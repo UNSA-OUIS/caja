@@ -1,64 +1,98 @@
 <template>
-    <jet-authentication-card>
-        <template #logo>
-            <!--<jet-authentication-card-logo />-->
-        </template>
-
-        <jet-validation-errors class="mb-4" />
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
+    <div>
+        <div class="home-btn d-none d-sm-block">
+            <a href="#" class="text-dark"><i class="mdi mdi-home-variant h2"></i></a>
         </div>
+        <div class="account-pages my-5 pt-sm-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <a href="#" class="mb-5 d-block auth-logo">
+                                <img src="assets/images/logo-dark.png" alt="" height="22" class="logo logo-dark">
+                                <img src="assets/images/logo-light.png" alt="" height="22" class="logo logo-light">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card">   
+                            <div class="card-body p-4"> 
+                                <div class="text-center mt-2">
+                                    <h5 class="text-primary">Welcome Back !</h5>
+                                    <p class="text-muted">Sign in to continue to Minible.</p>
+                                </div>
+                                <div class="p-2 mt-4">
+                                    <form action="#">
 
-        <form @submit.prevent="submit">
-            <!--<div>
-                <jet-label for="email" value="Email" />
-                <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus />
-            </div>
+                                        <div class="form-group">
+                                            <label for="username">Username</label>
+                                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                                        </div>
 
-            <div class="mt-4">
-                <jet-label for="password" value="Password" />
-                <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="current-password" />
-            </div>
+                                        <div class="form-group">
+                                            <div class="float-right">
+                                                <a href="#" class="text-muted">Forgot password?</a>
+                                            </div>
+                                            <label for="userpassword">Password</label>
+                                            <input type="password" class="form-control" id="userpassword" placeholder="Enter password">
+                                        </div>
 
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <jet-checkbox name="remember" v-model="form.remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="auth-remember-check">
+                                            <label class="custom-control-label" for="auth-remember-check">Remember me</label>
+                                        </div>
+                                        
+                                        <div class="mt-3 text-right">
+                                            <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Log In</button>
+                                        </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <inertia-link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Forgot your password?
-                </inertia-link>
+                                        
 
-                <jet-button class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Login
-                </jet-button>
-            </div>-->
-            <div class="flex items-center justify-center">
-                <img :src="`${app_url}/img/unsapay.png`">
+                                        <div class="mt-4 text-center">
+                                            <div class="signin-other-title">
+                                                <h5 class="font-size-14 mb-3 title">Sign in with</h5>
+                                            </div>
+                                            
+
+                                            <ul class="list-inline">
+                                                <li class="list-inline-item">
+                                                    <a href="javascript:void()" class="social-list-item bg-primary text-white border-primary">
+                                                        <i class="mdi mdi-facebook"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <a href="javascript:void()" class="social-list-item bg-info text-white border-info">
+                                                        <i class="mdi mdi-twitter"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <a :href="`${app_url}/google`" class="social-list-item bg-danger text-white border-danger">
+                                                        <i class="mdi mdi-google"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="mt-4 text-center">
+                                            <p class="mb-0">Don't have an account ? <a href="#" class="font-weight-medium text-primary"> Signup now </a> </p>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mt-5 text-center">
+                            <p>UNSA-CAJA © 2021. Elaborado con <i class="mdi mdi-heart text-danger"></i> por OUIS-UNSA</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <br>
-            <div class="flex items-center justify-center"> <!--justify-end-->
-                <a :href="`${app_url}/google`">
-                    <img :src="`${app_url}/img/login_unsa.png`">
-                </a>                 
-            </div>
-            <br>
-            <h2>
-                SI USTED NO RECUERDA SU CORREO UNSA POR FAVOR COMUNICARSE A LOS CORREOS: jhuajardo@unsa.edu.pe / ouisdesarrollo@unsa.edu.pe
-            </h2>
-            <br>
-            <div v-if="$page.props.flash.warningLoginMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                <p class="font-bold">Acceso Denegado</p>
-                <p>{{ $page.props.flash.warningLoginMessage }}</p>
-            </div>
-        </form>
-    </jet-authentication-card>
+            <!-- end container -->
+        </div>
+    </div>
 </template>
-
 <script>
     import JetAuthenticationCard from '@/Jetstream/AuthenticationCard'
     import JetAuthenticationCardLogo from '@/Jetstream/AuthenticationCardLogo'

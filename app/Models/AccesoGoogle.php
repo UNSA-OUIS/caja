@@ -10,4 +10,10 @@ class AccesoGoogle extends Model
     use HasFactory;
     protected $table = 'google_accesos';
     protected $primaryKey = 'correo';
+
+    protected $fillable = [
+        'correo',
+        'nombre',
+        'cargo',                
+    ];
 }

@@ -11,9 +11,9 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
         <!-- Styles Template-->
-        <link rel="stylesheet" href="assets/css/bootstrap.css">
-        <link rel="stylesheet" href="assets/css/icons.css}">
-        <link rel="stylesheet" href="assets/css/app.css">
+        <link rel="stylesheet" href="{{ asset(mix('assets/css/bootstrap.css')) }}">
+        <link rel="stylesheet" href="{{ asset(mix('assets/css/icons.css')) }}">
+        <link rel="stylesheet" href="{{ asset(mix('assets/css/app-dark.css')) }}">
 
         <!-- Styles -->
         <!--<link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}">-->        
@@ -22,7 +22,7 @@
         @routes
         <script src="{{ asset(mix('js/app.js')) }}" defer></script>
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased" data-sidebar="dark">
         @inertia
     </body>
 </html>
