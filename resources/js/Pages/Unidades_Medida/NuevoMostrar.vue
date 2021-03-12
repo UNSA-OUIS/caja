@@ -17,6 +17,7 @@
                             placeholder="Nombre de unidad de medida"   
                             :readonly="accion == 'Mostrar'"              
                         ></b-form-input>
+                        <span v-if="errors.nombre" class="error">{{ errors.nombre[0] }}</span>
                     </b-form-group>                    
                     <b-button v-if="accion == 'Crear'" @click="registrar"  variant="success">Registrar</b-button>
                     <b-button v-else-if="accion == 'Mostrar'" @click="accion = 'Editar'" variant="warning">Editar</b-button>
@@ -40,7 +41,9 @@
         data() {
             return {
                 app_url: this.$root.app_url,                      
-                accion: ''
+                accion: '',
+                errors: []
+
             };
         },       
         created() {
@@ -53,8 +56,10 @@
         },
         methods: {            
             async registrar() {
+                this.errors = []
+
                 try {
-                    const response = await axios.post(`${this.app_url}/unidades-medida`, this.unidadMedida)
+                    const response = await axios.post(`${this.app_url}/unidades-medida`, this.unidadMedida)                    
                     
                     if (!response.data.error) {    
                         this.makeToast(response.data.successMessage, 'success')                                                                                                             
@@ -67,10 +72,17 @@
 
                 } catch (error) {
                     console.log(error)
-                    this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
+                    if (error.response.status==422) {
+                        this.errors = error.response.data.errors;                         
+                    }
+                    else {
+                        this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
+                    }                      
                 }      
             },       
             async actualizar() {
+                this.errors = []
+                
                 try {
                     const response = await axios.post(`${this.app_url}/unidades-medida/${this.unidadMedida.id}`, this.unidadMedida)
                     
@@ -85,7 +97,12 @@
 
                 } catch (error) {
                     console.log(error)
-                    this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
+                    if (error.response.status==422) {
+                        this.errors = error.response.data.errors;                         
+                    }
+                    else {
+                        this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
+                    }                   
                 }      
             },       
             makeToast(message, variant = null) {
@@ -98,3 +115,8 @@
         },
     }
 </script>
+<style scoped>
+    .error {
+        color: red;
+    }
+</style>

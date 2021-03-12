@@ -32,5 +32,13 @@ class AppServiceProvider extends ServiceProvider
                 'errorMessage' => \Session::get('errorMessage'),
             ];
         });
+
+        Inertia::share([
+            'errors' => function () {
+                return Session::get('errors')
+                    ? Session::get('errors')->getBag('default')->getMessages()
+                    : (object) [];
+            },
+        ]);	
     }
 }

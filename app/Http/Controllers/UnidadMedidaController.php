@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
+use App\Http\Requests\UnidadMedidaStoreRequest;
+use App\Http\Requests\UnidadMedidaUpdateRequest;
 
 class UnidadMedidaController extends Controller
 {
@@ -40,7 +42,7 @@ class UnidadMedidaController extends Controller
         $unidadMedida = new UnidadMedida();
         $unidadMedida->nombre = "";
 
-        return Inertia::render('Unidades_Medida/Mostrar', compact('unidadMedida'));
+        return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
 
     /**
@@ -49,7 +51,7 @@ class UnidadMedidaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UnidadMedidaStoreRequest $request)
     {
         $unidadMedida = new UnidadMedida();
         $unidadMedida->nombre = $request->nombre;              
@@ -71,7 +73,7 @@ class UnidadMedidaController extends Controller
      */
     public function show(UnidadMedida $unidadMedida)
     {                   
-        return Inertia::render('Unidades_Medida/Mostrar', compact('unidadMedida'));
+        return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
 
     /**
@@ -92,7 +94,7 @@ class UnidadMedidaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UnidadMedida $unidadMedida)
+    public function update(UnidadMedidaUpdateRequest $request, UnidadMedida $unidadMedida)
     {
         $unidadMedida->nombre = $request->nombre;              
 
