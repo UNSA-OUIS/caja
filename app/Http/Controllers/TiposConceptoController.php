@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TipoConceptoStoreRequest;
+use App\Http\Requests\TipoConceptoUpdateRequest;
 use App\Models\TiposConcepto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +39,9 @@ class TiposConceptoController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Tipos_Concepto/Crear');
+        $tiposConcepto = new TiposConcepto();
+        $tiposConcepto->nombre = "";
+        return Inertia::render('Tipos_Concepto/NuevoMostrar', compact('tiposConcepto'));
     }
 
     /**
@@ -46,7 +50,7 @@ class TiposConceptoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TipoConceptoStoreRequest $request)
     {
         $tiposConcepto = new TiposConcepto();
         $tiposConcepto->nombre = $request->nombre;
@@ -68,7 +72,7 @@ class TiposConceptoController extends Controller
      */
     public function show(TiposConcepto $tiposConcepto)
     {
-        return Inertia::render('Tipos_Concepto/Mostrar', compact('tiposConcepto'));
+        return Inertia::render('Tipos_Concepto/NuevoMostrar', compact('tiposConcepto'));
     }
 
     /**
@@ -89,7 +93,7 @@ class TiposConceptoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TiposConcepto $tiposConcepto)
+    public function update(TipoConceptoUpdateRequest $request, TiposConcepto $tiposConcepto)
     {
         $tiposConcepto->nombre = $request->nombre;
 

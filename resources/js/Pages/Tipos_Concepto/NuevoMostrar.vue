@@ -7,11 +7,11 @@
             <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
           </li>
           <li class="breadcrumb-item">
-            <inertia-link :href="route('unidades-medida.iniciar')"
-              >Lista de unidades de medida</inertia-link
+            <inertia-link :href="route('tipos-concepto.iniciar')"
+              >Lista de tipos de concepto</inertia-link
             >
           </li>
-          <li class="breadcrumb-item active">{{ accion }} unidad de medida</li>
+          <li class="breadcrumb-item active">{{ accion }} tipo de concepto</li>
         </ol>
       </div>
       <div class="card-body">
@@ -19,8 +19,8 @@
           <b-form-group id="input-group-1" label="Nombre:" label-for="input-1">
             <b-form-input
               id="input-1"
-              v-model="unidadMedida.nombre"
-              placeholder="Nombre de unidad de medida"
+              v-model="tiposConcepto.nombre"
+              placeholder="Nombre de tipo de concepto"
               :readonly="accion == 'Mostrar'"
             ></b-form-input>
             <span v-if="errors.nombre" class="error">{{
@@ -56,8 +56,8 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "unidades-medida.mostrar",
-  props: ["unidadMedida"],
+  name: "tipos-concepto.mostrar",
+  props: ["tiposConcepto"],
   components: {
     AppLayout,
   },
@@ -69,7 +69,7 @@ export default {
     };
   },
   created() {
-    if (!this.unidadMedida.id) {
+    if (!this.tiposConcepto.id) {
       this.accion = "Crear";
     } else {
       this.accion = "Mostrar";
@@ -81,8 +81,8 @@ export default {
 
       try {
         const response = await axios.post(
-          `${this.app_url}/unidades-medida`,
-          this.unidadMedida
+          `${this.app_url}/tipos-concepto`,
+          this.tiposConcepto
         );
 
         if (!response.data.error) {
@@ -109,8 +109,8 @@ export default {
 
       try {
         const response = await axios.post(
-          `${this.app_url}/unidades-medida/${this.unidadMedida.id}`,
-          this.unidadMedida
+          `${this.app_url}/tipos-concepto/${this.tiposConcepto.id}`,
+          this.tiposConcepto
         );
 
         if (!response.data.error) {
@@ -134,7 +134,7 @@ export default {
     },
     makeToast(message, variant = null) {
       this.$bvToast.toast(message, {
-        title: `Unidades de medida`,
+        title: `Tipos de Concepto`,
         variant: variant,
         solid: true,
       });
@@ -142,8 +142,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.error {
-  color: red;
-}
-</style>

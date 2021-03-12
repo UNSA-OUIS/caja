@@ -15,7 +15,7 @@ class CreateTiposConceptoTable extends Migration
     {
         Schema::create('tipos_concepto', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('nombre',20);
+            $table->string('nombre',20)->unique();
             $table->timestamps();
             $table->softDeletes();
         });
