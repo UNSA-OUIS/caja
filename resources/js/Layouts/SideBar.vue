@@ -76,8 +76,12 @@
                 <inertia-link :href="route('unidades-medida.iniciar')">
                   Unidades de medida
                 </inertia-link>
+              </li>              
+              <li>
+                <inertia-link :href="route('clasificadores.iniciar')">
+                  Clasificadores
+                </inertia-link>
               </li>
-              <li><a href="#">Clasificadores</a></li>
               <li>
                 <inertia-link :href="route('tipos-concepto.iniciar')">
                   Tipos de concepto
