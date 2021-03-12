@@ -2,15 +2,15 @@
     <app-layout>                    
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Crear unidad de medida</h3>                
+                <h3 class="card-title">Crear tipo de concepto</h3>                
             </div>
             <div class="card-body">                
                 <b-form @submit.prevent="registrar">
                     <b-form-group id="input-group-1" label="Nombre:" label-for="input-1">
                         <b-form-input
                             id="input-1"
-                            v-model="unidadMedida.nombre"
-                            placeholder="Nombre de unidad de medida"                                         
+                            v-model="tiposConcepto.nombre"
+                            placeholder="Nombre de tipo de concepto"                                         
                         ></b-form-input>
                     </b-form-group>                    
                     <b-button type="submit" variant="success">Registrar</b-button>
@@ -25,14 +25,14 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "unidades-medida.crear",        
+        name: "tipos-concepto.crear",        
         components: {
             AppLayout,                      
         },
         data() {
             return {
                 app_url: this.$root.app_url,      
-                unidadMedida: {
+                tiposConcepto: {
                     nombre: ''
                 }                
             };
@@ -40,11 +40,11 @@
         methods: {
             async registrar() {
                 try {
-                    const response = await axios.post(`${this.app_url}/unidades-medida`, this.unidadMedida)
+                    const response = await axios.post(`${this.app_url}/tipos-concepto`, this.tiposConcepto)
                     
                     if (!response.data.error) {    
                         this.makeToast(response.data.successMessage, 'success')  
-                        location.href = `${this.app_url}/unidades-medida`;
+                        location.href = `${this.app_url}/tipos-concepto`;
                     }
                     else {                        
                         this.makeToast(response.data.errorMessage, 'danger')        
@@ -57,7 +57,7 @@
             },       
             makeToast(message, variant = null) {
                 this.$bvToast.toast(message, {
-                    title: `Unidades de medida`,
+                    title: `Tipos de Concepto`,
                     variant: variant,
                     solid: true
                 })

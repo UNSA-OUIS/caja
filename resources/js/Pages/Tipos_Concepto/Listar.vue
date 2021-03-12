@@ -2,11 +2,8 @@
     <app-layout>                    
         <div class="card">
             <div class="card-header">
-                <ol class="breadcrumb float-left">
-                    <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item active">Lista de unidades de medida</li>                    
-                </ol>              
-                <inertia-link class="btn btn-success float-right" :href="route('unidades-medida.crear')">Nuevo</inertia-link>
+                <h3 class="card-title">Lista de Tipos de Concepto</h3>
+                <inertia-link class="btn btn-success float-right" :href="route('tipos-concepto.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">                
                 <b-row>
@@ -46,7 +43,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_unidades_medida"
+                    ref="tbl_tipos_concepto"
                     show-empty
                     striped
                     hover
@@ -63,8 +60,8 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"   
-                    empty-text="No hay unidades de medida para mostrar"
-                    empty-filtered-text="No hay unidades de medida que coincidan con su búsqueda." 
+                    empty-text="No hay tipos de concepto para mostrar"
+                    empty-filtered-text="No hay tipos de concepto que coincidan con su búsqueda." 
                 >
                     <template v-slot:cell(condicion)="row">
                         <b-badge v-if="!row.item.deleted_at" variant="success">Activo</b-badge>
@@ -74,7 +71,7 @@
                         <inertia-link 
                             v-if="!row.item.deleted_at"
                             class="btn btn-primary btn-sm"
-                            :href="route('unidades-medida.mostrar', row.item.id)"
+                            :href="route('tipos-concepto.mostrar', row.item.id)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>             
@@ -113,7 +110,6 @@
             </div>
         </div>            
     </app-layout>
-
 </template>
 
 <script>
@@ -121,7 +117,7 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "unidades-medida.listar",        
+        name: "tipos-concepto.listar",        
         components: {
             AppLayout,            
         },
@@ -130,7 +126,7 @@
                 app_url: this.$root.app_url,
                 fields: [
                     { key: "id", label: "ID", sortable: true, class: "text-center" },
-                    { key: "nombre", label: "Unidad de medida", sortable: true },    
+                    { key: "nombre", label: "Tipo de Concepto", sortable: true },    
                     { key: "condicion", label: "Condición", class: "text-center" },                
                     { key: "acciones", label: "Acciones", class: "text-center" },
                 ],
@@ -144,10 +140,13 @@
                 sortDirection: 'asc',
                 filter: null,          
             };
-        },        
+        },
+        created() {
+            //this.totalRows = this.unidadesMedida.length;    
+        },
         methods: {
             refreshTable() {
-                this.$refs.tbl_unidades_medida.refresh();
+                this.$refs.tbl_tipos_concepto.refresh();
             },     
             myProvider(ctx) {                
                 let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -160,18 +159,18 @@
                     params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
                 }
 
-                const promise = axios.get(`${this.app_url}/unidades-medida/listar${params}`)
+                const promise = axios.get(`${this.app_url}/tipos-concepto/listar${params}`)
                 
                 return promise.then(response => {                                        
-                    const unidadesMedida = response.data.data                                   
+                    const tiposConcepto = response.data.data                                   
                     this.totalRows = response.data.total;
 
-                    return unidadesMedida || []
+                    return tiposConcepto || []
                 })
             },  
-            async eliminar(unidad_medida) {                
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar esta unidad de medida?", {
-                        title: "Eliminar unidad de medida",
+            async eliminar(tipos_concepto) {                
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este tipo de concepto?", {
+                        title: "Eliminar tipo de concepto",
                         okVariant: "danger",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -180,7 +179,7 @@
                     .then(async (value) => {
                         if (value) {                            
                             try {
-                                const response = await axios.delete(`${this.app_url}/unidades-medida/${unidad_medida.id}`)
+                                const response = await axios.delete(`${this.app_url}/tipos-concepto/${tipos_concepto.id}`)
                                 
                                 if (!response.data.error) {    
                                     this.makeToast(response.data.successMessage, 'success')                                                                                                             
@@ -196,9 +195,9 @@
                         }
                     })     
             },
-            async restaurar(unidad_medida) {
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar esta unidad de medida?", {
-                        title: "Restaurar unidad de medida",
+            async restaurar(tipos_concepto) {
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar este tipo de concepto?", {
+                        title: "Restaurar tipo de concepto",
                         okVariant: "primary",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -207,7 +206,7 @@
                     .then(async (value) => {
                         if (value) { 
                             try {
-                                const response = await axios.post(`${this.app_url}/unidades-medida/${unidad_medida.id}/restaurar`)
+                                const response = await axios.post(`${this.app_url}/tipos-concepto/${tipos_concepto.id}/restaurar`)
                                 
                                 if (!response.data.error) {    
                                     this.makeToast(response.data.successMessage, 'success')                                                                                                             
@@ -229,7 +228,7 @@
             },            
             makeToast(message, variant = null) {
                 this.$bvToast.toast(message, {
-                    title: `Unidades de medida`,
+                    title: `Tipos de Concepto`,
                     variant: variant,
                     solid: true
                 })

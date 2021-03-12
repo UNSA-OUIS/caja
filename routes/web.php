@@ -5,7 +5,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\LoginWithGoogleController;
-
+use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 
 
@@ -51,6 +51,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/unidades-medida/{unidad_medida}', [UnidadMedidaController::class, 'update'])->name('unidades-medida.actualizar');
     Route::delete('/unidades-medida/{unidad_medida}', [UnidadMedidaController::class, 'destroy'])->name('unidades-medida.eliminar');
     Route::post('/unidades-medida/{unidad_medida}/restaurar', [UnidadMedidaController::class, 'restore'])->name('unidades-medida.restaurar');
+    /***************************************************************************/
+
+    /**************************** TIPOS DE CONCEPTO ***************************/    
+    Route::get('/tipos-concepto', function () {
+        return Inertia::render('Tipos_Concepto/Listar');
+    })->name('tipos-concepto.iniciar');
+    Route::get('/tipos-concepto/listar', [TiposConceptoController::class, 'index'])->name('tipos-concepto.listar');
+    Route::get('/tipos-concepto/crear', [TiposConceptoController::class, 'create'])->name('tipos-concepto.crear'); 
+    Route::post('/tipos-concepto', [TiposConceptoController::class, 'store'])->name('tipos-concepto.registrar');
+    Route::get('/tipos-concepto/{tipos_concepto}', [TiposConceptoController::class, 'show'])->name('tipos-concepto.mostrar');    
+    Route::post('/tipos-concepto/{tipos_concepto}', [TiposConceptoController::class, 'update'])->name('tipos-concepto.actualizar');
+    Route::delete('/tipos-concepto/{tipos_concepto}', [TiposConceptoController::class, 'destroy'])->name('tipos-concepto.eliminar');
+    Route::post('/tipos-concepto/{tipos_concepto}/restaurar', [TiposConceptoController::class, 'restore'])->name('tipos-concepto.restaurar');
     /***************************************************************************/
  
     /**************************** CRUD CONCEPTOS ***********************************/    
