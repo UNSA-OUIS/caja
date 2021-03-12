@@ -1,21 +1,26 @@
 <template>
     <app-layout>                    
         <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Mostrar unidad de medida</h3>                
+            <div class="card-header">                
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
+                    <li class="breadcrumb-item"><inertia-link :href="route('unidades-medida.iniciar')">Lista de unidades de medida</inertia-link></li>
+                    <li class="breadcrumb-item active">{{ accion }} unidad de medida</li>
+                </ol>              
             </div>
             <div class="card-body">                
-                <b-form @submit.prevent="actualizar">
+                <b-form>
                     <b-form-group id="input-group-1" label="Nombre:" label-for="input-1">
                         <b-form-input
                             id="input-1"
                             v-model="unidadMedida.nombre"
                             placeholder="Nombre de unidad de medida"   
-                            :disabled="!editar"              
+                            :readonly="accion == 'Mostrar'"              
                         ></b-form-input>
-                    </b-form-group>
-                    <b-button v-show="!editar" @click="editar=true" variant="warning">Editar</b-button>
-                    <b-button type="submit" v-show="editar" variant="success">Actualizar</b-button>
+                    </b-form-group>                    
+                    <b-button v-if="accion == 'Crear'" @click="registrar"  variant="success">Registrar</b-button>
+                    <b-button v-else-if="accion == 'Mostrar'" @click="accion = 'Editar'" variant="warning">Editar</b-button>
+                    <b-button v-else-if="accion == 'Editar'" @click="actualizar" variant="success">Actualizar</b-button>
                 </b-form>                                
             </div>
         </div>            
@@ -34,11 +39,37 @@
         },
         data() {
             return {
-                app_url: this.$root.app_url,      
-                editar: false,            
+                app_url: this.$root.app_url,                      
+                accion: ''
             };
-        },        
-        methods: {
+        },       
+        created() {
+            if (!this.unidadMedida.id) {
+                this.accion = 'Crear'
+            }
+            else {
+                this.accion = 'Mostrar'
+            }            
+        },
+        methods: {            
+            async registrar() {
+                try {
+                    const response = await axios.post(`${this.app_url}/unidades-medida`, this.unidadMedida)
+                    
+                    if (!response.data.error) {    
+                        this.makeToast(response.data.successMessage, 'success')                                                                                                             
+                    }
+                    else {                        
+                        this.makeToast(response.data.errorMessage, 'danger')        
+                    }
+
+                    this.accion = 'Mostrar'
+
+                } catch (error) {
+                    console.log(error)
+                    this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
+                }      
+            },       
             async actualizar() {
                 try {
                     const response = await axios.post(`${this.app_url}/unidades-medida/${this.unidadMedida.id}`, this.unidadMedida)
@@ -50,7 +81,8 @@
                         this.makeToast(response.data.errorMessage, 'danger')        
                     }
 
-                    this.editar = false
+                    this.accion = 'Mostrar'
+
                 } catch (error) {
                     console.log(error)
                     this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        

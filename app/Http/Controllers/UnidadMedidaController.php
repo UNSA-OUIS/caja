@@ -36,8 +36,11 @@ class UnidadMedidaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-        return Inertia::render('Unidades_Medida/Crear');
+    {        
+        $unidadMedida = new UnidadMedida();
+        $unidadMedida->nombre = "";
+
+        return Inertia::render('Unidades_Medida/Mostrar', compact('unidadMedida'));
     }
 
     /**
@@ -67,7 +70,7 @@ class UnidadMedidaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(UnidadMedida $unidadMedida)
-    {       
+    {                   
         return Inertia::render('Unidades_Medida/Mostrar', compact('unidadMedida'));
     }
 
