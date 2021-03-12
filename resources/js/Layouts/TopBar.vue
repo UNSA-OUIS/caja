@@ -237,9 +237,9 @@
                 <div class="dropdown d-inline-block">
                     <button type="button" @click="mostrarMenuUsuario" class="btn header-item waves-effect" id="page-header-user-dropdown"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img class="rounded-circle header-profile-user" :src="`${app_url}/assets/images/users/avatar-4.jpg`"
+                        <img class="rounded-circle header-profile-user" :src="$page.props.user.profile_photo_path"
                             alt="Header Avatar">
-                        <span class="d-none d-xl-inline-block ml-1 font-weight-medium font-size-15">Renzo Siza Tejada</span>
+                        <span class="d-none d-xl-inline-block ml-1 font-weight-medium font-size-15">{{ $page.props.user.name }}</span>
                         <i class="uil-angle-down d-none d-xl-inline-block font-size-15"></i>
                     </button>                    
                     <div class="dropdown-menu dropdown-menu-right show" v-if="menuUsuario">

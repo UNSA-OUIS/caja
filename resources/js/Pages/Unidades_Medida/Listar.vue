@@ -2,7 +2,10 @@
     <app-layout>                    
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Lista de Unidades de medida</h3>
+                <ol class="breadcrumb float-left">
+                    <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
+                    <li class="breadcrumb-item active">Lista de unidades de medida</li>                    
+                </ol>              
                 <inertia-link class="btn btn-success float-right" :href="route('unidades-medida.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">                
@@ -110,6 +113,7 @@
             </div>
         </div>            
     </app-layout>
+
 </template>
 
 <script>
@@ -140,10 +144,7 @@
                 sortDirection: 'asc',
                 filter: null,          
             };
-        },
-        created() {
-            //this.totalRows = this.unidadesMedida.length;    
-        },
+        },        
         methods: {
             refreshTable() {
                 this.$refs.tbl_unidades_medida.refresh();

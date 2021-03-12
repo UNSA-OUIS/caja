@@ -3,14 +3,14 @@
         <div class="home-btn d-none d-sm-block">
             <a href="#" class="text-dark"><i class="mdi mdi-home-variant h2"></i></a>
         </div>
-        <div class="account-pages my-5 pt-sm-5">
+        <div class="account-pages my-4 pt-sm-4">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <a href="#" class="mb-5 d-block auth-logo">
-                                <img src="assets/images/logo-dark.png" alt="" height="22" class="logo logo-dark">
-                                <img src="assets/images/logo-light.png" alt="" height="22" class="logo logo-light">
+                            <a href="#" class="mb-4 d-block auth-logo">
+                                <img src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png" alt="" height="85" class="logo logo-dark">
+                                <img src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png" alt="" height="85" class="logo logo-light">
                             </a>
                         </div>
                     </div>
@@ -18,40 +18,42 @@
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-8 col-lg-6 col-xl-5">
                         <div class="card">   
-                            <div class="card-body p-4"> 
+                            <div class="card-body p-3"> 
                                 <div class="text-center mt-2">
-                                    <h5 class="text-primary">Welcome Back !</h5>
-                                    <p class="text-muted">Sign in to continue to Minible.</p>
+                                    <h5 class="text-primary">Bienvenid@ Nuevamente !</h5>
+                                    <p class="text-muted">Inicie sesión para ingresar a SISTEMA DE CAJA.</p>
                                 </div>
-                                <div class="p-2 mt-4">
+                                <div class="p-2 mt-3">
                                     <form action="#">
 
                                         <div class="form-group">
-                                            <label for="username">Username</label>
-                                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                                            <label for="username">Nombre de usuario</label>
+                                            <input type="text" class="form-control" id="username" placeholder="Ingrese nombre de usuario">
                                         </div>
 
                                         <div class="form-group">
                                             <div class="float-right">
-                                                <a href="#" class="text-muted">Forgot password?</a>
+                                                <a href="#" class="text-muted">¿Se te olvidó tu contraseña?</a>
                                             </div>
-                                            <label for="userpassword">Password</label>
-                                            <input type="password" class="form-control" id="userpassword" placeholder="Enter password">
+                                            <label for="userpassword">Contraseña</label>
+                                            <input type="password" class="form-control" id="userpassword" placeholder="Ingrese su contraseña">
                                         </div>
 
                                         <div class="custom-control custom-checkbox">
                                             <input type="checkbox" class="custom-control-input" id="auth-remember-check">
-                                            <label class="custom-control-label" for="auth-remember-check">Remember me</label>
+                                            <label class="custom-control-label" for="auth-remember-check">Recuérdame</label>
                                         </div>
                                         
                                         <div class="mt-3 text-right">
-                                            <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Log In</button>
-                                        </div>                                    
+                                            <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Iniciar sesión</button>
+                                        </div>
+                                       
 
                                         <div class="mt-4 text-center">
                                             <div class="signin-other-title">
-                                                <h5 class="font-size-14 mb-3 title">Sign in with</h5>
-                                            </div>                                          
+                                                <h5 class="font-size-14 mb-3 title login_redes_sociales p-1">Iniciar sesión con</h5>
+                                            </div>
+                                            
 
                                             <ul class="list-inline">
                                                 <li class="list-inline-item">
@@ -63,15 +65,15 @@
                                         </div>
 
                                         <div class="mt-4 text-center">
-                                            <p class="mb-0">Don't have an account ? <a href="#" class="font-weight-medium text-primary"> Signup now </a> </p>
+                                            <p class="mb-0">¿No tienes una cuenta? <a href="#" class="font-weight-medium text-primary"> Regístrate ahora </a> </p>
                                         </div>
                                     </form>
                                 </div>
 
                             </div>
                         </div>
-                        <div class="mt-5 text-center">
-                            <p>UNSA-CAJA © 2021. Elaborado con <i class="mdi mdi-heart text-danger"></i> por OUIS-UNSA</p>
+                        <div class="mt-3 text-center">
+                            <p>SISTEMA DE CAJA © 2021. Elaborado con <i class="mdi mdi-heart text-danger"></i> por OUIS-UNSA</p>
                         </div>
                     </div>
                 </div>
@@ -116,6 +118,11 @@
             }
         },
 
+        created() {
+            let sitebody = document.body;
+            sitebody.classList.add("authentication-bg")
+        },  
+
         methods: {
             submit() {
                 this.form
@@ -130,3 +137,8 @@
         }
     }
 </script>
+<style scoped>
+    .login_redes_sociales {
+        color: #a6b0cf
+    }
+</style>
