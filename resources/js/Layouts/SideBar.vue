@@ -47,7 +47,11 @@
                                     Unidades de medida
                                 </inertia-link>                                
                             </li>
-                            <li><a href="#">Clasificadores</a></li>
+                            <li>
+                                <inertia-link :href="route('clasificadores.iniciar')">
+                                    Clasificadores
+                                </inertia-link>   
+                            </li>
                             <li><a href="#">Tipos de concepto</a></li>
                             <li><a href="#">Conceptos</a></li>                            
                         </ul>

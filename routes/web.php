@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClasificadorController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -57,6 +58,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/conceptos/{concepto}', [ConceptoController::class, 'show'])->name('conceptos.mostrar');
     Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])->name('conceptos.eliminar');
     /*******************************************************************************/    
+
+    /**************************** CLASIFICADORES ***************************/    
+    Route::get('/clasificadores', function () {
+        return Inertia::render('Clasificadores/Listar');
+    })->name('clasificadores.iniciar');
+    Route::get('/clasificadores/listar', [ClasificadorController::class, 'index'])->name('clasificadores.listar');
+    Route::get('/clasificadores/crear', [ClasificadorController::class, 'create'])->name('clasificadores.crear'); 
+    Route::post('/clasificadores', [ClasificadorController::class, 'store'])->name('clasificadores.registrar');
+    Route::get('/clasificadores/{clasificador}', [ClasificadorController::class, 'show'])->name('clasificadores.mostrar');    
+    Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
+    Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
+    Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
+    /***************************************************************************/
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;
