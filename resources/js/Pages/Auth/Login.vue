@@ -47,8 +47,7 @@
                                         <div class="mt-3 text-right">
                                             <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Iniciar sesión</button>
                                         </div>
-
-                                        
+                                       
 
                                         <div class="mt-4 text-center">
                                             <div class="signin-other-title">
@@ -57,16 +56,6 @@
                                             
 
                                             <ul class="list-inline">
-                                                <li class="list-inline-item">
-                                                    <a href="javascript:void()" class="social-list-item bg-primary text-white border-primary">
-                                                        <i class="mdi mdi-facebook"></i>
-                                                    </a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="javascript:void()" class="social-list-item bg-info text-white border-info">
-                                                        <i class="mdi mdi-twitter"></i>
-                                                    </a>
-                                                </li>
                                                 <li class="list-inline-item">
                                                     <a :href="`${app_url}/google`" class="social-list-item bg-danger text-white border-danger">
                                                         <i class="mdi mdi-google"></i>
