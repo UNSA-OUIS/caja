@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccesoGoogleController;
 use App\Http\Controllers\ClasificadorController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +84,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
     Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
     Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
+    /***************************************************************************/
+
+    /**************************** CLASIFICADORES ***************************/    
+    Route::get('/accesos-google', function () {
+        return Inertia::render('AccesosGoogle/Listar');
+    })->name('accesos-google.iniciar');
+    Route::get('/accesos-google/listar', [AccesoGoogleController::class, 'index'])->name('accesos-google.listar');
+    Route::get('/accesos-google/crear', [AccesoGoogleController::class, 'create'])->name('accesos-google.crear'); 
+    Route::post('/accesos-google', [AccesoGoogleController::class, 'store'])->name('accesos-google.registrar');
+    Route::get('/accesos-google/{acceso_google}', [AccesoGoogleController::class, 'show'])->name('accesos-google.mostrar');    
+    Route::post('/accesos-google/{acceso_google}', [AccesoGoogleController::class, 'update'])->name('accesos-google.actualizar');
+    Route::delete('/accesos-google/{acceso_google}', [AccesoGoogleController::class, 'destroy'])->name('accesos-google.eliminar');
+    Route::post('/accesos-google/{acceso_google}/restaurar', [AccesoGoogleController::class, 'restore'])->name('accesos-google.restaurar');
     /***************************************************************************/
 });
 

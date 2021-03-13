@@ -4,9 +4,9 @@
             <div class="card-header">
                 <ol class="breadcrumb float-left">
                     <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item active">Lista de clasificadores</li>                    
+                    <li class="breadcrumb-item active">Lista de Accesos Google</li>                    
                 </ol>
-                <inertia-link class="btn btn-success float-right" :href="route('clasificadores.crear')">Nuevo</inertia-link>
+                <inertia-link class="btn btn-success float-right" :href="route('accesos-google.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">                
                 <b-row>
@@ -46,7 +46,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_clasificadores"
+                    ref="tbl_accesos_google"
                     show-empty
                     striped
                     hover
@@ -63,8 +63,8 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"   
-                    empty-text="No hay clasificadores para mostrar"
-                    empty-filtered-text="No hay clasificadores que coincidan con su búsqueda." 
+                    empty-text="No hay accesos para mostrar"
+                    empty-filtered-text="No hay accesos que coincidan con su búsqueda." 
                 >
                     <template v-slot:cell(condicion)="row">
                         <b-badge v-if="!row.item.deleted_at" variant="success">Activo</b-badge>
@@ -74,7 +74,7 @@
                         <inertia-link 
                             v-if="!row.item.deleted_at"
                             class="btn btn-primary btn-sm"
-                            :href="route('clasificadores.mostrar', row.item.id)"
+                            :href="route('accesos-google.mostrar', row.item.id)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>             
@@ -120,7 +120,7 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "clasificadores.listar",        
+        name: "accesos-google.listar",        
         components: {
             AppLayout,            
         },
@@ -129,7 +129,9 @@
                 app_url: this.$root.app_url,
                 fields: [
                     { key: "id", label: "ID", sortable: true, class: "text-center" },
-                    { key: "nombre", label: "Clasificador", sortable: true },    
+                    { key: "nombre", label: "Nombre", sortable: true },
+                    { key: "correo", label: "Correo", sortable: true },
+                    { key: "cargo", label: "Cargo", sortable: true },    
                     { key: "condicion", label: "Condición", class: "text-center" },                
                     { key: "acciones", label: "Acciones", class: "text-center" },
                 ],
@@ -147,7 +149,7 @@
         
         methods: {
             refreshTable() {
-                this.$refs.tbl_clasificadores.refresh();
+                this.$refs.tbl_accesos_google.refresh();
             },     
             myProvider(ctx) {                
                 let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -160,18 +162,18 @@
                     params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
                 }
 
-                const promise = axios.get(`${this.app_url}/clasificadores/listar${params}`)
+                const promise = axios.get(`${this.app_url}/accesos-google/listar${params}`)
                 
                 return promise.then(response => {                                        
-                    const Clasificadores = response.data.data                                   
+                    const AccesosGoogle = response.data.data                                   
                     this.totalRows = response.data.total;
 
-                    return Clasificadores || []
+                    return AccesosGoogle || []
                 })
             },  
-            async eliminar(clasificador) {                
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este clasificador?", {
-                        title: "Eliminar clasificador",
+            async eliminar(accesoGoogle) {                
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este acceso?", {
+                        title: "Eliminar acceso",
                         okVariant: "danger",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -180,7 +182,7 @@
                     .then(async (value) => {
                         if (value) {                            
                             try {
-                                const response = await axios.delete(`${this.app_url}/clasificadores/${clasificador.id}`)
+                                const response = await axios.delete(`${this.app_url}/accesos-google/${accesoGoogle.id}`)
                                 
                                 if (!response.data.error) {    
                                     this.makeToast(response.data.successMessage, 'success')                                                                                                             
@@ -196,9 +198,9 @@
                         }
                     })     
             },
-            async restaurar(clasificador) {
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar este clasificador?", {
-                        title: "Restaurar clasificador",
+            async restaurar(accesoGoogle) {
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar este acceso?", {
+                        title: "Restaurar acceso",
                         okVariant: "primary",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -207,7 +209,7 @@
                     .then(async (value) => {
                         if (value) { 
                             try {
-                                const response = await axios.post(`${this.app_url}/clasificadores/${clasificador.id}/restaurar`)
+                                const response = await axios.post(`${this.app_url}/accesos-google/${accesoGoogle.id}/restaurar`)
                                 
                                 if (!response.data.error) {    
                                     this.makeToast(response.data.successMessage, 'success')                                                                                                             
@@ -229,7 +231,7 @@
             },            
             makeToast(message, variant = null) {
                 this.$bvToast.toast(message, {
-                    title: `Clasificadores`,
+                    title: `Accesos Google`,
                     variant: variant,
                     solid: true
                 })

@@ -87,6 +87,11 @@
                   Tipos de concepto
                 </inertia-link>
               </li>
+              <li>
+                <inertia-link :href="route('accesos-google.iniciar')">
+                  Accesos Google
+                </inertia-link>
+              </li>
               <li><a href="#">Conceptos</a></li>
             </ul>
           </li>
