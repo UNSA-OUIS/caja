@@ -94,32 +94,41 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenuFacturacionElectronica"
+              @click="mostrarMenuSunat"
             >
-               <b-icon icon="cloud-upload"></b-icon>
-              <span>Facturacion Electronica</span>
+               <i class="fas fa-cloud-upload-alt"></i>
+              <span>Sunat</span>
             </a>
             <ul
               class="sub-menu"
               aria-expanded="false"
-              v-show="menuFacturacionElectronica"
+              v-show="menuSunat"
             >
               <li>
-                <inertia-link :href="route('unidades-medida.iniciar')">
+                <inertia-link :href="route('sunat.dashboard')">
                   Dashboard
                 </inertia-link>
               </li>              
               <li>
-                <inertia-link :href="route('clasificadores.iniciar')">
-                  Comprobantes electronicos
+                <inertia-link :href="route('sunat.enviarFacturas')">
+                  Enviar Facturas
                 </inertia-link>
               </li>
               <li>
-                <inertia-link :href="route('tipos-concepto.iniciar')">
-                  PLE - Libros eletronicos
+                <inertia-link :href="route('sunat.resumenBoletas')">
+                  Enviar Resumen Boletas
                 </inertia-link>
               </li>
-              <li><a href="#">Resumen de Boletas</a></li>
+              <li>
+                <inertia-link :href="route('sunat.comunicacionBaja')">
+                  Enviar Comunicacion Baja
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link :href="route('sunat.ticketCDR')">
+                  Envio Tickets CDR
+                </inertia-link>
+              </li>
             </ul>
           </li>
         </ul>
@@ -133,15 +142,15 @@ export default {
     return {
       app_url: this.$root.app_url,
       menuMantenimiento: false,
-      menuFacturacionElectronica: false
+      menuSunat: false
     };
   },
   methods: {
     mostrarMenuMantenimiento() {
       this.menuMantenimiento = !this.menuMantenimiento;
     },
-    mostrarMenuFacturacionElectronica() {
-      this.menuFacturacionElectronica = !this.menuFacturacionElectronica;
+    mostrarMenuSunat() {
+      this.menuSunat = !this.menuSunat;
     },
   },
 };

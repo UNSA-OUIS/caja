@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\LoginWithGoogleController;
+use App\Http\Controllers\SunatController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 
@@ -83,6 +84,17 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
     Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
     Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
+    /***************************************************************************/
+
+
+    /**************************** SUNAT ***************************/ 
+    Route::get('/sunat', function () {
+        return Inertia::render('Sunat/Dashboard');
+    })->name('sunat.dashboard');   
+    Route::get('/sunat/enviarFacturas', [SunatController::class, 'enviarFacturas'])->name('sunat.enviarFacturas'); 
+    Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
+    Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');    
+    Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
     /***************************************************************************/
 });
 
