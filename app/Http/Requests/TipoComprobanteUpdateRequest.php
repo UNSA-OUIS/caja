@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TipoConceptoUpdateRequest extends FormRequest
+class TipoComprobanteUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class TipoConceptoUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:20|unique:tipos_concepto,nombre,' . $this->request->get('id'),
+            'nombre' => 'required|max:20|unique:tipo_comprobante,nombre,' . $this->request->get('id'),
         ];
     }
 }

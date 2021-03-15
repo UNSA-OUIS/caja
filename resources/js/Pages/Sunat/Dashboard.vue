@@ -5,50 +5,50 @@
       <div>
         <b-card-group deck>
           <b-card
-            bg-variant="warning"
-            text-variant="white"
-            header="No Entregado"
-            class="text-center"
+            border-variant="warning"
+            header="No enviado"
+            header-bg-variant="warning"
+            header-text-variant="white"
+            align="center"
           >
             <b-card-text
-              ><p>1</p>
-              <p>comprobantes</p></b-card-text
+              ><p>1</p><p>comprobantes</p></b-card-text
             >
           </b-card>
 
           <b-card
-            bg-variant="danger"
-            text-variant="white"
+            border-variant="danger"
             header="Rechazado"
-            class="text-center"
+            header-bg-variant="danger"
+            header-text-variant="white"
+            align="center"
           >
             <b-card-text
-              ><p>2</p>
-              <p>comprobantes</p></b-card-text
+              ><p>1</p><p>comprobantes</p></b-card-text
             >
           </b-card>
 
           <b-card
-            bg-variant="secondary"
-            text-variant="white"
+            border-variant="secondary"
             header="Anulado"
-            class="text-center"
+            header-bg-variant="secondary"
+            header-text-variant="white"
+            align="center"
           >
             <b-card-text
-              ><p>3</p>
-              <p>comprobantes</p></b-card-text
+              ><p>1</p><p>comprobantes</p></b-card-text
             >
           </b-card>
 
           <b-card
-            bg-variant="success"
-            text-variant="white"
+            border-variant="success"
             header="Aceptado"
-            class="text-center"
+            header-bg-variant="success"
+            header-text-variant="white"
+            align="center"
           >
             <b-card-text
-              ><p>4</p>
-              <p>comprobantes</p></b-card-text
+              ><p>1</p><p>comprobantes</p></b-card-text
             >
           </b-card>
         </b-card-group>
@@ -59,7 +59,7 @@
       <div class="col-lg-12">
         <div class="card">
           <div class="card-body">
-            <h4 class="card-title mb-4">Latest Transaction</h4>
+            <h4 class="card-title mb-4"></h4>
             <div class="table-responsive">
               <table class="table table-centered table-nowrap mb-0">
                 <thead class="thead-light">

@@ -88,6 +88,11 @@
                 </inertia-link>
               </li>
               <li><a href="#">Conceptos</a></li>
+              <li>
+                <inertia-link :href="route('tipo-comprobante.iniciar')">
+                  Tipos de comprobante
+                </inertia-link>
+              </li>
             </ul>
           </li>
           <li>

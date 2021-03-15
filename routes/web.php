@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\SunatController;
+use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 
@@ -84,6 +85,20 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
     Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
     Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
+    /***************************************************************************/
+
+
+    /**************************** TIPOS DE COMPROBANTE ***************************/    
+    Route::get('/tipo-comprobante', function () {
+        return Inertia::render('Tipo_Comprobante/Listar');
+    })->name('tipo-comprobante.iniciar');
+    Route::get('/tipo-comprobante/listar', [TipoComprobanteController::class, 'index'])->name('tipo-comprobante.listar');
+    Route::get('/tipo-comprobante/crear', [TipoComprobanteController::class, 'create'])->name('tipo-comprobante.crear'); 
+    Route::post('/tipo-comprobante', [TipoComprobanteController::class, 'store'])->name('tipo-comprobante.registrar');
+    Route::get('/tipo-comprobante/{tipo_comprobante}', [TipoComprobanteController::class, 'show'])->name('tipo-comprobante.mostrar');    
+    Route::post('/tipo-comprobante/{tipo_comprobante}', [TipoComprobanteController::class, 'update'])->name('tipo-comprobante.actualizar');
+    Route::delete('/tipo-comprobante/{tipo_comprobante}', [TipoComprobanteController::class, 'destroy'])->name('tipo-comprobante.eliminar');
+    Route::post('/tipo-comprobante/{tipo_comprobante}/restaurar', [TipoComprobanteController::class, 'restore'])->name('tipo-comprobante.restaurar');
     /***************************************************************************/
 
 
