@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccesoGoogle extends Model
 {
-    use HasFactory;
-    protected $table = 'google_accesos';
-    protected $primaryKey = 'correo';
+    use HasFactory, SoftDeletes;
+    protected $table = 'accesos_google';
 
     protected $fillable = [
         'correo',

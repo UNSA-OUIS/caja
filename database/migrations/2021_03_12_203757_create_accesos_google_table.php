@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGoogleAccesosTable extends Migration
+class CreateAccesosGoogleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,14 +14,14 @@ class CreateGoogleAccesosTable extends Migration
      */
     public function up()
     {
-        Schema::create('google_accesos', function (Blueprint $table) {
-            $table->string('correo');
-            $table->string('nombre', 75);            
+        Schema::create('accesos_google', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre', 75);
+            $table->string('correo')->unique();
             $table->string('cargo', 30)->nullable();
-            $table->primary('correo');
             $table->timestamps();
+            $table->softDeletes();
         });
-
         AccesoGoogle::create(['correo' => 'rsiza@unsa.edu.pe', 'nombre' => 'Renzo Siza Tejada']);
         AccesoGoogle::create(['correo' => 'jortiz@unsa.edu.pe', 'nombre' => 'Jesus Ortiz']);
         AccesoGoogle::create(['correo' => 'gnunezc@unsa.edu.pe', 'nombre' => 'Gary Nuñez']);
@@ -34,6 +34,6 @@ class CreateGoogleAccesosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('google_accesos');
+        Schema::dropIfExists('accesos_google');
     }
 }
