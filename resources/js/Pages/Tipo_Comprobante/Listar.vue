@@ -6,11 +6,11 @@
           <li class="breadcrumb-item">
             <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
           </li>
-          <li class="breadcrumb-item active">Lista de tipos de concepto</li>
+          <li class="breadcrumb-item active">Lista de tipos de comprobante</li>
         </ol>
         <inertia-link
           class="btn btn-success float-right"
-          :href="route('tipos-concepto.crear')"
+          :href="route('tipo-comprobante.crear')"
           >Nuevo</inertia-link
         >
       </div>
@@ -59,7 +59,7 @@
           </b-col>
         </b-row>
         <b-table
-          ref="tbl_tipos_concepto"
+          ref="tbl_tipo_comprobante"
           show-empty
           striped
           hover
@@ -76,8 +76,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay tipos de concepto para mostrar"
-          empty-filtered-text="No hay tipos de concepto que coincidan con su búsqueda."
+          empty-text="No hay tipos de comprobante para mostrar"
+          empty-filtered-text="No hay tipos de comprobante que coincidan con su búsqueda."
         >
           <template v-slot:cell(condicion)="row">
             <b-badge v-if="!row.item.deleted_at" variant="success"
@@ -89,7 +89,7 @@
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
-              :href="route('tipos-concepto.mostrar', row.item.id)"
+              :href="route('tipo-comprobante.mostrar', row.item.id)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>
@@ -135,7 +135,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "tipos-concepto.listar",
+  name: "tipo-comprobante.listar",
   components: {
     AppLayout,
   },
@@ -144,7 +144,7 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "id", label: "ID", sortable: true, class: "text-center" },
-        { key: "nombre", label: "Tipo de Concepto", sortable: true },
+        { key: "nombre", label: "Tipo de Comprobante", sortable: true },
         { key: "condicion", label: "Condición", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
@@ -161,7 +161,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_tipos_concepto.refresh();
+      this.$refs.tbl_tipo_comprobante.refresh();
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -175,22 +175,22 @@ export default {
       }
 
       const promise = axios.get(
-        `${this.app_url}/tipos-concepto/listar${params}`
+        `${this.app_url}/tipo-comprobante/listar${params}`
       );
 
       return promise.then((response) => {
-        const tiposConcepto = response.data.data;
+        const tipoComprobante = response.data.data;
         this.totalRows = response.data.total;
 
-        return tiposConcepto || [];
+        return tipoComprobante || [];
       });
     },
-    async eliminar(tipos_concepto) {
+    async eliminar(tipo_comprobante) {
       this.$bvModal
         .msgBoxConfirm(
-          "¿Esta seguro de querer eliminar este tipo de concepto?",
+          "¿Esta seguro de querer eliminar este tipo de comprobante?",
           {
-            title: "Eliminar tipo de concepto",
+            title: "Eliminar tipo de comprobante",
             okVariant: "danger",
             okTitle: "SI",
             cancelTitle: "NO",
@@ -201,7 +201,7 @@ export default {
           if (value) {
             try {
               const response = await axios.delete(
-                `${this.app_url}/tipos-concepto/${tipos_concepto.id}`
+                `${this.app_url}/tipos-concepto/${tipo_comprobante.id}`
               );
 
               if (!response.data.error) {
@@ -220,12 +220,12 @@ export default {
           }
         });
     },
-    async restaurar(tipos_concepto) {
+    async restaurar(tipo_comprobante) {
       this.$bvModal
         .msgBoxConfirm(
-          "¿Esta seguro de querer restaurar este tipo de concepto?",
+          "¿Esta seguro de querer restaurar este tipo de comprobante?",
           {
-            title: "Restaurar tipo de concepto",
+            title: "Restaurar tipo de comprobante",
             okVariant: "primary",
             okTitle: "SI",
             cancelTitle: "NO",
@@ -236,7 +236,7 @@ export default {
           if (value) {
             try {
               const response = await axios.post(
-                `${this.app_url}/tipos-concepto/${tipos_concepto.id}/restaurar`
+                `${this.app_url}/tipos-concepto/${tipo_comprobante.id}/restaurar`
               );
 
               if (!response.data.error) {
@@ -261,7 +261,7 @@ export default {
     },
     makeToast(message, variant = null) {
       this.$bvToast.toast(message, {
-        title: `Tipos de Concepto`,
+        title: `Tipos de Comprobante`,
         variant: variant,
         solid: true,
       });

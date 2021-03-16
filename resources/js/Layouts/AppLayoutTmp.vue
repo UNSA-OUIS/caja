@@ -10,6 +10,8 @@
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex-shrink-0 flex items-center">
+                                <a href="#" class="mb-4 d-block auth-logo">
+                                </a>
                                 <inertia-link :href="route('dashboard')">
                                     <jet-application-mark class="block h-9 w-auto" />
                                 </inertia-link>

@@ -119,92 +119,94 @@
 </template>
 
 <script>
-    const axios = require('axios')
-    import AppLayout from '@/Layouts/AppLayout'    
+const axios = require("axios");
+import AppLayout from "@/Layouts/AppLayout";
 
-    export default {
-        name: "unidades-medida.listar",        
-        components: {
-            AppLayout,            
-        },
-        data() {
-            return {
-                app_url: this.$root.app_url,
-                fields: [
-                    { key: "id", label: "ID", sortable: true, class: "text-center" },
-                    { key: "nombre", label: "Unidad de medida", sortable: true },    
-                    { key: "condicion", label: "Condición", class: "text-center" },                
-                    { key: "acciones", label: "Acciones", class: "text-center" },
-                ],
-                index: 1,
-                totalRows: 1,
-                currentPage: 1,
-                perPage: 5,
-                pageOptions: [5, 10, 15],
-                sortBy: null,
-                sortDesc: false,
-                sortDirection: 'asc',
-                filter: null,          
-            };
-        },        
-        methods: {
-            refreshTable() {
-                this.$refs.tbl_unidades_medida.refresh();
-            },     
-            myProvider(ctx) {                
-                let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
+export default {
+  name: "unidades-medida.listar",
+  components: {
+    AppLayout,
+  },
+  data() {
+    return {
+      app_url: this.$root.app_url,
+      fields: [
+        { key: "id", label: "ID", sortable: true, class: "text-center" },
+        { key: "nombre", label: "Unidad de medida", sortable: true },
+        { key: "condicion", label: "Condición", class: "text-center" },
+        { key: "acciones", label: "Acciones", class: "text-center" },
+      ],
+      index: 1,
+      totalRows: 1,
+      currentPage: 1,
+      perPage: 5,
+      pageOptions: [5, 10, 15],
+      sortBy: null,
+      sortDesc: false,
+      sortDirection: "asc",
+      filter: null,
+    };
+  },
+  methods: {
+    refreshTable() {
+      this.$refs.tbl_unidades_medida.refresh();
+    },
+    myProvider(ctx) {
+      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
 
-                if (ctx.filter !== "" && ctx.filter !== null) {                    
-                    params += "&filter=" + ctx.filter;
+      if (ctx.filter !== "" && ctx.filter !== null) {
+        params += "&filter=" + ctx.filter;
+      }
+
+      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
+        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
+      }
+
+      const promise = axios.get(
+        `${this.app_url}/unidades-medida/listar${params}`
+      );
+
+      return promise.then((response) => {
+        const unidadesMedida = response.data.data;
+        this.totalRows = response.data.total;
+
+        return unidadesMedida || [];
+      });
+    },   
+    eliminar(unidad_medida) {                
+        this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar esta unidad de medida?", {
+                title: "Eliminar unidad de medida",
+                okVariant: "danger",
+                okTitle: "SI",
+                cancelTitle: "NO",
+                centered: true,
+            })
+            .then((value) => {
+                if (value) {                            
+                    this.$inertia.delete(route('unidades-medida.eliminar', [unidad_medida.id]))                            
+                    this.refreshTable()
                 }
-
-                if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-                    params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
+            })     
+    },
+    async restaurar(unidad_medida) {
+        this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar esta unidad de medida?", {
+                title: "Restaurar unidad de medida",
+                okVariant: "primary",
+                okTitle: "SI",
+                cancelTitle: "NO",
+                centered: true,
+            })
+            .then((value) => {
+                if (value) { 
+                    this.$inertia.post(route('unidades-medida.restaurar', [unidad_medida.id]))
+                    this.refreshTable()
                 }
-
-                const promise = axios.get(`${this.app_url}/unidades-medida/listar${params}`)
-                
-                return promise.then(response => {                                        
-                    const unidadesMedida = response.data.data                                   
-                    this.totalRows = response.data.total;
-
-                    return unidadesMedida || []
-                })
-            },  
-            eliminar(unidad_medida) {                
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar esta unidad de medida?", {
-                        title: "Eliminar unidad de medida",
-                        okVariant: "danger",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true,
-                    })
-                    .then((value) => {
-                        if (value) {                            
-                            this.$inertia.delete(route('unidades-medida.eliminar', [unidad_medida.id]))                            
-                            this.refreshTable()
-                        }
-                    })     
-            },
-            async restaurar(unidad_medida) {
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar esta unidad de medida?", {
-                        title: "Restaurar unidad de medida",
-                        okVariant: "primary",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true,
-                    })
-                    .then((value) => {
-                        if (value) { 
-                            this.$inertia.post(route('unidades-medida.restaurar', [unidad_medida.id]))
-                            this.refreshTable()
-                        }
-                    })                   
-            },
-            onFiltered(filteredItems) {
-                this.totalRows = filteredItems.length;
-                this.currentPage = 1;
-            },                          
-        },
-    }
+            })                   
+    },
+    onFiltered(filteredItems) {
+        this.totalRows = filteredItems.length;
+        this.currentPage = 1;
+    },                          
+  },
+}
 </script>

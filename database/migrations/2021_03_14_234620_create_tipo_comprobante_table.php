@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTiposConceptoTable extends Migration
+class CreateTipoComprobanteTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTiposConceptoTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipos_concepto', function (Blueprint $table) {
+        Schema::create('tipo_comprobante', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('nombre',20)->unique();
             $table->timestamps();
@@ -28,6 +28,6 @@ class CreateTiposConceptoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipos_concepto');
+        Schema::dropIfExists('tipo_comprobante');
     }
 }

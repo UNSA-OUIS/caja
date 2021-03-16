@@ -31,35 +31,34 @@
 </template>
 
 <script>
-    const axios = require('axios') 
-    import AppLayout from '@/Layouts/AppLayout'    
+import AppLayout from "@/Layouts/AppLayout";
 
-    export default {
-        name: "unidades-medida.mostrar",
-        props: ["unidadMedida"],
-        components: {
-            AppLayout,                      
-        },
-        data() {
-            return {                
-                accion: '',               
-            };
+export default {
+    name: "unidades-medida.mostrar",
+    props: ["unidadMedida"],
+    components: {
+        AppLayout,                      
+    },
+    data() {
+        return {                
+            accion: '',               
+        };
+    },       
+    created() {                        
+        if (!this.unidadMedida.id) {               
+            this.accion = 'Crear'
+        }
+        else {                
+            this.accion = 'Mostrar'
+        }            
+    },
+    methods: {            
+        registrar() {                                         
+            this.$inertia.post(route('unidades-medida.registrar'), this.unidadMedida)
         },       
-        created() {                        
-            if (!this.unidadMedida.id) {               
-                this.accion = 'Crear'
-            }
-            else {                
-                this.accion = 'Mostrar'
-            }            
-        },
-        methods: {            
-            registrar() {                                         
-                this.$inertia.post(route('unidades-medida.registrar'), this.unidadMedida)
-            },       
-            actualizar() {                
-                this.$inertia.post(route('unidades-medida.actualizar', [this.unidadMedida.id]), this.unidadMedida)                
-            }            
-        },
-    }
+        actualizar() {                
+            this.$inertia.post(route('unidades-medida.actualizar', [this.unidadMedida.id]), this.unidadMedida)                
+        }            
+    },
+}
 </script>
