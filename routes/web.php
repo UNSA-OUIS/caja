@@ -105,8 +105,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /**************************** SUNAT ***************************/ 
     Route::get('/sunat', function () {
         return Inertia::render('Sunat/Dashboard');
-    })->name('sunat.dashboard');   
-    Route::get('/sunat/enviarFacturas', [SunatController::class, 'enviarFacturas'])->name('sunat.enviarFacturas'); 
+    })->name('sunat.dashboard'); 
+    Route::get('/sunat/listarFacturas', [SunatController::class, 'listarFacturas'])->name('sunat.listarFacturas');
+    Route::post('/sunat/enviarFacturas', [SunatController::class, 'enviarFacturas'])->name('sunat.enviarFacturas'); 
     Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
     Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');    
     Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
