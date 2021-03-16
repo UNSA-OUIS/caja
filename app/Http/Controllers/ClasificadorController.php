@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClasificadorStoreRequest;
+use App\Http\Requests\ClasificadorUpdateRequest;
 use App\Models\Clasificador;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -36,7 +38,10 @@ class ClasificadorController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Clasificadores/Crear');
+        $clasificador = new Clasificador();
+        $clasificador->nombre = "";
+
+        return Inertia::render('Clasificadores/NuevoMostrar', compact('clasificador'));
     }
 
     /**
@@ -45,7 +50,7 @@ class ClasificadorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ClasificadorStoreRequest $request)
     {
         $clasificador = new Clasificador();
         $clasificador->nombre = $request->nombre;
@@ -68,7 +73,7 @@ class ClasificadorController extends Controller
      */
     public function show(Clasificador $clasificador)
     {
-        return Inertia::render('Clasificadores/Mostrar', compact('clasificador'));
+        return Inertia::render('Clasificadores/NuevoMostrar', compact('clasificador'));
     }
 
     /**
@@ -89,7 +94,7 @@ class ClasificadorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Clasificador $clasificador)
+    public function update(ClasificadorUpdateRequest $request, Clasificador $clasificador)
     {
         $clasificador->nombre = $request->nombre;
 
@@ -129,7 +134,7 @@ class ClasificadorController extends Controller
             $result = ['successMessage' => 'Clasificador restaurado con éxito', 'error' => false];
             
         } catch (\Throwable $e) {
-            $result = ['errorMessage' => 'No se pudo eliminar el clasificador', 'error' => true];
+            $result = ['errorMessage' => 'No se pudo restaurar el clasificador', 'error' => true];
             \Log::warning('ClasificadorController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 

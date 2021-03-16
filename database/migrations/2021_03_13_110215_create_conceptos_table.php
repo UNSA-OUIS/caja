@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClasificadoresTable extends Migration
+class CreateConceptosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateClasificadoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('clasificadores', function (Blueprint $table) {
-            $table->tinyIncrements('id');
-            $table->string('nombre', 50)->unique();
+        Schema::create('conceptos', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +26,6 @@ class CreateClasificadoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clasificadores');
+        Schema::dropIfExists('conceptos');
     }
 }
