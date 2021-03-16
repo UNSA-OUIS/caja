@@ -8,7 +8,9 @@
                 </ol>              
                 <inertia-link class="btn btn-success float-right" :href="route('unidades-medida.crear')">Nuevo</inertia-link>
             </div>
-            <div class="card-body">                
+            <div class="card-body">      
+                <b-alert show variant="success" v-if="$page.props.successMessage">{{ $page.props.successMessage }}</b-alert>
+                <b-alert show variant="danger" v-if="$page.props.errorMessage">{{ $page.props.errorMessage }}</b-alert>
                 <b-row>
                     <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
@@ -169,7 +171,7 @@
                     return unidadesMedida || []
                 })
             },  
-            async eliminar(unidad_medida) {                
+            eliminar(unidad_medida) {                
                 this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar esta unidad de medida?", {
                         title: "Eliminar unidad de medida",
                         okVariant: "danger",
@@ -177,22 +179,10 @@
                         cancelTitle: "NO",
                         centered: true,
                     })
-                    .then(async (value) => {
+                    .then((value) => {
                         if (value) {                            
-                            try {
-                                const response = await axios.delete(`${this.app_url}/unidades-medida/${unidad_medida.id}`)
-                                
-                                if (!response.data.error) {    
-                                    this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                                    this.refreshTable()
-                                }
-                                else {                        
-                                    this.makeToast(response.data.errorMessage, 'danger')        
-                                }                                
-                            } catch (error) {
-                                console.log(error)
-                                this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                            }     
+                            this.$inertia.delete(route('unidades-medida.eliminar', [unidad_medida.id]))                            
+                            this.refreshTable()
                         }
                     })     
             },
@@ -204,36 +194,17 @@
                         cancelTitle: "NO",
                         centered: true,
                     })
-                    .then(async (value) => {
+                    .then((value) => {
                         if (value) { 
-                            try {
-                                const response = await axios.post(`${this.app_url}/unidades-medida/${unidad_medida.id}/restaurar`)
-                                
-                                if (!response.data.error) {    
-                                    this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                                    this.refreshTable()
-                                }
-                                else {                        
-                                    this.makeToast(response.data.errorMessage, 'danger')        
-                                }                                
-                            } catch (error) {
-                                console.log(error)
-                                this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                            }     
+                            this.$inertia.post(route('unidades-medida.restaurar', [unidad_medida.id]))
+                            this.refreshTable()
                         }
                     })                   
             },
             onFiltered(filteredItems) {
                 this.totalRows = filteredItems.length;
                 this.currentPage = 1;
-            },            
-            makeToast(message, variant = null) {
-                this.$bvToast.toast(message, {
-                    title: `Unidades de medida`,
-                    variant: variant,
-                    solid: true
-                })
-            }     
+            },                          
         },
     }
 </script>
