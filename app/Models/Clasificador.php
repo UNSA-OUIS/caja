@@ -13,4 +13,9 @@ class Clasificador extends Model
     protected $table = 'clasificadores';
 
     protected $fillable = ['nombre'];
+
+    public function conceptos()
+    {
+        return $this->hasMany(Concepto::class);
+    }
 }

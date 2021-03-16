@@ -73,6 +73,11 @@
               v-show="menuMantenimiento"
             >
               <li>
+                <inertia-link :href="route('accesos-google.iniciar')">
+                  Accesos Google
+                </inertia-link>
+              </li>
+              <li>
                 <inertia-link :href="route('unidades-medida.iniciar')">
                   Unidades de medida
                 </inertia-link>
@@ -86,13 +91,12 @@
                 <inertia-link :href="route('tipos-concepto.iniciar')">
                   Tipos de concepto
                 </inertia-link>
-              </li>
+              </li>              
               <li>
-                <inertia-link :href="route('accesos-google.iniciar')">
-                  Accesos Google
+                <inertia-link :href="route('conceptos.iniciar')">
+                  Conceptos
                 </inertia-link>
               </li>
-              <li><a href="#">Conceptos</a></li>
             </ul>
           </li>
         </ul>

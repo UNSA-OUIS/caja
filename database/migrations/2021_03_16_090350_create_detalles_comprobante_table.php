@@ -19,8 +19,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->decimal('valor_unitario', 9);            
             $table->decimal('igv', 7);            
             $table->boolean('estado');
-            $table->tinyInteger('concepto_id');
-            $table->tinyInteger('unidad_medida_id');
+            $table->tinyInteger('concepto_id');            
             $table->bigInteger('comprobante_id');
             $table->timestamps();
 
@@ -31,11 +30,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->foreign('comprobante_id')->references('id')->on('comprobantes')
                 ->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->foreign('unidad_medida_id')->references('id')->on('unidades_medida')
-                ->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade');            
         });
     }
 

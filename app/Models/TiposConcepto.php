@@ -13,4 +13,9 @@ class TiposConcepto extends Model
     protected $table = 'tipos_concepto';
 
     protected $fillable = ['nombre'];
+
+    public function conceptos()
+    {
+        return $this->hasMany(Concepto::class);
+    }
 }
