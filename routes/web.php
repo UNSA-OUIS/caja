@@ -125,7 +125,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /************************* ACCESOS GOOGLE********************/    
     Route::get('/accesos-google', function () {
-        return Inertia::render('Roles/Listar');
+        return Inertia::render('AccesosGoogle/Listar');
     })->name('accesos-google.iniciar');
     Route::get('/accesos-google/listar', [AccesoGoogleController::class, 'index'])->name('accesos-google.listar');
     Route::get('/accesos-google/crear', [AccesoGoogleController::class, 'create'])->name('accesos-google.crear'); 
