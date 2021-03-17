@@ -6,7 +6,7 @@
                     <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
                     <li class="breadcrumb-item active">Lista de conceptos</li>                    
                 </ol>              
-                <inertia-link class="btn btn-success float-right" :href="route('unidades-medida.crear')">Nuevo</inertia-link>
+                <inertia-link class="btn btn-success float-right" :href="route('conceptos.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">      
                 <b-alert show variant="success" v-if="$page.props.successMessage">{{ $page.props.successMessage }}</b-alert>
@@ -85,7 +85,7 @@
                         <inertia-link 
                             v-if="!row.item.deleted_at"
                             class="btn btn-primary btn-sm"
-                            :href="route('unidades-medida.mostrar', row.item.id)"
+                            :href="route('conceptos.mostrar', row.item.id)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>             
@@ -163,8 +163,7 @@
             refreshTable() {
                 this.$refs.tbl_conceptos.refresh();
             },     
-            myProvider(ctx) {        
-                console.log('listando')
+            myProvider(ctx) {                
                 let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
 
                 if (ctx.filter !== "" && ctx.filter !== null) {                    
@@ -184,9 +183,9 @@
                     return unidadesMedida || []
                 })
             },  
-            eliminar(unidad_medida) {                
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar esta unidad de medida?", {
-                        title: "Eliminar unidad de medida",
+            eliminar(concepto) {                
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este concepto?", {
+                        title: "Eliminar concepto",
                         okVariant: "danger",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -194,14 +193,14 @@
                     })
                     .then((value) => {
                         if (value) {                            
-                            this.$inertia.delete(route('unidades-medida.eliminar', [unidad_medida.id]))                            
+                            this.$inertia.delete(route('conceptos.eliminar', [concepto.id]))                            
                             this.refreshTable()
                         }
                     })     
             },
-            async restaurar(unidad_medida) {
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar esta unidad de medida?", {
-                        title: "Restaurar unidad de medida",
+            async restaurar(concepto) {
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar este concepto?", {
+                        title: "Restaurar concepto",
                         okVariant: "primary",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -209,7 +208,7 @@
                     })
                     .then((value) => {
                         if (value) { 
-                            this.$inertia.post(route('unidades-medida.restaurar', [unidad_medida.id]))
+                            this.$inertia.post(route('conceptos.restaurar', [concepto.id]))
                             this.refreshTable()
                         }
                     })                   
