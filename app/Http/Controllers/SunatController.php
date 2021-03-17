@@ -23,7 +23,7 @@ class SunatController extends Controller
     }
     public function enviarFacturas(SunatEnviarFacturaRequest $request)
     {
-        $see = require __DIR__.'/config.php';
+        $see = require __DIR__ . '/config.php';
         // Cliente
         $client = (new Client())
             ->setTipoDoc('6')
@@ -108,22 +108,25 @@ class SunatController extends Controller
         $code = (int)$cdr->getCode();
 
         if ($code === 0) {
-            echo 'ESTADO: ACEPTADA' . PHP_EOL;
+            $result = ['successMessage' => 'ESTADO: ACEPTADA' . PHP_EOL . $cdr->getDescription() . PHP_EOL];
+            //$result = ['successMessage' => 'ESTADO: ACEPTADA' . PHP_EOL];
+            //echo ;
             if (count($cdr->getNotes()) > 0) {
                 echo 'OBSERVACIONES:' . PHP_EOL;
                 // Corregir estas observaciones en siguientes emisiones.
                 var_dump($cdr->getNotes());
             }
         } else if ($code >= 2000 && $code <= 3999) {
-            echo 'ESTADO: RECHAZADA' . PHP_EOL;
+            $result = ['errorMessage' => 'ESTADO: RECHAZADA' . PHP_EOL];
+            //echo ;
         } else {
             /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
             /*code: 0100 a 1999 */
             echo 'Excepción';
         }
-
-        return $cdr->getDescription() . PHP_EOL;
+        //return $cdr->getDescription() . PHP_EOL;
         //return $request;
+        return redirect()->route('sunat.listarFacturas')->with($result);
     }
     public function resumenBoletas()
     {

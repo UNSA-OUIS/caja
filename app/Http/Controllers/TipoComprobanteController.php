@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TipoComprobanteStoreRequest;
 use App\Http\Requests\TipoComprobanteUpdateRequest;
 use App\Models\TipoComprobante;
+use App\Models\TiposConcepto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -52,16 +53,17 @@ class TipoComprobanteController extends Controller
      */
     public function store(TipoComprobanteStoreRequest $request)
     {
-        $tipoComprobante = new TipoComprobante();
-        $tipoComprobante->nombre = $request->nombre;
-
-        if ($tipoComprobante->save()) {
-            $result = ['successMessage' => 'Tipo de Comprobante registrado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo registrar el tipo de comprobante', 'error' => true];
-        }
-
-        return $result;
+        try {           
+            $tipoComprobante = new TipoComprobante();
+            $tipoComprobante->nombre = $request->nombre;
+            $tipoComprobante->save();
+            $result = ['successMessage' => 'Comprobante registrada con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo registrar el comprobante'];
+            \Log::error('TipoComprobanteController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->route('tipo-comprobante.iniciar')->with($result);
     }
 
     /**
@@ -95,15 +97,17 @@ class TipoComprobanteController extends Controller
      */
     public function update(TipoComprobanteUpdateRequest $request, TipoComprobante $tipoComprobante)
     {
-        $tipoComprobante->nombre = $request->nombre;
-
-        if ($tipoComprobante->update()) {
-            $result = ['successMessage' => 'Tipo de comprobante actualizado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo actualizar el tipo de comprobante', 'error' => true];
-        }
-
-        return $result;
+        try {           
+            $tipoComprobante = $request->nombre;
+            $tipoComprobante->update();
+            $result = ['successMessage' => 'Comprobante actualizado con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar el comprobante'];
+            \Log::error('TipoComprobanteController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->route('tipo-comprobante.iniciar')->with($result);
+  
     }
 
     /**
@@ -114,27 +118,28 @@ class TipoComprobanteController extends Controller
      */
     public function destroy(TipoComprobante $tipoComprobante)
     {
-        if ($tipoComprobante->delete()) {
-            $result = ['successMessage' => 'Tipo de comprobante eliminado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo eliminar el tipo de comprobante', 'error' => true];
-        }
-
-        return $result;
+        try {                       
+            $tipoComprobante->delete();            
+            $result = ['successMessage' => 'Tipo de comprobante eliminado con éxito'];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo eliminar el comprobante'];
+            \Log::error('TipoComprobanteController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->back()->with($result);   
     }
 
     public function restore($tipo_comprobante_id)
     {
-        $tipo_comprobante_id = TipoComprobante::withTrashed()->findOrFail($tipo_comprobante_id);
-
-        try {
-            $tipo_comprobante_id->restore();
-            $result = ['successMessage' => 'Tipo de comprobante restaurada con éxito', 'error' => false];
+        try {                       
+            $tipoComprobante = TipoComprobante::withTrashed()->findOrFail($tipo_comprobante_id);  
+            $tipoComprobante->restore();
+            $result = ['successMessage' => 'Comprobante restaurado con éxito'];
         } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo restaurar el tipo de comprobante', 'error' => true];
-            Log::warning('TiposConceptoController@restore, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
-        }
-
-        return $result;
+            $result = ['errorMessage' => 'No se pudo restaurar el comprobante'];
+            \Log::error('TipoComprobanteController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->back()->with($result);
     }
 }
