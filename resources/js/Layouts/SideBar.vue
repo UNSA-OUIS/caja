@@ -44,6 +44,42 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
+                            @click="mostrarMenuAcceso"
+                        >
+                            <i class="uil-window-section"></i>
+                            <span>Accesos</span>
+                        </a>
+                        <ul
+                            class="sub-menu"
+                            aria-expanded="false"
+                            v-show="menuAcceso"
+                        >
+                            <li>
+                                <inertia-link
+                                    :href="route('unidades-medida.iniciar')"
+                                >
+                                    Roles
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link
+                                    :href="route('clasificadores.iniciar')"
+                                >
+                                    Usuarios
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link :href="route('accesos-google.iniciar')">
+                                    Google
+                                </inertia-link>
+                            </li>                            
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a
+                            href="javascript: void(0);"
+                            class="has-arrow waves-effect"
                             @click="mostrarMenuMantenimiento"
                         >
                             <i class="uil-window-section"></i>
@@ -144,11 +180,15 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            menuAcceso: false,
             menuMantenimiento: false,
             menuSunat: false
         };
     },
     methods: {
+        mostrarMenuAcceso() {
+            this.menuAcceso = !this.menuAcceso;
+        },
         mostrarMenuMantenimiento() {
             this.menuMantenimiento = !this.menuMantenimiento;
         },

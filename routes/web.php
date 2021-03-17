@@ -107,7 +107,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
     Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');    
     Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
-    /**************************** CLASIFICADORES ***************************/    
+    /***************************************************************/
+
+    /************************* ACCESOS GOOGLE********************/    
     Route::get('/accesos-google', function () {
         return Inertia::render('AccesosGoogle/Listar');
     })->name('accesos-google.iniciar');
