@@ -53,18 +53,21 @@ class AccesoGoogleController extends Controller
      */
     public function store(AccesoGoogleStoreRequest $request)
     {
-        $accesoGoogle = new AccesoGoogle();
-        $accesoGoogle->nombre = $request->nombre;
-        $accesoGoogle->correo = $request->correo;
-        $accesoGoogle->cargo = $request->cargo;
+        try {
+            $accesoGoogle = new AccesoGoogle();
+            $accesoGoogle->nombre = $request->nombre;
+            $accesoGoogle->correo = $request->correo;
+            $accesoGoogle->cargo = $request->cargo;
+            $accesoGoogle->save();
+            $result = ['successMessage' => 'Acceso registrado con éxito'];
 
-        if ($accesoGoogle->save()) {
-            $result = ['successMessage' => 'Acceso registrado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo registrar el acceso', 'error' => true];
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo registrar el acceso'];
+            \Log::error('AccesoGoogleController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+
         }
 
-        return $result;
+        return redirect()->route('accesos-google.iniciar')->with($result);
     }
 
     /**
@@ -98,17 +101,20 @@ class AccesoGoogleController extends Controller
      */
     public function update(AccesoGoogleUpdateRequest $request, AccesoGoogle $accesoGoogle)
     {
-        $accesoGoogle->nombre = $request->nombre;
-        $accesoGoogle->correo = $request->correo;
-        $accesoGoogle->cargo = $request->cargo;
+        try {
+            $accesoGoogle->nombre = $request->nombre;
+            $accesoGoogle->correo = $request->correo;
+            $accesoGoogle->cargo = $request->cargo;
+            $accesoGoogle->update();
+            $result = ['successMessage' => 'Acceso actualizado con éxito'];
+            
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar el acceso'];
+            \Log::error('AccesoGoogleController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
 
-        if ($accesoGoogle->update()) {
-            $result = ['successMessage' => 'Acceso actualizado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo actualizar el acceso', 'error' => true];
         }
 
-        return $result;
+        return redirect()->route('accesos-google.iniciar')->with($result);
     }
 
     /**
@@ -119,28 +125,31 @@ class AccesoGoogleController extends Controller
      */
     public function destroy(AccesoGoogle $accesoGoogle)
     {
-        if ($accesoGoogle->delete()) {
-            $result = ['successMessage' => 'Acceso eliminado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo eliminar el acceso', 'error' => true];
+        try {
+            $accesoGoogle->delete();
+            $result = ['successMessage' => 'Acceso eliminado con éxito'];
+
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo eliminar el acceso'];
+            \Log::error('AccesoGoogleController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+
         }
 
-        return $result;
+        return redirect()->back()->with($result);
     }
 
     public function restore($accesoGoogle_id)
     {
-        $accesoGoogle = AccesoGoogle::withTrashed()->findOrFail($accesoGoogle_id);
-
         try {
+            $accesoGoogle = AccesoGoogle::withTrashed()->findOrFail($accesoGoogle_id);
             $accesoGoogle->restore();
-            $result = ['successMessage' => 'Acceso restaurado con éxito', 'error' => false];
+            $result = ['successMessage' => 'Acceso restaurado con éxito'];
             
         } catch (\Throwable $e) {
-            $result = ['errorMessage' => 'No se pudo restaurar el acceso', 'error' => true];
+            $result = ['errorMessage' => 'No se pudo restaurar el acceso'];
             \Log::warning('AccesoGoogleController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
-        return $result;
+        return redirect()->back()->with($result);
     }
 }
