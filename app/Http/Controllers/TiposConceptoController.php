@@ -52,16 +52,17 @@ class TiposConceptoController extends Controller
      */
     public function store(TipoConceptoStoreRequest $request)
     {
+        try{
         $tiposConcepto = new TiposConcepto();
         $tiposConcepto->nombre = $request->nombre;
-
-        if ($tiposConcepto->save()) {
-            $result = ['successMessage' => 'Tipo de Concepto registrado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo registrar el tipo de concepto', 'error' => true];
+        $tiposConcepto->save();
+        $result = ['successMessage' => 'Tipo de concepto registrado con exito'];
+        }catch(\Exception $e){
+            $result = ['errorMessage' => 'No se pudo registrar el tipo de concepto'];
+            \Log::error('TiposConceptoController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
-        return $result;
+        return redirect()->route('tipos-concepto.iniciar')->with($result);
     }
 
     /**
@@ -95,15 +96,17 @@ class TiposConceptoController extends Controller
      */
     public function update(TipoConceptoUpdateRequest $request, TiposConcepto $tiposConcepto)
     {
-        $tiposConcepto->nombre = $request->nombre;
-
-        if ($tiposConcepto->update()) {
-            $result = ['successMessage' => 'Tipo de concepto actualizado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo actualizar el tipo de concepto', 'error' => true];
-        }
-
-        return $result;
+        try {                       
+            $tiposConcepto->nombre = $request->nombre;
+            $tiposConcepto->update();
+            $result = ['successMessage' => 'Tipo de concepto actualizado con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar el tipo de concepto'];
+            \Log::error('TiposConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->route('tipos-concepto.iniciar')->with($result);       
+    
     }
 
     /**
@@ -114,27 +117,32 @@ class TiposConceptoController extends Controller
      */
     public function destroy(TiposConcepto $tiposConcepto)
     {
-        if ($tiposConcepto->delete()) {
-            $result = ['successMessage' => 'Tipo de concepto eliminado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo eliminar el tipo de concepto', 'error' => true];
-        }
-
-        return $result;
+        try {                       
+            $tiposConcepto->delete();
+            $result = ['successMessage' => 'Tipo de concepto eliminado con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo eliminar el tipo de concepto'];
+            \Log::error('TiposConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->back()->with($result);       
+    
+   
     }
 
     public function restore($tipos_concepto_id)
     {
-        $tipos_concepto_id = TiposConcepto::withTrashed()->findOrFail($tipos_concepto_id);
-
-        try {
-            $tipos_concepto_id->restore();
-            $result = ['successMessage' => 'Tipo de concepto restaurada con éxito', 'error' => false];
+        try {                       
+            $tiposConcepto = TiposConcepto::withTrashed()->findOrFail($tipos_concepto_id);
+            $tiposConcepto->restore();
+            $result = ['successMessage' => 'Tipo de concepto restaurado con éxito'];            
         } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo restaurar el tipo de concepto', 'error' => true];
-            Log::warning('TiposConceptoController@restore, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
-        }
-
-        return $result;
+            $result = ['errorMessage' => 'No se pudo restadurar el tipo de concepto'];
+            \Log::error('TiposConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->back()->with($result);       
+    
+   
     }
 }

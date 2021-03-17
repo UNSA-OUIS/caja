@@ -15,6 +15,18 @@
         >
       </div>
       <div class="card-body">
+        <b-alert
+                    show
+                    variant="success"
+                    v-if="$page.props.successMessage"
+                    >{{ $page.props.successMessage }}</b-alert
+                >
+                <b-alert
+                    show
+                    variant="danger"
+                    v-if="$page.props.errorMessage"
+                    >{{ $page.props.errorMessage }}</b-alert
+                >
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -185,7 +197,7 @@ export default {
         return tipoComprobante || [];
       });
     },
-    async eliminar(tipo_comprobante) {
+    eliminar(tipo_comprobante) {
       this.$bvModal
         .msgBoxConfirm(
           "¿Esta seguro de querer eliminar este tipo de comprobante?",
@@ -199,24 +211,12 @@ export default {
         )
         .then(async (value) => {
           if (value) {
-            try {
-              const response = await axios.delete(
-                `${this.app_url}/tipos-concepto/${tipo_comprobante.id}`
-              );
-
-              if (!response.data.error) {
-                this.makeToast(response.data.successMessage, "success");
-                this.refreshTable();
-              } else {
-                this.makeToast(response.data.errorMessage, "danger");
-              }
-            } catch (error) {
-              console.log(error);
-              this.makeToast(
-                "Se ha producido un error, vuelve a intentarlo más tarde",
-                "danger"
-              );
-            }
+            this.$inertia.delete(
+                            route("tipo-comprobante.eliminar", [
+                                tipo_comprobante.id
+                            ])
+                        );
+                        this.refreshTable();
           }
         });
     },
@@ -234,37 +234,18 @@ export default {
         )
         .then(async (value) => {
           if (value) {
-            try {
-              const response = await axios.post(
-                `${this.app_url}/tipos-concepto/${tipo_comprobante.id}/restaurar`
-              );
-
-              if (!response.data.error) {
-                this.makeToast(response.data.successMessage, "success");
-                this.refreshTable();
-              } else {
-                this.makeToast(response.data.errorMessage, "danger");
-              }
-            } catch (error) {
-              console.log(error);
-              this.makeToast(
-                "Se ha producido un error, vuelve a intentarlo más tarde",
-                "danger"
-              );
-            }
+            this.$inertia.post(
+                            route("tipo-comprobante.restaurar", [
+                                tipo_comprobante.id
+                            ])
+                        );
+                        this.refreshTable();
           }
         });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
-    },
-    makeToast(message, variant = null) {
-      this.$bvToast.toast(message, {
-        title: `Tipos de Comprobante`,
-        variant: variant,
-        solid: true,
-      });
     },
   },
 };
