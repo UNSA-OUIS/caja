@@ -10,6 +10,7 @@ use App\Http\Controllers\SunatController;
 use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
+use App\Http\Controllers\ConceptoController;
 
 
 /*
@@ -67,14 +68,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/tipos-concepto/{tipos_concepto}', [TiposConceptoController::class, 'update'])->name('tipos-concepto.actualizar');
     Route::delete('/tipos-concepto/{tipos_concepto}', [TiposConceptoController::class, 'destroy'])->name('tipos-concepto.eliminar');
     Route::post('/tipos-concepto/{tipos_concepto}/restaurar', [TiposConceptoController::class, 'restore'])->name('tipos-concepto.restaurar');
-    /***************************************************************************/
- 
-    /**************************** CRUD CONCEPTOS ***********************************/    
-    Route::get('/conceptos', [ConceptoController::class, 'index'])->name('conceptos.listar');        
-    Route::get('/conceptos/{concepto}', [ConceptoController::class, 'show'])->name('conceptos.mostrar');
-    Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])->name('conceptos.eliminar');
-    /*******************************************************************************/    
-
+    /***************************************************************************/   
+  
     /**************************** CLASIFICADORES ***************************/    
     Route::get('/clasificadores', function () {
         return Inertia::render('Clasificadores/Listar');
@@ -124,6 +119,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/accesos-google/{acceso_google}', [AccesoGoogleController::class, 'destroy'])->name('accesos-google.eliminar');
     Route::post('/accesos-google/{acceso_google}/restaurar', [AccesoGoogleController::class, 'restore'])->name('accesos-google.restaurar');
     /***************************************************************************/
+
+    /**************************** CONCEPTOS ***************************/    
+    Route::get('/conceptos', function () {
+        return Inertia::render('Conceptos/Listar');
+    })->name('conceptos.iniciar');
+    Route::get('/conceptos/listar', [ConceptoController::class, 'index'])->name('conceptos.listar');
+    Route::get('/conceptos/crear', [ConceptoController::class, 'create'])->name('conceptos.crear'); 
+    Route::post('/conceptos', [ConceptoController::class, 'store'])->name('conceptos.registrar');
+    Route::get('/conceptos/{concepto}', [ConceptoController::class, 'show'])->name('conceptos.mostrar');    
+    Route::post('/conceptos/{concepto}', [ConceptoController::class, 'update'])->name('conceptos.actualizar');
+    Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])->name('conceptos.eliminar');
+    Route::post('/conceptos/{concepto}/restaurar', [ConceptoController::class, 'restore'])->name('conceptos.restaurar');
+    /*******************************************************************/
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;
