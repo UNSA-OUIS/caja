@@ -16,6 +16,10 @@ const mix = require('laravel-mix');
     dist_assets: "public/assets/" //build assets files
 };
 
+// copy all fonts
+var out = folder.dist + "fonts";
+mix.copyDirectory(folder.src + "fonts", out);
+
 mix.sass('resources/scss/bootstrap.scss', folder.dist_assets + "css").minify(folder.dist_assets + "css/bootstrap.css");
 mix.sass('resources/scss/icons.scss', folder.dist_assets + "css").minify(folder.dist_assets + "css/icons.css");
 mix.sass('resources/scss/app.scss', folder.dist_assets + "css").minify(folder.dist_assets + "css/app.css");
