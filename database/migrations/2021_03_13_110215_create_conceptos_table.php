@@ -15,7 +15,27 @@ class CreateConceptosTable extends Migration
     {
         Schema::create('conceptos', function (Blueprint $table) {
             $table->id();
+            $table->string('descripcion', 50);
+            $table->string('descripcion_imp', 25)->comment('Descripción corta para impresión de comprobante');
+            $table->string('tipo_afectacion', 25)->comment('Tipo de afectación según sunat');
+            $table->tinyInteger('tipo_concepto_id');            
+            $table->tinyInteger('clasificador_id');            
+            $table->tinyInteger('unidad_medida_id');            
             $table->timestamps();
+            $table->softDeletes();
+            
+            $table->foreign('tipo_concepto_id')->references('id')->on('tipos_concepto')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreign('clasificador_id')->references('id')->on('clasificadores')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreign('unidad_medida_id')->references('id')->on('unidades_medida')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 

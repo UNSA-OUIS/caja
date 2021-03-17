@@ -6,13 +6,13 @@
                 <img
                     src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png"
                     alt=""
-                    height="60"
+                    height="50"
                     class="logo logo-dark"
                 />
                 <img
                     src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png"
                     alt=""
-                    height="60"
+                    height="50"
                     class="logo logo-light"
                 />
             </a>
@@ -69,13 +69,15 @@
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link
-                                    :href="route('tipos-concepto.iniciar')"
-                                >
+                                <inertia-link :href="route('tipos-concepto.iniciar')">
                                     Tipos de concepto
                                 </inertia-link>
                             </li>
-                            <li><a href="#">Conceptos</a></li>
+                            <li>
+                                <inertia-link :href="route('conceptos.iniciar')">
+                                    Conceptos
+                                </inertia-link>
+                            </li>
                             <li>
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
