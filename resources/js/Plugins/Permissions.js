@@ -10,7 +10,7 @@ Permissions.install = function(Vue, options){
         can: (permissions = []) => {
             const user = Vue.prototype.$page.props.user;               
             
-            //if (user.roles[0].name === "Administrador") return true;
+            if (user.roles[0].name === "Administrador") return true;
 
             let can = false;
 

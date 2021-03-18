@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -64,6 +65,10 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Editar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Eliminar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Restaurar Tipos-Comprobante', 'guard_name' => 'sanctum']);
+
+        //usuario administrador
+        $user = User::find(1);
+        $user->assignRole('Administrador');
     }
 }
 

@@ -14,7 +14,7 @@ class UsuarioController extends Controller
 {    
     public function index(Request $request)
     {
-        $this->authorize("viewAny", User::class);
+        //$this->authorize("viewAny", User::class);
 
         $query = User::where('name', 'like', '%' . $request->filter . '%') 
                     ->orWhere('email', 'like', '%' . $request->filter . '%'); 

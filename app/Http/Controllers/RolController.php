@@ -14,7 +14,7 @@ class RolController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize("viewAny", Rol::class);
+        //$this->authorize("viewAny", Rol::class);
 
         $query = Rol::where('name', 'like', '%' . $request->filter . '%'); 
 
