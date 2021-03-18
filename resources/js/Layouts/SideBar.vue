@@ -55,15 +55,17 @@
                             v-show="menuAcceso"
                         >
                             <li>
-                                <inertia-link
+                                <inertia-link                                
                                     :href="route('roles.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Roles'}])"
                                 >
                                     Roles
                                 </inertia-link>
                             </li>
                             <li>
                                 <inertia-link
-                                    :href="route('clasificadores.iniciar')"
+                                    :href="route('usuarios.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Usuarios'}])"
                                 >
                                     Usuarios
                                 </inertia-link>
@@ -93,6 +95,7 @@
                             <li>
                                 <inertia-link
                                     :href="route('unidades-medida.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Unidades-Medida'}])"
                                 >
                                     Unidades de medida
                                 </inertia-link>
@@ -100,23 +103,31 @@
                             <li>
                                 <inertia-link
                                     :href="route('clasificadores.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Clasificadores'}])"
                                 >
                                     Clasificadores
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link :href="route('tipos-concepto.iniciar')">
+                                <inertia-link 
+                                    :href="route('tipos-concepto.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Tipos-Concepto'}])"
+                                >
                                     Tipos de concepto
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link :href="route('conceptos.iniciar')">
+                                <inertia-link 
+                                    :href="route('conceptos.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Conceptos'}])"
+                                >
                                     Conceptos
                                 </inertia-link>
                             </li>
                             <li>
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Tipos-Comprobante'}])"                                                                    
                                 >
                                     Tipos de comprobante
                                 </inertia-link>

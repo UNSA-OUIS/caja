@@ -15,6 +15,8 @@ class ConceptoController extends Controller
 {
     public function index(Request $request)
     {                
+        $this->authorize("viewAny", Concepto::class);
+        
         $query = Concepto::with('tipo_concepto')
                     ->with('clasificador')
                     ->with('unidad_medida')

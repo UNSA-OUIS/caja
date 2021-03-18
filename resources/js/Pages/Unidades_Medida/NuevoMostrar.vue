@@ -84,7 +84,7 @@ export default {
         }
     },
     methods: {
-        async registrar() {
+        registrar() {
             this.$inertia.post(
                 route("unidades-medida.registrar"),
                 this.unidadMedida

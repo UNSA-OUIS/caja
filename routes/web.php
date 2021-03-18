@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\TipoComprobanteController;
@@ -122,6 +123,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/roles/{rol}', [RolController::class, 'destroy'])->name('roles.eliminar');
     Route::post('/roles/{rol}/restaurar', [RolController::class, 'restore'])->name('roles.restaurar');
     /***************************************************************************/
+
+    /*********************************** USUARIOS ********************************/    
+    Route::get('/usuarios', function () {
+        return Inertia::render('Usuarios/Listar');
+    })->name('usuarios.iniciar');
+    Route::get('/usuarios/listar', [UsuarioController::class, 'index'])->name('usuarios.listar');
+    Route::get('/usuarios/crear', [UsuarioController::class, 'create'])->name('usuarios.crear'); 
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.registrar');
+    Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show'])->name('usuarios.mostrar');    
+    Route::post('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.actualizar');
+    Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('usuarios.eliminar');
+    Route::post('/usuarios/{usuario}/restaurar', [UsuarioController::class, 'restore'])->name('usuarios.restaurar');
+    /******************************************************************************/
 
     /************************* ACCESOS GOOGLE********************/    
     Route::get('/accesos-google', function () {

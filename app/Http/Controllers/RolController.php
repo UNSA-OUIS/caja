@@ -7,11 +7,15 @@ use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use App\Http\Requests\RolStoreRequest;
+use App\Http\Requests\RolUpdateRequest;
 
 class RolController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize("viewAny", Rol::class);
+
         $query = Rol::where('name', 'like', '%' . $request->filter . '%'); 
 
         $sortby = $request->sortby;
@@ -31,15 +35,18 @@ class RolController extends Controller
     {
         $rol = new Rol();
         $rol->name = "";
+        $rol->permisos_seleccionados = array();
+        $permissions = Permission::all(); 
 
-        return Inertia::render('Roles/NuevoMostrar', compact('rol'));
+        return Inertia::render('Roles/NuevoMostrar', compact('rol', 'permissions'));
     }
 
-    public function store(Request $request)
+    public function store(RolStoreRequest $request)
     {
         try {           
             $rol = new Rol();
             $rol->name = $request->name;
+            $rol->syncPermissions($request->permisos_seleccionados);
             $rol->save();
             $result = ['successMessage' => 'Rol registrado con éxito'];            
         } catch (\Exception $e) {
@@ -51,8 +58,18 @@ class RolController extends Controller
     }
 
     public function show(Rol $rol)
-    {
-        return Inertia::render('Roles/NuevoMostrar', compact('rol'));
+    {        
+        $rol_permissions = $rol->permissions()->select('id')->get();     
+        $permisos_seleccionados = array();
+
+        foreach ($rol_permissions as $key => $rol_permission) {
+            $permisos_seleccionados[$key] = $rol_permission->id;
+        }
+        
+        $rol->permisos_seleccionados = $permisos_seleccionados;
+        $permissions = Permission::all();   
+        
+        return Inertia::render('Roles/NuevoMostrar', compact('rol', 'permissions'));
     }
 
     public function edit($id)
@@ -60,10 +77,11 @@ class RolController extends Controller
         //
     }
 
-    public function update(Request $request, Rol $rol)
+    public function update(RolUpdateRequest $request, Rol $rol)
     {
         try {                       
             $rol->name = $request->name;
+            $rol->syncPermissions($request->permisos_seleccionados); 
             $rol->update();
             $result = ['successMessage' => 'Rol actualizado con éxito'];            
         } catch (\Exception $e) {
@@ -88,8 +106,7 @@ class RolController extends Controller
     }
 
     public function restore($rol_id) 
-    {     
-        
+    {   
         try {                       
             $rol = Rol::withTrashed()->findOrFail($rol_id);  
             $rol->restore();

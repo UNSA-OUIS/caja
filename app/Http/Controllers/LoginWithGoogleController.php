@@ -21,7 +21,9 @@ class LoginWithGoogleController extends Controller
         try {      
             $user = Socialite::driver('google')->user();               
                         
-            $personal = AccesoGoogle::where('correo', $user->email)->first();         
+            //$personal = AccesoGoogle::where('correo', $user->email)->first();         
+            $personal = User::where('email', $user->email)->first();         
+
             
             if (!$personal) { // si no es personal de caja
                 \Session::flash('errorLoginMessage', "Lo sentimos, esta aplicación es solo para personal con correos registrados en el sistema de caja");
