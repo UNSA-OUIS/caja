@@ -1,16 +1,7 @@
 <template>
     <app-layout>
+        <h1>ENVIO DE FACTURAS ELECTRONICAS</h1>
         <div class="card">
-            <div class="card-header">
-                <ol class="breadcrumb float-left">
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
-                    </li>
-                    <li class="breadcrumb-item active">Enviar Facturas</li>
-                </ol>
-            </div>
             <div class="card-body">
                 <b-alert
                     show
@@ -150,40 +141,13 @@ export default {
     },
     data() {
         return {
-            busy: false,
-            timeout: null,
             app_url: this.$root.app_url
         };
     },
     methods: {
-        clearTimeout() {
-            if (this.timeout) {
-                clearTimeout(this.timeout);
-                this.timeout = null;
-            }
-        },
-        setTimeout(callback) {
-            this.clearTimeout();
-            this.timeout = setTimeout(() => {
-                this.clearTimeout();
-                callback();
-            }, 5000);
-        },
-        onHidden() {
-            // Return focus to the button once hidden
-            this.$refs.button.focus();
-        },
-        onClick() {
-            this.busy = true;
-            // Simulate an async request
-            this.registrar(() => {});
-        },
         async registrar() {
-            this.$inertia.post(
-                route("sunat.enviarFacturas")
-            );
-            this.busy = false;
-        },
+            this.$inertia.post(route("sunat.enviarFacturas"));
+        }
     }
 };
 </script>
