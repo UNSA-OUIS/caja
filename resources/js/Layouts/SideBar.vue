@@ -69,12 +69,7 @@
                                 >
                                     Usuarios
                                 </inertia-link>
-                            </li>
-                            <li>
-                                <inertia-link :href="route('accesos-google.iniciar')">
-                                    Google
-                                </inertia-link>
-                            </li>                            
+                            </li>                                          
                         </ul>
                     </li>
 
