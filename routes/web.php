@@ -85,7 +85,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
     /***************************************************************************/
 
-
     /**************************** TIPOS DE COMPROBANTE ***************************/    
     Route::get('/tipo-comprobante', function () {
         return Inertia::render('Tipo_Comprobante/Listar');
@@ -99,7 +98,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/tipo-comprobante/{tipo_comprobante}/restaurar', [TipoComprobanteController::class, 'restore'])->name('tipo-comprobante.restaurar');
     /***************************************************************************/
 
-
     /**************************** SUNAT ***************************/ 
     Route::get('/sunat', function () {
         return Inertia::render('Sunat/Dashboard');
@@ -109,7 +107,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
     Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');    
     Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
-    /***************************************************************/
+    /**************************************************************/    
 
     /*********************************** ROLES ********************************/    
     Route::get('/roles', function () {
