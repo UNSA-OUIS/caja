@@ -37,14 +37,7 @@ class CreatePermissionTables extends Migration
             $table->softDeletes();
 
             $table->unique(['name', 'guard_name']);
-        });
-
-        DB::table('roles')->insert([
-            [
-                'name' => 'Administrador',
-                'guard_name' => 'sanctum'                                              
-            ],            
-        ]);
+        });       
 
         Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames) {
             $table->unsignedBigInteger('permission_id');

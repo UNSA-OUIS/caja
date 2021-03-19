@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Rol;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -15,6 +16,17 @@ class PermisoSeeder extends Seeder
      */
     public function run()
     {
+        Rol::create([            
+            'name' => 'Administrador',
+            'guard_name' => 'sanctum'                                                          
+        ]);
+
+        User::create(['name' => 'Renzo Siza Tejada', 'email' => 'rsiza@unsa.edu.pe']);
+
+        //usuario administrador
+        $user = User::find(1);
+        $user->assignRole('Administrador');
+
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         Permission::create(['name' => 'Listar Roles', 'guard_name' => 'sanctum']);
@@ -65,10 +77,6 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Editar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Eliminar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Restaurar Tipos-Comprobante', 'guard_name' => 'sanctum']);
-
-        //usuario administrador
-        $user = User::find(1);
-        $user->assignRole('Administrador');
     }
 }
 

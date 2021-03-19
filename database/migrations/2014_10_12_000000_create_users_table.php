@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\User;
 
 class CreateUsersTable extends Migration
 {
@@ -26,9 +25,7 @@ class CreateUsersTable extends Migration
             $table->text('profile_photo_path')->nullable();
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        User::create(['name' => 'Renzo Siza Tejada', 'email' => 'rsiza@unsa.edu.pe']);
+        });       
     }
 
     /**
