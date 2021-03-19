@@ -9,14 +9,11 @@ use App\Http\Requests\UnidadMedidaStoreRequest;
 use App\Http\Requests\UnidadMedidaUpdateRequest;
 
 class UnidadMedidaController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+{    
     public function index(Request $request)
     {
+        $this->authorize("viewAny", UnidadMedida::class);
+        
         $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%'); 
 
         $sortby = $request->sortby;
@@ -32,11 +29,6 @@ class UnidadMedidaController extends Controller
         return $query->paginate($request->size);        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {        
         $unidadMedida = new UnidadMedida();
@@ -44,13 +36,7 @@ class UnidadMedidaController extends Controller
 
         return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(UnidadMedidaStoreRequest $request)
     {
         try {           
@@ -65,36 +51,17 @@ class UnidadMedidaController extends Controller
         
         return redirect()->route('unidades-medida.iniciar')->with($result);        
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function show(UnidadMedida $unidadMedida)
     {                  
         return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(UnidadMedidaUpdateRequest $request, UnidadMedida $unidadMedida)
     {
         try {                       
@@ -109,12 +76,6 @@ class UnidadMedidaController extends Controller
         return redirect()->route('unidades-medida.iniciar')->with($result);       
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(UnidadMedida $unidadMedida)
     {      
         try {                       

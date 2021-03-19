@@ -19,6 +19,8 @@ class TipoComprobanteController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize("viewAny", TipoComprobante::class);
+        
         $query = TipoComprobante::where('nombre', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;

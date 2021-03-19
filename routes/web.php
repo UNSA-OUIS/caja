@@ -5,6 +5,8 @@ use App\Http\Controllers\ClasificadorController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\TipoComprobanteController;
@@ -83,7 +85,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');
     /***************************************************************************/
 
-
     /**************************** TIPOS DE COMPROBANTE ***************************/    
     Route::get('/tipo-comprobante', function () {
         return Inertia::render('Tipo_Comprobante/Listar');
@@ -97,7 +98,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/tipo-comprobante/{tipo_comprobante}/restaurar', [TipoComprobanteController::class, 'restore'])->name('tipo-comprobante.restaurar');
     /***************************************************************************/
 
-
     /**************************** SUNAT ***************************/ 
     Route::get('/sunat', function () {
         return Inertia::render('Sunat/Dashboard');
@@ -107,11 +107,35 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
     Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');    
     Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
-    /**************************************************************/
+    /**************************************************************/    
 
+    /*********************************** ROLES ********************************/    
+    Route::get('/roles', function () {
+        return Inertia::render('Roles/Listar');
+    })->name('roles.iniciar');
+    Route::get('/roles/listar', [RolController::class, 'index'])->name('roles.listar');
+    Route::get('/roles/crear', [RolController::class, 'create'])->name('roles.crear'); 
+    Route::post('/roles', [RolController::class, 'store'])->name('roles.registrar');
+    Route::get('/roles/{rol}', [RolController::class, 'show'])->name('roles.mostrar');    
+    Route::post('/roles/{rol}', [RolController::class, 'update'])->name('roles.actualizar');
+    Route::delete('/roles/{rol}', [RolController::class, 'destroy'])->name('roles.eliminar');
+    Route::post('/roles/{rol}/restaurar', [RolController::class, 'restore'])->name('roles.restaurar');
+    /***************************************************************************/
 
+    /*********************************** USUARIOS ********************************/    
+    Route::get('/usuarios', function () {
+        return Inertia::render('Usuarios/Listar');
+    })->name('usuarios.iniciar');
+    Route::get('/usuarios/listar', [UsuarioController::class, 'index'])->name('usuarios.listar');
+    Route::get('/usuarios/crear', [UsuarioController::class, 'create'])->name('usuarios.crear'); 
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.registrar');
+    Route::get('/usuarios/{usuario}', [UsuarioController::class, 'show'])->name('usuarios.mostrar');    
+    Route::post('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.actualizar');
+    Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('usuarios.eliminar');
+    Route::post('/usuarios/{usuario}/restaurar', [UsuarioController::class, 'restore'])->name('usuarios.restaurar');
+    /******************************************************************************/
 
-    /**************************** CLASIFICADORES ***************************/    
+    /************************* ACCESOS GOOGLE********************/    
     Route::get('/accesos-google', function () {
         return Inertia::render('AccesosGoogle/Listar');
     })->name('accesos-google.iniciar');

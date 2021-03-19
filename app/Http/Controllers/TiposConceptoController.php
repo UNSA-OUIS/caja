@@ -18,6 +18,8 @@ class TiposConceptoController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize("viewAny", TiposConcepto::class);
+
         $query = TiposConcepto::where('nombre', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;

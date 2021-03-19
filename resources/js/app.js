@@ -18,6 +18,9 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
+import Permissions from "./Plugins/Permissions";
+Vue.use(Permissions);
+
 const app = document.getElementById('app');
 
 import config from "./config";

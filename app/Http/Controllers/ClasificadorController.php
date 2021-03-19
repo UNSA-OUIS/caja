@@ -17,6 +17,8 @@ class ClasificadorController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize("viewAny", Clasificador::class);
+
         $query = Clasificador::where('nombre', 'like', '%' . $request->filter . '%');
         $sortby = $request->sortby;
 

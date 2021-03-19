@@ -44,6 +44,39 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
+                            @click="mostrarMenuAcceso"
+                        >
+                            <i class="uil-window-section"></i>
+                            <span>Accesos</span>
+                        </a>
+                        <ul
+                            class="sub-menu"
+                            aria-expanded="false"
+                            v-show="menuAcceso"
+                        >
+                            <li>
+                                <inertia-link                                
+                                    :href="route('roles.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Roles'}])"
+                                >
+                                    Roles
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link
+                                    :href="route('usuarios.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Usuarios'}])"
+                                >
+                                    Usuarios
+                                </inertia-link>
+                            </li>                                          
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a
+                            href="javascript: void(0);"
+                            class="has-arrow waves-effect"
                             @click="mostrarMenuMantenimiento"
                         >
                             <i class="uil-window-section"></i>
@@ -57,6 +90,7 @@
                             <li>
                                 <inertia-link
                                     :href="route('unidades-medida.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Unidades-Medida'}])"
                                 >
                                     Unidades de medida
                                 </inertia-link>
@@ -64,23 +98,31 @@
                             <li>
                                 <inertia-link
                                     :href="route('clasificadores.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Clasificadores'}])"
                                 >
                                     Clasificadores
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link :href="route('tipos-concepto.iniciar')">
+                                <inertia-link 
+                                    :href="route('tipos-concepto.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Tipos-Concepto'}])"
+                                >
                                     Tipos de concepto
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link :href="route('conceptos.iniciar')">
+                                <inertia-link 
+                                    :href="route('conceptos.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Conceptos'}])"
+                                >
                                     Conceptos
                                 </inertia-link>
                             </li>
                             <li>
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
+                                    v-if="$permissions.can([{name: 'Listar Tipos-Comprobante'}])"                                                                    
                                 >
                                     Tipos de comprobante
                                 </inertia-link>
@@ -144,11 +186,15 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            menuAcceso: false,
             menuMantenimiento: false,
             menuSunat: false
         };
     },
     methods: {
+        mostrarMenuAcceso() {
+            this.menuAcceso = !this.menuAcceso;
+        },
         mostrarMenuMantenimiento() {
             this.menuMantenimiento = !this.menuMantenimiento;
         },
