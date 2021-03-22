@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SunatEnviarFacturaRequest;
+use App\Models\UnidadMedida;
 use DateTime;
 use Inertia\Inertia;
 use Greenter\Model\Client\Client;
@@ -12,14 +13,29 @@ use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Sale\Legend;
+use Illuminate\Http\Request;
 
 //require __DIR__.'/vendor/autoload.php';
 
 class SunatController extends Controller
 {
-    public function listarFacturas()
+    public function listarFacturas(Request $request)
     {
-        return Inertia::render('Sunat/EnviarFactura');
+        $this->authorize("viewAny", UnidadMedida::class);
+        
+        $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%'); 
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {                        
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+        else {
+            $query = $query->withTrashed();
+        }        
+
+        return $query->paginate($request->size);   
     }
     public function enviarFacturas(SunatEnviarFacturaRequest $request)
     {

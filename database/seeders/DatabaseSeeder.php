@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $this->call([PermisoSeeder::class]);
+        $this->call([TipoComprobanteSeeder::class]);
+        $this->call([ComprobanteSeeder::class]);
     }
 }

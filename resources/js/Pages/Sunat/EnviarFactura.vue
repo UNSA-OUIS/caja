@@ -1,6 +1,5 @@
 <template>
     <app-layout>
-        <h1>ENVIO DE FACTURAS ELECTRONICAS</h1>
         <div class="card">
             <div class="card-body">
                 <b-alert
@@ -15,116 +14,110 @@
                     v-if="$page.props.errorMessage"
                     >{{ $page.props.errorMessage }}</b-alert
                 >
-                <div>
-                    <b-card-group deck>
-                        <b-card no-body header="Global">
-                            <b-list-group>
-                                <b-list-group-item href="#"
-                                    >Numero => F00-1</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Fecha de Emision =>
-                                    21/07/2020</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Hora de Emision => 13:05</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Forma de Pago => Contado</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Moneda => Sol(PEN)</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >RUC de Emisor =>
-                                    20123456789</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >RUC de Receptor =>
-                                    20000000001</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Operaciones Gravadas =>
-                                    S/100.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Valor Venta => S/100.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >IGV => S/18.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Total Impuestos =>
-                                    S/18.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Importe Total =>
-                                    S/118.00</b-list-group-item
-                                >
-                            </b-list-group>
-                        </b-card>
-
-                        <b-card no-body header="Detalle">
-                            <b-list-group flush>
-                                <b-list-group-item href="#"
-                                    >Codigo => P001</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Descripcion => Tijeras</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Unidad de Medida => Unidad
-                                    (NIU)</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Cantidad => 2</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Valor Unitario =>
-                                    S/50.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Valor Venta => S/100.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Tipo de afectacion IGV => Gravado
-                                    (10)</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >IGV => S/18.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Total Impuestos =>
-                                    S/18.00</b-list-group-item
-                                >
-                                <b-list-group-item href="#"
-                                    >Precio Unitario =>
-                                    S/59.00</b-list-group-item
-                                >
-                            </b-list-group>
-                        </b-card>
-                    </b-card-group>
-                    <div>
-                        <b-overlay
-                            :show="busy"
-                            rounded
-                            opacity="0.6"
-                            spinner-small
-                            spinner-variant="primary"
-                            class="d-inline-block"
-                            @hidden="onHidden"
+                <b-row>
+                    <b-col sm="12" md="4" lg="4" class="my-1">
+                        <b-form-group
+                            label="Registros por página: "
+                            label-cols-sm="6"
+                            label-align-sm="right"
+                            label-size="sm"
+                            label-for="perPageSelect"
+                            class="mb-0"
                         >
-                            <b-button
-                                ref="button"
-                                :disabled="busy"
-                                @click="onClick"
-                                variant="success"
-                            >
-                                Enviar
-                            </b-button>
-                        </b-overlay>
-                    </div>
-                </div>
+                            <b-form-select
+                                v-model="perPage"
+                                id="perPageSelect"
+                                size="sm"
+                                :options="pageOptions"
+                            ></b-form-select>
+                        </b-form-group>
+                    </b-col>
+                    <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
+                        <b-form-group
+                            label="Buscar: "
+                            label-cols-sm="3"
+                            label-align-sm="right"
+                            label-size="sm"
+                            label-for="filterInput"
+                            class="mb-0"
+                        >
+                            <b-input-group size="sm">
+                                <b-form-input
+                                    v-model="filter"
+                                    type="search"
+                                    id="filterInput"
+                                    placeholder="Escriba el texto a buscar..."
+                                ></b-form-input>
+                                <b-input-group-append>
+                                    <b-button
+                                        :disabled="!filter"
+                                        @click="filter = ''"
+                                        >Limpiar</b-button
+                                    >
+                                </b-input-group-append>
+                            </b-input-group>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-table
+                    ref="tbl_facturas"
+                    show-empty
+                    striped
+                    hover
+                    bordered
+                    small
+                    responsive
+                    stacked="md"
+                    :items="myProvider"
+                    :fields="fields"
+                    :current-page="currentPage"
+                    :per-page="perPage"
+                    :filter="filter"
+                    :sort-by.sync="sortBy"
+                    :sort-desc.sync="sortDesc"
+                    :sort-direction="sortDirection"
+                    @filtered="onFiltered"
+                    empty-text="No hay facturas para mostrar"
+                    empty-filtered-text="No hay facturas que coincidan con su búsqueda."
+                >
+                    <template v-slot:cell(condicion)="row">
+                        <b-badge v-if="row.item.estado" variant="success"
+                            >Activo</b-badge
+                        >
+                        <b-badge v-else variant="secondary">Inactivo</b-badge>
+                    </template>
+                    <template v-slot:cell(acciones)="row">
+                        <inertia-link
+                            class="btn btn-primary btn-sm"
+                            :href="
+                                route('sunat.enviarFacturas', row.item.id)
+                            "
+                        >
+                            <b-icon icon="cloud-upload-fill"></b-icon>
+                        </inertia-link>
+                        <b-button
+                            v-if="!row.item.deleted_at"
+                            variant="danger"
+                            size="sm"
+                            title="Eliminar"
+                            @click="eliminar(row.item)"
+                        >
+                            <b-icon icon="trash"></b-icon>
+                        </b-button>
+                    </template>
+                </b-table>
+                <b-row>
+                    <b-col offset-md="8" md="4" class="my-1">
+                        <b-pagination
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="fill"
+                            size="sm"
+                            class="my-0"
+                        ></b-pagination>
+                    </b-col>
+                </b-row>
             </div>
         </div>
     </app-layout>
@@ -135,24 +128,88 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "sunat.enviarFactura",
+    name: "sunat.listarFacturas",
     components: {
         AppLayout
     },
     data() {
         return {
-            app_url: this.$root.app_url
+            app_url: this.$root.app_url,
+            fields: [
+                {
+                    key: "id",
+                    label: "ID",
+                    sortable: true,
+                    class: "text-center"
+                },
+                { key: "nombre", label: "Unidad de medida", sortable: true },
+                { key: "condicion", label: "Condición", class: "text-center" },
+                { key: "acciones", label: "Acciones", class: "text-center" }
+            ],
+            index: 1,
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 5,
+            pageOptions: [5, 10, 15],
+            sortBy: null,
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null
         };
     },
     methods: {
-        async registrar() {
-            this.$inertia.post(route("sunat.enviarFacturas"));
+        refreshTable() {
+            this.$refs.tbl_facturas.refresh();
+        },
+        myProvider(ctx) {
+            let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
+
+            if (ctx.filter !== "" && ctx.filter !== null) {
+                params += "&filter=" + ctx.filter;
+            }
+
+            if (ctx.sortBy !== "" && ctx.sortBy !== null) {
+                params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
+            }
+
+            const promise = axios.get(
+                `${this.app_url}/sunat/listarFacturas${params}`
+            );
+
+            return promise.then(response => {
+                const facturas = response.data.data;
+                this.totalRows = response.data.total;
+
+                return facturas || [];
+            });
+        },
+        eliminar(unidad_medida) {
+            this.$bvModal
+                .msgBoxConfirm(
+                    "¿Esta seguro de querer eliminar esta unidad de medida?",
+                    {
+                        title: "Eliminar unidad de medida",
+                        okVariant: "danger",
+                        okTitle: "SI",
+                        cancelTitle: "NO",
+                        centered: true
+                    }
+                )
+                .then(value => {
+                    if (value) {
+                        this.$inertia.delete(
+                            route("unidades-medida.eliminar", [
+                                unidad_medida.id
+                            ])
+                        );
+                        this.refreshTable();
+                    }
+                });
+        },
+        onFiltered(filteredItems) {
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         }
     }
 };
 </script>
-<style scoped>
-.error {
-    color: red;
-}
-</style>
