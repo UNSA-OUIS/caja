@@ -186,7 +186,7 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,            
-            show_menus: [false, false, false]
+            show_menus: [false, false]
         };
     },
     methods: {
