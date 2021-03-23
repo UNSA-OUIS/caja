@@ -92,6 +92,13 @@
                                     Accesos Google
                                 </inertia-link>
                             </li>
+                            <li>
+                                <inertia-link
+                                    :href="route('comprobantes.iniciar')"
+                                >
+                                    Registrar comprobante
+                                </inertia-link>
+                            </li>
                         </ul>
                     </li>
                     <li>

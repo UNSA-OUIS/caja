@@ -16,8 +16,8 @@ class CreateDetallesComprobanteTable extends Migration
         Schema::create('detalles_comprobante', function (Blueprint $table) {
             $table->id();            
             $table->integer('cantidad');
-            $table->decimal('valor_unitario', 9);            
-            $table->decimal('igv', 7);            
+            $table->double('valor_unitario', 8, 4);            
+            $table->double('descuento', 8, 4);    
             $table->boolean('estado');
             $table->tinyInteger('concepto_id');            
             $table->bigInteger('comprobante_id');
