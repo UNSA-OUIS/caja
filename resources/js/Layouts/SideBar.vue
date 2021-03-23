@@ -127,6 +127,20 @@
                                     Tipos de comprobante
                                 </inertia-link>
                             </li>
+                            <li>
+                                <inertia-link
+                                    :href="route('accesos-google.iniciar')"
+                                >
+                                    Accesos Google
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link
+                                    :href="route('comprobantes.iniciar')"
+                                >
+                                    Registrar comprobante
+                                </inertia-link>
+                            </li>
                         </ul>
                     </li>
                     <li>

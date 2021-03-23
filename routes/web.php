@@ -165,4 +165,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;
 Route::get('/google/callback', [LoginWithGoogleController::class, 'handleGoogleCallback']);
 
+Route::get('/comprobantes', function () {
+    return Inertia::render('Comprobantes/Detalles');
+})->name('comprobantes.iniciar');
 

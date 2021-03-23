@@ -54,16 +54,18 @@ class ClasificadorController extends Controller
      */
     public function store(ClasificadorStoreRequest $request)
     {
-        $clasificador = new Clasificador();
-        $clasificador->nombre = $request->nombre;
+        try {
+            $clasificador = new Clasificador();
+            $clasificador->nombre = $request->nombre;
+            $clasificador->save();
+            $result = ['successMessage' => 'Clasificador registrado con éxito'];
 
-        if ($clasificador->save()) {
-            $result = ['successMessage' => 'Clasificador registrado con éxito', 'error' => false];
-        } else {
+        } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo registrar el clasificador', 'error' => true];
+            \Log::error('ClasificadorController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
-        return $result;
+        return redirect()->route('clasificadores.iniciar')->with($result);
         
     }
 
@@ -98,15 +100,18 @@ class ClasificadorController extends Controller
      */
     public function update(ClasificadorUpdateRequest $request, Clasificador $clasificador)
     {
-        $clasificador->nombre = $request->nombre;
+        try {
+            $clasificador->nombre = $request->nombre;
+            $clasificador->update();
+            $result = ['successMessage' => 'Clasificador actualizado con éxito'];
 
-        if ($clasificador->update()) {
-            $result = ['successMessage' => 'Clasificador actualizado con éxito', 'error' => false];
-        } else {
+        } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el clasificador', 'error' => true];
+            \Log::error('ClasificadorController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+
         }
 
-        return $result;
+        return redirect()->route('clasificadores.iniciar')->with($result);
         
     }
 
@@ -118,28 +123,32 @@ class ClasificadorController extends Controller
      */
     public function destroy(Clasificador $clasificador)
     {
-        if ($clasificador->delete()) {
-            $result = ['successMessage' => 'Clasificador eliminado con éxito', 'error' => false];
-        } else {
-            $result = ['errorMessage' => 'No se pudo eliminar el clasificador', 'error' => true];
+        try {
+            $clasificador->delete();
+            $result = ['successMessage' => 'Clasificador eliminado con éxito'];
+
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo eliminar el clasificador'];
+            \Log::error('ClasificadorController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            
         }
 
-        return $result;
+        return redirect()->back()->with($result);
     }
 
     public function restore($clasificador_id)
     {
-        $clasificador = Clasificador::withTrashed()->findOrFail($clasificador_id);
 
         try {
+            $clasificador = Clasificador::withTrashed()->findOrFail($clasificador_id);
             $clasificador->restore();
-            $result = ['successMessage' => 'Clasificador restaurado con éxito', 'error' => false];
+            $result = ['successMessage' => 'Clasificador restaurado con éxito'];
             
         } catch (\Throwable $e) {
-            $result = ['errorMessage' => 'No se pudo restaurar el clasificador', 'error' => true];
+            $result = ['errorMessage' => 'No se pudo restaurar el clasificador'];
             \Log::warning('ClasificadorController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
-        return $result;
+        return redirect()->back()->with($result);
     }
 }

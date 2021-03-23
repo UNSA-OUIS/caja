@@ -17,7 +17,9 @@
                             placeholder="Nombre de clasificador"   
                             :readonly="accion == 'Mostrar'"              
                         ></b-form-input>
-                        <span v-if="errors.nombre" class="error">{{ errors.nombre[0] }}</span>
+                        <div v-if="$page.props.errors.nombre" class="text-danger">
+                            {{ $page.props.errors.nombre[0] }}
+                        </div> 
                     </b-form-group>                    
                     <b-button v-if="accion == 'Crear'" @click="registrar"  variant="success">Registrar</b-button>
                     <b-button v-else-if="accion == 'Mostrar'" @click="accion = 'Editar'" variant="warning">Editar</b-button>
@@ -29,7 +31,6 @@
 </template>
 
 <script>
-    const axios = require('axios') 
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
@@ -39,11 +40,8 @@
             AppLayout,                      
         },
         data() {
-            return {
-                app_url: this.$root.app_url,                      
+            return {                     
                 accion: '',
-                errors: []
-
             };
         },       
         created() {
@@ -55,68 +53,12 @@
             }            
         },
         methods: {            
-            async registrar() {
-                this.errors = []
-
-                try {
-                    const response = await axios.post(`${this.app_url}/clasificadores`, this.clasificador)                    
-                    
-                    if (!response.data.error) {    
-                        this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                    }
-                    else {                        
-                        this.makeToast(response.data.errorMessage, 'danger')        
-                    }
-
-                    this.accion = 'Mostrar'
-
-                } catch (error) {
-                    console.log(error)
-                    if (error.response.status==422) {
-                        this.errors = error.response.data.errors;                         
-                    }
-                    else {
-                        this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                    }                      
-                }      
+            registrar() {
+                this.$inertia.post(route('clasificadores.registrar'), this.clasificador)
             },       
-            async actualizar() {
-                this.errors = []
-                
-                try {
-                    const response = await axios.post(`${this.app_url}/clasificadores/${this.clasificador.id}`, this.clasificador)
-                    
-                    if (!response.data.error) {    
-                        this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                    }
-                    else {                        
-                        this.makeToast(response.data.errorMessage, 'danger')        
-                    }
-
-                    this.accion = 'Mostrar'
-
-                } catch (error) {
-                    console.log(error)
-                    if (error.response.status==422) {
-                        this.errors = error.response.data.errors;                         
-                    }
-                    else {
-                        this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                    }                   
-                }      
-            },       
-            makeToast(message, variant = null) {
-                this.$bvToast.toast(message, {
-                    title: `Clasificadores`,
-                    variant: variant,
-                    solid: true
-                })
-            }     
+            actualizar() {
+                this.$inertia.post(route('clasificadores.actualizar', [this.clasificador.id]), this.clasificador)
+            },     
         },
     }
 </script>
-<style scoped>
-    .error {
-        color: red;
-    }
-</style>

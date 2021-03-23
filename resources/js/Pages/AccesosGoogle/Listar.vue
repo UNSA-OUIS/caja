@@ -9,6 +9,8 @@
                 <inertia-link class="btn btn-success float-right" :href="route('accesos-google.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">                
+                <b-alert show variant="success" v-if="$page.props.successMessage">{{ $page.props.successMessage }}</b-alert>
+                <b-alert show variant="danger" v-if="$page.props.errorMessage">{{ $page.props.errorMessage }}</b-alert>
                 <b-row>
                     <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
@@ -162,16 +164,16 @@
                     params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
                 }
 
-                const promise = axios.get(`${this.app_url}/accesos-google/listar${params}`)
+                const promise = axios.get(`${this.app_url}/accesos-google/listar${params}`);
                 
                 return promise.then(response => {                                        
-                    const AccesosGoogle = response.data.data                                   
+                    const accesosGoogle = response.data.data                                   
                     this.totalRows = response.data.total;
 
-                    return AccesosGoogle || []
+                    return accesosGoogle || []
                 })
             },  
-            async eliminar(accesoGoogle) {                
+            eliminar(accesoGoogle) {                
                 this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este acceso?", {
                         title: "Eliminar acceso",
                         okVariant: "danger",
@@ -179,22 +181,10 @@
                         cancelTitle: "NO",
                         centered: true,
                     })
-                    .then(async (value) => {
+                    .then((value) => {
                         if (value) {                            
-                            try {
-                                const response = await axios.delete(`${this.app_url}/accesos-google/${accesoGoogle.id}`)
-                                
-                                if (!response.data.error) {    
-                                    this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                                    this.refreshTable()
-                                }
-                                else {                        
-                                    this.makeToast(response.data.errorMessage, 'danger')        
-                                }                                
-                            } catch (error) {
-                                console.log(error)
-                                this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                            }     
+                            this.$inertia.delete(route('accesos-google.eliminar', [accesoGoogle.id]))                            
+                            this.refreshTable()
                         }
                     })     
             },
@@ -206,36 +196,17 @@
                         cancelTitle: "NO",
                         centered: true,
                     })
-                    .then(async (value) => {
+                    .then((value) => {
                         if (value) { 
-                            try {
-                                const response = await axios.post(`${this.app_url}/accesos-google/${accesoGoogle.id}/restaurar`)
-                                
-                                if (!response.data.error) {    
-                                    this.makeToast(response.data.successMessage, 'success')                                                                                                             
-                                    this.refreshTable()
-                                }
-                                else {                        
-                                    this.makeToast(response.data.errorMessage, 'danger')        
-                                }                                
-                            } catch (error) {
-                                console.log(error)
-                                this.makeToast('Se ha producido un error, vuelve a intentarlo más tarde', 'danger')        
-                            }     
+                            this.$inertia.post(route('accesos-google.restaurar', [accesoGoogle.id]))
+                            this.refreshTable()     
                         }
                     })                   
             },
             onFiltered(filteredItems) {
                 this.totalRows = filteredItems.length;
                 this.currentPage = 1;
-            },            
-            makeToast(message, variant = null) {
-                this.$bvToast.toast(message, {
-                    title: `Accesos Google`,
-                    variant: variant,
-                    solid: true
-                })
-            }     
+            },    
         },
     }
 </script>
