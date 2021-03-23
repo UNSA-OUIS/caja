@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SunatEnviarFacturaRequest;
-use App\Models\UnidadMedida;
+use App\Models\Comprobante;
 use DateTime;
 use Inertia\Inertia;
 use Greenter\Model\Client\Client;
@@ -14,30 +13,35 @@ use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Sale\Legend;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 //require __DIR__.'/vendor/autoload.php';
 
 class SunatController extends Controller
 {
-    public function listarFacturas(Request $request)
+    public function listarFacturas()
     {
-        $this->authorize("viewAny", UnidadMedida::class);
-        
-        $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%'); 
-
-        $sortby = $request->sortby;
-
-        if ($sortby && !empty($sortby)) {                        
-            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
-            $query = $query->orderBy($sortby, $sortdirection);
-        }
-        else {
-            $query = $query->withTrashed();
-        }        
-
-        return $query->paginate($request->size);   
+        return Inertia::render('Sunat/EnviarFactura');
     }
-    public function enviarFacturas(SunatEnviarFacturaRequest $request)
+    public function enviarFacturas(Request $request)
+    {
+        return $request; 
+        /*DB::beginTransaction();
+
+        try {
+            DB::table('comprobantes')->insert(['id' => $request->id]);
+            $result = ['successMessage' => 'ESTADO: ACEPTADA'];            
+            DB::commit();
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'ESTADO: RECHAZADA'];
+            DB::rollback();
+        }
+
+        return redirect()->route('sunat.listarFacturas')->with($result);*/
+        //return $comprobante->id;
+
+    }
+    /*public function enviarFacturas(Request $request)
     {
         $see = require __DIR__ . '/config.php';
         // Cliente
@@ -137,13 +141,13 @@ class SunatController extends Controller
             //echo ;
         } else {
             /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
-            /*code: 0100 a 1999 */
-            echo 'Excepción';
+    /*code: 0100 a 1999 */
+    /*echo 'Excepción';
         }
         //return $cdr->getDescription() . PHP_EOL;
         //return $request;
         return redirect()->route('sunat.listarFacturas')->with($result);
-    }
+    }*/
     public function resumenBoletas()
     {
         return Inertia::render('Sunat/ResumenBoletas');

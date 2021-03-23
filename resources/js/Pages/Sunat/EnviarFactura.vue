@@ -4,12 +4,14 @@
             <div class="card-body">
                 <b-alert
                     show
+                    dismissible
                     variant="success"
                     v-if="$page.props.successMessage"
                     >{{ $page.props.successMessage }}</b-alert
                 >
                 <b-alert
                     show
+                    dismissible
                     variant="danger"
                     v-if="$page.props.errorMessage"
                     >{{ $page.props.errorMessage }}</b-alert
@@ -60,7 +62,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_facturas"
+                    ref="tbl_comprobantes"
                     show-empty
                     striped
                     hover
@@ -68,7 +70,7 @@
                     small
                     responsive
                     stacked="md"
-                    :items="myProvider"
+                    :items="comCabe"
                     :fields="fields"
                     :current-page="currentPage"
                     :per-page="perPage"
@@ -77,32 +79,25 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"
-                    empty-text="No hay facturas para mostrar"
-                    empty-filtered-text="No hay facturas que coincidan con su búsqueda."
+                    empty-text="No hay tipos de comprobante para mostrar"
+                    empty-filtered-text="No hay tipos de comprobante que coincidan con su búsqueda."
                 >
-                    <template v-slot:cell(condicion)="row">
-                        <b-badge v-if="row.item.estado" variant="success"
+                    <template v-slot:cell(estado)="row">
+                        <b-badge
+                            v-if="row.item.estado == true"
+                            variant="success"
                             >Activo</b-badge
                         >
                         <b-badge v-else variant="secondary">Inactivo</b-badge>
                     </template>
                     <template v-slot:cell(acciones)="row">
-                        <inertia-link
-                            class="btn btn-primary btn-sm"
-                            :href="
-                                route('sunat.enviarFacturas', row.item.id)
-                            "
-                        >
-                            <b-icon icon="cloud-upload-fill"></b-icon>
-                        </inertia-link>
                         <b-button
-                            v-if="!row.item.deleted_at"
-                            variant="danger"
+                            variant="success"
                             size="sm"
-                            title="Eliminar"
-                            @click="eliminar(row.item)"
+                            title="Enviar a SUNAT"
+                            @click="enviar(row.item)"
                         >
-                            <b-icon icon="trash"></b-icon>
+                            <b-icon icon="check"></b-icon>
                         </b-button>
                     </template>
                 </b-table>
@@ -124,11 +119,10 @@
 </template>
 
 <script>
-const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "sunat.listarFacturas",
+    name: "sunat.enviarFacturas",
     components: {
         AppLayout
     },
@@ -142,10 +136,41 @@ export default {
                     sortable: true,
                     class: "text-center"
                 },
-                { key: "nombre", label: "Unidad de medida", sortable: true },
-                { key: "condicion", label: "Condición", class: "text-center" },
+                { key: "codigo", label: "Codigo", sortable: true },
+                { key: "cui", label: "CUI", sortable: true },
+                { key: "nues", label: "Codigo de Escuela", sortable: true },
+                { key: "serie", label: "Serie", sortable: true },
+                { key: "correlativo", label: "Correlativo", sortable: true },
+                { key: "detalles", label: "Detalles", sortable: true },
+                { key: "estado", label: "Condición", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
+            comCabe: [
+                {
+                    id: "1",
+                    codigo: "111",
+                    cui: "20143377",
+                    nues: "044",
+                    serie: "F001",
+                    correlativo: "0001",
+                    detalles: [
+                        {
+                            cantidad: 100,
+                            valor_unitario: 15,
+                            igv: 18,
+                            estado: true
+                        },
+                        {
+                            cantidad: 100,
+                            valor_unitario: 15,
+                            igv: 18,
+                            estado: true
+                        }
+                    ],
+                    estado: true
+                }
+            ],
+
             index: 1,
             totalRows: 1,
             currentPage: 1,
@@ -159,48 +184,25 @@ export default {
     },
     methods: {
         refreshTable() {
-            this.$refs.tbl_facturas.refresh();
+            this.$refs.tbl_comprobantes.refresh();
         },
-        myProvider(ctx) {
-            let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-            if (ctx.filter !== "" && ctx.filter !== null) {
-                params += "&filter=" + ctx.filter;
-            }
-
-            if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-                params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-            }
-
-            const promise = axios.get(
-                `${this.app_url}/sunat/listarFacturas${params}`
-            );
-
-            return promise.then(response => {
-                const facturas = response.data.data;
-                this.totalRows = response.data.total;
-
-                return facturas || [];
-            });
-        },
-        eliminar(unidad_medida) {
+        enviar(comprobante) {
+            console.log(comprobante);
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer eliminar esta unidad de medida?",
+                    "¿Esta seguro de querer eviar este comprobante?",
                     {
-                        title: "Eliminar unidad de medida",
-                        okVariant: "danger",
+                        title: "Enviar Comprobante",
+                        okVariant: "success",
                         okTitle: "SI",
                         cancelTitle: "NO",
                         centered: true
                     }
                 )
-                .then(value => {
+                .then(async value => {
                     if (value) {
-                        this.$inertia.delete(
-                            route("unidades-medida.eliminar", [
-                                unidad_medida.id
-                            ])
+                        this.$inertia.post(
+                            route("sunat.enviarFacturas", comprobante)
                         );
                         this.refreshTable();
                     }
