@@ -44,7 +44,7 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
-                            @click="mostrarMenuAcceso"
+                            @click="mostrarMenu(0)"
                         >
                             <i class="uil-window-section"></i>
                             <span>Accesos</span>
@@ -52,7 +52,7 @@
                         <ul
                             class="sub-menu"
                             aria-expanded="false"
-                            v-show="menuAcceso"
+                            v-show="show_menus[0]"
                         >
                             <li>
                                 <inertia-link                                
@@ -77,7 +77,7 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
-                            @click="mostrarMenuMantenimiento"
+                            @click="mostrarMenu(1)"
                         >
                             <i class="uil-window-section"></i>
                             <span>Mantenimiento</span>
@@ -85,7 +85,7 @@
                         <ul
                             class="sub-menu"
                             aria-expanded="false"
-                            v-show="menuMantenimiento"
+                            v-show="show_menus[1]"
                         >
                             <li>
                                 <inertia-link
@@ -133,7 +133,7 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
-                            @click="mostrarMenuSunat"
+                            @click="mostrarMenu(2)"
                         >
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>Sunat</span>
@@ -141,7 +141,7 @@
                         <ul
                             class="sub-menu"
                             aria-expanded="false"
-                            v-show="menuSunat"
+                            v-show="show_menus[2]"
                         >
                             <li>
                                 <inertia-link :href="route('sunat.dashboard')">
@@ -185,22 +185,23 @@
 export default {
     data() {
         return {
-            app_url: this.$root.app_url,
-            menuAcceso: false,
-            menuMantenimiento: false,
-            menuSunat: false
+            app_url: this.$root.app_url,            
+            show_menus: [false, false, false]
         };
     },
     methods: {
-        mostrarMenuAcceso() {
-            this.menuAcceso = !this.menuAcceso;
-        },
-        mostrarMenuMantenimiento() {
-            this.menuMantenimiento = !this.menuMantenimiento;
-        },
-        mostrarMenuSunat() {
-            this.menuSunat = !this.menuSunat;
-        }
+        mostrarMenu(orden) {                        
+            this.$set(this.show_menus, orden, !this.show_menus[orden])                        
+
+            for (let index = 0; index < this.show_menus.length; index++) {
+                
+                if (index == orden) {
+                    continue
+                }
+                
+                this.$set(this.show_menus, index, false)                        
+            }
+        },        
     }
 };
 </script>
