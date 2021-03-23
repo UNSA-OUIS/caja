@@ -25,7 +25,10 @@ class SunatController extends Controller
     }
     public function enviarFacturas(Request $request)
     {
-        return $request; 
+        //return $request->id;
+        foreach ($request as $key) {
+            return $key;
+        } 
         /*DB::beginTransaction();
 
         try {
