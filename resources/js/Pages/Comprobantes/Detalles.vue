@@ -485,10 +485,10 @@ export default {
             tipoDescuento: "",
             tipoCliente: "",
             clienteDni: "",
+            id: 1,
             cantidadState: null,
 
             compCabe: {
-                id: 1,
                 codigo: "",
                 cui: "",
                 nues: "",
@@ -496,7 +496,6 @@ export default {
                 correlativo: "",
                 submittedDetails: [
                     {
-                        id: 0,
                         codigo: "",
                         concepto: "",
                         cantidad: "1",

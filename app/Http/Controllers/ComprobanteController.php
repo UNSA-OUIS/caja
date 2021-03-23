@@ -48,19 +48,18 @@ class ComprobanteController extends Controller
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
             $comprobante->estado = $request->estado;
-            $comprobante->save();
-            
+            $comprobante->saveOrFail();
+
             $detalles = new DetallesComprobante();
             $d = $request->submittedDetails;
             foreach ($d as $key => $value) {
-                $detalles->id =  $value['id'];
                 $detalles->cantidad =  $value['cantidad'];
                 $detalles->valor_unitario =  $value['prUnit'];
                 $detalles->descuento =  $value['descuento'];
                 $detalles->estado =  true;
                 $detalles->concepto_id =  $value['codigo'];
                 $detalles->comprobante_id =  $comprobante->id;
-                $detalles->save();
+                $detalles->saveOrFail();
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
