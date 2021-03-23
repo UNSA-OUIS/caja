@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Comprobante extends Model
+class DetallesComprobante extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'comprobantes';
+    protected $table = 'detalles_comprobante';
 
-    protected $fillable = ['id', 'codigo', 'nues', 'serie', 'correlativo', 'total', 'estado'];
+    protected $fillable = ['id', 'cantidad', 'valor_unitario', 'descuento', 'estado', 'concepto_id', 'comprobante_id'];
 }

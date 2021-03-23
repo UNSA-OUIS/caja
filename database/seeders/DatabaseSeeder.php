@@ -15,6 +15,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([PermisoSeeder::class]);
         $this->call([TipoComprobanteSeeder::class]);
-        $this->call([ComprobanteSeeder::class]);
+        //$this->call([ComprobanteSeeder::class]);
     }
 }
