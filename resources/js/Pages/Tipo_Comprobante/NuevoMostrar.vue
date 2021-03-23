@@ -63,7 +63,6 @@
 </template>
 
 <script>
-const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
