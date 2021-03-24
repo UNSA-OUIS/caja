@@ -1,115 +1,194 @@
 <template>
     <app-layout>
         <div class="card">
-            <div class="card-header">
+            <!--<div class="card-header">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item active">Registrar comprobante</li>
+                    <li class="breadcrumb-item">
+                        <inertia-link :href="`${app_url}/dashboard`"
+                            >Inicio</inertia-link
+                        >
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Registrar comprobante
+                    </li>
                 </ol>
                 <h1>Registrar comprobante</h1>
-                
-                
-            </div>
+            </div>-->
             <div class="card-doby">
                 <div class="container">
+                    <b-alert
+                        show
+                        dismissible
+                        variant="success"
+                        v-if="$page.props.successMessage"
+                        >{{ $page.props.successMessage }}</b-alert
+                    >
+                    <b-alert
+                        show
+                        dismissible
+                        variant="danger"
+                        v-if="$page.props.errorMessage"
+                        >{{ $page.props.errorMessage }}</b-alert
+                    >
                     <b-form>
                         <b-row>
-                            <b-col> 
-                                <b-form-group id="select-g-1" label="Tipo de cliente:" label-for="select-1">
-                                    <b-form-select id="select-1" v-model="tipoCliente" :options="tipos_cliente" class="mb-3">
+                            <b-col>
+                                <b-form-group
+                                    id="select-g-1"
+                                    label="Tipo de cliente:"
+                                    label-for="select-1"
+                                >
+                                    <b-form-select
+                                        id="select-1"
+                                        v-model="tipoCliente"
+                                        :options="tipos_cliente"
+                                        class="mb-3"
+                                    >
                                         <template #first>
-                                            <b-form-select-option :value="null" disabled>-- Por favor, seleccione un concepto --</b-form-select-option>
+                                            <b-form-select-option
+                                                :value="null"
+                                                disabled
+                                                >-- Por favor, seleccione un
+                                                concepto
+                                                --</b-form-select-option
+                                            >
                                         </template>
                                     </b-form-select>
                                 </b-form-group>
                             </b-col>
-                            <b-col> 
-                                <b-form-group id="input-group-8" label="DNI:" label-for="input-8">
-                                    <b-form-input id="input-8" v-model="clienteDni" list="clientes" @change="getCliente($event)"></b-form-input>
+                            <b-col>
+                                <b-form-group
+                                    id="input-group-8"
+                                    label="DNI:"
+                                    label-for="input-8"
+                                >
+                                    <b-form-input
+                                        id="input-8"
+                                        v-model="clienteDni"
+                                        list="clientes"
+                                        @change="getCliente($event)"
+                                    ></b-form-input>
                                     <datalist id="clientes">
-                                    <option v-for="cliente in clientes" v-bind:key="cliente" :value="cliente.dni">{{ cliente.nombre }}</option>
-                                    </datalist> 
-                                </b-form-group> 
+                                        <option
+                                            v-for="cliente in clientes"
+                                            v-bind:key="cliente"
+                                            :value="cliente.dni"
+                                            >{{ cliente.nombre }}</option
+                                        >
+                                    </datalist>
+                                </b-form-group>
                             </b-col>
                             <b-col>
-                                <b-form-group id="input-group-9" label="Código:" label-for="input-9">
+                                <b-form-group
+                                    id="input-group-9"
+                                    label="Código:"
+                                    label-for="input-9"
+                                >
                                     <b-form-input
                                         id="input-9"
                                         readonly
                                         v-model="cliente.codigo"
-                                        placeholder="Código"             
+                                        placeholder="Código"
                                     ></b-form-input>
-                                </b-form-group> 
+                                </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>
                             <b-col>
-                                <b-form-group id="input-group-4" label="Nombre:" label-for="input-4">
+                                <b-form-group
+                                    id="input-group-4"
+                                    label="Nombre:"
+                                    label-for="input-4"
+                                >
                                     <b-form-input
                                         id="input-4"
                                         readonly
                                         v-model="cliente.nombre"
-                                        placeholder="Nombre"            
+                                        placeholder="Nombre"
                                     ></b-form-input>
-                                </b-form-group>   
+                                </b-form-group>
                             </b-col>
                             <b-col>
-                                <b-form-group id="input-group-10" label="Email:" label-for="input-10">
+                                <b-form-group
+                                    id="input-group-10"
+                                    label="Email:"
+                                    label-for="input-10"
+                                >
                                     <b-form-input
                                         id="input-10"
                                         readonly
                                         v-model="cliente.email"
-                                        placeholder="Email"             
+                                        placeholder="Email"
                                     ></b-form-input>
-                                </b-form-group> 
+                                </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>
                             <b-col>
-                                <b-form-group id="input-group-1" label="Código:" label-for="input-1">
+                                <b-form-group
+                                    id="input-group-1"
+                                    label="Código:"
+                                    label-for="input-1"
+                                >
                                     <b-form-input
                                         id="input-1"
                                         v-model="compCabe.codigo"
-                                        placeholder="Código"             
+                                        placeholder="Código"
                                     ></b-form-input>
-                                </b-form-group> 
+                                </b-form-group>
                             </b-col>
-                            <b-col> 
-                                <b-form-group id="input-group-5" label="NUES:" label-for="input-5">
+                            <b-col>
+                                <b-form-group
+                                    id="input-group-5"
+                                    label="NUES:"
+                                    label-for="input-5"
+                                >
                                     <b-form-input
                                         id="input-5"
                                         v-model="compCabe.nues"
-                                        placeholder="NUES"              
+                                        placeholder="NUES"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>
                             <b-col>
-                                <b-form-group id="input-group-6" label="Serie:" label-for="input-6">
+                                <b-form-group
+                                    id="input-group-6"
+                                    label="Serie:"
+                                    label-for="input-6"
+                                >
                                     <b-form-input
                                         id="input-6"
                                         v-model="compCabe.serie"
-                                        placeholder="Serie"              
+                                        placeholder="Serie"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                             <b-col>
-                                <b-form-group id="input-group-7" label="Correlativo:" label-for="input-7">
+                                <b-form-group
+                                    id="input-group-7"
+                                    label="Correlativo:"
+                                    label-for="input-7"
+                                >
                                     <b-form-input
                                         id="input-7"
                                         v-model="compCabe.correlativo"
-                                        placeholder="Correlativo"              
+                                        placeholder="Correlativo"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                    </b-form>  
+                    </b-form>
                 </div>
 
                 <div class="container">
-                    <b-button @click="showModal" ref="btnShow">Búsqueda avanzada de conceptos</b-button>
-                    <b-button @click="addDetalle" ref="btnAdd">Añadir concepto</b-button>
+                    <b-button @click="showModal" ref="btnShow"
+                        >Búsqueda avanzada de conceptos</b-button
+                    >
+                    <b-button @click="addDetalle" ref="btnAdd"
+                        >Añadir concepto</b-button
+                    >
                 </div>
 <!-- Modal nueva opcion para agregar conceptos -->
                 <b-modal id="modal-1" title="Selecciona concepto">
@@ -195,108 +274,172 @@
                 </b-row>
                 </b-modal>
 
-
                 <div>
-                <b-table
-                    ref="tbl_detalle"
-                    show-empty
-                    striped
-                    hover
-                    bordered
-                    small
-                    responsive
-                    stacked="md"
-                    :items="compCabe.submittedDetails"  
-                    :fields="fields"   
-                    empty-text="No hay conceptos para mostrar"
-                >
-                    <template v-slot:cell(codigo)="row">
-                        <label>{{ row.item.codigo }}</label>
-                    </template>
-                    <template v-slot:cell(concepto)="row">
-                        <!--<div>
+                    <b-table
+                        ref="tbl_detalle"
+                        show-empty
+                        striped
+                        hover
+                        bordered
+                        small
+                        responsive
+                        stacked="md"
+                        :items="compCabe.submittedDetails"
+                        :fields="fields"
+                        empty-text="No hay conceptos para mostrar"
+                    >
+                        <template v-slot:cell(codigo)="row">
+                            <label>{{ row.item.codigo }}</label>
+                        </template>
+                        <template v-slot:cell(concepto)="row">
+                            <!--<div>
                             <b-form-input list="conceptos" @change="completeConcepto(option, row.item.id)"></b-form-input>
                             <datalist id="conceptos">
                             <option v-for="option in options" v-bind:key="option" >{{ option.text }}</option>
                             </datalist>                          
                         </div>-->
-                        <b-form-select @change="completeConcepto($event, row.item.id)" class="mb-3">
-                            <!-- This slot appears above the options from 'options' prop -->
+                            <b-form-select
+                                @change="completeConcepto($event, row.item.id)"
+                                class="mb-3"
+                            >
+                                <!-- This slot appears above the options from 'options' prop -->
                                 <template #first>
-                                    <b-form-select-option :value="null" disabled>-- Por favor, seleccione un concepto --</b-form-select-option>
-                                    <b-form-select-option v-for="option in options" v-bind:key="option" :value="option.value" >{{ option.text }}</b-form-select-option>
+                                    <b-form-select-option :value="null" disabled
+                                        >-- Por favor, seleccione un concepto
+                                        --</b-form-select-option
+                                    >
+                                    <b-form-select-option
+                                        v-for="option in options"
+                                        v-bind:key="option"
+                                        :value="option.value"
+                                        >{{ option.text }}</b-form-select-option
+                                    >
                                 </template>
                             </b-form-select>
-                    </template>
-                    <template v-slot:cell(cantidad)="row">
-                        <div>
-                            <b-form-input id="cantidad" v-model="row.item.cantidad" type="number" ></b-form-input>
-                        </div>
-                    </template>
-                    <template v-slot:cell(prUnit)="row">
-                        <b-form-input id="prUnit" v-model="row.item.prUnit" type="number"  readonly :value="row.item.prUnit"></b-form-input>
-                    </template>
+                        </template>
+                        <template v-slot:cell(cantidad)="row">
+                            <div>
+                                <b-form-input
+                                    id="cantidad"
+                                    v-model="row.item.cantidad"
+                                    type="number"
+                                ></b-form-input>
+                            </div>
+                        </template>
+                        <template v-slot:cell(prUnit)="row">
+                            <b-form-input
+                                id="prUnit"
+                                v-model="row.item.prUnit"
+                                type="number"
+                                readonly
+                                :value="row.item.prUnit"
+                            ></b-form-input>
+                        </template>
 
-                    <template v-slot:cell(descuento)="row"> 
-                        <div>
-                            <b-form-select :options="tipo_descuento" v-model="row.item.tipo_descuento"></b-form-select>
-                            <b-form-input id="descuento" @change="calcularDescuento($event, row.item.id)" type="number" value="0.00"></b-form-input>
-                        </div>
-                    </template>
+                        <template v-slot:cell(descuento)="row">
+                            <div>
+                                <b-form-select
+                                    :options="tipo_descuento"
+                                    v-model="row.item.tipo_descuento"
+                                ></b-form-select>
+                                <b-form-input
+                                    id="descuento"
+                                    @change="
+                                        calcularDescuento($event, row.item.id)
+                                    "
+                                    type="number"
+                                    value="0.00"
+                                ></b-form-input>
+                            </div>
+                        </template>
 
-                    <template v-slot:cell(subTotal)="row">
-                        <div>
-                            <label>S/. {{ row.item.prUnit * row.item.cantidad - row.item.descuento | currency }}</label>
-                        </div>
-                        
-                    </template>
+                        <template v-slot:cell(subTotal)="row">
+                            <div>
+                                <label
+                                    >S/.
+                                    {{
+                                        (row.item.prUnit * row.item.cantidad -
+                                            row.item.descuento)
+                                            | currency
+                                    }}</label
+                                >
+                            </div>
+                        </template>
 
-                    <template v-slot:cell(acciones)="row">                                     
-                        <b-button
-                            v-if="!row.item.deleted_at"
-                            variant="danger"
-                            size="sm"
-                            title="Eliminar"
-                            @click="eliminar(row.item.id)"
-                        >
-                            <b-icon icon="trash"></b-icon>
-                        </b-button>
-                    </template>
-                    <template slot="bottom-row" slot-scope="data">
-                        <b-td/><b-td/><b-td/><b-td/><b-td>Total</b-td>
-                        <b-td>S/.{{ total | currency }}</b-td><b-td/>
-                    </template>
-                </b-table>
+                        <template v-slot:cell(acciones)="row">
+                            <b-button
+                                v-if="!row.item.deleted_at"
+                                variant="danger"
+                                size="sm"
+                                title="Eliminar"
+                                @click="eliminar(row.item.id)"
+                            >
+                                <b-icon icon="trash"></b-icon>
+                            </b-button>
+                        </template>
+                        <template slot="bottom-row" slot-scope="">
+                            <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
+                            <b-td>S/.{{ total | currency }}</b-td
+                            ><b-td />
+                        </template>
+                    </b-table>
                 </div>
                 <div class="container">
-                    <b-button ref="btnAdd">Registrar</b-button>
+                    <b-button
+                        variant="success"
+                        size="sm"
+                        title="Registrar"
+                        @click="registrar()"
+                    >
+                        Registrar<b-icon icon="check"></b-icon>
+                    </b-button>
                 </div>
             </div>
         </div>
     </app-layout>
 </template>
 <script>
-import AppLayout from '@/Layouts/AppLayout'
+import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "comprobante.registrar",
-    
+    name: "comprobantes.iniciar",
     components: {
-            AppLayout,                      
-        },
+        AppLayout
+    },
     methods: {
         showModal() {
-            this.$root.$emit('bv::show::modal', 'modal-1', '#btnShow')
+            this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
+        },
+        registrar() {
+            this.$bvModal
+                .msgBoxConfirm(
+                    "¿Esta seguro de querer eviar este comprobante?",
+                    {
+                        title: "Enviar Comprobante",
+                        okVariant: "success",
+                        okTitle: "SI",
+                        cancelVariant: "danger",
+                        cancelTitle: "NO",
+                        centered: true
+                    }
+                )
+                .then(async value => {
+                    if (value) {
+                        this.$inertia.post(
+                            route("comprobantes.registrar", this.compCabe)
+                        );
+                    }
+                });
         },
         addDetalle() {
             this.compCabe.submittedDetails.push({
-                "id": this.id++,
-                "codigo": '',
-                "concepto": '',
-                "cantidad": '1',
-                "prUnit": '',
-                'tipo_descuento': '',
-                "descuento": '0.00',
+                id: this.id++,
+                codigo: "",
+                concepto: "",
+                cantidad: "1",
+                prUnit: "",
+                tipo_descuento: "",
+                descuento: "0.00"
             });
         },
         agregarConcepto(conc) {
@@ -311,28 +454,35 @@ export default {
             });
         },
         eliminar(id) {
-            var index = this.compCabe.submittedDetails.findIndex(detalle => detalle.id == id);
+            var index = this.compCabe.submittedDetails.findIndex(
+                detalle => detalle.id == id
+            );
             this.compCabe.submittedDetails.splice(index, 1);
         },
-        completeConcepto(event, id){
-            var index = this.compCabe.submittedDetails.findIndex(detalle => detalle.id == id);
+        completeConcepto(event, id) {
+            var index = this.compCabe.submittedDetails.findIndex(
+                detalle => detalle.id == id
+            );
             var conc = this.options.find(option => option.value == event);
             this.compCabe.submittedDetails[index].codigo = conc.value;
             this.compCabe.submittedDetails[index].prUnit = conc.precio;
         },
         calcularDescuento(event, id) {
-            var index = this.compCabe.submittedDetails.findIndex(detalle => detalle.id == id);
+            var index = this.compCabe.submittedDetails.findIndex(
+                detalle => detalle.id == id
+            );
             var conc = this.compCabe.submittedDetails[index].tipo_descuento;
-            if (conc == 'A'){
-                this.compCabe.submittedDetails[index].descuento = (this.compCabe.submittedDetails[index].prUnit * this.compCabe.submittedDetails[index].cantidad) * event/100;
-            }
-            else if (conc == 'B'){
+            if (conc == "A") {
+                this.compCabe.submittedDetails[index].descuento =
+                    (this.compCabe.submittedDetails[index].prUnit *
+                        this.compCabe.submittedDetails[index].cantidad *
+                        event) /
+                    100;
+            } else if (conc == "B") {
                 this.compCabe.submittedDetails[index].descuento = event;
-            }
-            else{
+            } else {
                 this.compCabe.submittedDetails[index].descuento = 0;
             }
-
         },
         getCliente(dni) {
             var cli = this.clientesCompleto.find(cliente => cliente.dni == dni);
@@ -341,11 +491,11 @@ export default {
             this.cliente.nombre = cli.nombre;
             this.cliente.email = cli.email;
             this.cliente.codigo = cli.codigo;
-        },
+        }
     },
     filters: {
         currency(value) {
-        return value.toFixed(2);
+            return value.toFixed(2);
         }
     },
     computed: {
@@ -358,34 +508,39 @@ export default {
             this.cliente.codigo = cli.codigo;
         },*/
 
-        clientes(){
-            if ( this.tipoCliente == 'A' ){
-                return this.clientesCompleto.filter(cliente => cliente.tipo == 'Alumno');
-            }
-            else if (this.tipoCliente == 'B'){
-                return this.clientesCompleto.filter(cliente => cliente.tipo == 'Docente');
-            }
-            else if (this.tipoCliente == 'C'){
-                return this.clientesCompleto.filter(cliente => cliente.tipo == 'Particular');
+        clientes() {
+            if (this.tipoCliente == "A") {
+                return this.clientesCompleto.filter(
+                    cliente => cliente.tipo == "Alumno"
+                );
+            } else if (this.tipoCliente == "B") {
+                return this.clientesCompleto.filter(
+                    cliente => cliente.tipo == "Docente"
+                );
+            } else if (this.tipoCliente == "C") {
+                return this.clientesCompleto.filter(
+                    cliente => cliente.tipo == "Particular"
+                );
             }
             return [];
         },
-        
+
         total() {
             this.compCabe.total = this.compCabe.submittedDetails.reduce(
-                (acc, item) => acc + (item.cantidad * item.prUnit - item.descuento),
+                (acc, item) =>
+                    acc + (item.cantidad * item.prUnit - item.descuento),
                 0
             );
             return this.compCabe.total;
         }
     },
     data() {
-      return {
-        tipoDescuento: '',
-        tipoCliente: '',
-        clienteDni: '',
-        id: 1,
-        cantidadState: null,
+        return {
+            tipoDescuento: "",
+            tipoCliente: "",
+            clienteDni: "",
+            id: 1,
+            cantidadState: null,
 
         compCabe: {
             "codigo": '',
@@ -456,15 +611,17 @@ export default {
             nombre: ''
         },
         fields: [
-                    { key: "codigo", label: "CÓDIGO", class: "text-center" },
-                    { key: "concepto", label: "CONCEPTO", class: "text-center" },
-                    { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                    { key: "prUnit", label: "PR. UNIT", class: "text-center" },    
-                    { key: "descuento", label: "DESCUENTO", class: "text-center" },              
-                    { key: "subTotal", label: "SUB TOTAL", class: "text-right" },              
-                    { key: "acciones", label: "ACCIONES", class: "text-center" },
-                ],
-      }
-    },
-}
+            { key: "codigo", label: "CÓDIGO", class: "text-center" },
+            { key: "concepto", label: "CONCEPTO", class: "text-center" },
+            { key: "cantidad", label: "CANTIDAD", class: "text-center" },
+            { key: "prUnit", label: "PR. UNIT", class: "text-center" },    
+            { key: "descuento", label: "DESCUENTO", class: "text-center" },              
+            { key: "subTotal", label: "SUB TOTAL", class: "text-right" },              
+            { key: "acciones", label: "ACCIONES", class: "text-center" },
+        ],
+        total: "",
+        estado: true,
+        }
+    }
+};
 </script>
