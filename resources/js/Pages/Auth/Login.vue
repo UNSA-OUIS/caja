@@ -51,7 +51,10 @@
                                             <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Iniciar sesión</button>
                                         </div>
                                        
-
+                                        <div v-if="$page.props.errorLoginMessage" class="mt-3">
+                                            <p class="text-danger font-weight-bold">¡Acceso denegado!</p>
+                                            <p class="text-danger">{{ $page.props.errorLoginMessage }}</p>
+                                        </div>
                                         <div class="mt-4 text-center">
                                             <div class="signin-other-title">
                                                 <h5 class="font-size-14 mb-3 title login_redes_sociales p-1">Iniciar sesión con</h5>

@@ -26,7 +26,7 @@ class LoginWithGoogleController extends Controller
 
             
             if (!$personal) { // si no es personal de caja
-                \Session::flash('errorLoginMessage', "Lo sentimos, esta aplicación es solo para personal con correos registrados en el sistema de caja");
+                \Session::flash('errorLoginMessage', "Lo sentimos, esta aplicación es solo para personal registrado en el sistema de caja");
                 return redirect()->to('/login');
             }
             
