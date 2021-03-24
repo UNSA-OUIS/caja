@@ -97,7 +97,7 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                src="assets/images/flags/us.jpg"
+                                :src="`${app_url}/assets/images/flags/us.jpg`"
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -108,7 +108,7 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                src="assets/images/flags/spain.jpg"
+                                :src="`${app_url}/assets/images/flags/spain.jpg`"
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -119,7 +119,7 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                src="assets/images/flags/germany.jpg"
+                                :src="`${app_url}/assets/images/flags/germany.jpg`"
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -130,7 +130,7 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                src="assets/images/flags/italy.jpg"
+                                :src="`${app_url}/assets/images/flags/italy.jpg`"
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -141,7 +141,7 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                src="assets/images/flags/russia.jpg"
+                                :src="`${app_url}/assets/images/flags/russia.jpg`"
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -169,7 +169,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/github.png"
+                                            :src="`${app_url}/assets/images/brands/github.png`"
                                             alt="Github"
                                         />
                                         <span>GitHub</span>
@@ -178,7 +178,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/bitbucket.png"
+                                            :src="`${app_url}/assets/images/brands/bitbucket.png`"
                                             alt="bitbucket"
                                         />
                                         <span>Bitbucket</span>
@@ -187,7 +187,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/dribbble.png"
+                                            :src="`${app_url}/assets/images/brands/dribbble.png`"
                                             alt="dribbble"
                                         />
                                         <span>Dribbble</span>
@@ -199,7 +199,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/dropbox.png"
+                                            :src="`${app_url}/assets/images/brands/dropbox.png`"
                                             alt="dropbox"
                                         />
                                         <span>Dropbox</span>
@@ -208,7 +208,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/mail_chimp.png"
+                                            :src="`${app_url}/assets/images/brands/mail_chimp.png`"
                                             alt="mail_chimp"
                                         />
                                         <span>Mail Chimp</span>
@@ -217,7 +217,7 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            src="assets/images/brands/slack.png"
+                                            :src="`${app_url}/assets/images/brands/slack.png`"
                                             alt="slack"
                                         />
                                         <span>Slack</span>
@@ -295,7 +295,7 @@
                             <a href="" class="text-reset notification-item">
                                 <div class="media">
                                     <img
-                                        src="assets/images/users/avatar-3.jpg"
+                                        :src="`${app_url}/assets/images/users/avatar-3.jpg`"
                                         class="mr-3 rounded-circle avatar-xs"
                                         alt="user-pic"
                                     />

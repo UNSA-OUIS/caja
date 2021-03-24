@@ -21,7 +21,11 @@ class PermisoSeeder extends Seeder
             'guard_name' => 'sanctum'                                                          
         ]);
 
-        User::create(['name' => 'Jesus Ortiz Chavez', 'email' => 'jortiz@unsa.edu.pe']);
+        User::create([
+            'name' => 'Jesus Ortiz Chavez', 
+            'email' => 'jortiz@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
 
         //usuario administrador
         $user = User::find(1);
