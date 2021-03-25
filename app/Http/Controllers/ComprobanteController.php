@@ -6,6 +6,7 @@ use App\Models\Comprobante;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ComprobanteController extends Controller
 {
@@ -14,9 +15,20 @@ class ComprobanteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        //$this->authorize("viewAny", Comprobante::class);
+        
+        $query = Comprobante::where('codigo', 'like', '%' . $request->filter . '%');
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
     }
 
     /**
@@ -24,8 +36,11 @@ class ComprobanteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
+        $comprobante = new Comprobante();
+        $comprobante->codigo = "";
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
     }
 
     /**
@@ -48,7 +63,7 @@ class ComprobanteController extends Controller
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
             $comprobante->estado = $request->estado;
-            $comprobante->saveOrFail();
+            $comprobante->save();
 
             $detalles = new DetallesComprobante();
             $d = $request->submittedDetails;
@@ -59,7 +74,7 @@ class ComprobanteController extends Controller
                 $detalles->estado =  true;
                 $detalles->concepto_id =  $value['codigo'];
                 $detalles->comprobante_id =  $comprobante->id;
-                $detalles->saveOrFail();
+                $detalles->save();
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
@@ -76,9 +91,9 @@ class ComprobanteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Comprobante $comprobante)
     {
-        //
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
     }
 
     /**
@@ -99,19 +114,18 @@ class ComprobanteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function anular(Comprobante $comprobante)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        try {           
+            $comprobante->estado = false;
+            $comprobante->update();
+            $result = ['successMessage' => 'Comprobante anulado con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo anular el comprobante'];
+            \Log::error('ComprobanteController@anular, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->route('comprobantes.iniciar')->with($result);
+  
     }
 }

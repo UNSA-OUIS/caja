@@ -1,35 +1,22 @@
 <template>
     <app-layout>
         <div class="card">
-            <!--<div class="card-header">
+            <div class="card-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
                         <inertia-link :href="`${app_url}/dashboard`"
                             >Inicio</inertia-link
                         >
                     </li>
-                    <li class="breadcrumb-item active">
-                        Registrar comprobante
+                    <li class="breadcrumb-item">
+                        <inertia-link :href="route('comprobantes.iniciar')"
+                            >Lista de comprobantes</inertia-link
+                        >
                     </li>
                 </ol>
-                <h1>Registrar comprobante</h1>
-            </div>-->
+            </div>
             <div class="card-doby">
                 <div class="container">
-                    <b-alert
-                        show
-                        dismissible
-                        variant="success"
-                        v-if="$page.props.successMessage"
-                        >{{ $page.props.successMessage }}</b-alert
-                    >
-                    <b-alert
-                        show
-                        dismissible
-                        variant="danger"
-                        v-if="$page.props.errorMessage"
-                        >{{ $page.props.errorMessage }}</b-alert
-                    >
                     <b-form>
                         <b-row>
                             <b-col>
@@ -86,9 +73,9 @@
                                 >
                                     <b-form-input
                                         id="input-9"
-                                        readonly
-                                        v-model="cliente.codigo"
+                                        v-model="comprobante.cui"
                                         placeholder="Código"
+                                        :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -132,8 +119,9 @@
                                 >
                                     <b-form-input
                                         id="input-1"
-                                        v-model="compCabe.codigo"
+                                        v-model="comprobante.codigo"
                                         placeholder="Código"
+                                        :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -359,15 +347,134 @@
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "comprobantes.iniciar",
+    name: "comprobantes.mostrar",
+    props: ["comprobante"],
     components: {
         AppLayout
+    },
+
+    data() {
+        return {
+            accion: "",
+            tipoDescuento: "",
+            tipoCliente: "",
+            clienteDni: "",
+            id: 1,
+            cantidadState: null,
+            compCabe: {
+                codigo: "",
+                cui: "",
+                nues: "",
+                serie: "",
+                correlativo: "",
+                submittedDetails: [
+                    {
+                        codigo: "",
+                        concepto: "",
+                        cantidad: "1",
+                        prUnit: "",
+                        tipo_descuento: "",
+                        descuento: "0.00"
+                    }
+                ],
+                total: "",
+                estado: true
+            },
+
+            options: [
+                { value: "123", text: "Pago Matricula", precio: "10.00" },
+                { value: "10", text: "Rematricula", precio: "12.00" },
+                { value: "1", text: "Rematricula 2", precio: "15.00" },
+                { value: "12", text: "Rematricula 3", precio: "20.00" }
+            ],
+            tipo_descuento: [
+                { value: "A", text: "%" },
+                { value: "B", text: "S/." }
+            ],
+            tipos_cliente: [
+                { value: "A", text: "Alumno" },
+                { value: "B", text: "Docente" },
+                { value: "C", text: "Particulares" }
+            ],
+            tipos_cliente: [
+                { value: "A", text: "Alumno" },
+                { value: "B", text: "Docente" },
+                { value: "C", text: "Particular" }
+            ],
+            clientesCompleto: [
+                {
+                    dni: "77654321",
+                    nombre: "Carlos Duarte",
+                    email: "cduarte@unsa.edu.pe",
+                    codigo: "20167384",
+                    tipo: "Alumno"
+                },
+                {
+                    dni: "72345678",
+                    nombre: "Claudia Chaud",
+                    email: "cchaud@unsa.edu.pe",
+                    codigo: "201385",
+                    tipo: "Alumno"
+                },
+                {
+                    dni: "76736251",
+                    nombre: "Aracely Zeballos",
+                    email: "azeballos@unsa.edu.pe",
+                    codigo: "20124343",
+                    tipo: "Docente"
+                },
+                {
+                    dni: "74637281",
+                    nombre: "Martin Zegarra",
+                    email: "mzegarra@unsa.edu.pe",
+                    codigo: "20024367",
+                    tipo: "Docente"
+                },
+                {
+                    dni: "78462749",
+                    nombre: "Alfredo Zarate",
+                    email: "azarate@unsa.edu.pe",
+                    codigo: "",
+                    tipo: "Particular"
+                },
+                {
+                    dni: "74235656",
+                    nombre: "Maria Cuadros",
+                    email: "mcuadros@unsa.edu.pe",
+                    codigo: "",
+                    tipo: "Particular"
+                }
+            ],
+            cliente: {
+                dni: "",
+                email: "",
+                codigo: "",
+                nombre: ""
+            },
+            fields: [
+                { key: "codigo", label: "CÓDIGO", class: "text-center" },
+                { key: "concepto", label: "CONCEPTO", class: "text-center" },
+                { key: "cantidad", label: "CANTIDAD", class: "text-center" },
+                { key: "prUnit", label: "PR. UNIT", class: "text-center" },
+                { key: "descuento", label: "DESCUENTO", class: "text-center" },
+                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
+                { key: "acciones", label: "ACCIONES", class: "text-center" }
+            ]
+        };
+    },
+    created() {
+        if (!this.comprobante.id) {
+            this.accion = "Crear";
+        } else {
+            this.accion = "Mostrar";
+        }
     },
     methods: {
         showModal() {
             this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
         },
         registrar() {
+            console.log(this.compCabe);
             this.$bvModal
                 .msgBoxConfirm(
                     "¿Esta seguro de querer eviar este comprobante?",
@@ -479,115 +586,6 @@ export default {
             );
             return this.compCabe.total;
         }
-    },
-    data() {
-        return {
-            tipoDescuento: "",
-            tipoCliente: "",
-            clienteDni: "",
-            id: 1,
-            cantidadState: null,
-
-            compCabe: {
-                codigo: "",
-                cui: "",
-                nues: "",
-                serie: "",
-                correlativo: "",
-                submittedDetails: [
-                    {
-                        codigo: "",
-                        concepto: "",
-                        cantidad: "1",
-                        prUnit: "",
-                        tipo_descuento: "",
-                        descuento: "0.00"
-                    }
-                ],
-                total: "",
-                estado: true
-            },
-
-            options: [
-                { value: "123", text: "Pago Matricula", precio: "10.00" },
-                { value: "10", text: "Rematricula", precio: "12.00" },
-                { value: "1", text: "Rematricula 2", precio: "15.00" },
-                { value: "12", text: "Rematricula 3", precio: "20.00" }
-            ],
-            tipo_descuento: [
-                { value: "A", text: "%" },
-                { value: "B", text: "S/." }
-            ],
-            tipos_cliente: [
-                { value: "A", text: "Alumno" },
-                { value: "B", text: "Docente" },
-                { value: "C", text: "Particulares" }
-            ],
-            tipos_cliente: [
-                { value: "A", text: "Alumno" },
-                { value: "B", text: "Docente" },
-                { value: "C", text: "Particular" }
-            ],
-            clientesCompleto: [
-                {
-                    dni: "77654321",
-                    nombre: "Carlos Duarte",
-                    email: "cduarte@unsa.edu.pe",
-                    codigo: "20167384",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "72345678",
-                    nombre: "Claudia Chaud",
-                    email: "cchaud@unsa.edu.pe",
-                    codigo: "201385",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "76736251",
-                    nombre: "Aracely Zeballos",
-                    email: "azeballos@unsa.edu.pe",
-                    codigo: "20124343",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "74637281",
-                    nombre: "Martin Zegarra",
-                    email: "mzegarra@unsa.edu.pe",
-                    codigo: "20024367",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "78462749",
-                    nombre: "Alfredo Zarate",
-                    email: "azarate@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                },
-                {
-                    dni: "74235656",
-                    nombre: "Maria Cuadros",
-                    email: "mcuadros@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                }
-            ],
-            cliente: {
-                dni: "",
-                email: "",
-                codigo: "",
-                nombre: ""
-            },
-            fields: [
-                { key: "codigo", label: "CÓDIGO", class: "text-center" },
-                { key: "concepto", label: "CONCEPTO", class: "text-center" },
-                { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "prUnit", label: "PR. UNIT", class: "text-center" },
-                { key: "descuento", label: "DESCUENTO", class: "text-center" },
-                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
-                { key: "acciones", label: "ACCIONES", class: "text-center" }
-            ]
-        };
     }
 };
 </script>
