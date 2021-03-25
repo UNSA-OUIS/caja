@@ -40,7 +40,7 @@
                         </a>
                     </li>
 
-                    <li>
+                    <li v-if="$permissions.can([{name: 'Listar Roles'}, {name: 'Listar Usuarios'}])">
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
@@ -73,7 +73,14 @@
                         </ul>
                     </li>
 
-                    <li>
+                    <li v-if="$permissions.can([
+                            {name: 'Listar Unidades-Medida'}, 
+                            {name: 'Listar Clasificadores'},
+                            {name: 'Listar Tipos-Concepto'},
+                            {name: 'Listar Conceptos'},
+                            {name: 'Listar Tipos-Comprobante'},                            
+                        ])"
+                    > 
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
@@ -122,18 +129,18 @@
                             <li>
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Tipos-Comprobante'}])"                                                                    
+                                    v-if="$permissions.can([{name: 'Listar Tipos-Comprobante'}])"
                                 >
                                     Tipos de comprobante
                                 </inertia-link>
                             </li>
-                            <li>
+                            <!--<li>
                                 <inertia-link
                                     :href="route('accesos-google.iniciar')"
                                 >
                                     Accesos Google
                                 </inertia-link>
-                            </li>
+                            </li>-->
                             <li>
                                 <inertia-link
                                     :href="route('comprobantes.iniciar')"

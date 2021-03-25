@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\Concepto;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class ComprobanteController extends Controller
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
-        
+
         $query = Comprobante::where('codigo', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
@@ -40,7 +41,12 @@ class ComprobanteController extends Controller
     {
         $comprobante = new Comprobante();
         $comprobante->codigo = "";
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
+            ->orderBy('descripcion', 'asc')
+            ->get();
+
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
 
     /**
@@ -93,7 +99,10 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
+            ->orderBy('descripcion', 'asc')
+            ->get();
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
 
     /**
@@ -116,16 +125,15 @@ class ComprobanteController extends Controller
      */
     public function anular(Comprobante $comprobante)
     {
-        try {           
+        try {
             $comprobante->estado = false;
             $comprobante->update();
-            $result = ['successMessage' => 'Comprobante anulado con éxito'];            
+            $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo anular el comprobante'];
-            \Log::error('ComprobanteController@anular, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
-        }                      
-        
+            \Log::error('ComprobanteController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+
         return redirect()->route('comprobantes.iniciar')->with($result);
-  
     }
 }

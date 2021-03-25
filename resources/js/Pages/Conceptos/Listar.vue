@@ -141,7 +141,9 @@
                 app_url: this.$root.app_url,
                 fields: [
                     { key: "id", label: "ID", sortable: true, class: "text-center" },
+                    { key: "codigo", label: "Código", sortable: true },
                     { key: "descripcion", label: "Descripción", sortable: true },
+                    { key: "precio", label: "Precio", class: "text-center" },
                     { key: "tipo_concepto", label: "Tipo concepto", class: "text-center" },                    
                     { key: "clasificador", label: "Clasificador", class: "text-center" },    
                     { key: "unidad_medida", label: "Unidad medida", class: "text-center" },    

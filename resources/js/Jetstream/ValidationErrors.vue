@@ -1,9 +1,9 @@
 <template>
     <div v-if="hasErrors">
-        <div class="font-medium text-red-600">Whoops! Something went wrong.</div>
+        <div class="text-danger font-weight-bold">¡Ups! Algo salió mal.</div>
 
-        <ul class="mt-3 list-disc list-inside text-sm text-red-600">
-            <li v-for="(error, key) in errors" :key="key">{{ error }}</li>
+        <ul class="mt-3 text-danger">
+            <li v-for="(error, key) in errors" :key="key">{{ error[0] }}</li>
         </ul>
     </div>
 </template>

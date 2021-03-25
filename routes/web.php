@@ -14,7 +14,7 @@ use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
-
+use App\Models\Concepto;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +35,10 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::middleware(['auth:sanctum', 'verified'])->get('/', function () {
+    return Inertia::render('Dashboard');
+})->name('dashboard');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -169,6 +173,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('comprobantes.iniciar');
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
+    //Route::get('/comprobantes', [ConceptoController::class, 'listConcepts'])->name('comprobantes.iniciar');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');

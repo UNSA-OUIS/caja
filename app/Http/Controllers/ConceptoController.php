@@ -39,8 +39,10 @@ class ConceptoController extends Controller
     {
         $concepto = new Concepto();
 
+        $concepto->codigo = null;
         $concepto->descripcion = "";
         $concepto->descripcion_imp = "";
+        $concepto->precio = "";
         $concepto->tipo_concepto_id = null;
         $concepto->clasificador_id = null;
         $concepto->unidad_medida_id = null;
@@ -65,8 +67,10 @@ class ConceptoController extends Controller
     {
         try {           
             $concepto = new Concepto();
+            $concepto->codigo = $request->codigo;
             $concepto->descripcion = $request->descripcion;
             $concepto->descripcion_imp = $request->descripcion_imp;
+            $concepto->precio = $request->precio;
             $concepto->tipo_afectacion = '03';
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
@@ -105,9 +109,11 @@ class ConceptoController extends Controller
     
     public function update(ConceptoUpdateRequest $request, Concepto $concepto)
     {
-        try {                       
+        try {           
+            $concepto->codigo = $request->codigo;            
             $concepto->descripcion = $request->descripcion;
             $concepto->descripcion_imp = $request->descripcion_imp;
+            $concepto->precio = $request->precio;
             $concepto->tipo_afectacion = '03';
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
