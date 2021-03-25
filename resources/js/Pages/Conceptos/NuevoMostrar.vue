@@ -11,7 +11,21 @@
             <div class="card-body">                  
                 <b-form>
                     <b-row>
-                        <b-col cols="7">
+                        <b-col cols="2">
+                            <b-form-group id="input-group-6" label="Código:" label-for="input-6">
+                                <b-form-input
+                                    id="input-6"
+                                    v-model="concepto.codigo"
+                                    type="number"
+                                    placeholder="Ingrese código" 
+                                    :readonly="accion == 'Mostrar'"                           
+                                ></b-form-input>
+                                <div v-if="$page.props.errors.codigo" class="text-danger">
+                                    {{ $page.props.errors.codigo[0] }}
+                                </div>   
+                            </b-form-group>
+                        </b-col>
+                        <b-col cols="6">
                             <b-form-group id="input-group-1" label="Descripción:" label-for="input-1">
                                 <b-form-input
                                     id="input-1"
@@ -25,7 +39,7 @@
                                 </div>   
                             </b-form-group>
                         </b-col>
-                        <b-col cols="5">
+                        <b-col cols="4">
                             <b-form-group id="input-group-2" label="Descripción corta:" label-for="input-2"
                                 description="Descripción que aparecerá en el comprobante."
                             >
@@ -43,6 +57,20 @@
                         </b-col>
                     </b-row>
                     <b-row>
+                        <b-col>
+                            <b-form-group id="input-group-7" label="Precio:" label-for="input-7">
+                                <b-form-input
+                                    id="input-7"
+                                    v-model="concepto.precio"
+                                    type="number"
+                                    placeholder="Ingrese precio" 
+                                    :readonly="accion == 'Mostrar'"                           
+                                ></b-form-input>
+                                <div v-if="$page.props.errors.precio" class="text-danger">
+                                    {{ $page.props.errors.precio[0] }}
+                                </div>   
+                            </b-form-group>
+                        </b-col>
                         <b-col>
                             <b-form-group id="input-group-3" label="Tipo de concepto:" label-for="input-3">
                                 <b-form-select

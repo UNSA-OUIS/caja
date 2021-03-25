@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <div class="card">
-            <!--<div class="card-header">
+            <div class="card-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
                         <inertia-link :href="`${app_url}/dashboard`"
@@ -12,8 +12,7 @@
                         Registrar comprobante
                     </li>
                 </ol>
-                <h1>Registrar comprobante</h1>
-            </div>-->
+            </div>
             <div class="card-doby">
                 <div class="container">
                     <b-alert
@@ -190,45 +189,88 @@
                         >Añadir concepto</b-button
                     >
                 </div>
-
+<!-- Modal nueva opcion para agregar conceptos -->
                 <b-modal id="modal-1" title="Selecciona concepto">
-                    <form ref="form" @submit.stop.prevent="handleSubmit">
+                    <b-row>
+                    <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
-                            label="Concepto"
-                            label-for="concepto-input"
-                            invalid-feedback="Concepto is required"
-                            :state="conceptoState"
-                        >
-                            <b-form-select
-                                v-model="selected"
-                                :options="options"
-                                class="mb-3"
+                            label="Registros por página: "
+                            label-cols-sm="6"
+                            label-align-sm="right"
+                            label-size="sm"
+                            label-for="perPageSelect"
+                            class="mb-0"
                             >
-                                <!-- This slot appears above the options from 'options' prop -->
-                                <template #first>
-                                    <b-form-select-option :value="null" disabled
-                                        >-- Por favor, seleccione un concepto
-                                        --</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
+                            <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
                         </b-form-group>
+                    </b-col>
+                    <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
                         <b-form-group
-                            label="Cantidad"
-                            label-for="cantidad-input"
-                            invalid-feedback="Name is required"
-                            :state="nameState"
+                        label="Buscar: "
+                        label-cols-sm="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="filterInput"
+                        class="mb-0"
                         >
-                            <b-form-input
-                                id="name-input"
-                                v-model="name"
-                                :state="nameState"
-                                type="number"
-                                required
-                                placeholder="Ingrese cantidad"
-                            ></b-form-input>
+                            <b-input-group size="sm">
+                                <b-form-input
+                                    v-model="filter"
+                                    type="search"
+                                    id="filterInput"
+                                    placeholder="Escriba el texto a buscar..."
+                                ></b-form-input>
+                                <b-input-group-append>
+                                    <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
+                                </b-input-group-append>
+                            </b-input-group>
                         </b-form-group>
-                    </form>
+                    </b-col>
+                </b-row>
+                <b-table
+                    ref="tbl_conceptos"
+                    show-empty
+                    striped
+                    hover
+                    bordered
+                    small
+                    responsive
+                    stacked="md"
+                    :items="conceptos"  
+                    :fields="conceptosFields"
+                    :current-page="currentPage"
+                    :per-page="perPage"
+                    :filter="filter"
+                    :sort-by.sync="sortBy"
+                    :sort-desc.sync="sortDesc"
+                    :sort-direction="sortDirection"
+                    @filtered="onFiltered"   
+                    empty-text="No hay conceptos para mostrar"
+                    empty-filtered-text="No hay conceptos que coincidan con su búsqueda." 
+                >
+                    <template v-slot:cell(anadir)="row">                                   
+                        <b-button
+                            variant="success"
+                            size="sm"
+                            title="Restaurar"
+                            @click="agregarConcepto(row.item)"
+                        >
+                            <b-icon icon="check"></b-icon>
+                        </b-button>
+                    </template>
+                </b-table>
+                <b-row>
+                    <b-col offset-md="8" md="4" class="my-1">
+                        <b-pagination
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="fill"
+                            size="sm"
+                            class="my-0"
+                        ></b-pagination>
+                    </b-col>
+                </b-row>
                 </b-modal>
 
                 <div>
@@ -266,7 +308,7 @@
                                         --</b-form-select-option
                                     >
                                     <b-form-select-option
-                                        v-for="option in options"
+                                        v-for="option in conceptos"
                                         v-bind:key="option"
                                         :value="option.value"
                                         >{{ option.text }}</b-form-select-option
@@ -336,7 +378,7 @@
                         </template>
                         <template slot="bottom-row" slot-scope="">
                             <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
-                            <b-td>S/.{{ total | currency }}</b-td
+                            <b-td>S/.{{ precioTotal | currency }}</b-td
                             ><b-td />
                         </template>
                     </b-table>
@@ -360,6 +402,7 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.iniciar",
+    props: ['conceptos'],
     components: {
         AppLayout
     },
@@ -392,11 +435,22 @@ export default {
             this.compCabe.submittedDetails.push({
                 id: this.id++,
                 codigo: "",
-                concepto: "",
+                concepto_id: "",
                 cantidad: "1",
                 prUnit: "",
                 tipo_descuento: "",
                 descuento: "0.00"
+            });
+        },
+        agregarConcepto(conc) {
+            this.compCabe.submittedDetails.push({
+                "id": this.id++,
+                "codigo": conc.value,
+                "concepto_id": conc.id,
+                "cantidad": '1',
+                "prUnit": conc.precio,
+                'tipo_descuento': '',
+                "descuento": '0.00',
             });
         },
         eliminar(id) {
@@ -409,7 +463,8 @@ export default {
             var index = this.compCabe.submittedDetails.findIndex(
                 detalle => detalle.id == id
             );
-            var conc = this.options.find(option => option.value == event);
+            var conc = this.conceptos.find(option => option.value == event);
+            this.compCabe.submittedDetails[index].concepto_id = conc.id;
             this.compCabe.submittedDetails[index].codigo = conc.value;
             this.compCabe.submittedDetails[index].prUnit = conc.precio;
         },
@@ -471,7 +526,7 @@ export default {
             return [];
         },
 
-        total() {
+        precioTotal() {
             this.compCabe.total = this.compCabe.submittedDetails.reduce(
                 (acc, item) =>
                     acc + (item.cantidad * item.prUnit - item.descuento),
@@ -488,106 +543,86 @@ export default {
             id: 1,
             cantidadState: null,
 
-            compCabe: {
-                codigo: "",
-                cui: "",
-                nues: "",
-                serie: "",
-                correlativo: "",
-                submittedDetails: [
-                    {
-                        codigo: "",
-                        concepto: "",
-                        cantidad: "1",
-                        prUnit: "",
-                        tipo_descuento: "",
-                        descuento: "0.00"
-                    }
-                ],
-                total: "",
-                estado: true
-            },
+        compCabe: {
+            "codigo": '',
+            "cui": '',
+            "nues": '',
+            "serie": '',
+            "correlativo": '',
+            submittedDetails: [{
+                "id": 0,
+                "codigo": '',
+                "concepto_id": '',
+                "cantidad": '1',
+                "prUnit": '',
+                'tipo_descuento': '',
+                "descuento": '0.00',
+            }],
+            "total": '',
+        },
 
-            options: [
-                { value: "123", text: "Pago Matricula", precio: "10.00" },
-                { value: "10", text: "Rematricula", precio: "12.00" },
-                { value: "1", text: "Rematricula 2", precio: "15.00" },
-                { value: "12", text: "Rematricula 3", precio: "20.00" }
-            ],
-            tipo_descuento: [
-                { value: "A", text: "%" },
-                { value: "B", text: "S/." }
-            ],
-            tipos_cliente: [
-                { value: "A", text: "Alumno" },
-                { value: "B", text: "Docente" },
-                { value: "C", text: "Particulares" }
-            ],
-            tipos_cliente: [
-                { value: "A", text: "Alumno" },
-                { value: "B", text: "Docente" },
-                { value: "C", text: "Particular" }
-            ],
-            clientesCompleto: [
-                {
-                    dni: "77654321",
-                    nombre: "Carlos Duarte",
-                    email: "cduarte@unsa.edu.pe",
-                    codigo: "20167384",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "72345678",
-                    nombre: "Claudia Chaud",
-                    email: "cchaud@unsa.edu.pe",
-                    codigo: "201385",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "76736251",
-                    nombre: "Aracely Zeballos",
-                    email: "azeballos@unsa.edu.pe",
-                    codigo: "20124343",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "74637281",
-                    nombre: "Martin Zegarra",
-                    email: "mzegarra@unsa.edu.pe",
-                    codigo: "20024367",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "78462749",
-                    nombre: "Alfredo Zarate",
-                    email: "azarate@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                },
-                {
-                    dni: "74235656",
-                    nombre: "Maria Cuadros",
-                    email: "mcuadros@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                }
-            ],
-            cliente: {
-                dni: "",
-                email: "",
-                codigo: "",
-                nombre: ""
-            },
-            fields: [
-                { key: "codigo", label: "CÓDIGO", class: "text-center" },
-                { key: "concepto", label: "CONCEPTO", class: "text-center" },
-                { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "prUnit", label: "PR. UNIT", class: "text-center" },
-                { key: "descuento", label: "DESCUENTO", class: "text-center" },
-                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
-                { key: "acciones", label: "ACCIONES", class: "text-center" }
-            ]
-        };
+        conceptosFields: [
+                    { key: "value", label: "Código", sortable: true, class: "text-center" },
+                    { key: "text", label: "Descripción", sortable: true },    
+                    { key: "precio", label: "Precio", class: "text-center" },
+                    { key: "anadir", label: "Añadir", class: "text-center" },
+                ],
+        index: 1,
+        totalRows: 1,
+        currentPage: 1,
+        perPage: 5,
+        pageOptions: [5, 10, 15],
+        sortBy: null,
+        sortDesc: false,
+        sortDirection: 'asc',
+        filter: null,  
+        
+        options: [
+          { value: '123', text: 'Pago Matricula', precio: '10.00' },
+          { value: '10', text: 'Rematricula', precio: '12.00' },
+          { value: '11', text: 'Rematricula 2', precio: '15.00' },
+          { value: '12', text: 'Rematricula 3', precio: '20.00' },
+        ],
+        tipo_descuento: [
+          { value: 'A', text: '%' },
+          { value: 'B', text: 'S/.' }
+        ],
+        tipos_cliente: [
+          { value: 'A', text: 'Alumno' },
+          { value: 'B', text: 'Docente' },
+          { value: 'C', text: 'Particulares' },
+        ],
+        tipos_cliente: [
+          { value: 'A', text: 'Alumno' },
+          { value: 'B', text: 'Docente' },
+          { value: 'C', text: 'Particular' },
+        ],
+        clientesCompleto: [
+            {dni: '77654321', nombre: 'Carlos Duarte', email: 'cduarte@unsa.edu.pe', codigo: '20167384', tipo: 'Alumno'},
+            {dni: '72345678', nombre: 'Claudia Chaud', email: 'cchaud@unsa.edu.pe', codigo: '201385', tipo: 'Alumno'},
+            {dni: '76736251', nombre: 'Aracely Zeballos', email: 'azeballos@unsa.edu.pe', codigo: '20124343', tipo: 'Docente'},
+            {dni: '74637281', nombre: 'Martin Zegarra', email: 'mzegarra@unsa.edu.pe', codigo: '20024367', tipo: 'Docente'},
+            {dni: '78462749', nombre: 'Alfredo Zarate', email: 'azarate@unsa.edu.pe', codigo: '', tipo: 'Particular'},
+            {dni: '74235656', nombre: 'Maria Cuadros', email: 'mcuadros@unsa.edu.pe', codigo: '', tipo: 'Particular'},
+        ],
+        cliente: {
+            dni: '',
+            email: '',
+            codigo: '',
+            nombre: ''
+        },
+        fields: [
+            { key: "codigo", label: "CÓDIGO", class: "text-center" },
+            { key: "concepto", label: "CONCEPTO", class: "text-center" },
+            { key: "cantidad", label: "CANTIDAD", class: "text-center" },
+            { key: "prUnit", label: "PR. UNIT", class: "text-center" },    
+            { key: "descuento", label: "DESCUENTO", class: "text-center" },              
+            { key: "subTotal", label: "SUB TOTAL", class: "text-right" },              
+            { key: "acciones", label: "ACCIONES", class: "text-center" },
+        ],
+        total: "",
+        estado: true,
+        }
     }
 };
 </script>
