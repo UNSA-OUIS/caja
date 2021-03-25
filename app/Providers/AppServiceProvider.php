@@ -24,21 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //https://stackoverflow.com/questions/58513228/why-are-my-props-empty-in-my-laravel-vue-inertia-project
-        Inertia::share('flash', function () {
-            return [
-                'warningLoginMessage' => \Session::get('warningLoginMessage'),                
-                'successMessage' => \Session::get('successMessage'),
-                'errorMessage' => \Session::get('errorMessage'),
-            ];
-        });
-
-        Inertia::share([
-            'errors' => function () {
-                return Session::get('errors')
-                    ? Session::get('errors')->getBag('default')->getMessages()
-                    : (object) [];
-            },
-        ]);	
+        
     }
 }

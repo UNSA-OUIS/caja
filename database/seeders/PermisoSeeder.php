@@ -20,12 +20,32 @@ class PermisoSeeder extends Seeder
             'name' => 'Administrador',
             'guard_name' => 'sanctum'                                                          
         ]);
+        
+        User::create([
+            'name' => 'Jesus Ortiz Chavez', 
+            'email' => 'jortiz@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
 
-        User::create(['name' => 'Gary Núñez Ccahuaya', 'email' => 'gnunezc@unsa.edu.pe']);
+        User::create([
+            'name' => 'Gary Núñez Ccahuaya', 
+            'email' => 'gnunezc@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
+
+        User::create([
+            'name' => 'Renzo Siza Tejada', 
+            'email' => 'rsiza@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
 
         //usuario administrador
-        $user = User::find(1);
-        $user->assignRole('Administrador');
+        $user1 = User::find(1);
+        $user1->assignRole('Administrador');
+        $user2 = User::find(2);
+        $user2->assignRole('Administrador');
+        $user3 = User::find(3);
+        $user3->assignRole('Administrador');
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 

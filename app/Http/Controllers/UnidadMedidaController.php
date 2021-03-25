@@ -86,7 +86,7 @@ class UnidadMedidaController extends Controller
             \Log::error('UnidadMedidaController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }                      
         
-        return redirect()->back()->with($result);          
+        return redirect()->back()->with($result);                  
     }
 
     public function restore($unidad_medida_id) 

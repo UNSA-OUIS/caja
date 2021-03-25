@@ -24,23 +24,26 @@
                                     <p class="text-muted">Inicie sesión para ingresar a SISTEMA DE CAJA.</p>
                                 </div>
                                 <div class="p-2 mt-3">
-                                    <form action="#">
+                                    
+                                    <jet-validation-errors class="mb-4" />
+
+                                    <form @submit.prevent="submit">
 
                                         <div class="form-group">
-                                            <label for="username">Nombre de usuario</label>
-                                            <input type="text" class="form-control" id="username" placeholder="Ingrese nombre de usuario">
+                                            <label for="email">Nombre de usuario</label>
+                                            <input type="email" v-model="form.email" class="form-control" id="email" placeholder="Ingrese su correo electrónico">
                                         </div>
 
                                         <div class="form-group">
                                             <div class="float-right">
-                                                <a href="#" class="text-muted">¿Se te olvidó tu contraseña?</a>
+                                                <a v-if="canResetPassword" href="#" class="text-muted">¿Se te olvidó tu contraseña?</a>
                                             </div>
                                             <label for="userpassword">Contraseña</label>
-                                            <input type="password" class="form-control" id="userpassword" placeholder="Ingrese su contraseña">
+                                            <input type="password" v-model="form.password" class="form-control" id="userpassword" placeholder="Ingrese su contraseña">
                                         </div>
 
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="auth-remember-check">
+                                            <input type="checkbox" v-model="form.remember" class="custom-control-input" id="auth-remember-check">
                                             <label class="custom-control-label" for="auth-remember-check">Recuérdame</label>
                                         </div>
                                         
@@ -48,7 +51,10 @@
                                             <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Iniciar sesión</button>
                                         </div>
                                        
-
+                                        <div v-if="$page.props.errorLoginMessage" class="mt-3">
+                                            <p class="text-danger font-weight-bold">¡Acceso denegado!</p>
+                                            <p class="text-danger">{{ $page.props.errorLoginMessage }}</p>
+                                        </div>
                                         <div class="mt-4 text-center">
                                             <div class="signin-other-title">
                                                 <h5 class="font-size-14 mb-3 title login_redes_sociales p-1">Iniciar sesión con</h5>
