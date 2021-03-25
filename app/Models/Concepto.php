@@ -13,8 +13,10 @@ class Concepto extends Model
     protected $table = 'conceptos';
 
     protected $fillable = [
+        'codigo',
         'descripcion', 
         'descripcion_imp', 
+        'precio',
         'tipo_afectacion',
         'tipo_concepto_id',
         'clasificador_id',

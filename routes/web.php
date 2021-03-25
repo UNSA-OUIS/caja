@@ -14,7 +14,7 @@ use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
-
+use App\Models\Concepto;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,9 +164,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     /**************************** COMPROBANTES ***************************/
-    Route::get('/comprobantes', function () {
-        return Inertia::render('Comprobantes/Detalles');
-    })->name('comprobantes.iniciar');
+    Route::get('/comprobantes', [ConceptoController::class, 'listConcepts'])->name('comprobantes.iniciar');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     /*******************************************************************/
 });

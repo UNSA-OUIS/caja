@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <div class="card">
-            <!--<div class="card-header">
+            <div class="card-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
                         <inertia-link :href="`${app_url}/dashboard`"
@@ -12,8 +12,7 @@
                         Registrar comprobante
                     </li>
                 </ol>
-                <h1>Registrar comprobante</h1>
-            </div>-->
+            </div>
             <div class="card-doby">
                 <div class="container">
                     <b-alert
@@ -237,7 +236,7 @@
                     small
                     responsive
                     stacked="md"
-                    :items="options"  
+                    :items="conceptos"  
                     :fields="conceptosFields"
                     :current-page="currentPage"
                     :per-page="perPage"
@@ -309,7 +308,7 @@
                                         --</b-form-select-option
                                     >
                                     <b-form-select-option
-                                        v-for="option in options"
+                                        v-for="option in conceptos"
                                         v-bind:key="option"
                                         :value="option.value"
                                         >{{ option.text }}</b-form-select-option
@@ -379,7 +378,7 @@
                         </template>
                         <template slot="bottom-row" slot-scope="">
                             <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
-                            <b-td>S/.{{ total | currency }}</b-td
+                            <b-td>S/.{{ precioTotal | currency }}</b-td
                             ><b-td />
                         </template>
                     </b-table>
@@ -403,6 +402,7 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.iniciar",
+    props: ['conceptos'],
     components: {
         AppLayout
     },
@@ -435,7 +435,7 @@ export default {
             this.compCabe.submittedDetails.push({
                 id: this.id++,
                 codigo: "",
-                concepto: "",
+                concepto_id: "",
                 cantidad: "1",
                 prUnit: "",
                 tipo_descuento: "",
@@ -446,7 +446,7 @@ export default {
             this.compCabe.submittedDetails.push({
                 "id": this.id++,
                 "codigo": conc.value,
-                "concepto": conc.text,
+                "concepto_id": conc.id,
                 "cantidad": '1',
                 "prUnit": conc.precio,
                 'tipo_descuento': '',
@@ -463,7 +463,8 @@ export default {
             var index = this.compCabe.submittedDetails.findIndex(
                 detalle => detalle.id == id
             );
-            var conc = this.options.find(option => option.value == event);
+            var conc = this.conceptos.find(option => option.value == event);
+            this.compCabe.submittedDetails[index].concepto_id = conc.id;
             this.compCabe.submittedDetails[index].codigo = conc.value;
             this.compCabe.submittedDetails[index].prUnit = conc.precio;
         },
@@ -525,7 +526,7 @@ export default {
             return [];
         },
 
-        total() {
+        precioTotal() {
             this.compCabe.total = this.compCabe.submittedDetails.reduce(
                 (acc, item) =>
                     acc + (item.cantidad * item.prUnit - item.descuento),
@@ -551,7 +552,7 @@ export default {
             submittedDetails: [{
                 "id": 0,
                 "codigo": '',
-                "concepto": '',
+                "concepto_id": '',
                 "cantidad": '1',
                 "prUnit": '',
                 'tipo_descuento': '',
