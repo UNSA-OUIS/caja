@@ -34,15 +34,6 @@ class ConceptoController extends Controller
 
         return $query->paginate($request->size);  
     }
-
-    public function listConcepts()
-    {
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
-                        ->orderBy('descripcion', 'asc')
-                        ->get();
-        
-        return Inertia::render('Comprobantes/Detalles', compact('conceptos'));
-    }
     
     public function create()
     {
