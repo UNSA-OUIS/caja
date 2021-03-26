@@ -105,7 +105,7 @@
             </inertia-link>
             <inertia-link
               class="btn btn-primary btn-sm"
-              :href="route('comprobantes.mostrar', row.item.id)"
+              :href="route('comprobantes.mostrar', row.item)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>
@@ -188,6 +188,7 @@ export default {
 
       return promise.then((response) => {
         const comprobante = response.data.data;
+        console.log(comprobante);
         this.totalRows = response.data.total;
 
         return comprobante || [];

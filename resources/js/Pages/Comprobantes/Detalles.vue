@@ -68,13 +68,13 @@
                             <b-col>
                                 <b-form-group
                                     id="input-group-9"
-                                    label="Código:"
+                                    label="CUI:"
                                     label-for="input-9"
                                 >
                                     <b-form-input
                                         id="input-9"
-                                        v-model="comprobante.cui"
-                                        placeholder="Código"
+                                        v-model="compCabe.cui"
+                                        placeholder="Cui"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
@@ -119,7 +119,7 @@
                                 >
                                     <b-form-input
                                         id="input-1"
-                                        v-model="comprobante.codigo"
+                                        v-model="compCabe.codigo"
                                         placeholder="Código"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -135,6 +135,7 @@
                                         id="input-5"
                                         v-model="compCabe.nues"
                                         placeholder="NUES"
+                                        :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -150,6 +151,7 @@
                                         id="input-6"
                                         v-model="compCabe.serie"
                                         placeholder="Serie"
+                                        :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -163,6 +165,7 @@
                                         id="input-7"
                                         v-model="compCabe.correlativo"
                                         placeholder="Correlativo"
+                                        :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -178,88 +181,97 @@
                         >Añadir concepto</b-button
                     >
                 </div>
-<!-- Modal nueva opcion para agregar conceptos -->
+                <!-- Modal nueva opcion para agregar conceptos -->
                 <b-modal id="modal-1" title="Selecciona concepto">
                     <b-row>
-                    <b-col sm="12" md="4" lg="4" class="my-1">
-                        <b-form-group
-                            label="Registros por página: "
-                            label-cols-sm="6"
-                            label-align-sm="right"
-                            label-size="sm"
-                            label-for="perPageSelect"
-                            class="mb-0"
+                        <b-col sm="12" md="4" lg="4" class="my-1">
+                            <b-form-group
+                                label="Registros por página: "
+                                label-cols-sm="6"
+                                label-align-sm="right"
+                                label-size="sm"
+                                label-for="perPageSelect"
+                                class="mb-0"
                             >
-                            <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
-                        </b-form-group>
-                    </b-col>
-                    <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
-                        <b-form-group
-                        label="Buscar: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                            <b-input-group size="sm">
-                                <b-form-input
-                                    v-model="filter"
-                                    type="search"
-                                    id="filterInput"
-                                    placeholder="Escriba el texto a buscar..."
-                                ></b-form-input>
-                                <b-input-group-append>
-                                    <b-button :disabled="!filter" @click="filter = ''">Limpiar</b-button>
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-                <b-table
-                    ref="tbl_conceptos"
-                    show-empty
-                    striped
-                    hover
-                    bordered
-                    small
-                    responsive
-                    stacked="md"
-                    :items="conceptos"  
-                    :fields="conceptosFields"
-                    :current-page="currentPage"
-                    :per-page="perPage"
-                    :filter="filter"
-                    :sort-by.sync="sortBy"
-                    :sort-desc.sync="sortDesc"
-                    :sort-direction="sortDirection"
-                    @filtered="onFiltered"   
-                    empty-text="No hay conceptos para mostrar"
-                    empty-filtered-text="No hay conceptos que coincidan con su búsqueda." 
-                >
-                    <template v-slot:cell(anadir)="row">                                   
-                        <b-button
-                            variant="success"
-                            size="sm"
-                            title="Restaurar"
-                            @click="agregarConcepto(row.item)"
-                        >
-                            <b-icon icon="check"></b-icon>
-                        </b-button>
-                    </template>
-                </b-table>
-                <b-row>
-                    <b-col offset-md="8" md="4" class="my-1">
-                        <b-pagination
-                            v-model="currentPage"
-                            :total-rows="totalRows"
-                            :per-page="perPage"
-                            align="fill"
-                            size="sm"
-                            class="my-0"
-                        ></b-pagination>
-                    </b-col>
-                </b-row>
+                                <b-form-select
+                                    v-model="perPage"
+                                    id="perPageSelect"
+                                    size="sm"
+                                    :options="pageOptions"
+                                ></b-form-select>
+                            </b-form-group>
+                        </b-col>
+                        <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
+                            <b-form-group
+                                label="Buscar: "
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                                label-size="sm"
+                                label-for="filterInput"
+                                class="mb-0"
+                            >
+                                <b-input-group size="sm">
+                                    <b-form-input
+                                        v-model="filter"
+                                        type="search"
+                                        id="filterInput"
+                                        placeholder="Escriba el texto a buscar..."
+                                    ></b-form-input>
+                                    <b-input-group-append>
+                                        <b-button
+                                            :disabled="!filter"
+                                            @click="filter = ''"
+                                            >Limpiar</b-button
+                                        >
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-table
+                        ref="tbl_conceptos"
+                        show-empty
+                        striped
+                        hover
+                        bordered
+                        small
+                        responsive
+                        stacked="md"
+                        :items="conceptos"
+                        :fields="conceptosFields"
+                        :current-page="currentPage"
+                        :per-page="perPage"
+                        :filter="filter"
+                        :sort-by.sync="sortBy"
+                        :sort-desc.sync="sortDesc"
+                        :sort-direction="sortDirection"
+                        @filtered="onFiltered"
+                        empty-text="No hay conceptos para mostrar"
+                        empty-filtered-text="No hay conceptos que coincidan con su búsqueda."
+                    >
+                        <template v-slot:cell(anadir)="row">
+                            <b-button
+                                variant="success"
+                                size="sm"
+                                title="Restaurar"
+                                @click="agregarConcepto(row.item)"
+                            >
+                                <b-icon icon="check"></b-icon>
+                            </b-button>
+                        </template>
+                    </b-table>
+                    <b-row>
+                        <b-col offset-md="8" md="4" class="my-1">
+                            <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
+                                :per-page="perPage"
+                                align="fill"
+                                size="sm"
+                                class="my-0"
+                            ></b-pagination>
+                        </b-col>
+                    </b-row>
                 </b-modal>
 
                 <div>
@@ -272,7 +284,7 @@
                         small
                         responsive
                         stacked="md"
-                        :items="compCabe.submittedDetails"
+                        :items="compCabe.detalles"
                         :fields="fields"
                         empty-text="No hay conceptos para mostrar"
                     >
@@ -280,13 +292,9 @@
                             <label>{{ row.item.codigo }}</label>
                         </template>
                         <template v-slot:cell(concepto)="row">
-                            <!--<div>
-                            <b-form-input list="conceptos" @change="completeConcepto(option, row.item.id)"></b-form-input>
-                            <datalist id="conceptos">
-                            <option v-for="option in options" v-bind:key="option" >{{ option.text }}</option>
-                            </datalist>                          
-                        </div>-->
+                            <!--<b-form-select v-model="row.item.concepto_id" :options="conceptos"></b-form-select>-->
                             <b-form-select
+                                v-model="row.item.concepto_id"
                                 @change="completeConcepto($event, row.item.id)"
                                 class="mb-3"
                             >
@@ -299,7 +307,7 @@
                                     <b-form-select-option
                                         v-for="option in conceptos"
                                         v-bind:key="option"
-                                        :value="option.value"
+                                        :value="option.id"
                                         >{{ option.text }}</b-form-select-option
                                     >
                                 </template>
@@ -317,10 +325,10 @@
                         <template v-slot:cell(prUnit)="row">
                             <b-form-input
                                 id="prUnit"
-                                v-model="row.item.prUnit"
+                                v-model="row.item.valor_unitario"
                                 type="number"
                                 readonly
-                                :value="row.item.prUnit"
+                                :value="row.item.valor_unitario"
                             ></b-form-input>
                         </template>
 
@@ -346,7 +354,7 @@
                                 <label
                                     >S/.
                                     {{
-                                        (row.item.prUnit * row.item.cantidad -
+                                        (row.item.valor_unitario * row.item.cantidad -
                                             row.item.descuento)
                                             | currency
                                     }}</label
@@ -372,7 +380,7 @@
                         </template>
                     </b-table>
                 </div>
-                <div class="container">
+                <div v-show="accion == 'Crear'" class="container">
                     <b-button
                         variant="success"
                         size="sm"
@@ -391,103 +399,131 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.mostrar",
-    props: ["comprobante","conceptos"],
+    props: ["compCabe", "conceptos"],
     components: {
         AppLayout
     },
-    
+
     data() {
         return {
             accion: "",
+
             tipoDescuento: "",
             tipoCliente: "",
             clienteDni: "",
-            id: 1,
             cantidadState: null,
 
-        compCabe: {
-            "codigo": '',
-            "cui": '',
-            "nues": '',
-            "serie": '',
-            "correlativo": '',
-            submittedDetails: [{
-                "id": 0,
-                "codigo": '',
-                "concepto_id": '',
-                "cantidad": '1',
-                "prUnit": '',
-                'tipo_descuento': '',
-                "descuento": '0.00',
-            }],
-            "total": '',
-        },
-
-        conceptosFields: [
-                    { key: "value", label: "Código", sortable: true, class: "text-center" },
-                    { key: "text", label: "Descripción", sortable: true },    
-                    { key: "precio", label: "Precio", class: "text-center" },
-                    { key: "anadir", label: "Añadir", class: "text-center" },
+            /*compCabe: {
+                codigo: "",
+                cui: "",
+                nues: "",
+                serie: "",
+                correlativo: "",
+                submittedDetails: [
+                    {
+                        codigo: "",
+                        concepto_id: "",
+                        cantidad: "1",
+                        prUnit: "",
+                        tipo_descuento: "",
+                        descuento: "0.00"
+                    }
                 ],
-        index: 1,
-        totalRows: 1,
-        currentPage: 1,
-        perPage: 5,
-        pageOptions: [5, 10, 15],
-        sortBy: null,
-        sortDesc: false,
-        sortDirection: 'asc',
-        filter: null,  
-        
-        options: [
-          { value: '123', text: 'Pago Matricula', precio: '10.00' },
-          { value: '10', text: 'Rematricula', precio: '12.00' },
-          { value: '11', text: 'Rematricula 2', precio: '15.00' },
-          { value: '12', text: 'Rematricula 3', precio: '20.00' },
-        ],
-        tipo_descuento: [
-          { value: 'A', text: '%' },
-          { value: 'B', text: 'S/.' }
-        ],
-        tipos_cliente: [
-          { value: 'A', text: 'Alumno' },
-          { value: 'B', text: 'Docente' },
-          { value: 'C', text: 'Particulares' },
-        ],
-        tipos_cliente: [
-          { value: 'A', text: 'Alumno' },
-          { value: 'B', text: 'Docente' },
-          { value: 'C', text: 'Particular' },
-        ],
-        clientesCompleto: [
-            {dni: '77654321', nombre: 'Carlos Duarte', email: 'cduarte@unsa.edu.pe', codigo: '20167384', tipo: 'Alumno'},
-            {dni: '72345678', nombre: 'Claudia Chaud', email: 'cchaud@unsa.edu.pe', codigo: '201385', tipo: 'Alumno'},
-            {dni: '76736251', nombre: 'Aracely Zeballos', email: 'azeballos@unsa.edu.pe', codigo: '20124343', tipo: 'Docente'},
-            {dni: '74637281', nombre: 'Martin Zegarra', email: 'mzegarra@unsa.edu.pe', codigo: '20024367', tipo: 'Docente'},
-            {dni: '78462749', nombre: 'Alfredo Zarate', email: 'azarate@unsa.edu.pe', codigo: '', tipo: 'Particular'},
-            {dni: '74235656', nombre: 'Maria Cuadros', email: 'mcuadros@unsa.edu.pe', codigo: '', tipo: 'Particular'},
-        ],
-        cliente: {
-            dni: '',
-            email: '',
-            codigo: '',
-            nombre: ''
-        },
-        fields: [
-            { key: "codigo", label: "CÓDIGO", class: "text-center" },
-            { key: "concepto", label: "CONCEPTO", class: "text-center" },
-            { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-            { key: "prUnit", label: "PR. UNIT", class: "text-center" },    
-            { key: "descuento", label: "DESCUENTO", class: "text-center" },              
-            { key: "subTotal", label: "SUB TOTAL", class: "text-right" },              
-            { key: "acciones", label: "ACCIONES", class: "text-center" },
-        ],
-        total: "",
-        estado: true,
-        }
+                total: ""
+            },*/
+
+            conceptosFields: [
+                {
+                    key: "value",
+                    label: "Código",
+                    sortable: true,
+                    class: "text-center"
+                },
+                { key: "text", label: "Descripción", sortable: true },
+                { key: "precio", label: "Precio", class: "text-center" },
+                { key: "anadir", label: "Añadir", class: "text-center" }
+            ],
+            index: 1,
+            totalRows: 1,
+            currentPage: 1,
+            perPage: 5,
+            pageOptions: [5, 10, 15],
+            sortBy: null,
+            sortDesc: false,
+            sortDirection: "asc",
+            filter: null,
+            tipo_descuento: [
+                { value: "A", text: "%" },
+                { value: "B", text: "S/." }
+            ],
+            tipos_cliente: [
+                { value: "A", text: "Alumno" },
+                { value: "B", text: "Docente" },
+                { value: "C", text: "Particular" }
+            ],
+            clientesCompleto: [
+                {
+                    dni: "77654321",
+                    nombre: "Carlos Duarte",
+                    email: "cduarte@unsa.edu.pe",
+                    codigo: "20167384",
+                    tipo: "Alumno"
+                },
+                {
+                    dni: "72345678",
+                    nombre: "Claudia Chaud",
+                    email: "cchaud@unsa.edu.pe",
+                    codigo: "20136858",
+                    tipo: "Alumno"
+                },
+                {
+                    dni: "76736251",
+                    nombre: "Aracely Zeballos",
+                    email: "azeballos@unsa.edu.pe",
+                    codigo: "20124343",
+                    tipo: "Docente"
+                },
+                {
+                    dni: "74637281",
+                    nombre: "Martin Zegarra",
+                    email: "mzegarra@unsa.edu.pe",
+                    codigo: "20024367",
+                    tipo: "Docente"
+                },
+                {
+                    dni: "78462749",
+                    nombre: "Alfredo Zarate",
+                    email: "azarate@unsa.edu.pe",
+                    codigo: "",
+                    tipo: "Particular"
+                },
+                {
+                    dni: "74235656",
+                    nombre: "Maria Cuadros",
+                    email: "mcuadros@unsa.edu.pe",
+                    codigo: "",
+                    tipo: "Particular"
+                }
+            ],
+            cliente: {
+                dni: "",
+                email: "",
+                codigo: "",
+                nombre: ""
+            },
+            fields: [
+                { key: "codigo", label: "CÓDIGO", class: "text-center" },
+                { key: "concepto", label: "CONCEPTO", class: "text-center" },
+                { key: "cantidad", label: "CANTIDAD", class: "text-center" },
+                { key: "prUnit", label: "PR. UNIT", class: "text-center" },
+                { key: "descuento", label: "DESCUENTO", class: "text-center" },
+                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
+                { key: "acciones", label: "ACCIONES", class: "text-center" }
+            ]
+        };
     },
     created() {
-        if (!this.comprobante.id) {
+        if (!this.compCabe.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
@@ -498,7 +534,6 @@ export default {
             this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
         },
         registrar() {
-            console.log(this.compCabe);
             this.$bvModal
                 .msgBoxConfirm(
                     "¿Esta seguro de querer eviar este comprobante?",
@@ -520,57 +555,55 @@ export default {
                 });
         },
         addDetalle() {
-            this.compCabe.submittedDetails.push({
-                id: this.id++,
+            this.compCabe.detalles.push({
                 codigo: "",
                 concepto_id: "",
                 cantidad: "1",
-                prUnit: "",
+                valor_unitario: "",
                 tipo_descuento: "",
                 descuento: "0.00"
             });
         },
         agregarConcepto(conc) {
-            this.compCabe.submittedDetails.push({
-                "id": this.id++,
-                "codigo": conc.value,
-                "concepto_id": conc.id,
-                "cantidad": '1',
-                "prUnit": conc.precio,
-                'tipo_descuento': '',
-                "descuento": '0.00',
+            this.compCabe.detalles.push({
+                codigo: conc.value,
+                concepto_id: conc.id,
+                cantidad: "1",
+                valor_unitario: conc.precio,
+                tipo_descuento: "",
+                descuento: "0.00"
             });
         },
         eliminar(id) {
-            var index = this.compCabe.submittedDetails.findIndex(
+            var index = this.compCabe.detalles.findIndex(
                 detalle => detalle.id == id
             );
-            this.compCabe.submittedDetails.splice(index, 1);
+            this.compCabe.detalles.splice(index, 1);
         },
         completeConcepto(event, id) {
-            var index = this.compCabe.submittedDetails.findIndex(
+            var index = this.compCabe.detalles.findIndex(
                 detalle => detalle.id == id
             );
-            var conc = this.conceptos.find(option => option.value == event);
-            this.compCabe.submittedDetails[index].concepto_id = conc.id;
-            this.compCabe.submittedDetails[index].codigo = conc.value;
-            this.compCabe.submittedDetails[index].prUnit = conc.precio;
+            var conc = this.conceptos.find(option => option.id == event);
+            this.compCabe.detalles[index].concepto_id = conc.id;
+            this.compCabe.detalles[index].codigo = conc.value;
+            this.compCabe.detalles[index].valor_unitario = conc.precio;
         },
         calcularDescuento(event, id) {
-            var index = this.compCabe.submittedDetails.findIndex(
+            var index = this.compCabe.detalles.findIndex(
                 detalle => detalle.id == id
             );
-            var conc = this.compCabe.submittedDetails[index].tipo_descuento;
+            var conc = this.compCabe.detalles[index].tipo_descuento;
             if (conc == "A") {
-                this.compCabe.submittedDetails[index].descuento =
-                    (this.compCabe.submittedDetails[index].prUnit *
-                        this.compCabe.submittedDetails[index].cantidad *
+                this.compCabe.detalles[index].descuento =
+                    (this.compCabe.detalles[index].valor_unitario *
+                        this.compCabe.detalles[index].cantidad *
                         event) /
                     100;
             } else if (conc == "B") {
-                this.compCabe.submittedDetails[index].descuento = event;
+                this.compCabe.detalles[index].descuento = event;
             } else {
-                this.compCabe.submittedDetails[index].descuento = 0;
+                this.compCabe.detalles[index].descuento = 0;
             }
         },
         getCliente(dni) {
@@ -588,15 +621,6 @@ export default {
         }
     },
     computed: {
-        /*getCliente() {
-            var cli = this.clientesCompleto.find(cliente => cliente.dni == clienteDni);
-            this.cliente.dni = cli.dni;
-            this.compCabe.cui = cli.dni;
-            this.cliente.nombre = cli.nombre;
-            this.cliente.email = cli.email;
-            this.cliente.codigo = cli.codigo;
-        },*/
-
         clientes() {
             if (this.tipoCliente == "A") {
                 return this.clientesCompleto.filter(
@@ -615,13 +639,13 @@ export default {
         },
 
         precioTotal() {
-            this.compCabe.total = this.compCabe.submittedDetails.reduce(
+            this.compCabe.total = this.compCabe.detalles.reduce(
                 (acc, item) =>
-                    acc + (item.cantidad * item.prUnit - item.descuento),
+                    acc + (item.cantidad * item.valor_unitario - item.descuento),
                 0
             );
             return this.compCabe.total;
         }
-    },
+    }
 };
 </script>
