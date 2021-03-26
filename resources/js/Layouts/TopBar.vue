@@ -409,12 +409,11 @@
                         v-if="menuUsuario"
                     >
                         <!-- item-->
-                        <a class="dropdown-item" href="#"
-                            ><i
-                                class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"
+                        <inertia-link class="dropdown-item" :href="route('usuarios.perfil')">
+                            <i class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"
                             ></i>
-                            <span class="align-middle">View_Profile</span></a
-                        >
+                            <span class="align-middle">Perfil de usuario</span>
+                        </inertia-link>                        
                         <a class="dropdown-item" href="#"
                             ><i
                                 class="uil uil-wallet font-size-18 align-middle mr-1 text-muted"

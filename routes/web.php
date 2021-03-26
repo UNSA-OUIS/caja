@@ -138,6 +138,10 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('usuarios.actualizar');
     Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('usuarios.eliminar');
     Route::post('/usuarios/{usuario}/restaurar', [UsuarioController::class, 'restore'])->name('usuarios.restaurar');
+
+    Route::get('/perfil-usuario', function () {
+        return Inertia::render('Usuarios/Perfil');
+    })->name('usuarios.perfil');
     /******************************************************************************/
 
     /************************* ACCESOS GOOGLE********************/
