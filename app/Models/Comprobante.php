@@ -12,4 +12,9 @@ class Comprobante extends Model
     protected $table = 'comprobantes';
 
     protected $fillable = ['codigo', 'nues', 'serie', 'correlativo', 'total', 'estado'];
+
+    public function detalles()
+    {
+        return $this->hasMany(DetallesComprobante::class);
+    }
 }

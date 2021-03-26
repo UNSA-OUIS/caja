@@ -7,6 +7,7 @@ use App\Models\Concepto;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ComprobanteController extends Controller
@@ -20,7 +21,7 @@ class ComprobanteController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::where('codigo', 'like', '%' . $request->filter . '%');
+        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 
@@ -39,14 +40,41 @@ class ComprobanteController extends Controller
      */
     public function create()
     {
-        $comprobante = new Comprobante();
-        $comprobante->codigo = "";
+        /*compCabe: {
+            codigo: "",
+            cui: "",
+            nues: "",
+            serie: "",
+            correlativo: "",
+            submittedDetails: [
+                {
+                    codigo: "",
+                    concepto_id: "",
+                    cantidad: "1",
+                    prUnit: "",
+                    tipo_descuento: "",
+                    descuento: "0.00"
+                }
+            ],
+            total: ""
+        },*/
+        $compCabe = new Comprobante();
+        $compCabe->codigo = "";
+        $compCabe->cui = "";
+        $compCabe->nues = "";
+        $compCabe->serie = "";
+        $compCabe->correlativo = "";
+        $compCabe->total = "";
+        $compCabe->detalles = array();
+
+        //$detalles = new DetallesComprobante();
+        //$detalles->cantidad = "";
 
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
 
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('compCabe', 'conceptos'));
     }
 
     /**
@@ -57,6 +85,7 @@ class ComprobanteController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->all();
         DB::beginTransaction();
 
         try {
@@ -68,17 +97,17 @@ class ComprobanteController extends Controller
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
-            $comprobante->estado = $request->estado;
+            $comprobante->estado = true;
             $comprobante->save();
 
             $detalles = new DetallesComprobante();
-            $d = $request->submittedDetails;
-            foreach ($d as $key => $value) {
+            $detalle = $request->detalles;
+            foreach ($detalle as $key => $value) {
                 $detalles->cantidad =  $value['cantidad'];
                 $detalles->valor_unitario =  $value['prUnit'];
                 $detalles->descuento =  $value['descuento'];
                 $detalles->estado =  true;
-                $detalles->concepto_id =  $value['codigo'];
+                $detalles->concepto_id =  $value['concepto_id'];
                 $detalles->comprobante_id =  $comprobante->id;
                 $detalles->save();
             }
@@ -86,7 +115,7 @@ class ComprobanteController extends Controller
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
         } catch (\Exception $e) {
             DB::rollback();
-            $result = ['errorMessage' => 'No se pudo registrar el comprobante'];
+            $result = ['errorMessage' => 'No se pudo registrar el comprobante' . $e];
         }
         return redirect()->route('comprobantes.iniciar')->with($result);
     }
@@ -99,10 +128,13 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
+        //return $comprobante;
+        $compCabe = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+        //return $compCabe;
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('compCabe', 'conceptos'));
     }
 
     /**
@@ -131,7 +163,7 @@ class ComprobanteController extends Controller
             $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo anular el comprobante'];
-            \Log::error('ComprobanteController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('ComprobanteController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('comprobantes.iniciar')->with($result);
