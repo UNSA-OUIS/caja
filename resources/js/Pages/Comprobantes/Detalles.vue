@@ -58,7 +58,6 @@
                                     <datalist id="clientes">
                                         <option
                                             v-for="cliente in clientes"
-                                            v-bind:key="cliente"
                                             :value="cliente.dni"
                                             >{{ cliente.nombre }}</option
                                         >
@@ -292,10 +291,10 @@
                             <label>{{ row.item.codigo }}</label>
                         </template>
                         <template v-slot:cell(concepto)="row">
-                            <!--<b-form-select v-model="row.item.concepto_id" :options="conceptos"></b-form-select>-->
+                            <!--<b-form-select v-model="row.item.concepto_id" @change="completeConcepto($event, row.item.id)" :options="conceptos"></b-form-select>-->
                             <b-form-select
                                 v-model="row.item.concepto_id"
-                                @change="completeConcepto($event, row.item.id)"
+                                @change="completeConcepto($event, row.item.concepto_id)"
                                 class="mb-3"
                             >
                                 <!-- This slot appears above the options from 'options' prop -->
@@ -306,7 +305,6 @@
                                     >
                                     <b-form-select-option
                                         v-for="option in conceptos"
-                                        v-bind:key="option"
                                         :value="option.id"
                                         >{{ option.text }}</b-form-select-option
                                     >
@@ -341,7 +339,7 @@
                                 <b-form-input
                                     id="descuento"
                                     @change="
-                                        calcularDescuento($event, row.item.id)
+                                        calcularDescuento($event, row.item.concepto_id)
                                     "
                                     type="number"
                                     value="0.00"
@@ -368,7 +366,7 @@
                                 variant="danger"
                                 size="sm"
                                 title="Eliminar"
-                                @click="eliminar(row.item.id)"
+                                @click="eliminar(row.item.concepto_id)"
                             >
                                 <b-icon icon="trash"></b-icon>
                             </b-button>
@@ -576,22 +574,23 @@ export default {
         },
         eliminar(id) {
             var index = this.compCabe.detalles.findIndex(
-                detalle => detalle.id == id
+                detalle => detalle.concepto_id == id
             );
             this.compCabe.detalles.splice(index, 1);
         },
         completeConcepto(event, id) {
             var index = this.compCabe.detalles.findIndex(
-                detalle => detalle.id == id
+                detalle => detalle.concepto_id == id
             );
             var conc = this.conceptos.find(option => option.id == event);
             this.compCabe.detalles[index].concepto_id = conc.id;
             this.compCabe.detalles[index].codigo = conc.value;
             this.compCabe.detalles[index].valor_unitario = conc.precio;
+            this.compCabe.detalles[index].descuento = "0.00";
         },
         calcularDescuento(event, id) {
             var index = this.compCabe.detalles.findIndex(
-                detalle => detalle.id == id
+                detalle => detalle.concepto_id == id
             );
             var conc = this.compCabe.detalles[index].tipo_descuento;
             if (conc == "A") {
