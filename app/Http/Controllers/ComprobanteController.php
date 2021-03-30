@@ -40,7 +40,7 @@ class ComprobanteController extends Controller
      */
     public function create()
     {
-        /*compCabe: {
+        /*comprobante: {
             codigo: "",
             cui: "",
             nues: "",
@@ -58,14 +58,14 @@ class ComprobanteController extends Controller
             ],
             total: ""
         },*/
-        $compCabe = new Comprobante();
-        $compCabe->codigo = "";
-        $compCabe->cui = "";
-        $compCabe->nues = "";
-        $compCabe->serie = "";
-        $compCabe->correlativo = "";
-        $compCabe->total = "";
-        $compCabe->detalles = array();
+        $comprobante = new Comprobante();
+        $comprobante->codigo = "";
+        $comprobante->cui = "";
+        $comprobante->nues = "";
+        $comprobante->serie = "";
+        $comprobante->correlativo = "";
+        $comprobante->total = "";
+        $comprobante->detalles = array();
 
         //$detalles = new DetallesComprobante();
         //$detalles->cantidad = "";
@@ -74,7 +74,7 @@ class ComprobanteController extends Controller
             ->orderBy('descripcion', 'asc')
             ->get();
 
-        return Inertia::render('Comprobantes/Detalles', compact('compCabe', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
 
     /**
@@ -85,7 +85,6 @@ class ComprobanteController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->all();
         DB::beginTransaction();
 
         try {
@@ -100,16 +99,21 @@ class ComprobanteController extends Controller
             $comprobante->estado = true;
             $comprobante->save();
 
-            $detalles = new DetallesComprobante();
             $detalle = $request->detalles;
-            foreach ($detalle as $key => $value) {
-                $detalles->cantidad =  $value['cantidad'];
-                $detalles->valor_unitario =  $value['valor_unitario'];
-                $detalles->descuento =  $value['descuento'];
-                $detalles->estado =  true;
-                $detalles->concepto_id =  $value['concepto_id'];
-                $detalles->comprobante_id =  $comprobante->id;
-                $detalles->save();
+            foreach ($detalle as $index => $value) {
+                //echo $index . "\n";
+                //echo count($detalle). "\n";
+                if ($index <= count($detalle)) {
+                    $detalles = new DetallesComprobante();
+                    $detalles->cantidad = $value['cantidad'];
+                    $detalles->valor_unitario =  $value['valor_unitario'];
+                    $detalles->descuento =  $value['descuento'];
+                    $detalles->estado =  true;
+                    $detalles->concepto_id =  $value['concepto_id'];
+                    $detalles->comprobante_id =  $comprobante->id;
+                    $detalles->save();
+                    //echo $detalles . "\n";
+                }
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
@@ -128,11 +132,11 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
-        $compCabe = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+        $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
-        return Inertia::render('Comprobantes/Detalles', compact('compCabe', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
 
     /**
