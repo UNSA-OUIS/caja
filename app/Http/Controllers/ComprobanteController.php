@@ -104,7 +104,7 @@ class ComprobanteController extends Controller
             $detalle = $request->detalles;
             foreach ($detalle as $key => $value) {
                 $detalles->cantidad =  $value['cantidad'];
-                $detalles->valor_unitario =  $value['prUnit'];
+                $detalles->valor_unitario =  $value['valor_unitario'];
                 $detalles->descuento =  $value['descuento'];
                 $detalles->estado =  true;
                 $detalles->concepto_id =  $value['concepto_id'];
