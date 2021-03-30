@@ -103,17 +103,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/tipo-comprobante/{tipo_comprobante}/restaurar', [TipoComprobanteController::class, 'restore'])->name('tipo-comprobante.restaurar');
     /***************************************************************************/
 
-    /**************************** SUNAT ***************************/
-    Route::get('/sunat', function () {
-        return Inertia::render('Sunat/Dashboard');
-    })->name('sunat.dashboard');
-    Route::get('/sunat/listarFacturas', [SunatController::class, 'listarFacturas'])->name('sunat.listarFacturas');
-    Route::post('/sunat/enviarFacturas', [SunatController::class, 'enviarFacturas'])->name('sunat.enviarFacturas');
-    Route::get('/sunat/resumenBoletas', [SunatController::class, 'resumenBoletas'])->name('sunat.resumenBoletas');
-    Route::get('/sunat/comunicacionBaja', [SunatController::class, 'comunicacionBaja'])->name('sunat.comunicacionBaja');
-    Route::get('/sunat/ticketCDR', [SunatController::class, 'ticketCDR'])->name('sunat.ticketCDR');
-    /**************************************************************/
-
     /*********************************** ROLES ********************************/
     Route::get('/roles', function () {
         return Inertia::render('Roles/Listar');
@@ -180,6 +169,16 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
+    /*******************************************************************/
+
+
+    /**************************** Sunat ***************************/
+    Route::get('/sunat', function () {
+        return Inertia::render('Sunat/Listar');
+    })->name('sunat.iniciar');
+    Route::get('/sunat/listar', [SunatController::class, 'index'])->name('sunat.listar');
+    Route::post('/sunat/enviar/{comprobante}', [SunatController::class, 'enviar'])->name('sunat.enviar');
+    Route::post('/sunat/{comprobante}', [SunatController::class, 'anular'])->name('sunat.anular');
     /*******************************************************************/
 });
 

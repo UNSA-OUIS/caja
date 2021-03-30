@@ -320,9 +320,9 @@
                                 ></b-form-input>
                             </div>
                         </template>
-                        <template v-slot:cell(prUnit)="row">
+                        <template v-slot:cell(valor_unitario)="row">
                             <b-form-input
-                                id="prUnit"
+                                id="valor_unitario"
                                 v-model="row.item.valor_unitario"
                                 type="number"
                                 readonly
@@ -403,7 +403,8 @@ export default {
     },
 
     data() {
-        return {
+        return {            
+            app_url: this.$root.app_url,
             accion: "",
 
             tipoDescuento: "",
@@ -422,7 +423,7 @@ export default {
                         codigo: "",
                         concepto_id: "",
                         cantidad: "1",
-                        prUnit: "",
+                        valor_unitarios: "",
                         tipo_descuento: "",
                         descuento: "0.00"
                     }
@@ -513,7 +514,7 @@ export default {
                 { key: "codigo", label: "CÓDIGO", class: "text-center" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "prUnit", label: "PR. UNIT", class: "text-center" },
+                { key: "valor_unitario", label: "PR. UNIT", class: "text-center" },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
                 { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
                 { key: "acciones", label: "ACCIONES", class: "text-center" }

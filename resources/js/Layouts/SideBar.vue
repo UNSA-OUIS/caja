@@ -40,7 +40,14 @@
                         </a>
                     </li>
 
-                    <li v-if="$permissions.can([{name: 'Listar Roles'}, {name: 'Listar Usuarios'}])">
+                    <li
+                        v-if="
+                            $permissions.can([
+                                { name: 'Listar Roles' },
+                                { name: 'Listar Usuarios' }
+                            ])
+                        "
+                    >
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
@@ -55,9 +62,13 @@
                             v-show="show_menus[0]"
                         >
                             <li>
-                                <inertia-link                                
+                                <inertia-link
                                     :href="route('roles.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Roles'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Roles' }
+                                        ])
+                                    "
                                 >
                                     Roles
                                 </inertia-link>
@@ -65,22 +76,29 @@
                             <li>
                                 <inertia-link
                                     :href="route('usuarios.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Usuarios'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Usuarios' }
+                                        ])
+                                    "
                                 >
                                     Usuarios
                                 </inertia-link>
-                            </li>                                          
+                            </li>
                         </ul>
                     </li>
 
-                    <li v-if="$permissions.can([
-                            {name: 'Listar Unidades-Medida'}, 
-                            {name: 'Listar Clasificadores'},
-                            {name: 'Listar Tipos-Concepto'},
-                            {name: 'Listar Conceptos'},
-                            {name: 'Listar Tipos-Comprobante'},                            
-                        ])"
-                    > 
+                    <li
+                        v-if="
+                            $permissions.can([
+                                { name: 'Listar Unidades-Medida' },
+                                { name: 'Listar Clasificadores' },
+                                { name: 'Listar Tipos-Concepto' },
+                                { name: 'Listar Conceptos' },
+                                { name: 'Listar Tipos-Comprobante' }
+                            ])
+                        "
+                    >
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
@@ -97,7 +115,11 @@
                             <li>
                                 <inertia-link
                                     :href="route('unidades-medida.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Unidades-Medida'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Unidades-Medida' }
+                                        ])
+                                    "
                                 >
                                     Unidades de medida
                                 </inertia-link>
@@ -105,23 +127,35 @@
                             <li>
                                 <inertia-link
                                     :href="route('clasificadores.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Clasificadores'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Clasificadores' }
+                                        ])
+                                    "
                                 >
                                     Clasificadores
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link 
+                                <inertia-link
                                     :href="route('tipos-concepto.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Tipos-Concepto'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Tipos-Concepto' }
+                                        ])
+                                    "
                                 >
                                     Tipos de concepto
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link 
+                                <inertia-link
                                     :href="route('conceptos.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Conceptos'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Conceptos' }
+                                        ])
+                                    "
                                 >
                                     Conceptos
                                 </inertia-link>
@@ -129,7 +163,11 @@
                             <li>
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
-                                    v-if="$permissions.can([{name: 'Listar Tipos-Comprobante'}])"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Tipos-Comprobante' }
+                                        ])
+                                    "
                                 >
                                     Tipos de comprobante
                                 </inertia-link>
@@ -164,19 +202,19 @@
                             aria-expanded="false"
                             v-show="show_menus[2]"
                         >
-                            <li>
+                            <!--<li>
                                 <inertia-link :href="route('sunat.dashboard')">
                                     Dashboard
                                 </inertia-link>
-                            </li>
+                            </li>-->
                             <li>
                                 <inertia-link
-                                    :href="route('sunat.listarFacturas')"
+                                    :href="route('sunat.iniciar')"
                                 >
                                     Enviar Facturas
                                 </inertia-link>
                             </li>
-                            <li>
+                            <!--<li>
                                 <inertia-link
                                     :href="route('sunat.resumenBoletas')"
                                 >
@@ -194,7 +232,7 @@
                                 <inertia-link :href="route('sunat.ticketCDR')">
                                     Envio Tickets CDR
                                 </inertia-link>
-                            </li>
+                            </li>-->
                         </ul>
                     </li>
                 </ul>
@@ -206,23 +244,22 @@
 export default {
     data() {
         return {
-            app_url: this.$root.app_url,            
+            app_url: this.$root.app_url,
             show_menus: [false, false, false]
         };
     },
     methods: {
-        mostrarMenu(orden) {                        
-            this.$set(this.show_menus, orden, !this.show_menus[orden])                        
+        mostrarMenu(orden) {
+            this.$set(this.show_menus, orden, !this.show_menus[orden]);
 
             for (let index = 0; index < this.show_menus.length; index++) {
-                
                 if (index == orden) {
-                    continue
+                    continue;
                 }
-                
-                this.$set(this.show_menus, index, false)                        
+
+                this.$set(this.show_menus, index, false);
             }
-        },        
+        }
     }
 };
 </script>

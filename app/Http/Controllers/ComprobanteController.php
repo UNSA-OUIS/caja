@@ -128,9 +128,7 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
-        //return $comprobante;
         $compCabe = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
-        //return $compCabe;
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
