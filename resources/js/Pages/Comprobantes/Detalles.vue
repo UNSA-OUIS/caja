@@ -72,7 +72,7 @@
                                 >
                                     <b-form-input
                                         id="input-9"
-                                        v-model="compCabe.cui"
+                                        v-model="comprobante.cui"
                                         placeholder="Cui"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -118,7 +118,7 @@
                                 >
                                     <b-form-input
                                         id="input-1"
-                                        v-model="compCabe.codigo"
+                                        v-model="comprobante.codigo"
                                         placeholder="Código"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -132,7 +132,7 @@
                                 >
                                     <b-form-input
                                         id="input-5"
-                                        v-model="compCabe.nues"
+                                        v-model="comprobante.nues"
                                         placeholder="NUES"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -148,7 +148,7 @@
                                 >
                                     <b-form-input
                                         id="input-6"
-                                        v-model="compCabe.serie"
+                                        v-model="comprobante.serie"
                                         placeholder="Serie"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -162,7 +162,7 @@
                                 >
                                     <b-form-input
                                         id="input-7"
-                                        v-model="compCabe.correlativo"
+                                        v-model="comprobante.correlativo"
                                         placeholder="Correlativo"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
@@ -283,7 +283,7 @@
                         small
                         responsive
                         stacked="md"
-                        :items="compCabe.detalles"
+                        :items="comprobante.detalles"
                         :fields="fields"
                         empty-text="No hay conceptos para mostrar"
                     >
@@ -305,6 +305,7 @@
                                     >
                                     <b-form-select-option
                                         v-for="option in conceptos"
+                                        v-bind:key="option.id"
                                         :value="option.id"
                                         >{{ option.text }}</b-form-select-option
                                     >
@@ -397,13 +398,13 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.mostrar",
-    props: ["compCabe", "conceptos"],
+    props: ["comprobante", "conceptos"],
     components: {
         AppLayout
     },
 
     data() {
-        return {            
+        return {
             app_url: this.$root.app_url,
             accion: "",
 
@@ -412,7 +413,7 @@ export default {
             clienteDni: "",
             cantidadState: null,
 
-            /*compCabe: {
+            /*comprobante: {
                 codigo: "",
                 cui: "",
                 nues: "",
@@ -522,7 +523,7 @@ export default {
         };
     },
     created() {
-        if (!this.compCabe.id) {
+        if (!this.comprobante.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
@@ -535,7 +536,7 @@ export default {
         registrar() {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer eviar este comprobante?",
+                    "¿Esta seguro de querer enviar este comprobante?",
                     {
                         title: "Enviar Comprobante",
                         okVariant: "success",
@@ -548,13 +549,13 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("comprobantes.registrar", this.compCabe)
+                            route("comprobantes.registrar", this.comprobante)
                         );
                     }
                 });
         },
         addDetalle() {
-            this.compCabe.detalles.push({
+            this.comprobante.detalles.push({
                 codigo: "",
                 concepto_id: "",
                 cantidad: "1",
@@ -564,7 +565,7 @@ export default {
             });
         },
         agregarConcepto(conc) {
-            this.compCabe.detalles.push({
+            this.comprobante.detalles.push({
                 codigo: conc.value,
                 concepto_id: conc.id,
                 cantidad: "1",
@@ -574,42 +575,42 @@ export default {
             });
         },
         eliminar(id) {
-            var index = this.compCabe.detalles.findIndex(
+            var index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
-            this.compCabe.detalles.splice(index, 1);
+            this.comprobante.detalles.splice(index, 1);
         },
         completeConcepto(event, id) {
-            var index = this.compCabe.detalles.findIndex(
+            var index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
             var conc = this.conceptos.find(option => option.id == event);
-            this.compCabe.detalles[index].concepto_id = conc.id;
-            this.compCabe.detalles[index].codigo = conc.value;
-            this.compCabe.detalles[index].valor_unitario = conc.precio;
-            this.compCabe.detalles[index].descuento = "0.00";
+            this.comprobante.detalles[index].concepto_id = conc.id;
+            this.comprobante.detalles[index].codigo = conc.value;
+            this.comprobante.detalles[index].valor_unitario = conc.precio;
+            this.comprobante.detalles[index].descuento = "0.00";
         },
         calcularDescuento(event, id) {
-            var index = this.compCabe.detalles.findIndex(
+            var index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
-            var conc = this.compCabe.detalles[index].tipo_descuento;
+            var conc = this.comprobante.detalles[index].tipo_descuento;
             if (conc == "A") {
-                this.compCabe.detalles[index].descuento =
-                    (this.compCabe.detalles[index].valor_unitario *
-                        this.compCabe.detalles[index].cantidad *
+                this.comprobante.detalles[index].descuento =
+                    (this.comprobante.detalles[index].valor_unitario *
+                        this.comprobante.detalles[index].cantidad *
                         event) /
                     100;
             } else if (conc == "B") {
-                this.compCabe.detalles[index].descuento = event;
+                this.comprobante.detalles[index].descuento = event;
             } else {
-                this.compCabe.detalles[index].descuento = 0;
+                this.comprobante.detalles[index].descuento = 0;
             }
         },
         getCliente(dni) {
             var cli = this.clientesCompleto.find(cliente => cliente.dni == dni);
             this.cliente.dni = cli.dni;
-            this.compCabe.cui = cli.dni;
+            this.comprobante.cui = cli.dni;
             this.cliente.nombre = cli.nombre;
             this.cliente.email = cli.email;
             this.cliente.codigo = cli.codigo;
@@ -639,12 +640,12 @@ export default {
         },
 
         precioTotal() {
-            this.compCabe.total = this.compCabe.detalles.reduce(
+            this.comprobante.total = this.comprobante.detalles.reduce(
                 (acc, item) =>
                     acc + (item.cantidad * item.valor_unitario - item.descuento),
                 0
             );
-            return this.compCabe.total;
+            return this.comprobante.total;
         }
     }
 };
