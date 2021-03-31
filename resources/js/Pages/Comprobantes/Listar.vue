@@ -92,10 +92,15 @@
           empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
         >
           <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == true" variant="success"
+            <b-badge v-if="row.item.estado == 0" variant="secondary"
+              >Anulada</b-badge
+            >
+            <b-badge v-if="row.item.estado == 1" variant="danger"
+              >Pendiente</b-badge
+            >
+            <b-badge v-if="row.item.estado == 2" variant="success"
               >Facturada</b-badge
             >
-            <b-badge v-else variant="secondary">Anulado</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
@@ -110,7 +115,7 @@
               <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
-              v-if="row.item.estado == true"
+              v-if="row.item.estado == 1"
               variant="danger"
               size="sm"
               title="Anular"

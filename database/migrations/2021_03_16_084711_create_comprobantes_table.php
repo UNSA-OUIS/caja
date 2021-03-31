@@ -21,7 +21,7 @@ class CreateComprobantesTable extends Migration
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total');
-            $table->boolean('estado');
+            $table->tinyInteger('estado'); // 0=anulado, 1=pendiente, 2=facturado
             $table->timestamps();
         });
     }

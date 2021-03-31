@@ -96,18 +96,27 @@
                 >
                     <template v-slot:cell(estado)="row">
                         <b-badge
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 0"
+                            variant="secondary"
+                            >Anulada</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 1"
+                            variant="danger"
+                            >Pendiente</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 2"
                             variant="success"
                             >Facturada</b-badge
                         >
-                        <b-badge v-else variant="secondary">Anulado</b-badge>
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <inertia-link title="Ver" class="btn btn-info btn-sm">
                             <b-icon icon="printer"></b-icon>
                         </inertia-link>
                         <b-button
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 1"
                             variant="danger"
                             size="sm"
                             title="Anular"
@@ -116,7 +125,7 @@
                             <b-icon icon="x-circle"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 1"
                             variant="success"
                             size="sm"
                             title="Enviar"

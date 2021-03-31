@@ -96,6 +96,9 @@ class SunatController extends Controller
     public function enviar(Comprobante $comprobante)
     {
         try {
+            $comprobante->estado = 2;
+            $comprobante->update();
+
             $see = require __DIR__ . '/config.php';
 
             // Cliente
@@ -124,7 +127,7 @@ class SunatController extends Controller
             $invoice = (new Invoice())
                 ->setUblVersion('2.1')
                 ->setTipoOperacion('0101') // Venta - Catalog. 51
-                ->setTipoDoc('01') // Factura - Catalog. 01 
+                ->setTipoDoc('01') // Factura - Catalog. 01
                 ->setSerie('F001')
                 ->setCorrelativo('1')
                 ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
@@ -185,33 +188,34 @@ class SunatController extends Controller
 
             if ($code === 0) {
                 //echo 'ESTADO: ACEPTADA' . PHP_EOL;
-                $result = ['successMessage' => 'ESTADO: ACEPTADA' . $cdr->getDescription() . PHP_EOL];
+                $result = ['successMessage' => 'Comprobante enviado a sunat con éxito' . $cdr->getDescription() . PHP_EOL];
+
                 if (count($cdr->getNotes()) > 0) {
-                    echo 'OBSERVACIONES:' . PHP_EOL;
+                    // echo 'OBSERVACIONES:' . PHP_EOL;
                     // Corregir estas observaciones en siguientes emisiones.
-                    var_dump($cdr->getNotes());
+                    // var_dump($cdr->getNotes());
                 }
             } else if ($code >= 2000 && $code <= 3999) {
+                $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
                 //echo 'ESTADO: RECHAZADA' . PHP_EOL;
-                $result = ['successMessage' => 'ESTADO: RECHAZADA' . $cdr->getDescription() . PHP_EOL];
             } else {
                 /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
                 /*code: 0100 a 1999 */
-                echo 'Excepción';
+                $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
+                //echo 'Excepción';
             }
 
             //echo $cdr->getDescription() . PHP_EOL;
         } catch (\Exception $e) {
-            $result = ['successMessage' => 'ESTADO: RECHAZADA' . $cdr->getDescription() . PHP_EOL];
-            Log::error('SunatController@envar, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
+            Log::error('SunatController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
-
         return redirect()->route('sunat.iniciar')->with($result);
     }
     public function anular(Comprobante $comprobante)
     {
         try {
-            $comprobante->estado = false;
+            $comprobante->estado = 0;
             $comprobante->update();
             $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {
