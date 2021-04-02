@@ -202,15 +202,13 @@
                             aria-expanded="false"
                             v-show="show_menus[2]"
                         >
-                            <!--<li>
-                                <inertia-link :href="route('sunat.dashboard')">
-                                    Dashboard
-                                </inertia-link>
-                            </li>-->
                             <li>
-                                <inertia-link
-                                    :href="route('sunat.iniciar')"
-                                >
+                                <inertia-link :href="route('sunat.tablero')">
+                                    Tablero
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link :href="route('sunat.iniciar')">
                                     Enviar Facturas
                                 </inertia-link>
                             </li>

@@ -12,12 +12,30 @@ use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\SaleDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {
+    public function __invoke()
+    {
+        $noenviado  = count(DB::table('comprobantes')
+            ->where('estado', 'like', 0)
+            ->get());
+        $rechazado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 1)
+            ->get());;
+        $anulado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 2)
+            ->get());;
+        $aceptado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 3)
+            ->get());;
+        return Inertia::render('Sunat/Tablero', compact('noenviado', 'rechazado', 'anulado', 'aceptado'));
+    }
     /**
      * Display a listing of the resource.
      *
@@ -96,8 +114,7 @@ class SunatController extends Controller
     public function enviar(Comprobante $comprobante)
     {
         try {
-            $comprobante->estado = 2;
-            $comprobante->update();
+            //code...
 
             $see = require __DIR__ . '/config.php';
 
@@ -187,30 +204,31 @@ class SunatController extends Controller
             $code = (int)$cdr->getCode();
 
             if ($code === 0) {
-                //echo 'ESTADO: ACEPTADA' . PHP_EOL;
-                $result = ['successMessage' => 'Comprobante enviado a sunat con éxito' . $cdr->getDescription() . PHP_EOL];
+                $comprobante->estado = 3;
+                $comprobante->update();
+                $resultado = ['successMessage' => 'Comprobante enviado a sunat con éxito' . $cdr->getDescription() . PHP_EOL];
 
                 if (count($cdr->getNotes()) > 0) {
-                    // echo 'OBSERVACIONES:' . PHP_EOL;
-                    // Corregir estas observaciones en siguientes emisiones.
-                    // var_dump($cdr->getNotes());
+                    $comprobante->estado = 0;
+                    $comprobante->update();
+                    $resultado = ['warningMessage' => 'Comprobante con observaciones' . $cdr->getDescription() . PHP_EOL];
                 }
             } else if ($code >= 2000 && $code <= 3999) {
-                $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
+                $comprobante->estado = 1;
+                $comprobante->update();
+                $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
                 //echo 'ESTADO: RECHAZADA' . PHP_EOL;
             } else {
                 /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
                 /*code: 0100 a 1999 */
-                $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
-                //echo 'Excepción';
+                $comprobante->estado = 1;
+                $comprobante->update();
+                $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
             }
-
-            //echo $cdr->getDescription() . PHP_EOL;
-        } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo enciar el comprobante a sunat'];
-            Log::error('SunatController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        } catch (\Throwable $th) {
+            $resultado = ['errorMessage' => 'Ocurrio un error al enviar. Intente nuevamente'];
         }
-        return redirect()->route('sunat.iniciar')->with($result);
+        return redirect()->route('sunat.iniciar')->with($resultado);
     }
     public function anular(Comprobante $comprobante)
     {

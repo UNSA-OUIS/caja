@@ -24,6 +24,13 @@
                 <b-alert
                     show
                     dismissible
+                    variant="warning"
+                    v-if="$page.props.warningMessage"
+                    >{{ $page.props.warningMessage }}</b-alert
+                >
+                <b-alert
+                    show
+                    dismissible
                     variant="danger"
                     v-if="$page.props.errorMessage"
                     >{{ $page.props.errorMessage }}</b-alert
@@ -97,16 +104,21 @@
                     <template v-slot:cell(estado)="row">
                         <b-badge
                             v-if="row.item.estado == 0"
-                            variant="secondary"
-                            >Anulada</b-badge
+                            variant="warning"
+                            >No Enviado</b-badge
                         >
                         <b-badge
                             v-if="row.item.estado == 1"
                             variant="danger"
-                            >Pendiente</b-badge
+                            >Rechazado</b-badge
                         >
                         <b-badge
                             v-if="row.item.estado == 2"
+                            variant="secondary"
+                            >Anulado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 3"
                             variant="success"
                             >Facturada</b-badge
                         >
@@ -116,7 +128,7 @@
                             <b-icon icon="printer"></b-icon>
                         </inertia-link>
                         <b-button
-                            v-if="row.item.estado == 1"
+                            v-if="row.item.estado == 0"
                             variant="danger"
                             size="sm"
                             title="Anular"
@@ -125,7 +137,7 @@
                             <b-icon icon="x-circle"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == 1"
+                            v-if="row.item.estado == 0"
                             variant="success"
                             size="sm"
                             title="Enviar"
@@ -231,10 +243,10 @@ export default {
         enviar(comprobante) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer anular este comprobante?",
+                    "¿Esta seguro de querer enviar este comprobante?",
                     {
-                        title: "Anular comprobante",
-                        okVariant: "danger",
+                        title: "Enviar comprobante",
+                        okVariant: "success",
                         okTitle: "SI",
                         cancelTitle: "NO",
                         centered: true

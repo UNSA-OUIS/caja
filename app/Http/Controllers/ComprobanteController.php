@@ -96,7 +96,7 @@ class ComprobanteController extends Controller
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
-            $comprobante->estado = 1;
+            $comprobante->estado = 0;
             $comprobante->save();
 
             $detalle = $request->detalles;
@@ -157,7 +157,7 @@ class ComprobanteController extends Controller
     public function anular(Comprobante $comprobante)
     {
         try {
-            $comprobante->estado = 0;
+            $comprobante->estado = 2;
             $comprobante->update();
             $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {
