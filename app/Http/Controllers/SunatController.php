@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\Concepto;
 use DateTime;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
@@ -22,19 +23,22 @@ class SunatController extends Controller
 {
     public function __invoke()
     {
-        $noenviado  = count(DB::table('comprobantes')
-            ->where('estado', 'like', 0)
+        $noEnviado  = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'noEnviado')
+            ->get());
+        $observado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'observado')
             ->get());
         $rechazado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 1)
-            ->get());;
+            ->where('estado', 'like', 'rechazado')
+            ->get());
         $anulado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 2)
-            ->get());;
+            ->where('estado', 'like', 'anulado')
+            ->get());
         $aceptado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 3)
-            ->get());;
-        return Inertia::render('Sunat/Tablero', compact('noenviado', 'rechazado', 'anulado', 'aceptado'));
+            ->where('estado', 'like', 'aceptado')
+            ->get());
+        return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));
     }
     /**
      * Display a listing of the resource.
@@ -114,6 +118,7 @@ class SunatController extends Controller
     public function enviar(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+
         try {
             $see = require __DIR__ . '/config.php';
 
@@ -176,13 +181,13 @@ class SunatController extends Controller
                     ->setTotalImpuestos(18.00)
                     ->setValorVenta(100.00)
                     ->setSubTotal(118.00)
-                    ->setMtoImpVenta(118.00);
+                    ->setMtoImpVenta($comprobante->total);
             }
             $detalle = $comprobante->detalles;
             foreach ($detalle as $index => $value) {
                 if ($index <= count($detalle)) {
                     $item = (new SaleDetail())
-                        ->setCodProducto($value['id'])
+                        ->setCodProducto($value['codigo'])
                         ->setUnidad('NIU') // Unidad - Catalog. 03
                         ->setCantidad($value['cantidad'])
                         ->setMtoValorUnitario($value['valor_unitario'])
@@ -229,26 +234,27 @@ class SunatController extends Controller
             $code = (int)$cdr->getCode();
 
             if ($code === 0) {
-                $comprobante->estado = 3;
+                $comprobante->estado = 'aceptado';
                 $comprobante->update();
                 $resultado = ['successMessage' => 'Comprobante enviado a sunat con éxito' . $cdr->getDescription() . PHP_EOL];
 
                 if (count($cdr->getNotes()) > 0) {
-                    $comprobante->estado = 0;
+                    $comprobante->estado = 'observado';
                     $comprobante->update();
                     $resultado = ['warningMessage' => 'OBSERVACIONES:' . PHP_EOL . var_dump($cdr->getNotes())];
                 }
             } else if ($code >= 2000 && $code <= 3999) {
-                $comprobante->estado = 1;
+                $comprobante->estado = 'rechazado';
                 $comprobante->update();
                 $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
             } else {
-                $comprobante->estado = 1;
+                $comprobante->estado = 'rechazado';
                 $comprobante->update();
                 $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
             }
-        } catch (\Throwable $th) {
-            $resultado = ['errorMessage' => 'Ocurrio un error al enviar. Intente nuevamente' . $th];
+        } catch (\Exception $e) {
+            $resultado = ['errorMessage' => 'Error al enviar el comprobante' . $e];
+            Log::error('SunatController@enviar, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
         //return redirect()->route('sunat.iniciar')->with($resultado);
         return $resultado;
@@ -256,7 +262,7 @@ class SunatController extends Controller
     public function anular(Comprobante $comprobante)
     {
         try {
-            $comprobante->estado = 0;
+            $comprobante->estado = 'anulado';
             $comprobante->update();
             $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {

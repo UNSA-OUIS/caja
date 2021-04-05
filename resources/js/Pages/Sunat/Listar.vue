@@ -103,22 +103,27 @@
                 >
                     <template v-slot:cell(estado)="row">
                         <b-badge
-                            v-if="row.item.estado == 0"
-                            variant="warning"
+                            v-if="row.item.estado == 'noEnviado'"
+                            variant="primary"
                             >No Enviado</b-badge
                         >
                         <b-badge
-                            v-if="row.item.estado == 1"
+                            v-if="row.item.estado == 'observado'"
+                            variant="warning"
+                            >Observado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'rechazado'"
                             variant="danger"
                             >Rechazado</b-badge
                         >
                         <b-badge
-                            v-if="row.item.estado == 2"
+                            v-if="row.item.estado == 'anulado'"
                             variant="secondary"
                             >Anulado</b-badge
                         >
                         <b-badge
-                            v-if="row.item.estado == 3"
+                            v-if="row.item.estado == 'aceptado'"
                             variant="success"
                             >Facturada</b-badge
                         >
@@ -128,7 +133,7 @@
                             <b-icon icon="printer"></b-icon>
                         </inertia-link>
                         <b-button
-                            v-if="row.item.estado == 0"
+                            v-if="row.item.estado == 'noEnviado'"
                             variant="danger"
                             size="sm"
                             title="Anular"
@@ -137,7 +142,7 @@
                             <b-icon icon="x-circle"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == 0"
+                            v-if="row.item.estado == 'observado' || row.item.estado == 'noEnviado'"
                             variant="success"
                             size="sm"
                             title="Enviar"
