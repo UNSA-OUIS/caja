@@ -14,12 +14,12 @@ class CreateDetallesComprobanteTable extends Migration
     public function up()
     {
         Schema::create('detalles_comprobante', function (Blueprint $table) {
-            $table->id();            
+            $table->id();
             $table->integer('cantidad');
-            $table->double('valor_unitario', 8, 4);            
-            $table->double('descuento', 8, 4);    
-            $table->boolean('estado');
-            $table->tinyInteger('concepto_id');            
+            $table->double('valor_unitario', 8, 4);
+            $table->double('descuento', 8, 4);
+            $table->enum('estado', ['noEnviado', 'observado','rechazado','anulado','aceptado']);
+            $table->tinyInteger('concepto_id');
             $table->bigInteger('comprobante_id');
             $table->timestamps();
 
@@ -30,7 +30,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->foreign('comprobante_id')->references('id')->on('comprobantes')
                 ->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('cascade');            
+                ->onDelete('cascade');
         });
     }
 

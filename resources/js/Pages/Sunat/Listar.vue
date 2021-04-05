@@ -24,6 +24,13 @@
                 <b-alert
                     show
                     dismissible
+                    variant="warning"
+                    v-if="$page.props.warningMessage"
+                    >{{ $page.props.warningMessage }}</b-alert
+                >
+                <b-alert
+                    show
+                    dismissible
                     variant="danger"
                     v-if="$page.props.errorMessage"
                     >{{ $page.props.errorMessage }}</b-alert
@@ -96,18 +103,37 @@
                 >
                     <template v-slot:cell(estado)="row">
                         <b-badge
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 'noEnviado'"
+                            variant="primary"
+                            >No Enviado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'observado'"
+                            variant="warning"
+                            >Observado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'rechazado'"
+                            variant="danger"
+                            >Rechazado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'anulado'"
+                            variant="secondary"
+                            >Anulado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'aceptado'"
                             variant="success"
                             >Facturada</b-badge
                         >
-                        <b-badge v-else variant="secondary">Anulado</b-badge>
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <inertia-link title="Ver" class="btn btn-info btn-sm">
                             <b-icon icon="printer"></b-icon>
                         </inertia-link>
                         <b-button
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 'noEnviado'"
                             variant="danger"
                             size="sm"
                             title="Anular"
@@ -116,7 +142,7 @@
                             <b-icon icon="x-circle"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == true"
+                            v-if="row.item.estado == 'observado' || row.item.estado == 'noEnviado'"
                             variant="success"
                             size="sm"
                             title="Enviar"
@@ -222,10 +248,10 @@ export default {
         enviar(comprobante) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer anular este comprobante?",
+                    "¿Esta seguro de querer enviar este comprobante?",
                     {
-                        title: "Anular comprobante",
-                        okVariant: "danger",
+                        title: "Enviar comprobante",
+                        okVariant: "success",
                         okTitle: "SI",
                         cancelTitle: "NO",
                         centered: true

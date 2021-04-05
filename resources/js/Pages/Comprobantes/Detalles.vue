@@ -58,6 +58,7 @@
                                     <datalist id="clientes">
                                         <option
                                             v-for="cliente in clientes"
+                                            v-bind:key="cliente.dni"
                                             :value="cliente.dni"
                                             >{{ cliente.nombre }}</option
                                         >
@@ -295,7 +296,12 @@
                             <!--<b-form-select v-model="row.item.concepto_id" @change="completeConcepto($event, row.item.id)" :options="conceptos"></b-form-select>-->
                             <b-form-select
                                 v-model="row.item.concepto_id"
-                                @change="completeConcepto($event, row.item.concepto_id)"
+                                @change="
+                                    completeConcepto(
+                                        $event,
+                                        row.item.concepto_id
+                                    )
+                                "
                                 class="mb-3"
                                 :disabled="row.item.concepto_id != ''"
                             >
@@ -343,7 +349,10 @@
                                 <b-form-input
                                     id="descuento"
                                     @change="
-                                        calcularDescuento($event, row.item.concepto_id)
+                                        calcularDescuento(
+                                            $event,
+                                            row.item.concepto_id
+                                        )
                                     "
                                     type="number"
                                     value="0.00"
@@ -356,7 +365,8 @@
                                 <label
                                     >S/.
                                     {{
-                                        (row.item.valor_unitario * row.item.cantidad -
+                                        (row.item.valor_unitario *
+                                            row.item.cantidad -
                                             row.item.descuento)
                                             | currency
                                     }}</label
@@ -518,7 +528,11 @@ export default {
                 { key: "codigo", label: "CÓDIGO", class: "text-center" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "valor_unitario", label: "PR. UNIT", class: "text-center" },
+                {
+                    key: "valor_unitario",
+                    label: "PR. UNIT",
+                    class: "text-center"
+                },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
                 { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
                 { key: "acciones", label: "ACCIONES", class: "text-center" }
@@ -652,7 +666,8 @@ export default {
         precioTotal() {
             this.comprobante.total = this.comprobante.detalles.reduce(
                 (acc, item) =>
-                    acc + (item.cantidad * item.valor_unitario - item.descuento),
+                    acc +
+                    (item.cantidad * item.valor_unitario - item.descuento),
                 0
             );
             return this.comprobante.total;

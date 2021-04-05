@@ -97,23 +97,20 @@ class ComprobanteController extends Controller
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
-            $comprobante->estado = true;
+            $comprobante->estado = 'noEnviado';
             $comprobante->save();
 
             $detalle = $request->detalles;
             foreach ($detalle as $index => $value) {
-                //echo $index . "\n";
-                //echo count($detalle). "\n";
                 if ($index <= count($detalle)) {
                     $detalles = new DetallesComprobante();
                     $detalles->cantidad = $value['cantidad'];
                     $detalles->valor_unitario =  $value['valor_unitario'];
                     $detalles->descuento =  $value['descuento'];
-                    $detalles->estado =  true;
+                    $detalles->estado =  $comprobante->estado;
                     $detalles->concepto_id =  $value['concepto_id'];
                     $detalles->comprobante_id =  $comprobante->id;
                     $detalles->save();
-                    //echo $detalles . "\n";
                 }
             }
             DB::commit();
@@ -163,7 +160,7 @@ class ComprobanteController extends Controller
     public function anular(Comprobante $comprobante)
     {
         try {
-            $comprobante->estado = false;
+            $comprobante->estado = 'anulado';
             $comprobante->update();
             $result = ['successMessage' => 'Comprobante anulado con éxito'];
         } catch (\Exception $e) {

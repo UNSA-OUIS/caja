@@ -173,6 +173,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     /**************************** Sunat ***************************/
+    Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/sunat', function () {
         return Inertia::render('Sunat/Listar');
     })->name('sunat.iniciar');
