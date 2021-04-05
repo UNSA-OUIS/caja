@@ -100,16 +100,21 @@ class ComprobanteController extends Controller
             $comprobante->estado = true;
             $comprobante->save();
 
-            $detalles = new DetallesComprobante();
             $detalle = $request->detalles;
-            foreach ($detalle as $key => $value) {
-                $detalles->cantidad =  $value['cantidad'];
-                $detalles->valor_unitario =  $value['valor_unitario'];
-                $detalles->descuento =  $value['descuento'];
-                $detalles->estado =  true;
-                $detalles->concepto_id =  $value['concepto_id'];
-                $detalles->comprobante_id =  $comprobante->id;
-                $detalles->save();
+            foreach ($detalle as $index => $value) {
+                //echo $index . "\n";
+                //echo count($detalle). "\n";
+                if ($index <= count($detalle)) {
+                    $detalles = new DetallesComprobante();
+                    $detalles->cantidad = $value['cantidad'];
+                    $detalles->valor_unitario =  $value['valor_unitario'];
+                    $detalles->descuento =  $value['descuento'];
+                    $detalles->estado =  true;
+                    $detalles->concepto_id =  $value['concepto_id'];
+                    $detalles->comprobante_id =  $comprobante->id;
+                    $detalles->save();
+                    //echo $detalles . "\n";
+                }
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
