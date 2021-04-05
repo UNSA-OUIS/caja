@@ -14,7 +14,7 @@ use Greenter\Model\Sale\SaleDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
+require '../vendor/autoload.php';
 
 class SunatController extends Controller
 {

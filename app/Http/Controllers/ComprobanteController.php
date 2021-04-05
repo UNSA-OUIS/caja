@@ -40,7 +40,7 @@ class ComprobanteController extends Controller
      */
     public function create()
     {
-        /*comprobante: {
+        /*compCabe: {
             codigo: "",
             cui: "",
             nues: "",
@@ -70,7 +70,7 @@ class ComprobanteController extends Controller
         //$detalles = new DetallesComprobante();
         //$detalles->cantidad = "";
 
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
             ->orderBy('descripcion', 'asc')
             ->get();
 
@@ -85,6 +85,7 @@ class ComprobanteController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->all();
         DB::beginTransaction();
 
         try {
@@ -99,21 +100,16 @@ class ComprobanteController extends Controller
             $comprobante->estado = true;
             $comprobante->save();
 
+            $detalles = new DetallesComprobante();
             $detalle = $request->detalles;
-            foreach ($detalle as $index => $value) {
-                //echo $index . "\n";
-                //echo count($detalle). "\n";
-                if ($index <= count($detalle)) {
-                    $detalles = new DetallesComprobante();
-                    $detalles->cantidad = $value['cantidad'];
-                    $detalles->valor_unitario =  $value['valor_unitario'];
-                    $detalles->descuento =  $value['descuento'];
-                    $detalles->estado =  true;
-                    $detalles->concepto_id =  $value['concepto_id'];
-                    $detalles->comprobante_id =  $comprobante->id;
-                    $detalles->save();
-                    //echo $detalles . "\n";
-                }
+            foreach ($detalle as $key => $value) {
+                $detalles->cantidad =  $value['cantidad'];
+                $detalles->valor_unitario =  $value['valor_unitario'];
+                $detalles->descuento =  $value['descuento'];
+                $detalles->estado =  true;
+                $detalles->concepto_id =  $value['concepto_id'];
+                $detalles->comprobante_id =  $comprobante->id;
+                $detalles->save();
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
@@ -132,7 +128,9 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
+        //return $comprobante;
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+        //return $comprobante;
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
