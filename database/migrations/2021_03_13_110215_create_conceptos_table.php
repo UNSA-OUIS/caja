@@ -22,7 +22,8 @@ class CreateConceptosTable extends Migration
             $table->string('tipo_afectacion', 25)->comment('Tipo de afectación según sunat');
             $table->tinyInteger('tipo_concepto_id');            
             $table->tinyInteger('clasificador_id');            
-            $table->tinyInteger('unidad_medida_id');            
+            $table->tinyInteger('unidad_medida_id');
+            $table->boolean('estado')->default(true);            
             $table->timestamps();
             $table->softDeletes();
             

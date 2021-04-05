@@ -40,7 +40,7 @@ class ComprobanteController extends Controller
      */
     public function create()
     {
-        /*comprobante: {
+        /*compCabe: {
             codigo: "",
             cui: "",
             nues: "",
@@ -70,7 +70,7 @@ class ComprobanteController extends Controller
         //$detalles = new DetallesComprobante();
         //$detalles->cantidad = "";
 
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
             ->orderBy('descripcion', 'asc')
             ->get();
 
@@ -85,6 +85,7 @@ class ComprobanteController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->all();
         DB::beginTransaction();
 
         try {
@@ -132,7 +133,9 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
+        //return $comprobante;
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+        //return $comprobante;
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();

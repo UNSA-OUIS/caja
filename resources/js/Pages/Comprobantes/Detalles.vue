@@ -236,7 +236,7 @@
                         small
                         responsive
                         stacked="md"
-                        :items="conceptos"
+                        :items="conceptosDisponibles"
                         :fields="conceptosFields"
                         :current-page="currentPage"
                         :per-page="perPage"
@@ -247,6 +247,7 @@
                         @filtered="onFiltered"
                         empty-text="No hay conceptos para mostrar"
                         empty-filtered-text="No hay conceptos que coincidan con su búsqueda."
+                        
                     >
                         <template v-slot:cell(anadir)="row">
                             <b-button
@@ -296,6 +297,7 @@
                                 v-model="row.item.concepto_id"
                                 @change="completeConcepto($event, row.item.concepto_id)"
                                 class="mb-3"
+                                :disabled="row.item.concepto_id != ''"
                             >
                                 <!-- This slot appears above the options from 'options' prop -->
                                 <template #first>
@@ -307,6 +309,7 @@
                                         v-for="option in conceptos"
                                         v-bind:key="option.id"
                                         :value="option.id"
+                                        :disabled="!option.estado"
                                         >{{ option.text }}</b-form-select-option
                                     >
                                 </template>
@@ -573,11 +576,16 @@ export default {
                 tipo_descuento: "",
                 descuento: "0.00"
             });
+            var concIndex = this.conceptos.findIndex(option => option.id == conc.id);
+            this.conceptos[concIndex].estado = false;
         },
         eliminar(id) {
             var index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
+            var concIndex = this.conceptos.findIndex(option => option.id == id);
+            this.conceptos[concIndex].estado = true;
+
             this.comprobante.detalles.splice(index, 1);
         },
         completeConcepto(event, id) {
@@ -585,6 +593,8 @@ export default {
                 detalle => detalle.concepto_id == id
             );
             var conc = this.conceptos.find(option => option.id == event);
+            var concIndex = this.conceptos.findIndex(option => option.id == event);
+            this.conceptos[concIndex].estado = false;
             this.comprobante.detalles[index].concepto_id = conc.id;
             this.comprobante.detalles[index].codigo = conc.value;
             this.comprobante.detalles[index].valor_unitario = conc.precio;
@@ -646,6 +656,10 @@ export default {
                 0
             );
             return this.comprobante.total;
+        },
+
+        conceptosDisponibles(){
+            return this.conceptos.filter(option => option.estado == true);
         }
     }
 };
