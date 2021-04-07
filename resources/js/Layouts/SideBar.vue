@@ -124,7 +124,7 @@
                             aria-expanded="false"
                             v-show="show_menus[1]"
                         >
-                            <li>
+                            <li :class="{ 'mm-active': path == 'unidades-medida' }">
                                 <inertia-link
                                     :href="route('unidades-medida.iniciar')"
                                     :class="{ 'active': path == 'unidades-medida' }"
@@ -260,7 +260,7 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            show_menus: [false, false, false]
+            show_menus: this.$store.getters.getEstadosMenu,            
         };
     },
     computed: {
@@ -280,7 +280,7 @@ export default {
                 this.$set(this.show_menus, index, false);
             }
 
-
+            this.$store.dispatch('setEstadoMenu', this.show_menus)   
         }
     }
 };
