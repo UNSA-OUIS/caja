@@ -104,7 +104,6 @@ class ComprobanteController extends Controller
                 $detalles->cantidad = $value['cantidad'];
                 $detalles->valor_unitario =  $value['valor_unitario'];
                 $detalles->descuento =  $value['descuento'];
-                $detalles->estado =  $comprobante->estado;
                 $detalles->concepto_id =  $value['concepto_id'];
                 $detalles->comprobante_id =  $comprobante->id;
                 $detalles->save();

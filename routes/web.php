@@ -174,12 +174,20 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
-    Route::get('/sunat', function () {
-        return Inertia::render('Sunat/Listar');
-    })->name('sunat.iniciar');
-    Route::get('/sunat/listar', [SunatController::class, 'index'])->name('sunat.listar');
-    Route::post('/sunat/enviar/{comprobante}', [SunatController::class, 'enviar'])->name('sunat.enviar');
-    Route::post('/sunat/{comprobante}', [SunatController::class, 'anular'])->name('sunat.anular');
+
+    Route::get('/sunat/facturas', function () {
+        return Inertia::render('Sunat/ListarFacturas');
+    })->name('sunat.iniciarFacturas');
+    Route::get('/sunat/listarFacturas', [SunatController::class, 'indexFactura'])->name('sunat.listarFacturas');
+    Route::post('/sunat/enviarFactura/{comprobante}', [SunatController::class, 'enviarFactura'])->name('sunat.enviarFactura');
+    Route::post('/sunat/anularFactura/{comprobante}', [SunatController::class, 'anularFactura'])->name('sunat.anularFactura');
+
+    Route::get('/sunat/boletas', function () {
+        return Inertia::render('Sunat/ListarBoletas');
+    })->name('sunat.iniciarBoletas');
+    Route::get('/sunat/listarBoletas', [SunatController::class, 'indexBoleta'])->name('sunat.listarBoletas');
+    Route::post('/sunat/enviarBoleta/{comprobante}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoletas');
+    Route::post('/sunat/anularBoleta/{comprobante}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
     /*******************************************************************/
 });
 
