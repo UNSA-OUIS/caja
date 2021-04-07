@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-//require '../vendor/autoload.php';
+require '../vendor/autoload.php';
 
 class SunatController extends Controller
 {
