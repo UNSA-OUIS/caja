@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-require '../vendor/autoload.php';
+//require '/vendor/autoload.php';
 
 class SunatController extends Controller
 {
@@ -144,47 +144,14 @@ class SunatController extends Controller
                 ->setNombreComercial('GREEN')
                 ->setAddress($address);
 
-            // Venta
-            $serie = substr($comprobante->serie, 0, 1);
-            if ($serie == 'F') {
-                $invoice = (new Invoice())
-                    ->setUblVersion('2.1')
-                    ->setTipoOperacion('0101') // Venta - Catalog. 51
-                    ->setTipoDoc('01') // Factura - Catalog. 01
-                    ->setSerie($comprobante->serie)
-                    ->setCorrelativo($comprobante->correlativo)
-                    ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
-                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
-                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
-                    ->setCompany($company)
-                    ->setClient($client)
-                    ->setMtoOperGravadas(100.00)
-                    ->setMtoIGV(18.00)
-                    ->setTotalImpuestos(18.00)
-                    ->setValorVenta(100.00)
-                    ->setSubTotal(118.00)
-                    ->setMtoImpVenta($comprobante->total);
-            } elseif ($serie == 'B') {
-                $invoice = (new Invoice())
-                    ->setUblVersion('2.1')
-                    ->setTipoOperacion('0101') // Venta - Catalog. 51
-                    ->setTipoDoc('03') // Boleta - Catalog. 01
-                    ->setSerie($comprobante->serie)
-                    ->setCorrelativo($comprobante->correlativo)
-                    ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
-                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
-                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
-                    ->setCompany($company)
-                    ->setClient($client)
-                    ->setMtoOperGravadas(100.00)
-                    ->setMtoIGV(18.00)
-                    ->setTotalImpuestos(18.00)
-                    ->setValorVenta(100.00)
-                    ->setSubTotal(118.00)
-                    ->setMtoImpVenta($comprobante->total);
-            }
+
+            //Variables Globales
+            $valorVenta = 0.0;
+            $totalImpuestos = 0.0;
+
             $detalle = $comprobante->detalles;
             foreach ($detalle as $index => $value) {
+
                 if ($index <= count($detalle)) {
                     $item = (new SaleDetail())
                         ->setCodProducto($value['codigo'])
@@ -207,6 +174,46 @@ class SunatController extends Controller
                     $invoice->setDetails([$item])
                         ->setLegends([$legend]);
                 }
+                $valorVenta = $valorVenta + $value['cantidad'] * $value['valor_unitario'] - $value['descuento'];
+            }
+            // Venta
+            $serie = substr($comprobante->serie, 0, 1);
+            if ($serie == 'F') {
+                $invoice = (new Invoice())
+                    ->setUblVersion('2.1')
+                    ->setTipoOperacion('0101') // Venta - Catalog. 51
+                    ->setTipoDoc('01') // Factura - Catalog. 01
+                    ->setSerie($comprobante->serie)
+                    ->setCorrelativo($comprobante->correlativo)
+                    ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
+                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                    ->setCompany($company)
+                    ->setClient($client)
+                    ->setMtoOperGravadas(100.00)
+                    ->setMtoIGV(18.00)
+                    ->setTotalImpuestos(18.00)
+                    ->setValorVenta($valorVenta)
+                    ->setSubTotal(118.00)
+                    ->setMtoImpVenta($comprobante->total);
+            } elseif ($serie == 'B') {
+                $invoice = (new Invoice())
+                    ->setUblVersion('2.1')
+                    ->setTipoOperacion('0101') // Venta - Catalog. 51
+                    ->setTipoDoc('03') // Boleta - Catalog. 01
+                    ->setSerie($comprobante->serie)
+                    ->setCorrelativo($comprobante->correlativo)
+                    ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
+                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                    ->setCompany($company)
+                    ->setClient($client)
+                    ->setMtoOperGravadas(100.00)
+                    ->setMtoIGV(18.00)
+                    ->setTotalImpuestos(18.00)
+                    ->setValorVenta($valorVenta)
+                    ->setSubTotal(118.00)
+                    ->setMtoImpVenta($comprobante->total);
             }
 
 
@@ -235,29 +242,28 @@ class SunatController extends Controller
 
             if ($code === 0) {
                 $comprobante->estado = 'aceptado';
+                $comprobante->observaciones =  $cdr->getDescription();
                 $comprobante->update();
-                $resultado = ['successMessage' => 'Comprobante enviado a sunat con éxito' . $cdr->getDescription() . PHP_EOL];
 
                 if (count($cdr->getNotes()) > 0) {
                     $comprobante->estado = 'observado';
+                    $comprobante->observaciones = $cdr->getNotes();
                     $comprobante->update();
-                    $resultado = ['warningMessage' => 'OBSERVACIONES:' . PHP_EOL . var_dump($cdr->getNotes())];
                 }
             } else if ($code >= 2000 && $code <= 3999) {
                 $comprobante->estado = 'rechazado';
+                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
                 $comprobante->update();
-                $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
             } else {
                 $comprobante->estado = 'rechazado';
+                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
                 $comprobante->update();
-                $resultado = ['errorMessage' => 'No se pudo enviar el comprobante a sunat'];
             }
         } catch (\Exception $e) {
-            $resultado = ['errorMessage' => 'Error al enviar el comprobante' . $e];
+            $comprobante->observaciones = 'Error al enviar el comprobante';
             Log::error('SunatController@enviar, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
-        //return redirect()->route('sunat.iniciar')->with($resultado);
-        return $resultado;
+        return redirect()->route('sunat.iniciar');
     }
     public function anular(Comprobante $comprobante)
     {
