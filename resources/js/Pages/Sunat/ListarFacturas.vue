@@ -101,11 +101,18 @@
                             variant="secondary"
                             >Anulado</b-badge
                         >
-                        <b-badge
-                            v-if="row.item.estado == 'aceptado'"
-                            variant="success"
-                            >Aceptado</b-badge
-                        >
+                        <div v-if="row.item.estado == 'aceptado'">
+                            <b-badge variant="success">Aceptado</b-badge>
+                            <br />
+                            <b-button
+                                variant="success"
+                                size="sm"
+                                title="XML"
+                                @click="xml(row.item)"
+                                >XML
+                            </b-button>
+                            <a href="#">CDR</a>
+                        </div>
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <inertia-link title="Ver" class="btn btn-info btn-sm">
@@ -167,8 +174,18 @@ export default {
                 { key: "codigo", label: "Codigo", sortable: true },
                 { key: "serie", label: "Serie", sortable: true },
                 { key: "correlativo", label: "Correlativo", sortable: true },
-                { key: "estado", label: "Estado", class: "text-center",sortable: true },
-                { key: "observaciones", label: "Observaciones", class: "text-center",sortable: true },
+                {
+                    key: "estado",
+                    label: "Estado",
+                    class: "text-center",
+                    sortable: true
+                },
+                {
+                    key: "observaciones",
+                    label: "Observaciones",
+                    class: "text-center",
+                    sortable: true
+                },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,
@@ -197,7 +214,9 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(`${this.app_url}/sunat/listarFacturas${params}`);
+            const promise = axios.get(
+                `${this.app_url}/sunat/listarFacturas${params}`
+            );
 
             return promise.then(response => {
                 const comprobante = response.data.data;
@@ -248,6 +267,9 @@ export default {
                         this.refreshTable();
                     }
                 });
+        },
+        xml(comprobante) {
+            this.$inertia.get(route("sunat.descarga", [comprobante]));
         },
         onFiltered(filteredItems) {
             this.totalRows = filteredItems.length;

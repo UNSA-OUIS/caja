@@ -57,6 +57,7 @@ class SunatController extends Controller
         }
 
         return $query->paginate($request->size);
+        //return $request;
     }
     /**
      * Display a listing of the resource.
@@ -225,10 +226,14 @@ class SunatController extends Controller
             $result = $see->send($invoice);
 
             // Guardar XML firmado digitalmente.
-            file_put_contents(
+            $xmlGuardado = file_put_contents(
                 $invoice->getName() . '.xml',
                 $see->getFactory()->getLastXml()
             );
+
+            if ($xmlGuardado) {
+                $comprobante->url_xml = $invoice->getName() . '.xml';
+            }
 
             // Verificamos que la conexión con SUNAT fue exitosa.
             if (!$result->isSuccess()) {
@@ -239,7 +244,11 @@ class SunatController extends Controller
             }
 
             // Guardamos el CDR
-            file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
+            $cdrGuardado = file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
+            if ($cdrGuardado) {
+                $comprobante->url_cdr = 'R-' . $invoice->getName() . '.zip';
+            }
+
 
             $cdr = $result->getCdrResponse();
 
@@ -421,5 +430,11 @@ class SunatController extends Controller
         }
 
         return redirect()->route('sunat.iniciarBoletas');
+    }
+
+    public function descargarArchivo(Comprobante $comprobante)
+    {
+        $pathtoFile = public_path() . $comprobante->url_xml;
+        return response()->download($pathtoFile);
     }
 }

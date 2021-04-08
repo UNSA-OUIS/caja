@@ -23,6 +23,8 @@ class CreateComprobantesTable extends Migration
             $table->decimal('total');
             $table->enum('estado', ['noEnviado', 'observado','rechazado','anulado','aceptado']);
             $table->string('observaciones');
+            $table->string('url_xml');
+            $table->string('url_cdr');
             $table->timestamps();
         });
     }
