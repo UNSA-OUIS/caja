@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comprobante;
 use App\Models\Concepto;
 use App\Models\DetallesComprobante;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -169,5 +170,18 @@ class ComprobanteController extends Controller
         }
 
         return redirect()->route('comprobantes.iniciar')->with($result);
+    }
+
+    public function verReporte()
+    {
+        $comprobantes = Comprobante::all();
+        return Inertia::render('Reportes/Ventas', compact('comprobantes'));
+    }
+
+    public function reportePdf()
+    {
+        $comprobantes = Comprobante::all();
+        $pdf = PDF::loadView('reportes.ventas', compact('comprobantes'));
+        return $pdf->download('file.pdf');
     }
 }

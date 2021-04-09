@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comprobante;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -15,7 +17,7 @@ class ComprobanteSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('comprobantes')->insert(
+        /*DB::table('comprobantes')->insert(
             [
                 'codigo' => Str::random(20),
                 'cui' => '20143377',
@@ -26,6 +28,20 @@ class ComprobanteSeeder extends Seeder
                 'estado' => true,
             ],
 
-        );
+        );*/
+
+        $faker = Factory::create();
+
+        for($i = 0; $i < 100; $i++) {
+            Comprobante::create([
+                'codigo' => $faker->randomNumber(9, false),
+                'cui' => $faker->randomNumber(8, true),
+                'nues' => $faker->randomNumber(3, true),
+                'serie' => 'F'.$faker->randomNumber(3, false),
+                'correlativo' => $faker->randomNumber(8, false),
+                'total' => $faker->randomFloat(2, 10, 200),
+                'estado' => 'noEnviado',
+            ]);
+        }
     }
 }
