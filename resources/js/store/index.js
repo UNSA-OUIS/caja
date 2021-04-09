@@ -4,7 +4,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    array_estado_menu: [false, false, false],    
+    array_estado_menu: [false, false, false, false],    
   },
   mutations: {
     SET_ESTADO_MENU(state, array_estado_menu) {

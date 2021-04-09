@@ -14,27 +14,6 @@
                 </ol>
             </div>
             <div class="card-body">
-                <b-alert
-                    show
-                    dismissible
-                    variant="success"
-                    v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
-                >
-                <b-alert
-                    show
-                    dismissible
-                    variant="warning"
-                    v-if="$page.props.warningMessage"
-                    >{{ $page.props.warningMessage }}</b-alert
-                >
-                <b-alert
-                    show
-                    dismissible
-                    variant="danger"
-                    v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
-                >
                 <b-row>
                     <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
@@ -110,8 +89,8 @@
                         <b-badge
                             v-if="row.item.estado == 'observado'"
                             variant="warning"
-                            >Observado</b-badge
-                        >
+                            >Observado
+                        </b-badge>
                         <b-badge
                             v-if="row.item.estado == 'rechazado'"
                             variant="danger"
@@ -125,7 +104,7 @@
                         <b-badge
                             v-if="row.item.estado == 'aceptado'"
                             variant="success"
-                            >Facturada</b-badge
+                            >Aceptado</b-badge
                         >
                     </template>
                     <template v-slot:cell(acciones)="row">
@@ -142,7 +121,10 @@
                             <b-icon icon="x-circle"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == 'observado' || row.item.estado == 'noEnviado'"
+                            v-if="
+                                row.item.estado == 'observado' ||
+                                    row.item.estado == 'noEnviado'
+                            "
                             variant="success"
                             size="sm"
                             title="Enviar"
@@ -186,6 +168,7 @@ export default {
                 { key: "serie", label: "Serie", sortable: true },
                 { key: "correlativo", label: "Correlativo", sortable: true },
                 { key: "estado", label: "Estado", class: "text-center" },
+                { key: "observaciones", label: "Observaciones", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,

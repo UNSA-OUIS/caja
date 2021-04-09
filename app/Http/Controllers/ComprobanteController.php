@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comprobante;
 use App\Models\Concepto;
 use App\Models\DetallesComprobante;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -65,10 +66,8 @@ class ComprobanteController extends Controller
         $comprobante->serie = "";
         $comprobante->correlativo = "";
         $comprobante->total = "";
+        $comprobante->observaciones = "";
         $comprobante->detalles = array();
-
-        //$detalles = new DetallesComprobante();
-        //$detalles->cantidad = "";
 
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
             ->orderBy('descripcion', 'asc')
@@ -85,7 +84,6 @@ class ComprobanteController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->all();
         DB::beginTransaction();
 
         try {
@@ -98,20 +96,19 @@ class ComprobanteController extends Controller
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
+            $comprobante->observaciones = '';
             $comprobante->save();
 
             $detalle = $request->detalles;
             foreach ($detalle as $index => $value) {
-                if ($index <= count($detalle)) {
-                    $detalles = new DetallesComprobante();
-                    $detalles->cantidad = $value['cantidad'];
-                    $detalles->valor_unitario =  $value['valor_unitario'];
-                    $detalles->descuento =  $value['descuento'];
-                    $detalles->estado =  $comprobante->estado;
-                    $detalles->concepto_id =  $value['concepto_id'];
-                    $detalles->comprobante_id =  $comprobante->id;
-                    $detalles->save();
-                }
+                $detalles = new DetallesComprobante();
+                $detalles->cantidad = $value['cantidad'];
+                $detalles->valor_unitario =  $value['valor_unitario'];
+                $detalles->descuento =  $value['descuento'];
+                $detalles->estado =  $comprobante->estado;
+                $detalles->concepto_id =  $value['concepto_id'];
+                $detalles->comprobante_id =  $comprobante->id;
+                $detalles->save();
             }
             DB::commit();
             $result = ['successMessage' => 'Comprobante registrado con éxito'];
@@ -130,9 +127,8 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
-        //return $comprobante;
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
-        //return $comprobante;
+
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
             ->orderBy('descripcion', 'asc')
             ->get();
@@ -169,5 +165,18 @@ class ComprobanteController extends Controller
         }
 
         return redirect()->route('comprobantes.iniciar')->with($result);
+    }
+
+    public function verReporte()
+    {
+        $comprobantes = Comprobante::all();
+        return Inertia::render('Reportes/Ventas', compact('comprobantes'));
+    }
+
+    public function reportePdf()
+    {
+        $comprobantes = Comprobante::all();
+        $pdf = PDF::loadView('reportes.ventas', compact('comprobantes'));
+        return $pdf->download('file.pdf');
     }
 }

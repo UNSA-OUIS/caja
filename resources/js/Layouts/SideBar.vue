@@ -1,6 +1,6 @@
 <template>
     <div class="vertical-menu">
-        <!-- LOGO -->
+        <!-- LOGO
         <div class="navbar-brand-box">
             <a :href="route('dashboard')" class="mb-4 d-block auth-logo">
                 <img
@@ -16,7 +16,24 @@
                     class="logo logo-light"
                 />
             </a>
-        </div>
+        </div> -->
+
+        <b-navbar variant="faded" type="light">
+            <b-navbar-brand :href="route('dashboard')">
+            <img
+                    src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png"
+                    alt=""
+                    height="50"
+                    class="logo logo-dark"
+                />
+                <img
+                    src="https://cdn.jsdelivr.net/gh/unsa-cdn/static/siscaja/siscaja_blanco.png"
+                    alt=""
+                    height="50"
+                    class="logo logo-light"
+                />
+            </b-navbar-brand>
+        </b-navbar>
 
         <button
             type="button"
@@ -248,6 +265,38 @@
                                     Envio Tickets CDR
                                 </inertia-link>
                             </li>-->
+                        </ul>
+                    </li>
+                    <li>
+                        <a
+                            href="javascript: void(0);"
+                            class="has-arrow waves-effect"
+                            @click="mostrarMenu(3)"
+                            :class="{ 'mm-active': path == 'reportes' }"
+                        >
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Reportes</span>
+                        </a>
+                        <ul
+                            class="sub-menu"
+                            aria-expanded="false"
+                            v-show="show_menus[3]"
+                        >
+                            <li>
+                                <inertia-link 
+                                :href="route('comprobantes.reporte')"
+                                :class="{ 'mm-active': path == 'reportes' }">
+                                    Reporte de ventas
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes' }">
+                                    Otro reporte
+                                </inertia-link>
+                            </li>
+                            
                         </ul>
                     </li>
                 </ul>
