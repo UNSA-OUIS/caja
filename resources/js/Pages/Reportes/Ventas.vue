@@ -265,7 +265,7 @@ export default {
             : group
 
             const groups = [];
-            var i,j,temparray,chunk = 50;
+            var i,j,temparray,chunk = 25;
             for (i=0,j=group.length; i<j; i+=chunk) {
                 temparray = group.slice(i,i+chunk);
                 groups.push(temparray);

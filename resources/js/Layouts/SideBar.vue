@@ -272,6 +272,7 @@
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
                             @click="mostrarMenu(3)"
+                            :class="{ 'mm-active': path == 'reportes' }"
                         >
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>Reportes</span>
@@ -282,12 +283,16 @@
                             v-show="show_menus[3]"
                         >
                             <li>
-                                <inertia-link :href="route('comprobantes.reporte')">
+                                <inertia-link 
+                                :href="route('comprobantes.reporte')"
+                                :class="{ 'mm-active': path == 'reportes' }">
                                     Reporte de ventas
                                 </inertia-link>
                             </li>
                             <li>
-                                <inertia-link href="#">
+                                <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes' }">
                                     Otro reporte
                                 </inertia-link>
                             </li>

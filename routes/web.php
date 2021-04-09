@@ -165,8 +165,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Comprobantes/Listar');
     })->name('comprobantes.iniciar');
     
-    Route::get('/comprobantes/reporte', [ComprobanteController::class, 'verReporte'])->name('comprobantes.reporte');
-    Route::post('/comprobantes/reporte', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
+    
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
@@ -184,6 +183,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/listar', [SunatController::class, 'index'])->name('sunat.listar');
     Route::post('/sunat/enviar/{comprobante}', [SunatController::class, 'enviar'])->name('sunat.enviar');
     Route::post('/sunat/{comprobante}', [SunatController::class, 'anular'])->name('sunat.anular');
+    /*******************************************************************/
+    
+    /**************************** Reportes ***************************/
+    Route::get('/reportes', [ComprobanteController::class, 'verReporte'])->name('comprobantes.reporte');
+    Route::post('/reportes', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
     /*******************************************************************/
 });
 
