@@ -104,14 +104,8 @@
                         <div v-if="row.item.estado == 'aceptado'">
                             <b-badge variant="success">Aceptado</b-badge>
                             <br />
-                            <b-button
-                                variant="success"
-                                size="sm"
-                                title="XML"
-                                @click="xml(row.item)"
-                                >XML
-                            </b-button>
-                            <a href="#">CDR</a>
+                            <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
+                            <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
                         </div>
                     </template>
                     <template v-slot:cell(acciones)="row">

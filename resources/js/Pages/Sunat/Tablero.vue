@@ -179,6 +179,9 @@ export default {
     props: ["noEnviado", "observado", "rechazado", "anulado", "aceptado"],
     components: {
         AppLayout
+    },
+    created(){
+        this.$store.dispatch("getEstados");
     }
 };
 </script>

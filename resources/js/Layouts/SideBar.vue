@@ -331,6 +331,7 @@ export default {
             }
 
             this.$store.dispatch("setEstadoMenu", this.show_menus);
+
         }
     }
 };

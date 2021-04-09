@@ -38,6 +38,26 @@ class SunatController extends Controller
             ->get());
         return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));
     }
+    public function getEstados()
+    {
+        /*$noEnviado  = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'noEnviado')
+            ->get());*/
+        return 'jesus';
+        /*$observado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'observado')
+            ->get());
+        $rechazado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'rechazado')
+            ->get());
+        $anulado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'anulado')
+            ->get());
+        $aceptado = count(DB::table('comprobantes')
+            ->where('estado', 'like', 'aceptado')
+            ->get());
+        return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));*/
+    }
     /**
      * Display a listing of the resource.
      *
@@ -227,12 +247,12 @@ class SunatController extends Controller
 
             // Guardar XML firmado digitalmente.
             $xmlGuardado = file_put_contents(
-                $invoice->getName() . '.xml',
+                'public/facturas/xml' . $invoice->getName() . '.xml',
                 $see->getFactory()->getLastXml()
             );
 
             if ($xmlGuardado) {
-                $comprobante->url_xml = $invoice->getName() . '.xml';
+                $comprobante->url_xml = 'public/facturas/xml' . $invoice->getName() . '.xml';
             }
 
             // Verificamos que la conexión con SUNAT fue exitosa.
