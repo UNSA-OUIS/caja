@@ -69,7 +69,10 @@
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
                             @click="mostrarMenu(0)"
-                            :class="{ 'mm-active': path == 'roles' || path == 'usuarios' }"
+                            :class="{
+                                'mm-active':
+                                    path == 'roles' || path == 'usuarios'
+                            }"
                         >
                             <i class="uil-window-section"></i>
                             <span>Accesos</span>
@@ -82,7 +85,7 @@
                             <li :class="{ 'mm-active': path == 'roles' }">
                                 <inertia-link
                                     :href="route('roles.iniciar')"
-                                    :class="{ 'active': path == 'roles' }"
+                                    :class="{ active: path == 'roles' }"
                                     v-if="
                                         $permissions.can([
                                             { name: 'Listar Roles' }
@@ -95,7 +98,7 @@
                             <li :class="{ 'mm-active': path == 'usuarios' }">
                                 <inertia-link
                                     :href="route('usuarios.iniciar')"
-                                    :class="{ 'active': path == 'usuarios' }"
+                                    :class="{ active: path == 'usuarios' }"
                                     v-if="
                                         $permissions.can([
                                             { name: 'Listar Usuarios' }
@@ -123,15 +126,15 @@
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
                             @click="mostrarMenu(1)"
-                            :class="{ 'mm-active': 
-                                path == 'unidades-medida' ||
-                                path == 'clasificadores' || 
-                                path == 'tipos-concepto' ||
-                                path == 'conceptos' ||
-                                path == 'tipo-comprobante' ||
-                                path == 'comprobantes'
+                            :class="{
+                                'mm-active':
+                                    path == 'unidades-medida' ||
+                                    path == 'clasificadores' ||
+                                    path == 'tipos-concepto' ||
+                                    path == 'conceptos' ||
+                                    path == 'tipo-comprobante' ||
+                                    path == 'comprobantes'
                             }"
-                            
                         >
                             <i class="uil-window-section"></i>
                             <span>Mantenimiento</span>
@@ -141,10 +144,16 @@
                             aria-expanded="false"
                             v-show="show_menus[1]"
                         >
-                            <li :class="{ 'mm-active': path == 'unidades-medida' }">
+                            <li
+                                :class="{
+                                    'mm-active': path == 'unidades-medida'
+                                }"
+                            >
                                 <inertia-link
                                     :href="route('unidades-medida.iniciar')"
-                                    :class="{ 'active': path == 'unidades-medida' }"
+                                    :class="{
+                                        active: path == 'unidades-medida'
+                                    }"
                                     v-if="
                                         $permissions.can([
                                             { name: 'Listar Unidades-Medida' }
@@ -154,20 +163,40 @@
                                     Unidades de medida
                                 </inertia-link>
                             </li>
-                            <li :class="{ 'mm-active': path == 'clasificadores' }">
+                            <li
+                                :class="{
+                                    'mm-active': path == 'clasificadores'
+                                }"
+                            >
                                 <inertia-link
-                                    :href="route('clasificadores.iniciar')" 
-                                    :class="{ 'active': path == 'clasificadores' }"
-                                    v-if="$permissions.can([{ name: 'Listar Clasificadores' }])"
+                                    :href="route('clasificadores.iniciar')"
+                                    :class="{
+                                        active: path == 'clasificadores'
+                                    }"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Clasificadores' }
+                                        ])
+                                    "
                                 >
                                     Clasificadores
-                                </inertia-link>                                
+                                </inertia-link>
                             </li>
-                            <li :class="{ 'mm-active': path == 'tipos-concepto' }">
+                            <li
+                                :class="{
+                                    'mm-active': path == 'tipos-concepto'
+                                }"
+                            >
                                 <inertia-link
                                     :href="route('tipos-concepto.iniciar')"
-                                    :class="{ 'active': path == 'tipos-concepto' }"                                    
-                                    v-if="$permissions.can([{ name: 'Listar Tipos-Concepto' }])"
+                                    :class="{
+                                        active: path == 'tipos-concepto'
+                                    }"
+                                    v-if="
+                                        $permissions.can([
+                                            { name: 'Listar Tipos-Concepto' }
+                                        ])
+                                    "
                                 >
                                     Tipos de concepto
                                 </inertia-link>
@@ -175,7 +204,7 @@
                             <li :class="{ 'mm-active': path == 'conceptos' }">
                                 <inertia-link
                                     :href="route('conceptos.iniciar')"
-                                    :class="{ 'active': path == 'conceptos' }"
+                                    :class="{ active: path == 'conceptos' }"
                                     v-if="
                                         $permissions.can([
                                             { name: 'Listar Conceptos' }
@@ -185,10 +214,16 @@
                                     Conceptos
                                 </inertia-link>
                             </li>
-                            <li :class="{ 'mm-active': path == 'tipo-comprobante' }">
+                            <li
+                                :class="{
+                                    'mm-active': path == 'tipo-comprobante'
+                                }"
+                            >
                                 <inertia-link
                                     :href="route('tipo-comprobante.iniciar')"
-                                    :class="{ 'active': path == 'tipo-comprobante' }"
+                                    :class="{
+                                        active: path == 'tipo-comprobante'
+                                    }"
                                     v-if="
                                         $permissions.can([
                                             { name: 'Listar Tipos-Comprobante' }
@@ -205,24 +240,32 @@
                                     Accesos Google
                                 </inertia-link>
                             </li>-->
-                            <li :class="{ 'mm-active': path == 'comprobantes' }">
+                            <li
+                                :class="{ 'mm-active': path == 'comprobantes' }"
+                            >
                                 <inertia-link
                                     :href="route('comprobantes.iniciar')"
-                                    :class="{ 'active': path == 'comprobantes' }"
+                                    :class="{ active: path == 'comprobantes' }"
                                 >
                                     Registrar comprobante
                                 </inertia-link>
                             </li>
                         </ul>
                     </li>
+
                     <li>
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
                             @click="mostrarMenu(2)"
-                            :class="{ 'mm-active': path == 'sunat' }"
+                            :class="{
+                                'mm-active':
+                                    path == 'dashboard sunat' ||
+                                    path == 'facturas' ||
+                                    path == 'boletas'
+                            }"
                         >
-                            <i class="fas fa-cloud-upload-alt"></i>
+                            <i class="uil-upload"></i>
                             <span>Sunat</span>
                         </a>
                         <ul
@@ -230,41 +273,48 @@
                             aria-expanded="false"
                             v-show="show_menus[2]"
                         >
-                            <li :class="{ 'mm-active': path == 'sunat' }">
-                                <inertia-link 
+                            <li
+                                :class="{
+                                    'mm-active': path == 'dashboard sunat'
+                                }"
+                            >
+                                <inertia-link
                                     :href="route('sunat.tablero')"
-                                    :class="{ 'active': path == 'sunat' }"
+                                    :class="{
+                                        active: path == 'dashboard sunat'
+                                    }"
                                 >
-                                    Tablero
+                                    Dashboard Sunat
                                 </inertia-link>
                             </li>
-                            <li :class="{ 'mm-active': path == 'sunat' }">
-                                <inertia-link 
-                                    :href="route('sunat.iniciar')"
-                                    :class="{ 'active': path == 'sunat' }"
-                                >
-                                    Enviar Facturas
-                                </inertia-link>
-                            </li>
-                            <!--<li>
+                            <li
+                                :class="{
+                                    'mm-active': path == 'facturas'
+                                }"
+                            >
                                 <inertia-link
-                                    :href="route('sunat.resumenBoletas')"
+                                    :href="route('sunat.iniciarFacturas')"
+                                    :class="{
+                                        active: path == 'facturas'
+                                    }"
                                 >
-                                    Enviar Resumen Boletas
+                                    Facturas
                                 </inertia-link>
                             </li>
-                            <li>
+                            <li
+                                :class="{
+                                    'mm-active': path == 'boletas'
+                                }"
+                            >
                                 <inertia-link
-                                    :href="route('sunat.comunicacionBaja')"
+                                    :href="route('sunat.iniciarBoletas')"
+                                    :class="{
+                                        active: path == 'boletas'
+                                    }"
                                 >
-                                    Enviar Comunicacion Baja
+                                    Boletas
                                 </inertia-link>
                             </li>
-                            <li>
-                                <inertia-link :href="route('sunat.ticketCDR')">
-                                    Envio Tickets CDR
-                                </inertia-link>
-                            </li>-->
                         </ul>
                     </li>
                     <li>
@@ -305,18 +355,18 @@
     </div>
 </template>
 <script>
-export default {    
+export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            show_menus: this.$store.getters.getEstadosMenu,            
+            show_menus: this.$store.getters.getEstadosMenu
         };
     },
     computed: {
         path() {
-            return window.location.pathname.split('/')[1];
-        },
-    },  
+            return window.location.pathname.split("/")[1];
+        }
+    },
     methods: {
         mostrarMenu(orden) {
             this.$set(this.show_menus, orden, !this.show_menus[orden]);
@@ -329,7 +379,8 @@ export default {
                 this.$set(this.show_menus, index, false);
             }
 
-            this.$store.dispatch('setEstadoMenu', this.show_menus)   
+            this.$store.dispatch("setEstadoMenu", this.show_menus);
+
         }
     }
 };
