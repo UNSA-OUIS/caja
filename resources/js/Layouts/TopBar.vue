@@ -108,7 +108,9 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                :src="`${app_url}/assets/images/flags/spain.jpg`"
+                                :src="
+                                    `${app_url}/assets/images/flags/spain.jpg`
+                                "
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -119,7 +121,9 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                :src="`${app_url}/assets/images/flags/germany.jpg`"
+                                :src="
+                                    `${app_url}/assets/images/flags/germany.jpg`
+                                "
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -130,7 +134,9 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                :src="`${app_url}/assets/images/flags/italy.jpg`"
+                                :src="
+                                    `${app_url}/assets/images/flags/italy.jpg`
+                                "
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -141,7 +147,9 @@
                         <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
-                                :src="`${app_url}/assets/images/flags/russia.jpg`"
+                                :src="
+                                    `${app_url}/assets/images/flags/russia.jpg`
+                                "
                                 alt="user-image"
                                 class="mr-1"
                                 height="12"
@@ -169,7 +177,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/github.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/github.png`
+                                            "
                                             alt="Github"
                                         />
                                         <span>GitHub</span>
@@ -178,7 +188,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/bitbucket.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/bitbucket.png`
+                                            "
                                             alt="bitbucket"
                                         />
                                         <span>Bitbucket</span>
@@ -187,7 +199,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/dribbble.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/dribbble.png`
+                                            "
                                             alt="dribbble"
                                         />
                                         <span>Dribbble</span>
@@ -199,7 +213,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/dropbox.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/dropbox.png`
+                                            "
                                             alt="dropbox"
                                         />
                                         <span>Dropbox</span>
@@ -208,7 +224,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/mail_chimp.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/mail_chimp.png`
+                                            "
                                             alt="mail_chimp"
                                         />
                                         <span>Mail Chimp</span>
@@ -217,7 +235,9 @@
                                 <div class="col">
                                     <a class="dropdown-icon-item" href="#">
                                         <img
-                                            :src="`${app_url}/assets/images/brands/slack.png`"
+                                            :src="
+                                                `${app_url}/assets/images/brands/slack.png`
+                                            "
                                             alt="slack"
                                         />
                                         <span>Slack</span>
@@ -241,6 +261,7 @@
                 <div class="dropdown d-inline-block">
                     <button
                         type="button"
+                        @click="mostrarNotificaciones"
                         class="btn header-item noti-icon waves-effect"
                         id="page-header-notifications-dropdown"
                         data-toggle="dropdown"
@@ -248,136 +269,22 @@
                         aria-expanded="false"
                     >
                         <i class="uil-bell"></i>
-                        <span class="badge badge-danger badge-pill">3</span>
+                        <span class="badge badge-danger badge-pill">5</span>
                     </button>
                     <div
-                        class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
-                        aria-labelledby="page-header-notifications-dropdown"
+                        class="dropdown-menu dropdown-menu-right show"
+                        v-if="menuNotificaciones"
                     >
-                        <div class="p-3">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h5 class="m-0 font-size-16">
-                                        Notifications
-                                    </h5>
-                                </div>
-                                <div class="col-auto">
-                                    <a href="#!" class="small"> Mark_read</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-simplebar style="max-height: 230px;">
-                            <a href="" class="text-reset notification-item">
-                                <div class="media">
-                                    <div class="avatar-xs mr-3">
-                                        <span
-                                            class="avatar-title bg-primary rounded-circle font-size-16"
-                                        >
-                                            <i class="uil-cart"></i>
-                                        </span>
-                                    </div>
-                                    <div class="media-body">
-                                        <h6 class="mt-0 mb-1">order_placed</h6>
-                                        <div class="font-size-12 text-muted">
-                                            <p class="mb-1">
-                                                languages_grammar
-                                            </p>
-                                            <p class="mb-0">
-                                                <i
-                                                    class="mdi mdi-clock-outline"
-                                                ></i
-                                                >3_min_ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="" class="text-reset notification-item">
-                                <div class="media">
-                                    <img
-                                        :src="`${app_url}/assets/images/users/avatar-3.jpg`"
-                                        class="mr-3 rounded-circle avatar-xs"
-                                        alt="user-pic"
-                                    />
-                                    <div class="media-body">
-                                        <h6 class="mt-0 mb-1">James Lemire</h6>
-                                        <div class="font-size-12 text-muted">
-                                            <p class="mb-1">
-                                                simplified_English
-                                            </p>
-                                            <p class="mb-0">
-                                                <i
-                                                    class="mdi mdi-clock-outline"
-                                                ></i>
-                                                1_hours_ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                            <a href="" class="text-reset notification-item">
-                                <div class="media">
-                                    <div class="avatar-xs mr-3">
-                                        <span
-                                            class="avatar-title bg-success rounded-circle font-size-16"
-                                        >
-                                            <i class="uil-truck"></i>
-                                        </span>
-                                    </div>
-                                    <div class="media-body">
-                                        <h6 class="mt-0 mb-1">item_shipped</h6>
-                                        <div class="font-size-12 text-muted">
-                                            <p class="mb-1">
-                                                languages_grammar
-                                            </p>
-                                            <p class="mb-0">
-                                                <i
-                                                    class="mdi mdi-clock-outline"
-                                                ></i
-                                                >translation.3_min_ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-
-                            <a href="" class="text-reset notification-item">
-                                <div class="media">
-                                    <img
-                                        :src="
-                                            `${app_url}/assets/images/users/avatar-4.jpg`
-                                        "
-                                        class="mr-3 rounded-circle avatar-xs"
-                                        alt="user-pic"
-                                    />
-                                    <div class="media-body">
-                                        <h6 class="mt-0 mb-1">
-                                            Salena Layfield
-                                        </h6>
-                                        <div class="font-size-12 text-muted">
-                                            <p class="mb-1">
-                                                simplified_English
-                                            </p>
-                                            <p class="mb-0">
-                                                <i
-                                                    class="mdi mdi-clock-outline"
-                                                ></i>
-                                                1_hours_ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="p-2 border-top">
-                            <a
-                                class="btn btn-sm btn-link font-size-14 btn-block text-center"
-                                href="javascript:void(0)"
-                            >
-                                <i class="uil-arrow-circle-right mr-1"></i>
-                                View_More
-                            </a>
-                        </div>
+                        <!-- item-->
+                        <inertia-link
+                            class="dropdown-item"
+                            :href="route('sunat.tablero')"
+                        >
+                            <i
+                                class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"
+                            ></i>
+                            <span class="align-middle">Tablero</span>
+                        </inertia-link>
                     </div>
                 </div>
 
@@ -409,11 +316,15 @@
                         v-if="menuUsuario"
                     >
                         <!-- item-->
-                        <inertia-link class="dropdown-item" :href="route('usuarios.perfil')">
-                            <i class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"
+                        <inertia-link
+                            class="dropdown-item"
+                            :href="route('usuarios.perfil')"
+                        >
+                            <i
+                                class="uil uil-user-circle font-size-18 align-middle text-muted mr-1"
                             ></i>
                             <span class="align-middle">Perfil de usuario</span>
-                        </inertia-link>                        
+                        </inertia-link>
                         <a class="dropdown-item" href="#"
                             ><i
                                 class="uil uil-wallet font-size-18 align-middle mr-1 text-muted"
@@ -462,12 +373,16 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            menuUsuario: false
+            menuUsuario: false,
+            menuNotificaciones: false
         };
     },
     methods: {
         mostrarMenuUsuario() {
             this.menuUsuario = !this.menuUsuario;
+        },
+        mostrarNotificaciones() {
+            this.menuNotificaciones = !this.menuNotificaciones;
         },
         logout() {
             this.$inertia.post(route("logout"));

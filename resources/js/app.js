@@ -24,11 +24,13 @@ Vue.use(Permissions);
 const app = document.getElementById('app');
 
 import config from "./config";
+import store from './Store'
 
-new Vue({
+new Vue({    
     data: {
         app_url: config.APP_URL
     },
+    store,
     render: (h) =>
         h(InertiaApp, {
             props: {

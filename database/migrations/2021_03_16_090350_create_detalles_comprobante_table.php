@@ -18,7 +18,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->integer('cantidad');
             $table->double('valor_unitario', 8, 4);
             $table->double('descuento', 8, 4);
-            $table->enum('estado', ['noEnviado', 'observado','rechazado','anulado','aceptado']);
+            $table->boolean('estado')->default(true);
             $table->tinyInteger('concepto_id');
             $table->bigInteger('comprobante_id');
             $table->timestamps();
