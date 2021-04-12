@@ -9,7 +9,7 @@
                         >
                     </li>
                     <li class="breadcrumb-item active">
-                        Lista de comprobantes
+                        Lista de boletas
                     </li>
                 </ol>
             </div>
@@ -77,8 +77,8 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"
-                    empty-text="No hay comprobantes para mostrar"
-                    empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                    empty-text="No hay boletas para mostrar"
+                    empty-filtered-text="No hay boletas que coincidan con su búsqueda."
                 >
                     <template v-slot:cell(estado)="row">
                         <b-badge
@@ -101,11 +101,14 @@
                             variant="secondary"
                             >Anulado</b-badge
                         >
-                        <b-badge
-                            v-if="row.item.estado == 'aceptado'"
-                            variant="success"
-                            >Aceptado</b-badge
-                        >
+                        <div v-if="row.item.estado == 'aceptado'">
+                            <b-badge variant="success">Aceptado</b-badge>
+                            <br />
+                            <a :href="`${app_url}/${row.item.url_xml}`" download
+                                >XML</a
+                            >
+                            <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
+                        </div>
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <inertia-link title="Ver" class="btn btn-info btn-sm">
@@ -156,7 +159,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "sunat.listar",
+    name: "sunat.listarBoletas",
     components: {
         AppLayout
     },
@@ -168,7 +171,11 @@ export default {
                 { key: "serie", label: "Serie", sortable: true },
                 { key: "correlativo", label: "Correlativo", sortable: true },
                 { key: "estado", label: "Estado", class: "text-center" },
-                { key: "observaciones", label: "Observaciones", class: "text-center" },
+                {
+                    key: "observaciones",
+                    label: "Observaciones",
+                    class: "text-center"
+                },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,
@@ -197,7 +204,7 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(`${this.app_url}/sunat/listar${params}`);
+            const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
 
             return promise.then(response => {
                 const comprobante = response.data.data;
@@ -207,7 +214,7 @@ export default {
                 return comprobante || [];
             });
         },
-        anular(comprobante) {
+        anular(boleta) {
             this.$bvModal
                 .msgBoxConfirm(
                     "¿Esta seguro de querer anular este comprobante?",
@@ -222,13 +229,13 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.anular", [comprobante])
+                            route("sunat.anular", [boleta])
                         );
                         this.refreshTable();
                     }
                 });
         },
-        enviar(comprobante) {
+        enviar(boleta) {
             this.$bvModal
                 .msgBoxConfirm(
                     "¿Esta seguro de querer enviar este comprobante?",
@@ -243,7 +250,7 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.enviar", [comprobante])
+                            route("sunat.enviar", [boleta])
                         );
                         this.refreshTable();
                     }

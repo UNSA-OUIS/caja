@@ -7,7 +7,6 @@ use DateTime;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
-use Greenter\Model\Sale\Charge;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
@@ -16,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Greenter\Report\HtmlReport;
+use Greenter\Report\PdfReport;
 
 class SunatController extends Controller
 {
@@ -67,7 +68,7 @@ class SunatController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%');
+        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'F' . '%');
 
         $sortby = $request->sortby;
 
@@ -77,7 +78,6 @@ class SunatController extends Controller
         }
 
         return $query->paginate($request->size);
-        //return $request;
     }
     /**
      * Display a listing of the resource.
@@ -88,7 +88,7 @@ class SunatController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%');
+        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'B' . '%');
 
         $sortby = $request->sortby;
 
@@ -154,12 +154,12 @@ class SunatController extends Controller
     {
         //
     }
-    public function enviarFactura(Comprobante $comprobante)
+    public function enviarFactura(Comprobante $factura)
     {
-        $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
+        $factura = Comprobante::with('detalles')->where('id', 'like', $factura->id)->first();
 
         try {
-            $see = require __DIR__ . '/config.php';
+            $see = require __DIR__ . '/Sunat/config.php';
 
             // Cliente
             $client = (new Client())
@@ -183,37 +183,24 @@ class SunatController extends Controller
                 ->setNombreComercial('GREEN')
                 ->setAddress($address);
 
+            // Venta
             $invoice = new Invoice();
 
-            //Variables Globales
-            $montoValorVenta = 0.0;
-            $montoPrecioUnitario = 0.0;
-            $subTotal = 0.0;
-
-            $detalle = $comprobante->detalles;
+            $detalle = $factura->detalles;
             foreach ($detalle as $index => $value) {
-                $montoPrecioUnitario = $value['valor_unitario'] + 18.00 / $value['cantidad'];
-                $montoValorVenta = $value['cantidad'] * $value['valor_unitario'];
                 $item = (new SaleDetail())
-                    ->setCodProducto($value['codigo'])
+                    ->setCodProducto($value['concepto_id'])
                     ->setUnidad('NIU') // Unidad - Catalog. 03
                     ->setCantidad($value['cantidad'])
                     ->setMtoValorUnitario($value['valor_unitario'])
-                    /*->setDescuentos([
-                        (new Charge())
-                            ->setCodTipo('00') // Catalog. 53
-                            ->setMontoBase(200)
-                            ->setFactor(0.10)
-                            ->setMonto(20)
-                    ])*/
                     ->setDescripcion('PRODUCTO 1')
                     ->setMtoBaseIgv(100)
                     ->setPorcentajeIgv(18.00) // 18%
                     ->setIgv(18.00)
                     ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
                     ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
-                    ->setMtoValorVenta($montoValorVenta)
-                    ->setMtoPrecioUnitario($montoPrecioUnitario);
+                    ->setMtoValorVenta(100.00)
+                    ->setMtoPrecioUnitario(59.00);
 
                 $legend = (new Legend())
                     ->setCode('1000') // Monto en letras - Catalog. 52
@@ -221,16 +208,44 @@ class SunatController extends Controller
 
                 $invoice->setDetails([$item])
                     ->setLegends([$legend]);
-
-                $subTotal += $montoPrecioUnitario;
             }
+            return var_dump($item);
+
+            $invoice
+                ->setUblVersion('2.1')
+                ->setTipoOperacion('0101') // Venta - Catalog. 51
+                ->setTipoDoc('01') // Factura - Catalog. 01
+                ->setSerie($factura->serie)
+                ->setCorrelativo($factura->correlativo)
+                ->setFechaEmision(new DateTime(now())) // Zona horaria: Lima
+                ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                ->setCompany($company)
+                ->setClient($client)
+                ->setMtoOperGravadas(100.00)
+                ->setMtoIGV(18.00)
+                ->setTotalImpuestos(18.00)
+                ->setValorVenta(100.00)
+                ->setSubTotal(118.00)
+                ->setMtoImpVenta($factura->total);
+
+
+
+            //$invoice = new Invoice();
+
+            //Variables Globales
+            //$montoValorVenta = 0.0;
+            //$montoPrecioUnitario = 0.0;
+            //$subTotal = 0.0;
+
+            /*
             // Venta
             $invoice
                 ->setUblVersion('2.1')
                 ->setTipoOperacion('0101') // Venta - Catalog. 51
                 ->setTipoDoc('01') // Factura - Catalog. 01
-                ->setSerie($comprobante->serie)
-                ->setCorrelativo($comprobante->correlativo)
+                ->setSerie($factura->serie)
+                ->setCorrelativo($factura->correlativo)
                 ->setFechaEmision(new DateTime()) // Zona horaria: Lima
                 ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
                 ->setTipoMoneda('PEN') // Sol - Catalog. 02
@@ -241,18 +256,18 @@ class SunatController extends Controller
                 ->setTotalImpuestos(18.00)
                 ->setValorVenta($montoValorVenta)
                 ->setSubTotal($subTotal)
-                ->setMtoImpVenta($comprobante->total);
+                ->setMtoImpVenta($factura->total);*/
 
             $result = $see->send($invoice);
 
             // Guardar XML firmado digitalmente.
             $xmlGuardado = file_put_contents(
-                'public/facturas/xml' . $invoice->getName() . '.xml',
+                $invoice->getName() . '.xml',
                 $see->getFactory()->getLastXml()
             );
 
             if ($xmlGuardado) {
-                $comprobante->url_xml = 'public/facturas/xml' . $invoice->getName() . '.xml';
+                $factura->url_xml = $invoice->getName() . '.xml';
             }
 
             // Verificamos que la conexión con SUNAT fue exitosa.
@@ -266,7 +281,7 @@ class SunatController extends Controller
             // Guardamos el CDR
             $cdrGuardado = file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
             if ($cdrGuardado) {
-                $comprobante->url_cdr = 'R-' . $invoice->getName() . '.zip';
+                $factura->url_cdr = 'R-' . $invoice->getName() . '.zip';
             }
 
 
@@ -275,186 +290,99 @@ class SunatController extends Controller
             $code = (int)$cdr->getCode();
 
             if ($code === 0) {
-                $comprobante->estado = 'aceptado';
-                $comprobante->observaciones =  substr($cdr->getDescription(), 0, 255);
-                $comprobante->update();
-
+                $factura->estado = 'aceptado';
+                $factura->observaciones = '';
                 if (count($cdr->getNotes()) > 0) {
-                    $comprobante->estado = 'observado';
-                    $comprobante->observaciones = substr($cdr->getNotes(), 0, 255);
-                    $comprobante->update();
+                    $factura->estado = 'observado';
+                    // Corregir estas observaciones en siguientes emisiones.
+                    $factura->observaciones = var_dump($cdr->getNotes());
                 }
             } else if ($code >= 2000 && $code <= 3999) {
-                $comprobante->estado = 'rechazado';
-                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
-                $comprobante->update();
+                $factura->estado = 'rechazado';
+                //echo 'ESTADO: RECHAZADA' . PHP_EOL;
             } else {
-                $comprobante->estado = 'rechazado';
-                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
-                $comprobante->update();
+                /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
+                /*code: 0100 a 1999 */
+                $factura->estado = 'rechazado';
             }
+
+            $factura->observaciones =  $factura->observaciones . $cdr->getDescription() . PHP_EOL;
+
+            $html = new HtmlReport();
+            $html->setTemplate('/Sunat/invoice.html.twig');
+
+            $report = new PdfReport($html);
+
+            $report->setOptions([
+                'no-outline',
+                'viewport-size' => '1280x1024',
+                'page-width' => '21cm',
+                'page-height' => '29.7cm',
+            ]);
+            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+            $params = [
+                'system' => [
+                    'logo' => file_get_contents(__DIR__ . '/Sunat/siscaja_blanco.png'), // Logo de Empresa
+                    'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                ],
+                'user' => [
+                    'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                    'extras'     => [
+                        // Leyendas adicionales
+                        ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                        ['name' => 'VENDEDOR', 'value' => 'GITHUB SELLER'],
+                    ],
+                    'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+                ]
+            ];
+
+            $pdf = $report->render($invoice, $params);
+
+            if ($pdf === null) {
+                $error = $report->getExporter()->getError();
+                echo 'Error: ' . $error;
+                return;
+            }
+
+            $pdfGuardado = file_put_contents($invoice->getName() . '.pdf', $pdf);
+            if ($pdfGuardado) {
+                $factura->url_pdf = $invoice->getName() . '.pdf';
+            }
+            $factura->update();
         } catch (\Exception $e) {
-            $comprobante->observaciones = 'Error al enviar el comprobante';
+            $factura->estado = 'noEnviado';
+            $factura->observaciones = 'Error al enviar la factura' . $e;
+            $factura->update();
             Log::error('SunatController@enviarFactura, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('sunat.iniciarFacturas');
+        //return $factura;
     }
-    public function enviarBoleta(Comprobante $comprobante)
+    public function enviarBoleta(Comprobante $boleta)
     {
-        $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
-
-        try {
-            $see = require __DIR__ . '/config.php';
-
-            // Cliente
-            $client = (new Client())
-                ->setTipoDoc('6')
-                ->setNumDoc('20000000001')
-                ->setRznSocial('EMPRESA X');
-
-            // Emisor
-            $address = (new Address())
-                ->setUbigueo('150101')
-                ->setDepartamento('LIMA')
-                ->setProvincia('LIMA')
-                ->setDistrito('LIMA')
-                ->setUrbanizacion('-')
-                ->setDireccion('Av. Villa Nueva 221')
-                ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
-
-            $company = (new Company())
-                ->setRuc('20123456789')
-                ->setRazonSocial('GREEN SAC')
-                ->setNombreComercial('GREEN')
-                ->setAddress($address);
-
-
-            //Variables Globales
-            $valorVenta = 0.0;
-            $totalImpuestos = 0.0;
-
-            $detalle = $comprobante->detalles;
-            foreach ($detalle as $index => $value) {
-
-                if ($index <= count($detalle)) {
-                    $item = (new SaleDetail())
-                        ->setCodProducto($value['codigo'])
-                        ->setUnidad('NIU') // Unidad - Catalog. 03
-                        ->setCantidad($value['cantidad'])
-                        ->setMtoValorUnitario($value['valor_unitario'])
-                        ->setDescripcion('PRODUCTO 1')
-                        ->setMtoBaseIgv(100)
-                        ->setPorcentajeIgv(18.00) // 18%
-                        ->setIgv(18.00)
-                        ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
-                        ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
-                        ->setMtoValorVenta(100.00)
-                        ->setMtoPrecioUnitario(59.00);
-
-                    $legend = (new Legend())
-                        ->setCode('1000') // Monto en letras - Catalog. 52
-                        ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
-
-                    $invoice->setDetails([$item])
-                        ->setLegends([$legend]);
-                }
-                $valorVenta = $valorVenta + $value['cantidad'] * $value['valor_unitario'] - $value['descuento'];
-            }
-            // Venta
-            $invoice = (new Invoice())
-                ->setUblVersion('2.1')
-                ->setTipoOperacion('0101') // Venta - Catalog. 51
-                ->setTipoDoc('03') // Boleta - Catalog. 01
-                ->setSerie($comprobante->serie)
-                ->setCorrelativo($comprobante->correlativo)
-                ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
-                ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
-                ->setTipoMoneda('PEN') // Sol - Catalog. 02
-                ->setCompany($company)
-                ->setClient($client)
-                ->setMtoOperGravadas(100.00)
-                ->setMtoIGV(18.00)
-                ->setTotalImpuestos(18.00)
-                ->setValorVenta($valorVenta)
-                ->setSubTotal(118.00)
-                ->setMtoImpVenta($comprobante->total);
-
-
-            $result = $see->send($invoice);
-
-            // Guardar XML firmado digitalmente.
-            file_put_contents(
-                $invoice->getName() . '.xml',
-                $see->getFactory()->getLastXml()
-            );
-
-            // Verificamos que la conexión con SUNAT fue exitosa.
-            if (!$result->isSuccess()) {
-                // Mostrar error al conectarse a SUNAT.
-                echo 'Codigo Error: ' . $result->getError()->getCode();
-                echo 'Mensaje Error: ' . $result->getError()->getMessage();
-                exit();
-            }
-
-            // Guardamos el CDR
-            file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
-
-            $cdr = $result->getCdrResponse();
-
-            $code = (int)$cdr->getCode();
-
-            if ($code === 0) {
-                $comprobante->estado = 'aceptado';
-                $comprobante->observaciones =  substr($cdr->getDescription(), 0, 255);
-                $comprobante->update();
-
-                if (count($cdr->getNotes()) > 0) {
-                    $comprobante->estado = 'observado';
-                    $comprobante->observaciones = substr($cdr->getNotes(), 0, 255);
-                    $comprobante->update();
-                }
-            } else if ($code >= 2000 && $code <= 3999) {
-                $comprobante->estado = 'rechazado';
-                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
-                $comprobante->update();
-            } else {
-                $comprobante->estado = 'rechazado';
-                $comprobante->observaciones = 'No se pudo enviar el comprobante a sunat';
-                $comprobante->update();
-            }
-        } catch (\Exception $e) {
-            $comprobante->observaciones = 'Error al enviar el comprobante';
-            Log::error('SunatController@enviar, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
-        }
-        return redirect()->route('sunat.iniciarBoletas');
     }
-    public function anularFactura(Comprobante $comprobante)
+    public function anularFactura(Comprobante $factura)
     {
         try {
-            $comprobante->estado = 'anulado';
-            $comprobante->update();
+            $factura->estado = 'anulado';
+            $factura->update();
         } catch (\Exception $e) {
             Log::error('SunatController@anularFactura, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('sunat.iniciarFacturas');
     }
-    public function anularBoleta(Comprobante $comprobante)
+    public function anularBoleta(Comprobante $boleta)
     {
         try {
-            $comprobante->estado = 'anulado';
-            $comprobante->update();
+            $boleta->estado = 'anulado';
+            $boleta->update();
         } catch (\Exception $e) {
             Log::error('SunatController@anularBoleta, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('sunat.iniciarBoletas');
-    }
-
-    public function descargarArchivo(Comprobante $comprobante)
-    {
-        $pathtoFile = public_path() . $comprobante->url_xml;
-        return response()->download($pathtoFile);
     }
 }

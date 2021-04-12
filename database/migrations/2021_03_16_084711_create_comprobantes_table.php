@@ -21,10 +21,11 @@ class CreateComprobantesTable extends Migration
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total');
-            $table->enum('estado', ['noEnviado', 'observado','rechazado','anulado','aceptado']);
-            $table->string('observaciones');
+            $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
+            $table->text('observaciones');
             $table->string('url_xml');
             $table->string('url_cdr');
+            $table->string('url_pdf');
             $table->timestamps();
         });
     }

@@ -68,6 +68,7 @@ class ComprobanteController extends Controller
         $comprobante->observaciones = "";
         $comprobante->url_xml = "";
         $comprobante->url_cdr = "";
+        $comprobante->url_pdf = "";
         $comprobante->detalles = array();
 
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
@@ -100,6 +101,7 @@ class ComprobanteController extends Controller
             $comprobante->observaciones = '';
             $comprobante->url_xml = '';
             $comprobante->url_cdr = '';
+            $comprobante->url_pdf = '';
             $comprobante->save();
 
             $detalle = $request->detalles;
