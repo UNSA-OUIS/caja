@@ -204,7 +204,9 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
+            const promise = axios.get(
+                `${this.app_url}/sunat/listarBoletas${params}`
+            );
 
             return promise.then(response => {
                 const comprobante = response.data.data;
@@ -229,7 +231,7 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.anular", [boleta])
+                            route("sunat.anularBoleta", [boleta])
                         );
                         this.refreshTable();
                     }
@@ -250,7 +252,7 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.enviar", [boleta])
+                            route("sunat.enviarBoleta", [boleta])
                         );
                         this.refreshTable();
                     }

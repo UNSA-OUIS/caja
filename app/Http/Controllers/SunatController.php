@@ -159,7 +159,7 @@ class SunatController extends Controller
         $factura = Comprobante::with('detalles')->where('id', 'like', $factura->id)->first();
 
         try {
-            $see = require __DIR__ . '/Sunat/config.php';
+            $see = require storage_path() . '\app\public\config.php';
 
             // Cliente
             $client = (new Client())
@@ -188,12 +188,12 @@ class SunatController extends Controller
 
             $detalle = $factura->detalles;
             foreach ($detalle as $index => $value) {
-                $item = (new SaleDetail())
+                $items[$index] = (new SaleDetail())
                     ->setCodProducto($value['concepto_id'])
                     ->setUnidad('NIU') // Unidad - Catalog. 03
                     ->setCantidad($value['cantidad'])
                     ->setMtoValorUnitario($value['valor_unitario'])
-                    ->setDescripcion('PRODUCTO 1')
+                    ->setDescripcion('PRODUCTO - ' . $value['concepto_id'])
                     ->setMtoBaseIgv(100)
                     ->setPorcentajeIgv(18.00) // 18%
                     ->setIgv(18.00)
@@ -206,10 +206,9 @@ class SunatController extends Controller
                     ->setCode('1000') // Monto en letras - Catalog. 52
                     ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
 
-                $invoice->setDetails([$item])
+                $invoice->setDetails($items)
                     ->setLegends([$legend]);
             }
-            return var_dump($item);
 
             $invoice
                 ->setUblVersion('2.1')
@@ -229,35 +228,6 @@ class SunatController extends Controller
                 ->setSubTotal(118.00)
                 ->setMtoImpVenta($factura->total);
 
-
-
-            //$invoice = new Invoice();
-
-            //Variables Globales
-            //$montoValorVenta = 0.0;
-            //$montoPrecioUnitario = 0.0;
-            //$subTotal = 0.0;
-
-            /*
-            // Venta
-            $invoice
-                ->setUblVersion('2.1')
-                ->setTipoOperacion('0101') // Venta - Catalog. 51
-                ->setTipoDoc('01') // Factura - Catalog. 01
-                ->setSerie($factura->serie)
-                ->setCorrelativo($factura->correlativo)
-                ->setFechaEmision(new DateTime()) // Zona horaria: Lima
-                ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
-                ->setTipoMoneda('PEN') // Sol - Catalog. 02
-                ->setCompany($company)
-                ->setClient($client)
-                ->setMtoOperGravadas(100.00)
-                ->setMtoIGV(18.00)
-                ->setTotalImpuestos(18.00)
-                ->setValorVenta($montoValorVenta)
-                ->setSubTotal($subTotal)
-                ->setMtoImpVenta($factura->total);*/
-
             $result = $see->send($invoice);
 
             // Guardar XML firmado digitalmente.
@@ -268,22 +238,24 @@ class SunatController extends Controller
 
             if ($xmlGuardado) {
                 $factura->url_xml = $invoice->getName() . '.xml';
+                $factura->update();
             }
 
             // Verificamos que la conexión con SUNAT fue exitosa.
             if (!$result->isSuccess()) {
                 // Mostrar error al conectarse a SUNAT.
-                echo 'Codigo Error: ' . $result->getError()->getCode();
-                echo 'Mensaje Error: ' . $result->getError()->getMessage();
+                $factura->observaciones .= 'Codigo Error: ' . $result->getError()->getCode();
+                $factura->observaciones .= 'Mensaje Error: ' . $result->getError()->getMessage();
+                $factura->update();
                 exit();
             }
 
             // Guardamos el CDR
-            $cdrGuardado = file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
+            $cdrGuardado = file_put_contents('\R-' . $invoice->getName() . '.zip', $result->getCdrZip());
             if ($cdrGuardado) {
                 $factura->url_cdr = 'R-' . $invoice->getName() . '.zip';
+                $factura->update();
             }
-
 
             $cdr = $result->getCdrResponse();
 
@@ -292,24 +264,30 @@ class SunatController extends Controller
             if ($code === 0) {
                 $factura->estado = 'aceptado';
                 $factura->observaciones = '';
+                $factura->update();
                 if (count($cdr->getNotes()) > 0) {
-                    $factura->estado = 'observado';
+                    //return count($cdr->getNotes());
                     // Corregir estas observaciones en siguientes emisiones.
-                    $factura->observaciones = var_dump($cdr->getNotes());
+                    $factura->estado = 'observado';
+                    $factura->observaciones = json_encode($cdr->getNotes(), JSON_UNESCAPED_UNICODE);
+                    $factura->update();
                 }
             } else if ($code >= 2000 && $code <= 3999) {
                 $factura->estado = 'rechazado';
-                //echo 'ESTADO: RECHAZADA' . PHP_EOL;
+                $factura->observaciones = '';
+                $factura->update();
             } else {
                 /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
                 /*code: 0100 a 1999 */
                 $factura->estado = 'rechazado';
+                $factura->observaciones = '';
+                $factura->update();
             }
-
-            $factura->observaciones =  $factura->observaciones . $cdr->getDescription() . PHP_EOL;
+            $factura->observaciones = $cdr->getDescription() . PHP_EOL . $factura->observaciones;
+            $factura->update();
 
             $html = new HtmlReport();
-            $html->setTemplate('/Sunat/invoice.html.twig');
+            $html->setTemplate('invoice.html.twig');
 
             $report = new PdfReport($html);
 
@@ -323,7 +301,7 @@ class SunatController extends Controller
 
             $params = [
                 'system' => [
-                    'logo' => file_get_contents(__DIR__ . '/Sunat/siscaja_blanco.png'), // Logo de Empresa
+                    'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
                     'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
                 ],
                 'user' => [
@@ -331,7 +309,7 @@ class SunatController extends Controller
                     'extras'     => [
                         // Leyendas adicionales
                         ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
-                        ['name' => 'VENDEDOR', 'value' => 'GITHUB SELLER'],
+                        ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
                     ],
                     'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
                 ]
@@ -348,17 +326,14 @@ class SunatController extends Controller
             $pdfGuardado = file_put_contents($invoice->getName() . '.pdf', $pdf);
             if ($pdfGuardado) {
                 $factura->url_pdf = $invoice->getName() . '.pdf';
+                $factura->update();
             }
-            $factura->update();
         } catch (\Exception $e) {
-            $factura->estado = 'noEnviado';
-            $factura->observaciones = 'Error al enviar la factura' . $e;
+            $factura->observaciones = 'Error al enviar la factura' . $e->getMessage();
             $factura->update();
-            Log::error('SunatController@enviarFactura, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('sunat.iniciarFacturas');
-        //return $factura;
     }
     public function enviarBoleta(Comprobante $boleta)
     {
@@ -367,9 +342,11 @@ class SunatController extends Controller
     {
         try {
             $factura->estado = 'anulado';
+            $factura->observaciones = '';
             $factura->update();
         } catch (\Exception $e) {
-            Log::error('SunatController@anularFactura, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            $factura->observaciones = 'Error al anular la factura' . $e->getMessage();
+            $factura->update();
         }
 
         return redirect()->route('sunat.iniciarFacturas');
@@ -378,6 +355,7 @@ class SunatController extends Controller
     {
         try {
             $boleta->estado = 'anulado';
+            $boleta->observaciones = '';
             $boleta->update();
         } catch (\Exception $e) {
             Log::error('SunatController@anularBoleta, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());

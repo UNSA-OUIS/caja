@@ -1,5 +1,6 @@
 <template>
     <app-layout>
+
         <div class="card">
             <div class="card-header">
                 <ol class="breadcrumb float-left">
@@ -112,7 +113,7 @@
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <b-button
-                            v-if="row.item.estado == 'aceptado'"
+                            v-if="row.item.estado == 'aceptado' || row.item.estado == 'observado'"
                             target="_blank"
                             variant="primary"
                             size="sm"

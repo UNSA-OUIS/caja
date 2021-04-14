@@ -16,7 +16,7 @@
         <link rel="stylesheet" href="{{ asset(mix('assets/css/app-dark.css')) }}">
 
         <!-- Styles -->
-        <!--<link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}">-->        
+        <!--<link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}">-->
 
         <!-- Scripts -->
         @routes
