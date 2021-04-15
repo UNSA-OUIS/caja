@@ -18,6 +18,8 @@ use Inertia\Inertia;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 
+require '..\vendor\autoload.php';
+
 class SunatController extends Controller
 {
     public function __invoke()
@@ -193,22 +195,21 @@ class SunatController extends Controller
                     ->setUnidad('NIU') // Unidad - Catalog. 03
                     ->setCantidad($value['cantidad'])
                     ->setMtoValorUnitario($value['valor_unitario'])
-                    ->setDescripcion('PRODUCTO - ' . $value['concepto_id'])
-                    ->setMtoBaseIgv(100)
+                    ->setDescripcion('PRODUCTO - ' . $index)
+                    ->setMtoBaseIgv(100.00)
                     ->setPorcentajeIgv(18.00) // 18%
                     ->setIgv(18.00)
                     ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
                     ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
-                    ->setMtoValorVenta(100.00)
-                    ->setMtoPrecioUnitario(59.00);
-
-                $legend = (new Legend())
-                    ->setCode('1000') // Monto en letras - Catalog. 52
-                    ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
-
-                $invoice->setDetails($items)
-                    ->setLegends([$legend]);
+                    ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
+                    ->setMtoPrecioUnitario($value['valor_unitario'] + $value['valor_unitario'] * 18.00);
             }
+
+            $legend = (new Legend())
+                ->setCode('1000') // Monto en letras - Catalog. 52
+                ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
+
+            $invoice->setDetails($items)->setLegends([$legend]);
 
             $invoice
                 ->setUblVersion('2.1')
@@ -244,9 +245,9 @@ class SunatController extends Controller
             // Verificamos que la conexión con SUNAT fue exitosa.
             if (!$result->isSuccess()) {
                 // Mostrar error al conectarse a SUNAT.
-                $factura->observaciones .= 'Codigo Error: ' . $result->getError()->getCode();
-                $factura->observaciones .= 'Mensaje Error: ' . $result->getError()->getMessage();
+                $factura->observaciones = 'Codigo Error: ' . $result->getError()->getCode() . '\n' . 'Mensaje Error: ' . $result->getError()->getMessage();
                 $factura->update();
+                return $factura;
                 exit();
             }
 
@@ -263,7 +264,7 @@ class SunatController extends Controller
 
             if ($code === 0) {
                 $factura->estado = 'aceptado';
-                $factura->observaciones = '';
+                $factura->observaciones = $cdr->getDescription() . PHP_EOL;
                 $factura->update();
                 if (count($cdr->getNotes()) > 0) {
                     //return count($cdr->getNotes());
@@ -283,8 +284,8 @@ class SunatController extends Controller
                 $factura->observaciones = '';
                 $factura->update();
             }
-            $factura->observaciones = $cdr->getDescription() . PHP_EOL . $factura->observaciones;
-            $factura->update();
+            //$factura->observaciones = $cdr->getDescription() . PHP_EOL . $factura->observaciones;
+            //$factura->update();
 
             $html = new HtmlReport();
             $html->setTemplate('invoice.html.twig');
@@ -329,7 +330,7 @@ class SunatController extends Controller
                 $factura->update();
             }
         } catch (\Exception $e) {
-            $factura->observaciones = 'Error al enviar la factura' . $e->getMessage();
+            $factura->observaciones = 'Error al enviar la factura' . $e;
             $factura->update();
         }
 

@@ -1,6 +1,5 @@
 <template>
     <app-layout>
-
         <div class="card">
             <div class="card-header">
                 <ol class="breadcrumb float-left">
@@ -113,7 +112,10 @@
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <b-button
-                            v-if="row.item.estado == 'aceptado' || row.item.estado == 'observado'"
+                            v-if="
+                                row.item.estado == 'aceptado' ||
+                                    row.item.estado == 'observado'
+                            "
                             target="_blank"
                             variant="primary"
                             size="sm"
@@ -141,8 +143,28 @@
                             title="Enviar"
                             @click="enviar(row.item)"
                         >
-                            <b-icon icon="upload"></b-icon>
+                            <b-icon icon="cloud-arrow-up"></b-icon>
                         </b-button>
+                        <b-button
+                            v-if="row.item.estado == 'observado'"
+                            size="sm"
+                            @click="row.toggleDetails"
+                        >
+                            <b-icon
+                                v-if="row.detailsShowing"
+                                icon="dash-circle"
+                            ></b-icon>
+                            <b-icon v-else icon="plus-circle"></b-icon>
+                        </b-button>
+                    </template>
+                    <template #row-details="row">
+                        <b-card>
+                            <ul>
+                                <li>
+                                    {{ row.item.observaciones }}
+                                </li>
+                            </ul>
+                        </b-card>
                     </template>
                 </b-table>
                 <b-row>
@@ -181,12 +203,6 @@ export default {
                 {
                     key: "estado",
                     label: "Estado",
-                    class: "text-center",
-                    sortable: true
-                },
-                {
-                    key: "observaciones",
-                    label: "Observaciones",
                     class: "text-center",
                     sortable: true
                 },
