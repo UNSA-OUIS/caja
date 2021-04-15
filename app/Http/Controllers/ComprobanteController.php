@@ -43,9 +43,15 @@ class ComprobanteController extends Controller
         ];
     }    
 
-    public function buscarApnAlumno()
-    {
+    public function buscarApnAlumno(Request $request)
+    {        
+        $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
+                        //->orWhere('apn', 'like', '%' . $request->ap_materno)
+                        //->orWhere('apn', 'like', $request->nombres)
+                        ->take(10)
+                        ->get();  
         
+        return $alumnos;
     }
     
     public function create(Request $request)
