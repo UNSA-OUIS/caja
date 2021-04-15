@@ -227,7 +227,7 @@ class SunatController extends Controller
                 ->setTotalImpuestos(18.00)
                 ->setValorVenta(100.00)
                 ->setSubTotal(118.00)
-                ->setMtoImpVenta($factura->total);
+                ->setMtoImpVenta($factura->total + 18.00);
 
             $result = $see->send($invoice);
 
