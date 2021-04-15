@@ -11,12 +11,7 @@
                     <li class="breadcrumb-item active">
                         Lista de comprobantes
                     </li>
-                </ol>
-                <inertia-link
-                    class="btn btn-success float-right"
-                    :href="route('comprobantes.crear')"
-                    >Nuevo</inertia-link
-                >
+                </ol>                
             </div>
             <div class="card-body">
                 <b-alert

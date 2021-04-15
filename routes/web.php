@@ -162,13 +162,20 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
-        return Inertia::render('Comprobantes/Listar');
+        //return Inertia::render('Comprobantes/Listar');
+        return Inertia::render('Comprobantes/Busqueda');
     })->name('comprobantes.iniciar');
+    
+    
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
-    Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
+    Route::post('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
+
+    Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');    
+    Route::post('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
+
     /*******************************************************************/
 
 
@@ -190,6 +197,12 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoletas');
     Route::post('/sunat/anularBoleta/{boleta}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
     /*******************************************************************/
+    
+    /**************************** Reportes ***************************/
+    Route::get('/reportes', [ComprobanteController::class, 'verReporte'])->name('comprobantes.reporte');
+    Route::post('/reportes', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
+    /*******************************************************************/
+    
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;
