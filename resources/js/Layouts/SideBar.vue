@@ -132,8 +132,8 @@
                                     path == 'clasificadores' ||
                                     path == 'tipos-concepto' ||
                                     path == 'conceptos' ||
-                                    path == 'tipo-comprobante' ||
-                                    path == 'comprobantes'
+                                    path == 'tipo-comprobante'
+                                    
                             }"
                         >
                             <i class="uil-window-section"></i>
@@ -232,14 +232,25 @@
                                 >
                                     Tipos de comprobante
                                 </inertia-link>
-                            </li>
-                            <!--<li>
-                                <inertia-link
-                                    :href="route('accesos-google.iniciar')"
-                                >
-                                    Accesos Google
-                                </inertia-link>
-                            </li>-->
+                            </li>                                                     
+                        </ul>
+                    </li>
+
+                    <li>
+                        <a
+                            href="javascript: void(0);"
+                            class="has-arrow waves-effect"
+                            @click="mostrarMenu(2)"
+                            :class="{ 'mm-active': path == 'comprobantes' }"
+                        >
+                            <i class="uil-upload"></i>
+                            <span>Comprobantes</span>
+                        </a>
+                        <ul
+                            class="sub-menu"
+                            aria-expanded="false"
+                            v-show="show_menus[2]"
+                        >
                             <li
                                 :class="{ 'mm-active': path == 'comprobantes' }"
                             >
@@ -257,7 +268,7 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
-                            @click="mostrarMenu(2)"
+                            @click="mostrarMenu(3)"
                             :class="{
                                 'mm-active':
                                     path == 'dashboard sunat' ||
@@ -271,7 +282,7 @@
                         <ul
                             class="sub-menu"
                             aria-expanded="false"
-                            v-show="show_menus[2]"
+                            v-show="show_menus[3]"
                         >
                             <li
                                 :class="{
@@ -321,7 +332,7 @@
                         <a
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
-                            @click="mostrarMenu(3)"
+                            @click="mostrarMenu(4)"
                             :class="{ 'mm-active': path == 'reportes' }"
                         >
                             <i class="fas fa-cloud-upload-alt"></i>
@@ -330,7 +341,7 @@
                         <ul
                             class="sub-menu"
                             aria-expanded="false"
-                            v-show="show_menus[3]"
+                            v-show="show_menus[4]"
                         >
                             <li>
                                 <inertia-link 

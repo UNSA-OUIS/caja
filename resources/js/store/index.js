@@ -6,7 +6,7 @@ import config from "../config";
 
 export default new Vuex.Store({
   state: {
-    array_estado_menu: [false, false, false, false],    
+    array_estado_menu: [false, false, false, false, false],    
 	noEnviado: 0,
 	observado: 0,
 	rechazado: 0,
