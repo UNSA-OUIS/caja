@@ -21,28 +21,34 @@
                         <b-row>
                             <b-col>
                                 <b-form-group
-                                    id="select-g-1"
-                                    label="Tipo de cliente:"
-                                    label-for="select-1"
+                                    id="input-group-6"
+                                    label="Serie:"
+                                    label-for="input-6"
                                 >
-                                    <b-form-select
-                                        id="select-1"
-                                        v-model="tipoCliente"
-                                        :options="tipos_cliente"
-                                        class="mb-3"
-                                    >
-                                        <template #first>
-                                            <b-form-select-option
-                                                :value="null"
-                                                disabled
-                                                >-- Por favor, seleccione un
-                                                concepto
-                                                --</b-form-select-option
-                                            >
-                                        </template>
-                                    </b-form-select>
+                                    <b-form-input
+                                        id="input-6"
+                                        v-model="comprobante.serie"
+                                        placeholder="Serie"
+                                        :readonly="accion == 'Mostrar'"
+                                    ></b-form-input>
                                 </b-form-group>
                             </b-col>
+                            <b-col>
+                                <b-form-group
+                                    id="input-group-7"
+                                    label="Correlativo:"
+                                    label-for="input-7"
+                                >
+                                    <b-form-input
+                                        id="input-7"
+                                        v-model="comprobante.correlativo"
+                                        placeholder="Correlativo"
+                                        :readonly="accion == 'Mostrar'"
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>                            
                             <b-col>
                                 <b-form-group
                                     id="input-group-8"
@@ -51,31 +57,44 @@
                                 >
                                     <b-form-input
                                         id="input-8"
-                                        v-model="clienteDni"
+                                        v-model="comprobante.dni"
                                         list="clientes"
-                                        @change="getCliente($event)"
+                                        readonly
                                     ></b-form-input>
-                                    <datalist id="clientes">
+                                    <!--<datalist id="clientes">
                                         <option
                                             v-for="cliente in clientes"
                                             v-bind:key="cliente.dni"
                                             :value="cliente.dni"
                                             >{{ cliente.nombre }}</option
                                         >
-                                    </datalist>
+                                    </datalist>-->
                                 </b-form-group>
                             </b-col>
                             <b-col>
                                 <b-form-group
                                     id="input-group-9"
                                     label="CUI:"
-                                    label-for="input-9"
+                                    label-for="input-9"                                    
                                 >
                                     <b-form-input
                                         id="input-9"
                                         v-model="comprobante.cui"
                                         placeholder="Cui"
-                                        :readonly="accion == 'Mostrar'"
+                                        readonly
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group
+                                    id="input-group-10"
+                                    label="Escuela:"
+                                    label-for="input-10"                                    
+                                >
+                                    <b-form-input
+                                        id="input-10"
+                                        v-model="comprobante.escuela"                                        
+                                        readonly
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -90,8 +109,7 @@
                                     <b-form-input
                                         id="input-4"
                                         readonly
-                                        v-model="cliente.nombre"
-                                        placeholder="Nombre"
+                                        v-model="comprobante.usuario"                                        
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
@@ -139,37 +157,7 @@
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-6"
-                                    label="Serie:"
-                                    label-for="input-6"
-                                >
-                                    <b-form-input
-                                        id="input-6"
-                                        v-model="comprobante.serie"
-                                        placeholder="Serie"
-                                        :readonly="accion == 'Mostrar'"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-7"
-                                    label="Correlativo:"
-                                    label-for="input-7"
-                                >
-                                    <b-form-input
-                                        id="input-7"
-                                        v-model="comprobante.correlativo"
-                                        placeholder="Correlativo"
-                                        :readonly="accion == 'Mostrar'"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
+                        </b-row>                        
                     </b-form>
                 </div>
 
@@ -425,26 +413,6 @@ export default {
             tipoCliente: "",
             clienteDni: "",
             cantidadState: null,
-
-            /*comprobante: {
-                codigo: "",
-                cui: "",
-                nues: "",
-                serie: "",
-                correlativo: "",
-                submittedDetails: [
-                    {
-                        codigo: "",
-                        concepto_id: "",
-                        cantidad: "1",
-                        valor_unitarios: "",
-                        tipo_descuento: "",
-                        descuento: "0.00"
-                    }
-                ],
-                total: ""
-            },*/
-
             conceptosFields: [
                 {
                     key: "value",

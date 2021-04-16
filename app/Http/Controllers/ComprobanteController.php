@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
 use App\Models\Concepto;
+use App\Models\Matricula;
+use App\Models\Escuela;
+use App\Models\Alumno;
 use App\Models\DetallesComprobante;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
@@ -13,12 +16,7 @@ use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ComprobanteController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+{    
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
@@ -35,56 +33,58 @@ class ComprobanteController extends Controller
         return $query->paginate($request->size);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        /*compCabe: {
-            codigo: "",
-            cui: "",
-            nues: "",
-            serie: "",
-            correlativo: "",
-            submittedDetails: [
-                {
-                    codigo: "",
-                    concepto_id: "",
-                    cantidad: "1",
-                    prUnit: "",
-                    tipo_descuento: "",
-                    descuento: "0.00"
-                }
-            ],
-            total: ""
-        },*/
-        $comprobante = new Comprobante();
-        $comprobante->codigo = "";
-        $comprobante->cui = "";
-        $comprobante->nues = "";
-        $comprobante->serie = "";
-        $comprobante->correlativo = "";
-        $comprobante->total = "";
-        $comprobante->observaciones = "";
-        $comprobante->url_xml = "";
-        $comprobante->url_cdr = "";
-        $comprobante->detalles = array();
+    public function buscarCuiAlumno($cui)
+    {   
+        $alumno = Alumno::where('cui', $cui)->first();     
+        $matriculas = Matricula::with('escuela')->where('cui', $cui)->get();
+        
+        return [
+            'alumno' => $alumno,
+            'matriculas' => $matriculas
+        ];
+    }    
 
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
-            ->orderBy('descripcion', 'asc')
-            ->get();
-
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+    public function buscarApnAlumno(Request $request)
+    {        
+        $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
+                        //->orWhere('apn', 'like', '%' . $request->ap_materno)
+                        //->orWhere('apn', 'like', $request->nombres)
+                        ->take(10)
+                        ->get();  
+        
+        return $alumnos;
     }
+    
+    public function create(Request $request)
+    {   
+        //dd($request->matricula['escuela']);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+        if ($request->has('alumno') && $request->has('matricula')) {
+            $comprobante = new Comprobante();
+
+            $comprobante->codigo = "";
+            $comprobante->cui = $request->alumno['cui'];
+            $comprobante->escuela = $request->matricula['escuela']['nesc'];
+            $comprobante->nues = $request->matricula['nues'];
+            $comprobante->serie = "";
+            $comprobante->correlativo = "";
+            $comprobante->total = "";
+            $comprobante->observaciones = "";
+            $comprobante->url_xml = "";
+            $comprobante->url_cdr = "";
+            $comprobante->detalles = array();
+
+            $comprobante->usuario = $request->alumno['apn'];
+            $comprobante->dni = $request->alumno['dic'];
+
+            $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
+                ->orderBy('descripcion', 'asc')
+                ->get();
+
+            return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+        }       
+    }
+    
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -102,6 +102,7 @@ class ComprobanteController extends Controller
             $comprobante->observaciones = '';
             $comprobante->url_xml = '';
             $comprobante->url_cdr = '';
+
             $comprobante->save();
 
             $detalle = $request->detalles;
@@ -122,13 +123,7 @@ class ComprobanteController extends Controller
         }
         return redirect()->route('comprobantes.iniciar')->with($result);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function show(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
@@ -138,25 +133,12 @@ class ComprobanteController extends Controller
             ->get();
         return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function edit($id)
     {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function anular(Comprobante $comprobante)
     {
         try {
