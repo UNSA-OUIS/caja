@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ComprobanteController extends Controller
-{    
+{
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
@@ -33,15 +33,15 @@ class ComprobanteController extends Controller
     }
 
     public function buscarCuiAlumno($cui)
-    {   
-        $alumno = Alumno::where('cui', $cui)->first();     
+    {
+        $alumno = Alumno::where('cui', $cui)->first();
         $matriculas = Matricula::with('escuela')->where('cui', $cui)->get();
-        
+
         return [
             'alumno' => $alumno,
             'matriculas' => $matriculas
         ];
-    }    
+    }
 
     public function buscarApnAlumno(Request $request)
     {        
@@ -53,9 +53,9 @@ class ComprobanteController extends Controller
         
         return $alumnos;
     }
-    
+
     public function create(Request $request)
-    {   
+    {
         //dd($request->matricula['escuela']);
 
         if ($request->has('alumno') && $request->has('matricula')) {
@@ -81,9 +81,9 @@ class ComprobanteController extends Controller
                 ->get();
 
             return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
-        }       
+        }
     }
-    
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -101,7 +101,7 @@ class ComprobanteController extends Controller
             $comprobante->observaciones = '';
             $comprobante->url_xml = '';
             $comprobante->url_cdr = '';
-
+            $comprobante->url_pdf = '';
             $comprobante->save();
 
             $detalle = $request->detalles;
@@ -115,14 +115,14 @@ class ComprobanteController extends Controller
                 $detalles->save();
             }
             DB::commit();
-            $result = ['successMessage' => 'Comprobante registrado con éxito'];
+            return $comprobante;
         } catch (\Exception $e) {
             DB::rollback();
-            $result = ['errorMessage' => 'No se pudo registrar el comprobante' . $e];
+            return $e;
         }
-        return redirect()->route('comprobantes.iniciar')->with($result);
+        return redirect()->route('comprobantes.iniciar');
     }
-    
+
     public function show(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
@@ -132,12 +132,12 @@ class ComprobanteController extends Controller
             ->get();
         return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }
-    
+
     public function edit($id)
     {
         //
     }
-    
+
     public function anular(Comprobante $comprobante)
     {
         try {

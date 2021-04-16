@@ -9,7 +9,7 @@
                         >
                     </li>
                     <li class="breadcrumb-item active">
-                        Lista de comprobantes
+                        Lista de facturas
                     </li>
                 </ol>
             </div>
@@ -60,7 +60,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_comprobantes"
+                    ref="tbl_facturas"
                     show-empty
                     striped
                     hover
@@ -77,8 +77,8 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"
-                    empty-text="No hay comprobantes para mostrar"
-                    empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                    empty-text="No hay facturas para mostrar"
+                    empty-filtered-text="No hay facturas que coincidan con su búsqueda."
                 >
                     <template v-slot:cell(estado)="row">
                         <b-badge
@@ -104,14 +104,26 @@
                         <div v-if="row.item.estado == 'aceptado'">
                             <b-badge variant="success">Aceptado</b-badge>
                             <br />
-                            <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
+                            <a :href="`${app_url}/${row.item.url_xml}`" download
+                                >XML</a
+                            >
                             <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
                         </div>
                     </template>
                     <template v-slot:cell(acciones)="row">
-                        <inertia-link title="Ver" class="btn btn-info btn-sm">
+                        <b-button
+                            v-if="
+                                row.item.estado == 'aceptado' ||
+                                    row.item.estado == 'observado'
+                            "
+                            target="_blank"
+                            variant="primary"
+                            size="sm"
+                            title="Ver"
+                            :href="`${app_url}/${row.item.url_pdf}`"
+                        >
                             <b-icon icon="printer"></b-icon>
-                        </inertia-link>
+                        </b-button>
                         <b-button
                             v-if="row.item.estado == 'noEnviado'"
                             variant="danger"
@@ -131,8 +143,28 @@
                             title="Enviar"
                             @click="enviar(row.item)"
                         >
-                            <b-icon icon="upload"></b-icon>
+                            <b-icon icon="cloud-arrow-up"></b-icon>
                         </b-button>
+                        <b-button
+                            v-if="row.item.estado == 'observado'"
+                            size="sm"
+                            @click="row.toggleDetails"
+                        >
+                            <b-icon
+                                v-if="row.detailsShowing"
+                                icon="dash-circle"
+                            ></b-icon>
+                            <b-icon v-else icon="plus-circle"></b-icon>
+                        </b-button>
+                    </template>
+                    <template #row-details="row">
+                        <b-card>
+                            <ul>
+                                <li>
+                                    {{ row.item.observaciones }}
+                                </li>
+                            </ul>
+                        </b-card>
                     </template>
                 </b-table>
                 <b-row>
@@ -174,12 +206,6 @@ export default {
                     class: "text-center",
                     sortable: true
                 },
-                {
-                    key: "observaciones",
-                    label: "Observaciones",
-                    class: "text-center",
-                    sortable: true
-                },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,
@@ -195,7 +221,7 @@ export default {
     },
     methods: {
         refreshTable() {
-            this.$refs.tbl_comprobantes.refresh();
+            this.$refs.tbl_facturas.refresh();
         },
         myProvider(ctx) {
             let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -213,57 +239,48 @@ export default {
             );
 
             return promise.then(response => {
-                const comprobante = response.data.data;
-                console.log(comprobante);
+                const factura = response.data.data;
+                console.log(factura);
                 this.totalRows = response.data.total;
 
-                return comprobante || [];
+                return factura || [];
             });
         },
-        anular(comprobante) {
+        anular(factura) {
             this.$bvModal
-                .msgBoxConfirm(
-                    "¿Esta seguro de querer anular este comprobante?",
-                    {
-                        title: "Anular comprobante",
-                        okVariant: "danger",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true
-                    }
-                )
+                .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
+                    title: "Anular factura",
+                    okVariant: "danger",
+                    okTitle: "SI",
+                    cancelTitle: "NO",
+                    centered: true
+                })
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.anularFactura", [comprobante])
+                            route("sunat.anularFactura", [factura])
                         );
                         this.refreshTable();
                     }
                 });
         },
-        enviar(comprobante) {
+        enviar(factura) {
             this.$bvModal
-                .msgBoxConfirm(
-                    "¿Esta seguro de querer enviar este comprobante?",
-                    {
-                        title: "Enviar comprobante",
-                        okVariant: "success",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true
-                    }
-                )
+                .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
+                    title: "Enviar factura",
+                    okVariant: "success",
+                    okTitle: "SI",
+                    cancelTitle: "NO",
+                    centered: true
+                })
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.enviarFactura", [comprobante])
+                            route("sunat.enviarFactura", [factura])
                         );
                         this.refreshTable();
                     }
                 });
-        },
-        xml(comprobante) {
-            this.$inertia.get(route("sunat.descarga", [comprobante]));
         },
         onFiltered(filteredItems) {
             this.totalRows = filteredItems.length;

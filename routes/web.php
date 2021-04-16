@@ -182,21 +182,20 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
-    Route::get('/sunat/descarga/{comprobante}', SunatController::class, 'descargarArchivo')->name('sunat.descarga');
 
     Route::get('/sunat/facturas', function () {
         return Inertia::render('Sunat/ListarFacturas');
     })->name('sunat.iniciarFacturas');
     Route::get('/sunat/listarFacturas', [SunatController::class, 'indexFactura'])->name('sunat.listarFacturas');
-    Route::post('/sunat/enviarFactura/{comprobante}', [SunatController::class, 'enviarFactura'])->name('sunat.enviarFactura');
-    Route::post('/sunat/anularFactura/{comprobante}', [SunatController::class, 'anularFactura'])->name('sunat.anularFactura');
+    Route::post('/sunat/enviarFactura/{factura}', [SunatController::class, 'enviarFactura'])->name('sunat.enviarFactura');
+    Route::post('/sunat/anularFactura/{factura}', [SunatController::class, 'anularFactura'])->name('sunat.anularFactura');
 
     Route::get('/sunat/boletas', function () {
         return Inertia::render('Sunat/ListarBoletas');
     })->name('sunat.iniciarBoletas');
     Route::get('/sunat/listarBoletas', [SunatController::class, 'indexBoleta'])->name('sunat.listarBoletas');
-    Route::post('/sunat/enviarBoleta/{comprobante}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoletas');
-    Route::post('/sunat/anularBoleta/{comprobante}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
+    Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoletas');
+    Route::post('/sunat/anularBoleta/{boleta}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
     /*******************************************************************/
     
     /**************************** Reportes ***************************/
