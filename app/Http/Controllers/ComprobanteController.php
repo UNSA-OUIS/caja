@@ -144,12 +144,12 @@ class ComprobanteController extends Controller
                 $detalles->save();
             }
             DB::commit();
-            $result = ['successMessage' => 'Comprobante registrado con éxito'];
+            return $comprobante;
         } catch (\Exception $e) {
             DB::rollback();
-            $result = ['errorMessage' => 'No se pudo registrar el comprobante' . $e];
+            return $e;
         }
-        return redirect()->route('comprobantes.iniciar')->with($result);
+        return redirect()->route('comprobantes.iniciar');
     }
 
     public function show(Comprobante $comprobante)

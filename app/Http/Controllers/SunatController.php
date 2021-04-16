@@ -17,8 +17,9 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
+use Luecano\NumeroALetras\NumeroALetras;
 
-require '..\vendor\autoload.php';
+require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {
@@ -166,23 +167,23 @@ class SunatController extends Controller
             // Cliente
             $client = (new Client())
                 ->setTipoDoc('6')
-                ->setNumDoc('20000000001')
-                ->setRznSocial('EMPRESA X');
+                ->setNumDoc('10723516108')
+                ->setRznSocial('Jesus Ruben Ortiz Chavez');
 
             // Emisor
             $address = (new Address())
                 ->setUbigueo('150101')
-                ->setDepartamento('LIMA')
-                ->setProvincia('LIMA')
-                ->setDistrito('LIMA')
+                ->setDepartamento('AREQUIPA')
+                ->setProvincia('AREQUIPA')
+                ->setDistrito('AREQUIPA')
                 ->setUrbanizacion('-')
-                ->setDireccion('Av. Villa Nueva 221')
+                ->setDireccion('CALLE SANTA CATALINA 117')
                 ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
 
             $company = (new Company())
-                ->setRuc('20123456789')
-                ->setRazonSocial('GREEN SAC')
-                ->setNombreComercial('GREEN')
+                ->setRuc('20163646499')
+                ->setRazonSocial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
+                ->setNombreComercial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
                 ->setAddress($address);
 
             // Venta
@@ -205,9 +206,12 @@ class SunatController extends Controller
                     ->setMtoPrecioUnitario($value['valor_unitario'] + $value['valor_unitario'] * 18.00);
             }
 
+            $formatter = new NumeroALetras();
+            $montoLetras = $formatter->toInvoice($factura->total);
+
             $legend = (new Legend())
                 ->setCode('1000') // Monto en letras - Catalog. 52
-                ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
+                ->setValue($montoLetras);
 
             $invoice->setDetails($items)->setLegends([$legend]);
 
@@ -252,7 +256,7 @@ class SunatController extends Controller
             }
 
             // Guardamos el CDR
-            $cdrGuardado = file_put_contents('\R-' . $invoice->getName() . '.zip', $result->getCdrZip());
+            $cdrGuardado = file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
             if ($cdrGuardado) {
                 $factura->url_cdr = 'R-' . $invoice->getName() . '.zip';
                 $factura->update();
@@ -338,6 +342,72 @@ class SunatController extends Controller
     }
     public function enviarBoleta(Comprobante $boleta)
     {
+        $see = require storage_path() . '\app\public\config.php';
+
+        // Cliente
+        $client = new Client();
+        $client->setTipoDoc('1')
+            ->setNumDoc('46712369')
+            ->setRznSocial('MARIA RAMOS ARTEAGA');
+
+        // Emisor
+        $address = new Address();
+        $address->setUbigueo('150101')
+            ->setDepartamento('LIMA')
+            ->setProvincia('LIMA')
+            ->setDistrito('LIMA')
+            ->setUrbanizacion('-')
+            ->setDireccion('AV LOS GERUNDIOS');
+
+        $company = new Company();
+        $company->setRuc('20000000001')
+            ->setRazonSocial('EMPRESA SAC')
+            ->setNombreComercial('EMPRESA')
+            ->setAddress($address);
+
+        // Venta
+        $invoice = (new Invoice())
+            ->setUblVersion('2.1')
+            ->setTipoOperacion('0101') // Catalog. 51
+            ->setTipoDoc('03')
+            ->setSerie('B001')
+            ->setCorrelativo('1')
+            ->setFechaEmision(new DateTime())
+            ->setTipoMoneda('PEN')
+            ->setClient($client)
+            ->setMtoOperGravadas(100.00)
+            ->setMtoIGV(18.00)
+            ->setTotalImpuestos(18.00)
+            ->setValorVenta(100.00)
+            ->setSubTotal(118.00)
+            ->setMtoImpVenta(118.00)
+            ->setCompany($company);
+
+        $item = (new SaleDetail())
+            ->setCodProducto('P001')
+            ->setUnidad('NIU')
+            ->setCantidad(2)
+            ->setDescripcion('PRODUCTO 1')
+            ->setMtoBaseIgv(100)
+            ->setPorcentajeIgv(18.00) // 18%
+            ->setIgv(18.00)
+            ->setTipAfeIgv('10')
+            ->setTotalImpuestos(18.00)
+            ->setMtoValorVenta(100.00)
+            ->setMtoValorUnitario(50.00)
+            ->setMtoPrecioUnitario(59.00);
+
+        $legend = (new Legend())
+            ->setCode('1000')
+            ->setValue('SON CIENTO DIECIOCHO CON 00/100 SOLES');
+
+        $invoice->setDetails([$item])
+            ->setLegends([$legend]);
+
+        $xml = $see->getXmlSigned($invoice);
+
+        // Guardar XML
+        file_put_contents($invoice->getName() . '.xml', $xml);
     }
     public function anularFactura(Comprobante $factura)
     {
