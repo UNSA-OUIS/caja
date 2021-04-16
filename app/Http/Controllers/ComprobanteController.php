@@ -43,44 +43,15 @@ class ComprobanteController extends Controller
         ];
     }
 
-    public function buscarApnAlumno()
-    {
-        /*compCabe: {
-            codigo: "",
-            cui: "",
-            nues: "",
-            serie: "",
-            correlativo: "",
-            submittedDetails: [
-                {
-                    codigo: "",
-                    concepto_id: "",
-                    cantidad: "1",
-                    prUnit: "",
-                    tipo_descuento: "",
-                    descuento: "0.00"
-                }
-            ],
-            total: ""
-        },*/
-        $comprobante = new Comprobante();
-        $comprobante->codigo = "";
-        $comprobante->cui = "";
-        $comprobante->nues = "";
-        $comprobante->serie = "";
-        $comprobante->correlativo = "";
-        $comprobante->total = "";
-        $comprobante->observaciones = "";
-        $comprobante->url_xml = "";
-        $comprobante->url_cdr = "";
-        $comprobante->url_pdf = "";
-        $comprobante->detalles = array();
-
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
-            ->orderBy('descripcion', 'asc')
-            ->get();
-
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+    public function buscarApnAlumno(Request $request)
+    {        
+        $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
+                        //->orWhere('apn', 'like', '%' . $request->ap_materno)
+                        //->orWhere('apn', 'like', $request->nombres)
+                        ->take(10)
+                        ->get();  
+        
+        return $alumnos;
     }
 
     public function create(Request $request)

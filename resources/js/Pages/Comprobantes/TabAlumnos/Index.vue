@@ -1,92 +1,108 @@
 <template>
     <div>
-        <template v-if="!showEscuelas">
+        <template v-if="!showEscuelas && !showAlumnos">
             <div class="d-flex justify-content-center mb-3">    
-                <form @submit.prevent="buscarCuiAlumno">                                                                        
-                    <table>
-                        <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR ALUMNO</caption>
-                        <tr>
-                            <th class="text-right">
-                                <label class="mr-sm-2" for="cui">CUI</label>
-                            </th>
-                            <td>
-                                <b-form-input
-                                    id="cui"
-                                    v-model="cui"
-                                    class="mb-2 mr-sm-2 mb-sm-0"   
-                                    required                                         
-                                ></b-form-input>                                    
-                            </td>
-                            <td>
-                                <b-button type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
-                            </td>
-                        </tr>                                                                
-                        <tr>
-                            <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right">
-                                <label class="mr-sm-2" for="ap_paterno">Ap. Paterno <span class="text-danger">*</span></label>
-                            </th>
-                            <td>
-                                <b-form-input
-                                    id="ap_paterno"
-                                    class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                ></b-form-input>                                
-                            </td>
-                            <td>
-                                <b-button class="ml-sm-2" variant="primary">Buscar</b-button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="text-right">
-                                <label class="mr-sm-2" for="ap_materno">Ap. Materno</label>
-                            </th>
-                            <td>
-                                <b-form-input
-                                    id="ap_materno"
-                                    class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                ></b-form-input>                                
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th class="text-right">
-                                <label class="mr-sm-2" for="nombres">Nombres</label>
-                            </th>
-                            <td>
-                                <b-form-input
-                                    id="nombres"
-                                    class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                ></b-form-input>                                
-                            </td>
-                            <td></td>
-                        </tr>
-                    </table>                       
-                </form>                
-            </div>     
+                <form @submit.prevent="buscarCuiAlumno" id="cui_form"></form> 
+                <form @submit.prevent="buscarApnAlumno" id="apn_form"></form>                                                          
+                <table>
+                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR ALUMNO</caption>                        
+                    <tr>
+                        <th class="text-right">
+                            <label class="mr-sm-2" for="cui">CUI</label>
+                        </th>
+                        <td>
+                            <b-form-input
+                                id="cui"
+                                v-model="cui"
+                                class="mb-2 mr-sm-2 mb-sm-0"   
+                                required           
+                                form="cui_form"                              
+                            ></b-form-input>                                    
+                        </td>
+                        <td>
+                            <b-button form="cui_form" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                        </td>
+                    </tr> 
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr> 
+                    <tr>
+                        <th class="text-right">
+                            <label class="mr-sm-2" for="ap_paterno">Ap. Paterno <span class="text-danger">*</span></label>
+                        </th>
+                        <td>
+                            <b-form-input
+                                id="ap_paterno"     
+                                v-model="ap_paterno"                               
+                                class="mb-2 mr-sm-2 mb-sm-0"  
+                                required        
+                                form="apn_form"                                                              
+                            ></b-form-input>                                
+                        </td>
+                        <td>
+                            <b-button form="apn_form" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-right">
+                            <label class="mr-sm-2" for="ap_materno">Ap. Materno</label>
+                        </th>
+                        <td>
+                            <b-form-input
+                                id="ap_materno"
+                                v-model="ap_materno"                               
+                                class="mb-2 mr-sm-2 mb-sm-0"                                    
+                            ></b-form-input>                                
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th class="text-right">
+                            <label class="mr-sm-2" for="nombres">Nombres</label>
+                        </th>
+                        <td>
+                            <b-form-input
+                                id="nombres"
+                                v-model="nombres"                               
+                                class="mb-2 mr-sm-2 mb-sm-0"                                    
+                            ></b-form-input>                                
+                        </td>
+                        <td></td>
+                    </tr>                    
+                </table>                                                                            
+            </div>             
         </template>
-        <template v-else>
+        <template v-else-if="showEscuelas">
             <escuelas :alumno="alumno" :matriculas="matriculas"></escuelas>
+        </template>
+        <template v-else-if="showAlumnos">
+            <alumnos :alumnos="alumnos"></alumnos>
         </template>
     </div>    
 </template>
 <script>
 const axios = require("axios");
 import Escuelas from "./Escuelas";
+import Alumnos from "./Alumnos";
 
 export default {
     name: "comprobantes.tab-alumnos",    
     components: {        
-        Escuelas
+        Escuelas,
+        Alumnos
     },
     data() {
         return {
             app_url: this.$root.app_url,
             cui: '',
+            ap_paterno: '',
+            ap_materno: '',
+            nombres: '',
             alumno: {},
             matriculas: [],
-            showEscuelas: false
+            alumnos: [],
+            showEscuelas: false,
+            showAlumnos: false
         };
     },
     methods: {                
@@ -101,7 +117,32 @@ export default {
                 }
                 else {
                     this.showEscuelas = true
+                    this.showAlumnos = false
                 }
+            } catch (error) {
+                console.log(error)
+            }      
+        },
+        async buscarApnAlumno() {
+            try {
+                const response = await axios.get(`${this.app_url}/buscarApnAlumno`, { 
+                                        params: { 
+                                            ap_paterno: this.ap_paterno,
+                                            ap_materno: this.ap_materno,
+                                            nombres: this.nombres,
+                                        }
+                                })
+                
+                this.alumnos = response.data
+                this.showAlumnos = true
+                this.showEscuelas = false
+
+                /*if (this.alumnos.length == 1) {
+                    //this.mostrarComprobante(this.matriculas[0])                    
+                }
+                else {
+                    this.showAlumnos = true
+                }*/
             } catch (error) {
                 console.log(error)
             }      
