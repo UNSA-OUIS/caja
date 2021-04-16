@@ -1,9 +1,25 @@
 <template>
     <app-layout>
+        <div>
+            <b-nav tabs>
+                <b-nav-item active>Por cajero</b-nav-item>
+                <b-nav-item>Descuentos por cajero</b-nav-item>
+                <b-nav-item>Por centros de costo</b-nav-item>
+                <b-nav-item>Por recibo de ingresos</b-nav-item>
+                <b-nav-item>Facturas</b-nav-item>
+                <b-nav-item>Notas</b-nav-item>
+            </b-nav>
+        </div>
         <div class="card" ref="content">
             <div class="card-header">
-                <h1>Reporte de ventas</h1>
+                <h1>Reporte de cobros</h1>
                 <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
+                <b-button @click="dompdf">Descargar (dompdf)</b-button>
+                <a
+                    class="btn btn-success float-right" method="post"
+                    :href="route('comprobantes.reportepdf')" 
+                    >Descargar (dompdf)</a
+                >
             </div>
             <div class="card-body">
                 <b-row>
@@ -77,10 +93,10 @@
                             show-empty
                             striped
                             hover
+                            sticky-header
                             bordered
                             small
                             responsive
-                            stacked="md"
                             :items="grupoFilter"
                             :fields="fields"
                             empty-text="No hay comprobantes para mostrar"
@@ -131,7 +147,7 @@
                                         </div>
                                     </div>
                                     <div class="container row align-middle ">
-                                        <h1 class="text-center">Reporte de ventas</h1>
+                                        <h1 class="text-center">Reporte de cobros</h1>
                                     </div>
                                     
                                     
@@ -180,14 +196,14 @@ export default {
         return {
             app_url: this.$root.app_url,
             fields: [
-                { key: "codigo", label: "Codigo" },
+                { key: "codigo", label: "Código" },
                 { key: "serie", label: "Serie" },
                 { key: "correlativo", label: "Correlativo" },
                 { key: "cui", label: "Cliente" },
                 { key: "total", label: "Precio Total" },
 
             ],
-            filenamepdf: "Reporte_ventas",
+            filenamepdf: "Reporte_cobros",
             currentPage: 1,
             perPage: 5,
             dniCliente: "",
@@ -203,6 +219,13 @@ export default {
         },
         html2pdf(){
             this.$refs.html2Pdf.generatePdf()
+        },
+        dompdf(){
+            this.$inertia.post(
+                route("comprobantes.reportepdf"),
+                this.grupoFilter
+            );
+            //indow.open(`${this.app_url}/reportes/pdf/${this.grupoFilter}`, '_blanck');
         },
         async beforeDownload ({ html2pdf, options, pdfContent }) {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
@@ -254,7 +277,7 @@ export default {
             return group
         },
         grupoDividido(){
-            var group = this.comprobantes;
+            /*var group = this.comprobantes;
             group = this.fechaInicio && this.fechaFin
             ? group.filter(item => 
             new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
@@ -262,8 +285,9 @@ export default {
             : group
             group = this.dniCliente
             ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group
-
+            : group*/
+            
+            var group = this.grupoFilter;
             const groups = [];
             var i,j,temparray,chunk = 25;
             for (i=0,j=group.length; i<j; i+=chunk) {

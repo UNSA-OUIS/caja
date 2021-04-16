@@ -334,16 +334,30 @@
                         >
                             <li>
                                 <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes' }">
+                                    Diario
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link 
                                 :href="route('comprobantes.reporte')"
                                 :class="{ 'mm-active': path == 'reportes' }">
-                                    Reporte de ventas
+                                    Por periodo
                                 </inertia-link>
                             </li>
                             <li>
                                 <inertia-link 
                                 href="#"
                                 :class="{ 'mm-active': path == 'reportes' }">
-                                    Otro reporte
+                                    Ingresos
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes' }">
+                                    Conceptos
                                 </inertia-link>
                             </li>
                             
