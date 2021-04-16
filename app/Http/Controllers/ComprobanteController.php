@@ -156,7 +156,7 @@ class ComprobanteController extends Controller
     public function verReporte()
     {
         $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/Ventas', compact('comprobantes'));
+        return Inertia::render('Reportes/PorPeriodo/Ventas', compact('comprobantes'));
     }
 
     public function reportePdf(Request $request)

@@ -1,15 +1,6 @@
 <template>
     <app-layout>
-        <div>
-            <b-nav tabs>
-                <b-nav-item active>Por cajero</b-nav-item>
-                <b-nav-item>Descuentos por cajero</b-nav-item>
-                <b-nav-item>Por centros de costo</b-nav-item>
-                <b-nav-item>Por recibo de ingresos</b-nav-item>
-                <b-nav-item>Facturas</b-nav-item>
-                <b-nav-item>Notas</b-nav-item>
-            </b-nav>
-        </div>
+        <PeriodoMenu :tab="0"/>
         <div class="card" ref="content">
             <div class="card-header">
                 <h1>Reporte de cobros</h1>
@@ -184,13 +175,15 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
+import PeriodoMenu from "./PeriodoMenu";
 
 export default {
     name: "comprobantes.reporte",
     props: ["comprobantes"],
     components: {
         AppLayout,
-        VueHtml2pdf
+        VueHtml2pdf,
+        PeriodoMenu
     },
     data() {
         return {
