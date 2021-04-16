@@ -200,7 +200,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     
     /**************************** Reportes ***************************/
     Route::get('/reportes', [ComprobanteController::class, 'verReporte'])->name('comprobantes.reporte');
-    Route::post('/reportes', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
+    Route::post('/reportes/pdf', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
     /*******************************************************************/
     
 });
