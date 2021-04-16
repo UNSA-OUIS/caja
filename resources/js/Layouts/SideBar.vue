@@ -41,6 +41,16 @@
         >
             <i class="fa fa-fw fa-bars"></i>
         </button>
+        <!--<button
+            v-b-toggle.sidebar-no-header
+            type="button"
+            class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn"
+        >
+            <i class="fa fa-fw fa-bars"></i>
+        </button>
+        <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" no-header shadow class="bg-dark">
+        <template #default="{ hide }">
+        <div class="p-3 bg-dark">-->
 
         <div data-simplebar class="sidebar-menu-scroll">
             <div id="sidebar-menu">
@@ -345,16 +355,30 @@
                         >
                             <li>
                                 <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes-diario' }">
+                                    Diario
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link 
                                 :href="route('comprobantes.reporte')"
                                 :class="{ 'mm-active': path == 'reportes' }">
-                                    Reporte de ventas
+                                    Por periodo
                                 </inertia-link>
                             </li>
                             <li>
                                 <inertia-link 
                                 href="#"
-                                :class="{ 'mm-active': path == 'reportes' }">
-                                    Otro reporte
+                                :class="{ 'mm-active': path == 'reportes-ingresos' }">
+                                    Ingresos
+                                </inertia-link>
+                            </li>
+                            <li>
+                                <inertia-link 
+                                href="#"
+                                :class="{ 'mm-active': path == 'reportes-conceptos' }">
+                                    Conceptos
                                 </inertia-link>
                             </li>
                             
@@ -363,6 +387,10 @@
                 </ul>
             </div>
         </div>
+       <!-- <b-button variant="primary" block @click="hide">Close Sidebar</b-button>
+        </div>
+      </template>
+    </b-sidebar>-->
     </div>
 </template>
 <script>
