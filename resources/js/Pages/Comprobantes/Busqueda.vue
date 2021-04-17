@@ -23,66 +23,7 @@
                         <tab-alumnos></tab-alumnos>       
                     </b-tab>
                     <b-tab title="Docentes">
-                        <div class="d-flex justify-content-center mb-3">                                                         
-                            <table>
-                                <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR DOCENTE</caption>
-                                <tr>
-                                    <th class="text-right">
-                                        <label class="mr-sm-2" for="codigo">CÓDIGO</label>
-                                    </th>
-                                    <td>
-                                        <b-form-input
-                                            id="codigo"
-                                            class="mb-2 mr-sm-2 mb-sm-0"                                            
-                                        ></b-form-input>                                    
-                                    </td>
-                                    <td>
-                                        <b-button class="ml-sm-2" variant="primary">Buscar</b-button>
-                                    </td>
-                                </tr>                                                                
-                                <tr>
-                                    <td>&nbsp;</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-right">
-                                        <label class="mr-sm-2" for="ap_paterno">Ap. Paterno <span class="text-danger">*</span></label>
-                                    </th>
-                                    <td>
-                                        <b-form-input
-                                            id="ap_paterno"
-                                            class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                        ></b-form-input>                                
-                                    </td>
-                                    <td>
-                                        <b-button class="ml-sm-2" variant="primary">Buscar</b-button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-right">
-                                        <label class="mr-sm-2" for="ap_materno">Ap. Materno</label>
-                                    </th>
-                                    <td>
-                                        <b-form-input
-                                            id="ap_materno"
-                                            class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                        ></b-form-input>                                
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th class="text-right">
-                                        <label class="mr-sm-2" for="nombres">Nombres</label>
-                                    </th>
-                                    <td>
-                                        <b-form-input
-                                            id="nombres"
-                                            class="mb-2 mr-sm-2 mb-sm-0"                                    
-                                        ></b-form-input>                                
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </table>                       
-                        </div>       
+                        <tab-docentes></tab-docentes>  
                     </b-tab>
                     <b-tab title="Dependencias">
                         <div class="d-flex justify-content-center mb-3">                                                         
@@ -176,13 +117,15 @@
 <script>
 const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
-import TabAlumnos from "./TabAlumnos/Index";
+import TabAlumnos from "./TabAlumnos/Inicio";
+import TabDocentes from "./TabDocentes/Inicio";
 
 export default {
     name: "comprobantes.busqueda",
     components: {
         AppLayout,
-        TabAlumnos
+        TabAlumnos,
+        TabDocentes
     },
     data() {
         return {

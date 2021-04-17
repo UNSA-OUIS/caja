@@ -175,6 +175,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');    
     Route::get('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
+    Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');    
+    Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
 
     /*******************************************************************/
 

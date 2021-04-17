@@ -643,6 +643,11 @@ export default {
 
         conceptosDisponibles(){
             return this.conceptos.filter(option => option.estado == true);
+        },
+
+        onFiltered(filteredItems) {
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
         }
     }
 };

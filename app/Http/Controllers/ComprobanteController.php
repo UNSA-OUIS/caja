@@ -7,6 +7,7 @@ use App\Models\Concepto;
 use App\Models\Matricula;
 use App\Models\Escuela;
 use App\Models\Alumno;
+use App\Models\Docente;
 use App\Models\DetallesComprobante;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
@@ -55,34 +56,60 @@ class ComprobanteController extends Controller
         return $alumnos;
     }
 
-    public function create(Request $request)
+    public function buscarCodigoDocente($codigo)
     {
-        //dd($request->matricula['escuela']);
+        $docente = Docente::where('codper', $codigo)->first();        
 
-        if ($request->has('alumno') && $request->has('matricula')) {
-            $comprobante = new Comprobante();
+        return json_encode($docente);
+    }
 
-            $comprobante->codigo = "";
+    public function buscarApnDocente(Request $request)
+    {        
+        $docentes = Docente::where('apn', 'like', $request->ap_paterno . '%')
+                        //->orWhere('apn', 'like', '%' . $request->ap_materno)
+                        //->orWhere('apn', 'like', $request->nombres)
+                        ->take(10)
+                        ->get();  
+        
+        return $docentes;
+    }
+
+    public function create(Request $request)
+    {                   
+        $comprobante = new Comprobante();
+
+        $comprobante->codigo = "";
+        $comprobante->cui = "";
+        $comprobante->escuela = "";
+        $comprobante->nues = "";
+        $comprobante->serie = "";
+        $comprobante->correlativo = "";
+        $comprobante->total = "";
+        $comprobante->observaciones = "";
+        $comprobante->url_xml = "";
+        $comprobante->url_cdr = "";
+        $comprobante->detalles = array();
+
+        $tipo_usuario = $request->tipo_usuario;
+
+        if ($tipo_usuario == 'alumno') {
             $comprobante->cui = $request->alumno['cui'];
+            $comprobante->dni = $request->alumno['dic'];
             $comprobante->escuela = $request->matricula['escuela']['nesc'];
             $comprobante->nues = $request->matricula['nues'];
-            $comprobante->serie = "";
-            $comprobante->correlativo = "";
-            $comprobante->total = "";
-            $comprobante->observaciones = "";
-            $comprobante->url_xml = "";
-            $comprobante->url_cdr = "";
-            $comprobante->detalles = array();
-
-            $comprobante->usuario = $request->alumno['apn'];
-            $comprobante->dni = $request->alumno['dic'];
-
-            $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
-                ->orderBy('descripcion', 'asc')
-                ->get();
-
-            return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+            $comprobante->usuario = $request->alumno['apn'];            
+        }        
+        else if ($tipo_usuario == 'docente') {            
+            $comprobante->codigo = $request->docente['codper'];
+            $comprobante->dni = $request->docente['dic'];            
+            $comprobante->usuario = $request->docente['apn'];            
         }
+
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
+            ->orderBy('descripcion', 'asc')
+            ->get();
+
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));        
     }
 
     public function store(Request $request)
