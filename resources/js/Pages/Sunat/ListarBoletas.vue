@@ -107,7 +107,6 @@
                             <a :href="`${app_url}/${row.item.url_xml}`" download
                                 >XML</a
                             >
-                            <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
                         </div>
                     </template>
                     <template v-slot:cell(acciones)="row">
@@ -246,7 +245,7 @@ export default {
                 return factura || [];
             });
         },
-        anular(factura) {
+        anular(boleta) {
             this.$bvModal
                 .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
                     title: "Anular factura",
@@ -258,13 +257,13 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.anularFactura", [factura])
+                            route("sunat.anularBoleta", [boleta])
                         );
                         this.refreshTable();
                     }
                 });
         },
-        enviar(factura) {
+        enviar(boleta) {
             this.$bvModal
                 .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
                     title: "Enviar factura",
@@ -276,7 +275,7 @@ export default {
                 .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("sunat.enviarFactura", [factura])
+                            route("sunat.enviarBoleta", [boleta])
                         );
                         this.refreshTable();
                     }

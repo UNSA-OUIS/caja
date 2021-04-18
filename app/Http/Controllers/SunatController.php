@@ -344,70 +344,86 @@ class SunatController extends Controller
     {
         $see = require storage_path() . '\app\public\config.php';
 
-        // Cliente
-        $client = new Client();
-        $client->setTipoDoc('1')
-            ->setNumDoc('46712369')
-            ->setRznSocial('MARIA RAMOS ARTEAGA');
+        try {
+            // Cliente
+            $client = new Client();
+            $client->setTipoDoc('1')
+                ->setNumDoc('46712369')
+                ->setRznSocial('MARIA RAMOS ARTEAGA');
 
-        // Emisor
-        $address = new Address();
-        $address->setUbigueo('150101')
-            ->setDepartamento('LIMA')
-            ->setProvincia('LIMA')
-            ->setDistrito('LIMA')
-            ->setUrbanizacion('-')
-            ->setDireccion('AV LOS GERUNDIOS');
+            // Emisor
+            $address = new Address();
+            $address->setUbigueo('150101')
+                ->setDepartamento('LIMA')
+                ->setProvincia('LIMA')
+                ->setDistrito('LIMA')
+                ->setUrbanizacion('-')
+                ->setDireccion('AV LOS GERUNDIOS');
 
-        $company = new Company();
-        $company->setRuc('20000000001')
-            ->setRazonSocial('EMPRESA SAC')
-            ->setNombreComercial('EMPRESA')
-            ->setAddress($address);
+            $company = new Company();
+            $company->setRuc('20000000001')
+                ->setRazonSocial('EMPRESA SAC')
+                ->setNombreComercial('EMPRESA')
+                ->setAddress($address);
 
-        // Venta
-        $invoice = (new Invoice())
-            ->setUblVersion('2.1')
-            ->setTipoOperacion('0101') // Catalog. 51
-            ->setTipoDoc('03')
-            ->setSerie('B001')
-            ->setCorrelativo('1')
-            ->setFechaEmision(new DateTime())
-            ->setTipoMoneda('PEN')
-            ->setClient($client)
-            ->setMtoOperGravadas(100.00)
-            ->setMtoIGV(18.00)
-            ->setTotalImpuestos(18.00)
-            ->setValorVenta(100.00)
-            ->setSubTotal(118.00)
-            ->setMtoImpVenta(118.00)
-            ->setCompany($company);
+            // Venta
+            $invoice = (new Invoice())
+                ->setUblVersion('2.1')
+                ->setTipoOperacion('0101') // Catalog. 51
+                ->setTipoDoc('03')
+                ->setSerie('B001')
+                ->setCorrelativo('1')
+                ->setFechaEmision(new DateTime())
+                ->setTipoMoneda('PEN')
+                ->setClient($client)
+                ->setMtoOperGravadas(100.00)
+                ->setMtoIGV(18.00)
+                ->setTotalImpuestos(18.00)
+                ->setValorVenta(100.00)
+                ->setSubTotal(118.00)
+                ->setMtoImpVenta(118.00)
+                ->setCompany($company);
 
-        $item = (new SaleDetail())
-            ->setCodProducto('P001')
-            ->setUnidad('NIU')
-            ->setCantidad(2)
-            ->setDescripcion('PRODUCTO 1')
-            ->setMtoBaseIgv(100)
-            ->setPorcentajeIgv(18.00) // 18%
-            ->setIgv(18.00)
-            ->setTipAfeIgv('10')
-            ->setTotalImpuestos(18.00)
-            ->setMtoValorVenta(100.00)
-            ->setMtoValorUnitario(50.00)
-            ->setMtoPrecioUnitario(59.00);
+            $item = (new SaleDetail())
+                ->setCodProducto('P001')
+                ->setUnidad('NIU')
+                ->setCantidad(2)
+                ->setDescripcion('PRODUCTO 1')
+                ->setMtoBaseIgv(100)
+                ->setPorcentajeIgv(18.00) // 18%
+                ->setIgv(18.00)
+                ->setTipAfeIgv('10')
+                ->setTotalImpuestos(18.00)
+                ->setMtoValorVenta(100.00)
+                ->setMtoValorUnitario(50.00)
+                ->setMtoPrecioUnitario(59.00);
 
-        $legend = (new Legend())
-            ->setCode('1000')
-            ->setValue('SON CIENTO DIECIOCHO CON 00/100 SOLES');
 
-        $invoice->setDetails([$item])
-            ->setLegends([$legend]);
+            $formatter = new NumeroALetras();
+            $montoLetras = $formatter->toInvoice($boleta->total);
 
-        $xml = $see->getXmlSigned($invoice);
+            $legend = (new Legend())
+                ->setCode('1000') // Monto en letras - Catalog. 52
+                ->setValue($montoLetras);
 
-        // Guardar XML
-        file_put_contents($invoice->getName() . '.xml', $xml);
+            $invoice->setDetails([$item])
+                ->setLegends([$legend]);
+
+            $xml = $see->getXmlSigned($invoice);
+
+            // Guardar XML        
+            $xmlGuardado = file_put_contents($invoice->getName() . '.xml', $xml);
+
+            if ($xmlGuardado) {
+                $boleta->url_xml = $invoice->getName() . '.xml';
+                $boleta->update();
+            }
+            $boleta->estado = 'aceptado';
+            $boleta->update();
+        } catch (\Throwable $th) {
+            return 'Error' . $th;
+        }
+        return redirect()->route('sunat.iniciarBoletas');
     }
     public function anularFactura(Comprobante $factura)
     {
