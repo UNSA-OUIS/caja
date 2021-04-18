@@ -95,7 +95,8 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->codigo;
             $comprobante->cui = $request->cui;
             $comprobante->nues = $request->nues;
-            $comprobante->serie = $request->serie;
+            //$comprobante->serie = $request->serie;
+            $comprobante->serie = 'B001';
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
@@ -116,10 +117,10 @@ class ComprobanteController extends Controller
                 $detalles->save();
             }
             DB::commit();
-            return $comprobante;
+            //return $comprobante;
         } catch (\Exception $e) {
             DB::rollback();
-            return $e;
+            //return $e;
         }
         return redirect()->route('comprobantes.iniciar');
     }
