@@ -46,13 +46,13 @@ class ComprobanteController extends Controller
     }
 
     public function buscarApnAlumno(Request $request)
-    {        
+    {
         $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
-                        //->orWhere('apn', 'like', '%' . $request->ap_materno)
-                        //->orWhere('apn', 'like', $request->nombres)
-                        ->take(10)
-                        ->get();  
-        
+            //->orWhere('apn', 'like', '%' . $request->ap_materno)
+            //->orWhere('apn', 'like', $request->nombres)
+            ->take(10)
+            ->get();
+
         return $alumnos;
     }
 
@@ -115,6 +115,8 @@ class ComprobanteController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
+        $ultimo = Comprobante::latest('created_at')->first();
+        $ultimo->correlativo += 1;
 
         try {
             $comprobante = new Comprobante();
@@ -122,8 +124,8 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->codigo;
             $comprobante->cui = $request->cui;
             $comprobante->nues = $request->nues;
-            $comprobante->serie = $request->serie;
-            $comprobante->correlativo = $request->correlativo;
+            $comprobante->serie = 'B001';
+            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
             $comprobante->observaciones = '';
@@ -143,10 +145,9 @@ class ComprobanteController extends Controller
                 $detalles->save();
             }
             DB::commit();
-            return $comprobante;
         } catch (\Exception $e) {
             DB::rollback();
-            return $e;
+            return $e->getMessage();
         }
         return redirect()->route('comprobantes.iniciar');
     }
@@ -191,17 +192,17 @@ class ComprobanteController extends Controller
         $comprobantes = Comprobante::all()->take(25);
         //$comprobantes = Comprobante::;
         $comprobantes = (array)json_decode($request->getContent());
-        
+
         //return $comprobantes;
         //return view('reportes.ventas', compact('comprobantes'));
-        
+
         //return $comprobantes;        
         $pdf = PDF::loadView('reportes.ventas', compact('comprobantes'));
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->setPaper('A4', 'portrait');
-        $pdf->save(storage_path().'fdjfdh.pdf');
-        
-    // Finally, you can download the file using download function
+        $pdf->save(storage_path() . 'fdjfdh.pdf');
+
+        // Finally, you can download the file using download function
         //return response()->file(storage_path().'fdjfdh.pdf');
         $pdf->stream('customers.pdf');
         return "done";
