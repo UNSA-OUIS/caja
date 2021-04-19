@@ -21,7 +21,7 @@ use Greenter\Ws\Services\BillSender;
 use Greenter\Ws\Services\SoapClient;
 use Luecano\NumeroALetras\NumeroALetras;
 
-require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
+//require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {

@@ -14,6 +14,7 @@ use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
+use App\Http\Controllers\ReportesController;
 use App\Models\Concepto;
 
 /*
@@ -200,8 +201,14 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /*******************************************************************/
     
     /**************************** Reportes ***************************/
-    Route::get('/reportes', [ComprobanteController::class, 'verReporte'])->name('comprobantes.reporte');
-    Route::post('/reportes/pdf', [ComprobanteController::class, 'reportePdf'])->name('comprobantes.reportepdf');
+    Route::get('/reportes-periodo/cajero', [ReportesController::class, 'porCajero'])->name('reportes.cajero');
+    Route::post('/reportes-periodo/cajero/pdf', [ReportesController::class, 'porCajeroPDF'])->name('reportes.cajeropdf');
+    Route::get('/reportes-periodo/descuentos', [ReportesController::class, 'descuentos'])->name('reportes.descuentos');
+    Route::get('/reportes-periodo/centroDeCosto', [ReportesController::class, 'centroDeCosto'])->name('reportes.centroDeCosto');
+    Route::get('/reportes-periodo/reciboIngreso', [ReportesController::class, 'reciboIngreso'])->name('reportes.reciboIngreso');
+    Route::get('/reportes-periodo/facturas', [ReportesController::class, 'facturas'])->name('reportes.facturas');
+    Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
+    Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
     /*******************************************************************/
     
 });

@@ -9,7 +9,6 @@ use App\Models\Escuela;
 use App\Models\Alumno;
 use App\Models\Docente;
 use App\Models\DetallesComprobante;
-use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -179,34 +178,5 @@ class ComprobanteController extends Controller
         }
 
         return redirect()->route('comprobantes.iniciar')->with($result);
-    }
-
-    public function verReporte()
-    {
-        $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/PorPeriodo/Ventas', compact('comprobantes'));
-    }
-
-    public function reportePdf(Request $request)
-    {
-        $comprobantes = Comprobante::all()->take(25);
-        //$comprobantes = Comprobante::;
-        $comprobantes = (array)json_decode($request->getContent());
-
-        //return $comprobantes;
-        //return view('reportes.ventas', compact('comprobantes'));
-
-        //return $comprobantes;        
-        $pdf = PDF::loadView('reportes.ventas', compact('comprobantes'));
-        $pdf->getDomPDF()->set_option("enable_php", true);
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->save(storage_path() . 'fdjfdh.pdf');
-
-        // Finally, you can download the file using download function
-        //return response()->file(storage_path().'fdjfdh.pdf');
-        $pdf->stream('customers.pdf');
-        return "done";
-        //return $pdf->download('file.pdf');
-        //return $pdf;
     }
 }
