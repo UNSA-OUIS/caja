@@ -19,7 +19,7 @@ use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Luecano\NumeroALetras\NumeroALetras;
 
-require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
+//require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {

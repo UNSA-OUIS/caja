@@ -1,12 +1,16 @@
 <template>
     <div>
-        <b-nav tabs>
-            <b-nav-item :active="activeTab[0]" :disabled="activeTab[0]" :href="route('comprobantes.reporte')">Por cajero</b-nav-item>
-            <b-nav-item :active="activeTab[1]" :disabled="activeTab[1]" href="#">Descuentos por cajero</b-nav-item>
-            <b-nav-item :active="activeTab[2]" :disabled="activeTab[2]" href="#">Por centros de costo</b-nav-item>
-            <b-nav-item :active="activeTab[3]" :disabled="activeTab[3]" href="#">Por recibo de ingresos</b-nav-item>
-            <b-nav-item :active="activeTab[4]" :disabled="activeTab[4]" href="#">Facturas</b-nav-item>
-            <b-nav-item :active="activeTab[5]" :disabled="activeTab[5]" href="#">Notas</b-nav-item>
+        <b-nav tabs fill>
+            <b-nav-item :active="activeTab[0]" :disabled="activeTab[0]" >
+                <inertia-link :href="route('reportes.cajero')">
+                Por cajero</inertia-link>
+                </b-nav-item>
+            <b-nav-item :active="activeTab[1]" :disabled="activeTab[1]" :href="route('reportes.descuentos')">Descuentos por cajero</b-nav-item>
+            <b-nav-item :active="activeTab[2]" :disabled="activeTab[2]" :href="route('reportes.centroDeCosto')">Por centros de costo</b-nav-item>
+            <b-nav-item :active="activeTab[3]" :disabled="activeTab[3]" :href="route('reportes.reciboIngreso')">Por recibo de ingresos</b-nav-item>
+            <b-nav-item :active="activeTab[4]" :disabled="activeTab[4]" :href="route('reportes.consolidado')">Consolidado</b-nav-item>
+            <b-nav-item :active="activeTab[5]" :disabled="activeTab[5]" :href="route('reportes.facturas')">Facturas</b-nav-item>
+            <b-nav-item :active="activeTab[6]" :disabled="activeTab[6]" :href="route('reportes.notas')">Notas</b-nav-item>
         </b-nav>
     </div>
         
@@ -23,7 +27,7 @@ export default {
     },
     computed:{
         activeTab(){
-            var tabs= [false, false, false, false, false, false];
+            var tabs= [false, false, false, false, false, false, false];
             tabs[this.tab] = true;
             return tabs;
         },

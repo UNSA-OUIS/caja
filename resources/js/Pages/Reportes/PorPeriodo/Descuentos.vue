@@ -1,19 +1,43 @@
 <template>
     <app-layout>
-        <PeriodoMenu :tab="0"/>
+        <PeriodoMenu :tab="1"/>
         <div class="card" ref="content">
             <div class="card-header">
-                <h1>Reporte de cobros</h1>
+                <h1>Descuentos por cajero</h1>
                 <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
-                <b-button @click="dompdf">Descargar (dompdf)</b-button>
+                <!--<b-button @click="dompdf">Descargar (dompdf)</b-button>
                 <a
                     class="btn btn-success float-right" method="post"
-                    :href="route('comprobantes.reportepdf')" 
+                    href="#" @click="dompdf"
                     >Descargar (dompdf)</a
-                >
+                >-->
             </div>
             <div class="card-body">
                 <b-row>
+                    <b-col cols="4">
+                        <b-form-group
+                        label="Buscar cajero: "
+                        label-cols-sm="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="filterInput"
+                        class="mb-0"
+                        >
+                        <b-input-group size="sm">
+                            <b-form-input
+                            v-model="dniCliente"
+                            type="search"
+                            id="filterInput"
+                            placeholder="Escriba el texto a buscar..."
+                            ></b-form-input>
+                            <b-input-group-append>
+                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
+                                >Limpiar</b-button
+                            >
+                            </b-input-group-append>
+                        </b-input-group>
+                        </b-form-group>
+                    </b-col>
                     <b-col cols="4">
                         <b-form-group
                         label="Fecha inicio: "
@@ -53,30 +77,6 @@
                             size="sm"
                         ></b-form-datepicker>
                          </b-form-group>
-                    </b-col>
-                    <b-col cols="4">
-                        <b-form-group
-                        label="Buscar cliente: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>
                     </b-col>
                 </b-row>
                 <b-table
@@ -178,7 +178,7 @@ import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
 
 export default {
-    name: "comprobantes.reporte",
+    name: "comprobantes.descuentos",
     props: ["comprobantes"],
     components: {
         AppLayout,
@@ -215,10 +215,9 @@ export default {
         },
         dompdf(){
             this.$inertia.post(
-                route("comprobantes.reportepdf"),
+                route("reportes.cajeropdf"),
                 this.grupoFilter
             );
-            //indow.open(`${this.app_url}/reportes/pdf/${this.grupoFilter}`, '_blanck');
         },
         async beforeDownload ({ html2pdf, options, pdfContent }) {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
@@ -231,29 +230,6 @@ export default {
                 } 
             }).save()
         },
-        /*myProvider(ctx) {
-            let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-            if (ctx.filter !== "" && ctx.filter !== null) {
-                params += "&filter=" + ctx.filter;
-            }
-
-            if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-                params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-            }
-
-            const promise = axios.get(
-                `${this.app_url}/comprobantes/listar${params}`
-            );
-
-            return promise.then(response => {
-                const comprobante = response.data.data;
-                console.log(comprobante);
-                this.totalRows = response.data.total;
-
-                return comprobante || [];
-            });
-        },*/
     },
     computed:{
         grupoFilter(){
@@ -270,16 +246,6 @@ export default {
             return group
         },
         grupoDividido(){
-            /*var group = this.comprobantes;
-            group = this.fechaInicio && this.fechaFin
-            ? group.filter(item => 
-            new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
-            new Date(item.created_at.slice(0, 10).split('-')) <= new Date(this.fechaFin.split('-')))
-            : group
-            group = this.dniCliente
-            ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group*/
-            
             var group = this.grupoFilter;
             const groups = [];
             var i,j,temparray,chunk = 25;

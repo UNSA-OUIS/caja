@@ -343,7 +343,10 @@
                             href="javascript: void(0);"
                             class="has-arrow waves-effect"
                             @click="mostrarMenu(4)"
-                            :class="{ 'mm-active': path == 'reportes' }"
+                            :class="{ 'mm-active': path == 'reportes-diario'|| 
+                            path == 'reportes-periodo' ||
+                            path == 'reportes-ingresos' ||
+                            path == 'reportes-conceptos' }"
                         >
                             <i class="fas fa-cloud-upload-alt"></i>
                             <span>Reportes</span>
@@ -362,8 +365,8 @@
                             </li>
                             <li>
                                 <inertia-link 
-                                :href="route('comprobantes.reporte')"
-                                :class="{ 'mm-active': path == 'reportes' }">
+                                :href="route('reportes.cajero')"
+                                :class="{ 'mm-active': path == 'reportes-periodo' }">
                                     Por periodo
                                 </inertia-link>
                             </li>
