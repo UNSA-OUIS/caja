@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
+use Greenter\Ws\Services\BillSender;
+use Greenter\Ws\Services\SoapClient;
 use Luecano\NumeroALetras\NumeroALetras;
 
 require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
@@ -271,10 +273,11 @@ class SunatController extends Controller
                 $factura->observaciones = $cdr->getDescription() . PHP_EOL;
                 $factura->update();
                 if (count($cdr->getNotes()) > 0) {
-                    //return count($cdr->getNotes());
                     // Corregir estas observaciones en siguientes emisiones.
                     $factura->estado = 'observado';
-                    $factura->observaciones = json_encode($cdr->getNotes(), JSON_UNESCAPED_UNICODE);
+                    foreach ($cdr->getNotes() as $index => $value) {
+                        $factura->observaciones .= json_encode('Observacion #' . $index . '=>' . $value, JSON_UNESCAPED_UNICODE) . "\n";
+                    }
                     $factura->update();
                 }
             } else if ($code >= 2000 && $code <= 3999) {
@@ -288,8 +291,6 @@ class SunatController extends Controller
                 $factura->observaciones = '';
                 $factura->update();
             }
-            //$factura->observaciones = $cdr->getDescription() . PHP_EOL . $factura->observaciones;
-            //$factura->update();
 
             $html = new HtmlReport();
             $html->setTemplate('invoice.html.twig');
@@ -416,6 +417,49 @@ class SunatController extends Controller
 
             if ($xmlGuardado) {
                 $boleta->url_xml = $invoice->getName() . '.xml';
+                $boleta->update();
+            }
+
+            $html = new HtmlReport();
+            $html->setTemplate('invoice.html.twig');
+
+            $report = new PdfReport($html);
+
+            $report->setOptions([
+                'no-outline',
+                'viewport-size' => '1280x1024',
+                'page-width' => '21cm',
+                'page-height' => '29.7cm',
+            ]);
+            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+            $params = [
+                'system' => [
+                    'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
+                    'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                ],
+                'user' => [
+                    'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                    'extras'     => [
+                        // Leyendas adicionales
+                        ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                        ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
+                    ],
+                    'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+                ]
+            ];
+
+            $pdf = $report->render($invoice, $params);
+
+            if ($pdf === null) {
+                $error = $report->getExporter()->getError();
+                echo 'Error: ' . $error;
+                return;
+            }
+
+            $pdfGuardado = file_put_contents($invoice->getName() . '.pdf', $pdf);
+            if ($pdfGuardado) {
+                $boleta->url_pdf = $invoice->getName() . '.pdf';
                 $boleta->update();
             }
             $boleta->estado = 'aceptado';

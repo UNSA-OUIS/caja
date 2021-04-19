@@ -88,7 +88,8 @@ class ComprobanteController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
-        $ultimo = Comprobante::latest('correlativo')->first();
+        $ultimo = Comprobante::latest('created_at')->first();
+        $ultimo->correlativo += 1;
 
         try {
             $comprobante = new Comprobante();
@@ -96,8 +97,8 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->codigo;
             $comprobante->cui = $request->cui;
             $comprobante->nues = $request->nues;
-            $comprobante->serie = 'B001';
-            $comprobante->correlativo = str_pad($ultimo->correlativo + 1, 8, "0", STR_PAD_LEFT);
+            $comprobante->serie = 'F001';
+            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
             $comprobante->observaciones = '';

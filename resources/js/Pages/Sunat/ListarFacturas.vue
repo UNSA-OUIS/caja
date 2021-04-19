@@ -146,7 +146,7 @@
                             <b-icon icon="cloud-arrow-up"></b-icon>
                         </b-button>
                         <b-button
-                            v-if="row.item.estado == 'observado'"
+                            v-if="row.item.estado == 'observado' || row.item.estado == 'aceptado'"
                             size="sm"
                             @click="row.toggleDetails"
                         >
