@@ -48,6 +48,7 @@ export default {
     methods: {        
         mostrarComprobante(matricula) {       
             this.$inertia.post(route('comprobantes.crear'), {
+                'tipo_usuario' : 'alumno',
                 'alumno' : this.alumno,
                 'matricula': matricula
             })

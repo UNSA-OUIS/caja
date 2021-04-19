@@ -7,6 +7,7 @@ use App\Models\Concepto;
 use App\Models\Matricula;
 use App\Models\Escuela;
 use App\Models\Alumno;
+use App\Models\Docente;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,49 +45,77 @@ class ComprobanteController extends Controller
     }
 
     public function buscarApnAlumno(Request $request)
-    {        
+    {
         $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
+            //->orWhere('apn', 'like', '%' . $request->ap_materno)
+            //->orWhere('apn', 'like', $request->nombres)
+            ->take(10)
+            ->get();
+
+        return $alumnos;
+    }
+
+    public function buscarCodigoDocente($codigo)
+    {
+        $docente = Docente::where('codper', $codigo)->first();        
+
+        return json_encode($docente);
+    }
+
+    public function buscarApnDocente(Request $request)
+    {        
+        $docentes = Docente::where('apn', 'like', $request->ap_paterno . '%')
                         //->orWhere('apn', 'like', '%' . $request->ap_materno)
                         //->orWhere('apn', 'like', $request->nombres)
                         ->take(10)
                         ->get();  
         
-        return $alumnos;
+        return $docentes;
     }
 
     public function create(Request $request)
-    {
-        //dd($request->matricula['escuela']);
+    {                   
+        $comprobante = new Comprobante();
 
-        if ($request->has('alumno') && $request->has('matricula')) {
-            $comprobante = new Comprobante();
+        $comprobante->codigo = "";
+        $comprobante->cui = "";
+        $comprobante->escuela = "";
+        $comprobante->nues = "";
+        $comprobante->serie = "";
+        $comprobante->correlativo = "";
+        $comprobante->total = "";
+        $comprobante->observaciones = "";
+        $comprobante->url_xml = "";
+        $comprobante->url_cdr = "";
+        $comprobante->detalles = array();
 
-            $comprobante->codigo = "";
+        $tipo_usuario = $request->tipo_usuario;
+
+        if ($tipo_usuario == 'alumno') {
             $comprobante->cui = $request->alumno['cui'];
+            $comprobante->dni = $request->alumno['dic'];
             $comprobante->escuela = $request->matricula['escuela']['nesc'];
             $comprobante->nues = $request->matricula['nues'];
-            $comprobante->serie = "";
-            $comprobante->correlativo = "";
-            $comprobante->total = "";
-            $comprobante->observaciones = "";
-            $comprobante->url_xml = "";
-            $comprobante->url_cdr = "";
-            $comprobante->detalles = array();
-
-            $comprobante->usuario = $request->alumno['apn'];
-            $comprobante->dni = $request->alumno['dic'];
-
-            $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
-                ->orderBy('descripcion', 'asc')
-                ->get();
-
-            return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+            $comprobante->usuario = $request->alumno['apn'];            
+        }        
+        else if ($tipo_usuario == 'docente') {            
+            $comprobante->codigo = $request->docente['codper'];
+            $comprobante->dni = $request->docente['dic'];            
+            $comprobante->usuario = $request->docente['apn'];            
         }
+
+        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
+            ->orderBy('descripcion', 'asc')
+            ->get();
+
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));        
     }
 
     public function store(Request $request)
     {
         DB::beginTransaction();
+        $ultimo = Comprobante::latest('created_at')->first();
+        $ultimo->correlativo += 1;
 
         try {
             $comprobante = new Comprobante();
@@ -94,8 +123,8 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->codigo;
             $comprobante->cui = $request->cui;
             $comprobante->nues = $request->nues;
-            $comprobante->serie = $request->serie;
-            $comprobante->correlativo = $request->correlativo;
+            $comprobante->serie = 'B001';
+            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
             $comprobante->observaciones = '';
@@ -115,10 +144,9 @@ class ComprobanteController extends Controller
                 $detalles->save();
             }
             DB::commit();
-            return $comprobante;
         } catch (\Exception $e) {
             DB::rollback();
-            return $e;
+            return $e->getMessage();
         }
         return redirect()->route('comprobantes.iniciar');
     }

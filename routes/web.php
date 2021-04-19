@@ -165,8 +165,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/comprobantes', function () {
         //return Inertia::render('Comprobantes/Listar');
         return Inertia::render('Comprobantes/Busqueda');
-    })->name('comprobantes.iniciar');
-    
+    })->name('comprobantes.iniciar');    
     
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::post('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
@@ -176,6 +175,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');    
     Route::get('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
+    Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');    
+    Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
 
     /*******************************************************************/
 
@@ -195,7 +196,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/ListarBoletas');
     })->name('sunat.iniciarBoletas');
     Route::get('/sunat/listarBoletas', [SunatController::class, 'indexBoleta'])->name('sunat.listarBoletas');
-    Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoletas');
+    Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoleta');
     Route::post('/sunat/anularBoleta/{boleta}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
     /*******************************************************************/
     

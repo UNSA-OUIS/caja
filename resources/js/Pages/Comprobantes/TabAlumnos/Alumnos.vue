@@ -46,10 +46,7 @@ export default {
             ],    
             showEscuelas: false,        
         };
-    },    
-    created() {
-        console.log(this.alumnos)
-    },
+    },        
     methods: {        
         async buscarCuiAlumno(alumno) {
             try {
@@ -69,6 +66,7 @@ export default {
         },
         mostrarComprobante(matricula) {       
             this.$inertia.post(route('comprobantes.crear'), {
+                'tipo_usuario' : 'alumno',
                 'alumno' : this.alumno,
                 'matricula': matricula
             })
