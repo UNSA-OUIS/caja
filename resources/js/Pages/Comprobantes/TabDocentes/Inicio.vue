@@ -99,12 +99,10 @@ export default {
         };
     },
     methods: {                
-        async buscarCodigoDocente() {
-            console.log('codigo docente')
+        async buscarCodigoDocente() {            
             try {
                 const response = await axios.get(`${this.app_url}/buscarCodigoDocente/${this.codigo}`)
-                this.docente = response.data
-                console.log(this.docente)
+                this.docente = response.data                
                 this.mostrarComprobante(this.docente)
                 
             } catch (error) {

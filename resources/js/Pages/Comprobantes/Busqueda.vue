@@ -26,25 +26,7 @@
                         <tab-docentes></tab-docentes>  
                     </b-tab>
                     <b-tab title="Dependencias">
-                        <div class="d-flex justify-content-center mb-3">                                                         
-                            <table>
-                                <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR DEPENDENCIA</caption>
-                                <tr>
-                                    <th class="text-right">
-                                        <label class="mr-sm-2" for="nombre">NOMBRE</label>
-                                    </th>
-                                    <td>
-                                        <b-form-input
-                                            id="nombre"
-                                            class="mb-2 mr-sm-2 mb-sm-0"                                            
-                                        ></b-form-input>                                    
-                                    </td>
-                                    <td>
-                                        <b-button class="ml-sm-2" variant="primary">Buscar</b-button>
-                                    </td>
-                                </tr>                                                                                                
-                            </table>                       
-                        </div>    
+                        <tab-dependencias></tab-dependencias>  
                     </b-tab>
                     <b-tab title="Particulares">
                         <div class="d-flex justify-content-center mb-3">                                                         
@@ -119,13 +101,15 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 import TabAlumnos from "./TabAlumnos/Inicio";
 import TabDocentes from "./TabDocentes/Inicio";
+import TabDependencias from "./TabDependencias/Inicio";
 
 export default {
     name: "comprobantes.busqueda",
     components: {
         AppLayout,
         TabAlumnos,
-        TabDocentes
+        TabDocentes,
+        TabDependencias
     },
     data() {
         return {
