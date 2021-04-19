@@ -368,8 +368,35 @@ class SunatController extends Controller
                 ->setAddress($address);
 
             // Venta
-            $invoice = (new Invoice())
-                ->setUblVersion('2.1')
+            $invoice = new Invoice();
+
+            $detalle = $boleta->detalles;
+            foreach ($detalle as $index => $value) {
+                $items[$index] = (new SaleDetail())
+                    ->setCodProducto($value['concepto_id'])
+                    ->setUnidad('NIU') // Unidad - Catalog. 03
+                    ->setCantidad($value['cantidad'])
+                    ->setMtoValorUnitario($value['valor_unitario'])
+                    ->setDescripcion('PRODUCTO - ' . $index)
+                    ->setMtoBaseIgv(100.00)
+                    ->setPorcentajeIgv(18.00) // 18%
+                    ->setIgv(18.00)
+                    ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
+                    ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
+                    ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
+                    ->setMtoPrecioUnitario($value['valor_unitario'] + $value['valor_unitario'] * 18.00);
+            }
+
+            $formatter = new NumeroALetras();
+            $montoLetras = $formatter->toInvoice($boleta->total);
+
+            $legend = (new Legend())
+                ->setCode('1000') // Monto en letras - Catalog. 52
+                ->setValue($montoLetras);
+
+            $invoice->setDetails($items)->setLegends([$legend]);
+
+            $invoice->setUblVersion('2.1')
                 ->setTipoOperacion('0101') // Catalog. 51
                 ->setTipoDoc('03')
                 ->setSerie('B001')
@@ -384,31 +411,6 @@ class SunatController extends Controller
                 ->setSubTotal(118.00)
                 ->setMtoImpVenta(118.00)
                 ->setCompany($company);
-
-            $item = (new SaleDetail())
-                ->setCodProducto('P001')
-                ->setUnidad('NIU')
-                ->setCantidad(2)
-                ->setDescripcion('PRODUCTO 1')
-                ->setMtoBaseIgv(100)
-                ->setPorcentajeIgv(18.00) // 18%
-                ->setIgv(18.00)
-                ->setTipAfeIgv('10')
-                ->setTotalImpuestos(18.00)
-                ->setMtoValorVenta(100.00)
-                ->setMtoValorUnitario(50.00)
-                ->setMtoPrecioUnitario(59.00);
-
-
-            $formatter = new NumeroALetras();
-            $montoLetras = $formatter->toInvoice($boleta->total);
-
-            $legend = (new Legend())
-                ->setCode('1000') // Monto en letras - Catalog. 52
-                ->setValue($montoLetras);
-
-            $invoice->setDetails([$item])
-                ->setLegends([$legend]);
 
             $xml = $see->getXmlSigned($invoice);
 

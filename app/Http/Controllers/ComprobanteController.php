@@ -97,7 +97,7 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->codigo;
             $comprobante->cui = $request->cui;
             $comprobante->nues = $request->nues;
-            $comprobante->serie = 'F001';
+            $comprobante->serie = 'B001';
             $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
