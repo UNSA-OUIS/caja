@@ -142,7 +142,8 @@
                                     path == 'clasificadores' ||
                                     path == 'tipos-concepto' ||
                                     path == 'conceptos' ||
-                                    path == 'tipo-comprobante'
+                                    path == 'tipo-comprobante' ||
+                                    path == 'particulares'
                                     
                             }"
                         >
@@ -241,6 +242,15 @@
                                     "
                                 >
                                     Tipos de comprobante
+                                </inertia-link>
+                            </li>
+                            <li :class="{'mm-active': path == 'particulares'}">
+                                <inertia-link
+                                    :href="route('particulares.iniciar')"
+                                    :class="{ active: path == 'particulares' }"
+                                    v-if="$permissions.can([ { name: 'Listar Particulares' } ])"
+                                >
+                                    Particulares
                                 </inertia-link>
                             </li>                                                     
                         </ul>

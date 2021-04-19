@@ -97,6 +97,13 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Editar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Eliminar Tipos-Comprobante', 'guard_name' => 'sanctum']);
         Permission::create(['name' => 'Restaurar Tipos-Comprobante', 'guard_name' => 'sanctum']);
+
+        Permission::create(['name' => 'Listar Particulares', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'Crear Particulares', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'Mostrar Particulares', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'Editar Particulares', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'Eliminar Particulares', 'guard_name' => 'sanctum']);
+        Permission::create(['name' => 'Restaurar Particulares', 'guard_name' => 'sanctum']);
     }
 }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccesoGoogleController;
 use App\Http\Controllers\ClasificadorController;
+use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\ComprobanteController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -159,6 +160,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])->name('conceptos.eliminar');
     Route::post('/conceptos/{concepto}/restaurar', [ConceptoController::class, 'restore'])->name('conceptos.restaurar');
     /*******************************************************************/
+
+    /**************************** PARTICULARES ***************************/
+    Route::get('/particulares', function () {
+        return Inertia::render('Particulares/Listar');
+    })->name('particulares.iniciar');
+    Route::get('/particulares/listar', [ParticularController::class, 'index'])->name('particulares.listar');
+    Route::get('/particulares/crear', [ParticularController::class, 'create'])->name('particulares.crear');
+    Route::post('/particulares', [ParticularController::class, 'store'])->name('particulares.registrar');
+    Route::get('/particulares/{particular}', [ParticularController::class, 'show'])->name('particulares.mostrar');
+    Route::post('/particulares/{particular}', [ParticularController::class, 'update'])->name('particulares.actualizar');
+    Route::delete('/particulares/{particular}', [ParticularController::class, 'destroy'])->name('particulares.eliminar');
+    Route::post('/particulares/{particular}/restaurar', [ParticularController::class, 'restore'])->name('particulares.restaurar');
+    /*********************************************************************/
 
 
     /**************************** COMPROBANTES ***************************/

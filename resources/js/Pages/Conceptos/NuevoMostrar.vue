@@ -136,7 +136,7 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "conceptos.nuevo.mostrar",
+        name: "conceptos.nuevo-mostrar",
         props: ["concepto", "tipos_concepto", "clasificadores", "unidades_medida"],
         components: {
             AppLayout,                      
