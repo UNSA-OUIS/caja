@@ -79,11 +79,16 @@ class ComprobanteController extends Controller
 
         $comprobante = new Comprobante();
 
-        $comprobante->codigo = "";
+        if (!$ultimo) {
+            $comprobante->codigo = 1;
+        } else {
+            $ultimo->codigo += 1;
+            $comprobante->codigo = $ultimo->codigo;
+        }
         $comprobante->cui = "";
         $comprobante->escuela = "";
         $comprobante->nues = "";
-        $comprobante->serie = "B001";
+        $comprobante->serie = "F001";
         if (!$ultimo) {
             $comprobante->correlativo = '00000001';
         } else {

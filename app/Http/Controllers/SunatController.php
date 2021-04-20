@@ -7,21 +7,22 @@ use DateTime;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
+use Greenter\Model\Sale\Document;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\SaleDetail;
+use Greenter\Model\Summary\Summary;
+use Greenter\Model\Summary\SummaryDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
-use Greenter\Ws\Services\BillSender;
-use Greenter\Ws\Services\SoapClient;
 use Luecano\NumeroALetras\NumeroALetras;
 
-//require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
+require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {
@@ -191,6 +192,11 @@ class SunatController extends Controller
             // Venta
             $invoice = new Invoice();
 
+            $total_agravadas = 0;
+            $total_exonerados = 0;
+            $total_inafectos = 0;
+            $subtotal = 0;
+
             $detalle = $factura->detalles;
             foreach ($detalle as $index => $value) {
                 $items[$index] = (new SaleDetail())
@@ -201,15 +207,16 @@ class SunatController extends Controller
                     ->setDescripcion('PRODUCTO - ' . $index)
                     ->setMtoBaseIgv(100.00)
                     ->setPorcentajeIgv(18.00) // 18%
-                    ->setIgv(18.00)
+                    ->setIgv(18.00 / $value['cantidad'])
                     ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
                     ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
                     ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
-                    ->setMtoPrecioUnitario($value['valor_unitario'] + $value['valor_unitario'] * 18.00);
+                    ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
+                $total_agravadas += $value['valor_unitario'] * $value['cantidad'];
             }
 
             $formatter = new NumeroALetras();
-            $montoLetras = $formatter->toInvoice($factura->total);
+            $montoLetras = $formatter->toInvoice($factura->total, 2, 'soles');
 
             $legend = (new Legend())
                 ->setCode('1000') // Monto en letras - Catalog. 52
@@ -228,12 +235,12 @@ class SunatController extends Controller
                 ->setTipoMoneda('PEN') // Sol - Catalog. 02
                 ->setCompany($company)
                 ->setClient($client)
-                ->setMtoOperGravadas(100.00)
+                ->setMtoOperGravadas($total_agravadas)
                 ->setMtoIGV(18.00)
                 ->setTotalImpuestos(18.00)
-                ->setValorVenta(100.00)
-                ->setSubTotal(118.00)
-                ->setMtoImpVenta($factura->total + 18.00);
+                ->setValorVenta($total_agravadas)
+                ->setSubTotal($total_agravadas)
+                ->setMtoImpVenta($total_agravadas + 18.00);
 
             $result = $see->send($invoice);
 
@@ -275,6 +282,8 @@ class SunatController extends Controller
                 if (count($cdr->getNotes()) > 0) {
                     // Corregir estas observaciones en siguientes emisiones.
                     $factura->estado = 'observado';
+                    $factura->observaciones = '';
+                    $factura->update();
                     foreach ($cdr->getNotes() as $index => $value) {
                         $factura->observaciones .= json_encode('Observacion #' . $index . '=>' . $value, JSON_UNESCAPED_UNICODE) . "\n";
                     }
@@ -388,7 +397,7 @@ class SunatController extends Controller
             }
 
             $formatter = new NumeroALetras();
-            $montoLetras = $formatter->toInvoice($boleta->total);
+            $montoLetras = $formatter->toInvoice($boleta->total, 2, 'soles');
 
             $legend = (new Legend())
                 ->setCode('1000') // Monto en letras - Catalog. 52
@@ -414,7 +423,7 @@ class SunatController extends Controller
 
             $xml = $see->getXmlSigned($invoice);
 
-            // Guardar XML        
+            // Guardar XML
             $xmlGuardado = file_put_contents($invoice->getName() . '.xml', $xml);
 
             if ($xmlGuardado) {
@@ -470,6 +479,84 @@ class SunatController extends Controller
             return 'Error' . $th;
         }
         return redirect()->route('sunat.iniciarBoletas');
+    }
+    public function resumenDiario(Request $request)
+    {
+        //$this->authorize("viewAny", Comprobante::class);
+
+        $see = require storage_path() . '\app\public\config.php';
+
+        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'B' . '%');
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        $boletas = $query->paginate($request->size)->all();
+        //return $boletas;
+
+        $company = new Company();
+        $company->setRuc('20163646499')
+            ->setRazonSocial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
+            ->setNombreComercial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
+            ->setAddress((new Address())
+                ->setUbigueo('150101')
+                ->setDepartamento('AREQUIPA')
+                ->setProvincia('AREQUIPA')
+                ->setDistrito('AREQUIPA')
+                ->setUrbanizacion('-')
+                ->setDireccion('CALLE SANTA CATALINA 117')
+                ->setCodLocal('0000'));
+
+        $detail = new SummaryDetail();
+        $detail->setTipoDoc('03') // Boleta
+            ->setSerieNro('B001-2')
+            ->setEstado('3') // Anulación
+            ->setClienteTipo('1')
+            ->setClienteNro('00000000')
+            ->setTotal(119)
+            ->setMtoOperGravadas(20)
+            ->setMtoOperInafectas(24.4)
+            ->setMtoOperExoneradas(50)
+            ->setMtoOtrosCargos(21)
+            ->setMtoIGV(3.6);
+
+        $resumen = new Summary();
+        $resumen->setFecGeneracion(new \DateTime('2020-08-01')) // Fecha de emisión de las boletas.
+            ->setFecResumen(new \DateTime('2020-08-02')) // Fecha de envío del resumen diario.
+            ->setCorrelativo('001') // Correlativo, necesario para diferenciar de otros Resumen diario del mismo día.
+            ->setCompany($company)
+            ->setDetails([$detail]);
+
+        $result = $see->send($resumen);
+        // Guardar XML
+        file_put_contents(
+            $resumen->getName() . '.xml',
+            $see->getFactory()->getLastXml()
+        );
+
+        if (!$result->isSuccess()) {
+            // Si hubo error al conectarse al servicio de SUNAT.
+            var_dump($result->getError());
+            exit();
+        }
+
+        $ticket = $result->getTicket();
+        echo 'Ticket : ' . $ticket . PHP_EOL;
+
+        $statusResult = $see->getStatus($ticket);
+        if (!$statusResult->isSuccess()) {
+            // Si hubo error al conectarse al servicio de SUNAT.
+            var_dump($statusResult->getError());
+            return;
+        }
+
+        echo $statusResult->getCdrResponse()->getDescription();
+        // Guardar CDR
+        file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
     }
     public function anularFactura(Comprobante $factura)
     {
