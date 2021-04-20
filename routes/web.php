@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccesoGoogleController;
 use App\Http\Controllers\ClasificadorController;
+use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\ComprobanteController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -160,6 +161,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/conceptos/{concepto}/restaurar', [ConceptoController::class, 'restore'])->name('conceptos.restaurar');
     /*******************************************************************/
 
+    /**************************** PARTICULARES ***************************/
+    Route::get('/particulares', function () {
+        return Inertia::render('Particulares/Listar');
+    })->name('particulares.iniciar');
+    Route::get('/particulares/listar', [ParticularController::class, 'index'])->name('particulares.listar');
+    Route::get('/particulares/crear', [ParticularController::class, 'create'])->name('particulares.crear');
+    Route::post('/particulares', [ParticularController::class, 'store'])->name('particulares.registrar');
+    Route::get('/particulares/{particular}', [ParticularController::class, 'show'])->name('particulares.mostrar');
+    Route::post('/particulares/{particular}', [ParticularController::class, 'update'])->name('particulares.actualizar');
+    Route::delete('/particulares/{particular}', [ParticularController::class, 'destroy'])->name('particulares.eliminar');
+    Route::post('/particulares/{particular}/restaurar', [ParticularController::class, 'restore'])->name('particulares.restaurar');
+    /*********************************************************************/
+
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
@@ -177,7 +191,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
     Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');
     Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
-
+    Route::get('/buscarCodigoDependencia/{codigo}', [ComprobanteController::class, 'buscarCodigoDependencia'])->name('comprobantes.buscarCodigoDependencia');
+    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');    
+    Route::get('/buscarDniParticular/{dni}', [ComprobanteController::class, 'buscarDniParticular'])->name('comprobantes.buscarDniParticular');
+    Route::post('/registrarParticular', [ComprobanteController::class, 'registrarParticular'])->name('comprobantes.registrarParticular');
+    Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');    
     /*******************************************************************/
 
 

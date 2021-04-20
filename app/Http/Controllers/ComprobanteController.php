@@ -8,6 +8,9 @@ use App\Models\Matricula;
 use App\Models\Escuela;
 use App\Models\Alumno;
 use App\Models\Docente;
+use App\Models\Dependencia;
+use App\Models\Particular;
+use App\Http\Requests\ParticularStoreRequest;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,10 +76,62 @@ class ComprobanteController extends Controller
         return $docentes;
     }
 
+    public function buscarCodigoDependencia($codigo)
+    {
+        $dependencia = Dependencia::where('codi_depe', $codigo)->first();
+
+        return json_encode($dependencia);
+    }
+
+    public function buscarDependencia($dependencia)
+    {        
+        $dependencias = Dependencia::where('nomb_depe', 'like', $dependencia . '%')                        
+                        ->take(20)
+                        ->get();  
+        
+        return $dependencias;
+    }
+
+    public function buscarDniParticular($dni)
+    {
+        $particular = Particular::where('dni', $dni)->first();
+
+        return json_encode($particular);
+    }
+
+    public function buscarApnParticular(Request $request)
+    {        
+        $particulares = Particular::where('apellidos', 'like', $request->ap_paterno . '%')
+                        ->take(10)
+                        ->get();  
+        
+        return $particulares;
+    }
+
+    public function registrarParticular(ParticularStoreRequest $request)
+    {
+        try {           
+            $particular = new Particular();
+            $particular->dni = $request->dni;
+            $particular->nombres = $request->nombres;
+            $particular->apellidos = $request->apellidos;
+            $particular->email = $request->email;            
+            $particular->save();
+            $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo registrar al particular', 'error' => true];
+            \Log::error('ComprobanteController@registrarParticular, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }   
+
+        return $result;
+    }
+
     public function create(Request $request)
     {
-        $ultimo = Comprobante::latest('created_at')->first();
-
+        //$ultimo = Comprobante::latest('created_at')->first();
+                       
+        //dd($request->dependencia);
+        
         $comprobante = new Comprobante();
 
         if (!$ultimo) {
@@ -113,6 +168,14 @@ class ComprobanteController extends Controller
             $comprobante->codigo = $request->docente['codper'];
             $comprobante->dni = $request->docente['dic'];
             $comprobante->usuario = $request->docente['apn'];
+        }
+        else if ($tipo_usuario == 'dependencia') {          
+            $comprobante->codigo = $request->dependencia['codi_depe'];            
+            $comprobante->usuario = $request->dependencia['nomb_depe'];            
+        }
+        else if ($tipo_usuario == 'particular') {          
+            $comprobante->dni = $request->particular['dni'];                         
+            $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
         }
 
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
