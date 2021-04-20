@@ -179,15 +179,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/comprobantes', function () {
         //return Inertia::render('Comprobantes/Listar');
         return Inertia::render('Comprobantes/Busqueda');
-    })->name('comprobantes.iniciar');    
-    
+    })->name('comprobantes.iniciar');
+
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::post('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
 
-    Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');    
+    Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');
     Route::get('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
     Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');
     Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
@@ -216,8 +216,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/listarBoletas', [SunatController::class, 'indexBoleta'])->name('sunat.listarBoletas');
     Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoleta');
     Route::post('/sunat/anularBoleta/{boleta}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
+    Route::get('/sunat/resumenDiario', [SunatController::class, 'resumenDiario'])->name('sunat.resumenDiario');
     /*******************************************************************/
-    
+
     /**************************** Reportes ***************************/
     Route::get('/reportes-periodo/cajero', [ReportesController::class, 'porCajero'])->name('reportes.cajero');
     Route::post('/reportes-periodo/cajero/pdf', [ReportesController::class, 'porCajeroPDF'])->name('reportes.cajeropdf');
@@ -228,7 +229,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
     Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
     /*******************************************************************/
-    
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;
