@@ -8,10 +8,10 @@
                     small
                     head-variant="light"
                     :fields="fields" 
-                    :items="dependencias"
+                    :items="particulares"
                 >                       
-                    <template v-slot:cell(nomb_depe)="row">
-                        <a href="#" @click="buscarCodigoDependencia(row.item)">{{ row.item.nomb_depe }}</a>
+                    <template v-slot:cell(apn)="row">
+                        <a href="#" @click="buscarDniParticular(row.item)">{{ row.item.apellidos }}, {{ row.item.nombres }}</a>
                     </template>
                 </b-table>                
             </b-col>                
@@ -23,33 +23,32 @@
 const axios = require("axios");
 
 export default {
-    name: "comprobantes.tab-docentes.dependencias",  
-    props: ["dependencias"],    
+    name: "comprobantes.tab-particulares.particulares",  
+    props: ["particulares"],    
     data() {
         return {
             app_url: this.$root.app_url,    
-            dependencia: {},
+            particular: {},
             fields: [
-                { key: "codi_depe", label: "Código", sortable: true, class: "text-center" },
-                { key: "nomb_depe", label: "Nombre", sortable: true },                                
+                { key: "dni", label: "DNI", sortable: true, class: "text-center" },
+                { key: "apn", label: "Apellidos y Nombres", sortable: true },                                
             ],                
         };
     },        
     methods: {        
-        async buscarCodigoDependencia(dependencia) {
+        async buscarDniParticular(particular) {
             try {
-                const response = await axios.get(`${this.app_url}/buscarCodigoDependencia/${dependencia.codi_depe}`)
-                this.dependencia = response.data               
-                this.mostrarComprobante(this.dependencia)                    
-                
+                const response = await axios.get(`${this.app_url}/buscarDniParticular/${particular.dni}`)
+                this.particular = response.data               
+                this.mostrarComprobante(this.particular)                                  
             } catch (error) {
                 console.log(error)
             }      
         },
-        mostrarComprobante(dependencia) {       
+        mostrarComprobante(particular) {       
             this.$inertia.post(route('comprobantes.crear'), {
-                'tipo_usuario' : 'dependencia',
-                'dependencia': dependencia
+                'tipo_usuario' : 'particular',
+                'particular' : particular,                
             })
         },  
     }

@@ -1,26 +1,26 @@
 <template>
     <div>
-        <template v-if="!showDocentes">
+        <template v-if="!showRegistro && !showParticulares">
             <div class="d-flex justify-content-center mb-3">    
-                <form @submit.prevent="buscarCodigoDocente" id="codigo_form"></form> 
-                <form @submit.prevent="buscarApnDocente" id="apn_docente_form"></form>                                                          
+                <form @submit.prevent="buscarDniParticular" id="dni_form_particular"></form> 
+                <form @submit.prevent="buscarApnParticular" id="apn_form_particular"></form>                                                          
                 <table>
-                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR DOCENTE</caption>                        
+                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR PARTICULAR</caption>                        
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="codigo">Código</label>
+                            <label class="mr-sm-2" for="dni_particular">DNI</label>
                         </th>
                         <td>
                             <b-form-input
-                                id="codigo"
-                                v-model="codigo"
+                                id="dni_particular"
+                                v-model="dni"
                                 class="mb-2 mr-sm-2 mb-sm-0"   
                                 required           
-                                form="codigo_form"                              
+                                form="dni_form_particular"                              
                             ></b-form-input>                                    
                         </td>
                         <td>
-                            <b-button form="codigo_form" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                            <b-button form="dni_form_particular" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
                         </td>
                     </tr> 
                     <tr>
@@ -28,28 +28,28 @@
                     </tr> 
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="ap_paterno_docente">Ap. Paterno <span class="text-danger">*</span></label>
+                            <label class="mr-sm-2" for="ap_paterno_particular">Ap. Paterno <span class="text-danger">*</span></label>
                         </th>
                         <td>
                             <b-form-input
-                                id="ap_paterno_docente"     
+                                id="ap_paterno_particular"     
                                 v-model="ap_paterno"                               
                                 class="mb-2 mr-sm-2 mb-sm-0"  
                                 required        
-                                form="apn_docente_form"                                                              
+                                form="apn_form_particular"                                                              
                             ></b-form-input>                                
                         </td>
                         <td>
-                            <b-button form="apn_docente_form" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                            <b-button form="apn_form_particular" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
                         </td>
                     </tr>
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="ap_materno_docente">Ap. Materno</label>
+                            <label class="mr-sm-2" for="ap_materno_particular">Ap. Materno</label>
                         </th>
                         <td>
                             <b-form-input
-                                id="ap_materno_docente"
+                                id="ap_materno_particular"
                                 v-model="ap_materno"                               
                                 class="mb-2 mr-sm-2 mb-sm-0"                                    
                             ></b-form-input>                                
@@ -58,11 +58,11 @@
                     </tr>
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="nombres_docente">Nombres</label>
+                            <label class="mr-sm-2" for="nombres_particular">Nombres</label>
                         </th>
                         <td>
                             <b-form-input
-                                id="nombres_docente"
+                                id="nombres_particular"
                                 v-model="nombres"                               
                                 class="mb-2 mr-sm-2 mb-sm-0"                                    
                             ></b-form-input>                                
@@ -71,47 +71,61 @@
                     </tr>                    
                 </table>                                                                            
             </div>             
-        </template>        
-        <template v-if="showDocentes">
-            <docentes :docentes="docentes"></docentes>
+        </template>
+        <template v-else-if="showRegistro">
+            <registro :particular="particular"></registro>
+        </template>
+        <template v-else-if="showParticulares">
+            <particulares :particulares="particulares"></particulares>
         </template>
     </div>    
 </template>
 <script>
 const axios = require("axios");
-import Docentes from "./Docentes";
+import Registro from "./Registro";
+import Particulares from "./Particulares";
 
 export default {
-    name: "comprobantes.tab-docentes",    
-    components: {                
-        Docentes
+    name: "comprobantes.tab-particulares",    
+    components: {        
+        Registro,
+        Particulares
     },
     data() {
         return {
             app_url: this.$root.app_url,
-            codigo: '',
+            dni: '',
             ap_paterno: '',
             ap_materno: '',
             nombres: '',
-            docente: {},            
-            docentes: [],            
-            showDocentes: false
+            particular: {},
+            particulares: [],
+            showRegistro: false,
+            showParticulares: false
         };
     },
     methods: {                
-        async buscarCodigoDocente() {            
+        async buscarDniParticular() {
             try {
-                const response = await axios.get(`${this.app_url}/buscarCodigoDocente/${this.codigo}`)
-                this.docente = response.data                
-                this.mostrarComprobante(this.docente)
-                
+                const response = await axios.get(`${this.app_url}/buscarDniParticular/${this.dni}`)
+                this.particular = response.data          
+                   
+                if (this.particular) {
+                    this.mostrarComprobante(this.particular)                    
+                }
+                else {
+                    this.particular = {}                    
+                    this.particular.dni = this.dni
+                    this.showRegistro = true
+                    this.showParticulares = false
+                }
             } catch (error) {
                 console.log(error)
             }      
         },
-        async buscarApnDocente() {
+        async buscarApnParticular() {
             try {
-                const response = await axios.get(`${this.app_url}/buscarApnDocente`, { 
+                const response = await axios.get(`${this.app_url}/buscarApnParticular`, { 
                                         params: { 
                                             ap_paterno: this.ap_paterno,
                                             ap_materno: this.ap_materno,
@@ -119,19 +133,19 @@ export default {
                                         }
                                 })
                 
-                this.docentes = response.data
-                this.showDocentes = true                
+                this.particulares= response.data
+                this.showParticulares = true
+                this.showRegistro = false
             } catch (error) {
                 console.log(error)
             }      
         },
-        mostrarComprobante(docente) {       
+        mostrarComprobante(particular) {       
             this.$inertia.post(route('comprobantes.crear'), {
-                'tipo_usuario' : 'docente',
-                'docente': docente
+                'tipo_usuario' : 'particular',
+                'particular' : particular,                
             })
-        },        
-        
+        },                
     }
 };
 </script>
