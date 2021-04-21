@@ -192,16 +192,18 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');
     Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
     Route::get('/buscarCodigoDependencia/{codigo}', [ComprobanteController::class, 'buscarCodigoDependencia'])->name('comprobantes.buscarCodigoDependencia');
-    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');    
+    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');
     Route::get('/buscarDniParticular/{dni}', [ComprobanteController::class, 'buscarDniParticular'])->name('comprobantes.buscarDniParticular');
     Route::post('/registrarParticular', [ComprobanteController::class, 'registrarParticular'])->name('comprobantes.registrarParticular');
-    Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');    
+    Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');
     /*******************************************************************/
 
 
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
-    Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
+    //Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
+    Route::post('/sunat/filtrar/{fechaInicio}', SunatController::class, 'filtrar')->name('sunat.filtrar');
+
 
     Route::get('/sunat/facturas', function () {
         return Inertia::render('Sunat/ListarFacturas');

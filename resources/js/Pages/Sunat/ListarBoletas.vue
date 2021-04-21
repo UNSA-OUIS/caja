@@ -52,6 +52,54 @@
               </b-input-group>
             </b-form-group>
           </b-col>
+          <b-col sm="5">
+            <b-form-group
+              label="Fecha inicio: "
+              label-cols-sm="5"
+              label-align-sm="right"
+              label-size="sm"
+              label-for="startDate"
+              class="mb-0"
+            >
+              <b-form-datepicker
+                id="startDate"
+                v-model="fechaInicio"
+                today-button
+                reset-button
+                close-button
+                placeholder="Elige una fecha"
+                size="sm"
+              ></b-form-datepicker>
+            </b-form-group>
+          </b-col>
+          <b-col sm="5">
+            <b-form-group
+              label="Fecha fin: "
+              label-cols-sm="4"
+              label-align-sm="right"
+              label-size="sm"
+              label-for="endDate"
+              class="mb-0"
+            >
+              <b-form-datepicker
+                id="endDate"
+                v-model="fechaFin"
+                today-button
+                reset-button
+                close-button
+                placeholder="Elige una fecha"
+                size="sm"
+              ></b-form-datepicker>
+            </b-form-group>
+          </b-col>
+          <b-button
+            variant="success"
+            size="sm"
+            title="Enviar"
+            @click="filtrarFecha()"
+          >
+            Filtrar&nbsp;<b-icon icon="cloud-arrow-up"></b-icon>
+          </b-button>
         </b-row>
         <b-table
           ref="tbl_facturas"
@@ -175,13 +223,15 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.listarFacturas",
+  name: "sunat.listarBoletas",
   components: {
     AppLayout,
   },
   data() {
     return {
       app_url: this.$root.app_url,
+      fechaInicio: "",
+      fechaFin: "",
       fields: [
         { key: "codigo", label: "Codigo", sortable: true },
         { key: "serie", label: "Serie", sortable: true },
@@ -224,7 +274,6 @@ export default {
 
       return promise.then((response) => {
         const boleta = response.data.data;
-        console.log(boleta);
         this.totalRows = response.data.total;
 
         return boleta || [];
@@ -274,6 +323,22 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.get(route("sunat.resumenDiario"));
+            this.refreshTable();
+          }
+        });
+    },
+    filtrarFecha() {
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer enviar un resumen diario?", {
+          title: "Enviar resumen diario",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            this.$inertia.post(route("sunat.filtrar"), this.fechaInicio);
             this.refreshTable();
           }
         });
