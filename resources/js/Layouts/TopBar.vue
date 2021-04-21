@@ -24,6 +24,7 @@
                 <button
                     type="button"
                     class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn"
+                    @click="mostrarOcultarBarraLateral"
                 >
                     <i class="fa fa-fw fa-bars"></i>
                 </button>
@@ -386,6 +387,19 @@ export default {
         },
         logout() {
             this.$inertia.post(route("logout"));
+        },
+        mostrarOcultarBarraLateral() {            
+            let sitebody = document.body
+            let show_sidebar = !this.$store.getters.getShowSideBar            
+
+            if (show_sidebar) {
+                sitebody.classList.remove("vertical-collpsed")                                    
+            }
+            else {
+                sitebody.classList.add("vertical-collpsed")
+            }            
+
+            this.$store.dispatch("setShowSideBar", show_sidebar);
         }
     }
 };
