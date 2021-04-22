@@ -24,7 +24,7 @@ Vue.use(Permissions);
 const app = document.getElementById('app');
 
 import config from "./config";
-import store from './Store'
+import store from './store'
 
 new Vue({    
     data: {
