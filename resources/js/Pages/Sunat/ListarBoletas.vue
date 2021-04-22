@@ -52,7 +52,7 @@
               </b-input-group>
             </b-form-group>
           </b-col>
-          <b-col sm="5">
+          <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
               label="Fecha inicio: "
               label-cols-sm="5"
@@ -62,7 +62,7 @@
               class="mb-0"
             >
               <b-form-datepicker
-                id="startDate"
+                name="fechaInicio"
                 v-model="fechaInicio"
                 today-button
                 reset-button
@@ -72,7 +72,7 @@
               ></b-form-datepicker>
             </b-form-group>
           </b-col>
-          <b-col sm="5">
+          <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
             <b-form-group
               label="Fecha fin: "
               label-cols-sm="4"
@@ -82,7 +82,7 @@
               class="mb-0"
             >
               <b-form-datepicker
-                id="endDate"
+                name="fechaFin"
                 v-model="fechaFin"
                 today-button
                 reset-button
@@ -95,7 +95,7 @@
           <b-button
             variant="success"
             size="sm"
-            title="Enviar"
+            title="Buscar"
             @click="filtrarFecha()"
           >
             Filtrar&nbsp;<b-icon icon="cloud-arrow-up"></b-icon>
@@ -223,7 +223,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.listarBoletas",
+  name: "sunat.listarBoleta",
   components: {
     AppLayout,
   },
@@ -232,10 +232,12 @@ export default {
       app_url: this.$root.app_url,
       fechaInicio: "",
       fechaFin: "",
+      boletas: "",
       fields: [
         { key: "codigo", label: "Codigo", sortable: true },
         { key: "serie", label: "Serie", sortable: true },
         { key: "correlativo", label: "Correlativo", sortable: true },
+        { key: "created_at", label: "Fecha Inicio", sortable: true },
         {
           key: "estado",
           label: "Estado",
@@ -329,8 +331,8 @@ export default {
     },
     filtrarFecha() {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar un resumen diario?", {
-          title: "Enviar resumen diario",
+        .msgBoxConfirm("¿Esta seguro de estas fechas?", {
+          title: "Filtrar fechas",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -338,7 +340,10 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("sunat.filtrar"), this.fechaInicio);
+            this.$inertia.get(route("sunat.filtrar"), [
+              this.fechaInicio,
+              this.fechaFin,
+            ]);
             this.refreshTable();
           }
         });

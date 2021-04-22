@@ -501,10 +501,15 @@ class SunatController extends Controller
         // Guardar CDR
         file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
     }
-    public function filtrar(Comprobante $fechaInicio)
+    public function filtrar(Request $request)
     {
-        return $fechaInicio;
-        //return redirect()->route('sunat.iniciarBoletas');
+        $boletas = Comprobante::with('detalles')->where("created_at", ">=", $request[0])
+            ->where("created_at", "<=", $request[1])
+            ->where('serie', 'like', 'B' . '%')
+            ->get();
+
+        //return Inertia::render('Sunat/ListarBoletas', compact('boletas'));
+        return $boletas;
     }
     public function anularFactura(Comprobante $factura)
     {
