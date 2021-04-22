@@ -11,31 +11,36 @@ class ReportesController extends Controller
 {
     public function porCajero()
     {
-        $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/PorPeriodo/Cajero', compact('comprobantes'));
+        //$comprobantes = Comprobante::all();
+
+        //return Inertia::render('Reportes/PorPeriodo/Cajero', compact('comprobantes'));
+        return Inertia::render('Reportes/PorPeriodo/Cajero');
+    }
+
+    public function filtrarCajero(Request $request)
+    {
+        $comprobantes = Comprobante::where('cui', 'like', '%' . $request->dniCliente . '%')
+                                    ->whereDate('created_at','>=',$request->fechaInicio)
+                                    ->whereDate('created_at','<=',$request->fechaFin)->get();
+        return ['comprobantes' => $comprobantes];
     }
 
     public function porCajeroPDF(Request $request)
     {
-        $comprobantes = Comprobante::all()->take(25);
-        //$comprobantes = Comprobante::;
-        $comprobantes = (array)json_decode($request->getContent());
-        
-        //return $comprobantes;
-        //return view('reportes.ventas', compact('comprobantes'));
-        
-        //return $comprobantes;        
+        //$comprobantes = (array)json_decode($request->getContent());
+           
+        $comprobantes = Comprobante::where('cui', 'like', '%' . $request->dniCliente . '%')
+                                    ->whereDate('created_at','>=',$request->fechaInicio)
+                                    ->whereDate('created_at','<=',$request->fechaFin)->get();     
         $pdf = PDF::loadView('reportes.cajero', compact('comprobantes'));
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->setPaper('A4', 'portrait');
-        $pdf->save(storage_path().'fdjfdh.pdf');
+        //$pdf->save(storage_path().'fdjfdh.pdf');
         
     // Finally, you can download the file using download function
-        //return response()->file(storage_path().'fdjfdh.pdf');
-        $pdf->stream('customers.pdf');
-        return "done";
+        //return file(storage_path().'fdjfdh.pdf');
+        return $pdf->stream('customers.pdf');
         //return $pdf->download('file.pdf');
-        //return $pdf;
     }
 
     public function descuentos()
