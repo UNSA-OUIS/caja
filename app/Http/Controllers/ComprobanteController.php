@@ -127,20 +127,23 @@ class ComprobanteController extends Controller
     }
 
     public function create(Request $request)
-    {
-        $ultimo = Comprobante::latest('created_at')->first();
-
+    {       
         //dd($request->dependencia);
-
+        $ultimo = Comprobante::latest('created_at')->first();                                     
         $comprobante = new Comprobante();
+        $comprobante->tipo_usuario = $request->tipo_usuario;
+        $comprobante->codigo = "";
 
         if (!$ultimo) {
             $comprobante->codigo = 1;
-        } else {
+        } 
+        else {
             $ultimo->codigo += 1;
             $comprobante->codigo = $ultimo->codigo;
         }
-        $comprobante->cui = "";
+        
+        $comprobante->dni = "";
+        $comprobante->email = "";
         $comprobante->escuela = "";
         $comprobante->nues = "";
         $comprobante->serie = "B001";
@@ -154,31 +157,33 @@ class ComprobanteController extends Controller
         $comprobante->observaciones = "";
         $comprobante->url_xml = "";
         $comprobante->url_cdr = "";
-        $comprobante->detalles = array();
+        $comprobante->detalles = array();        
 
-        $tipo_usuario = $request->tipo_usuario;
-
-        if ($tipo_usuario == 'alumno') {
-            $comprobante->cui = $request->alumno['cui'];
+        if ($comprobante->tipo_usuario == 'alumno') {
+            $comprobante->codigo = $request->alumno['cui'];
             $comprobante->dni = $request->alumno['dic'];
             $comprobante->escuela = $request->matricula['escuela']['nesc'];
             $comprobante->nues = $request->matricula['nues'];
             $comprobante->usuario = $request->alumno['apn'];
-        } else if ($tipo_usuario == 'docente') {
+        } 
+        else if ($comprobante->tipo_usuario == 'docente') {
             $comprobante->codigo = $request->docente['codper'];
             $comprobante->dni = $request->docente['dic'];
             $comprobante->usuario = $request->docente['apn'];
-        } else if ($tipo_usuario == 'dependencia') {
-            $comprobante->codigo = $request->dependencia['codi_depe'];
-            $comprobante->usuario = $request->dependencia['nomb_depe'];
-        } else if ($tipo_usuario == 'particular') {
-            $comprobante->dni = $request->particular['dni'];
+        }
+        else if ($comprobante->tipo_usuario == 'dependencia') {          
+            $comprobante->codigo = $request->dependencia['codi_depe'];            
+            $comprobante->usuario = $request->dependencia['nomb_depe'];            
+        }
+        else if ($comprobante->tipo_usuario == 'particular') {          
+            $comprobante->dni = $request->particular['dni'];                         
+            $comprobante->email = $request->particular['email'];                         
             $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
         }
 
         $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
-            ->orderBy('descripcion', 'asc')
-            ->get();
+                        ->orderBy('descripcion', 'asc')
+                        ->get();
 
         return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
     }

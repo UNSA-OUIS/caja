@@ -44,24 +44,34 @@ class SunatController extends Controller
         return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));
     }
     public function getEstados()
-    {
-        /*$noEnviado  = count(DB::table('comprobantes')
+    {             
+        $noEnviado  = count(DB::table('comprobantes')
             ->where('estado', 'like', 'noEnviado')
-            ->get());*/
-        return 'jesus';
-        /*$observado = count(DB::table('comprobantes')
+            ->get());
+        
+        $observado = count(DB::table('comprobantes')
             ->where('estado', 'like', 'observado')
             ->get());
+
         $rechazado = count(DB::table('comprobantes')
             ->where('estado', 'like', 'rechazado')
             ->get());
+
         $anulado = count(DB::table('comprobantes')
             ->where('estado', 'like', 'anulado')
             ->get());
+
         $aceptado = count(DB::table('comprobantes')
             ->where('estado', 'like', 'aceptado')
             ->get());
-        return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));*/
+
+        return [
+            'noEnviado' => $noEnviado,
+            'observado' => $observado,
+            'rechazado' => $rechazado,
+            'anulado' => $anulado,
+            'aceptado' => $aceptado,
+        ];
     }
     /**
      * Display a listing of the resource.

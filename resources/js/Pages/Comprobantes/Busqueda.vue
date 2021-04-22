@@ -4,13 +4,9 @@
             <div class="card-header">
                 <ol class="breadcrumb float-left">
                     <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
+                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
-                    <li class="breadcrumb-item active">
-                        Lista de comprobantes
-                    </li>
+                    <li class="breadcrumb-item active">Buscar usuario</li>
                 </ol>                
             </div>
             <div class="card-body">
@@ -38,7 +34,6 @@
 </template>
 
 <script>
-const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 import TabAlumnos from "./TabAlumnos/Inicio";
 import TabDocentes from "./TabDocentes/Inicio";
@@ -56,20 +51,8 @@ export default {
     },
     data() {
         return {
-            app_url: this.$root.app_url,
-            cui: '',
-            escuelas: []
+            app_url: this.$root.app_url,            
         };
-    },
-    methods: {                
-        async buscarCuiAlumno() {
-            try {
-                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${this.cui}`)
-                this.escuelas = response.data               
-            } catch (error) {
-                console.log(error)    
-            }      
-        }
-    }
+    },    
 };
 </script>

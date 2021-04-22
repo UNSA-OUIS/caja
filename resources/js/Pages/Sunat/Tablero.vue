@@ -176,9 +176,26 @@
 import AppLayout from "@/Layouts/AppLayout";
 export default {
     name: "sunat.tablero",
-    props: ["noEnviado", "observado", "rechazado", "anulado", "aceptado"],
+    //props: ["noEnviado", "observado", "anulado", "aceptado"],
     components: {
         AppLayout
+    },    
+    computed: {
+        noEnviado () {
+            return this.$store.state.envio.noEnviado
+        },        
+        observado () {
+            return this.$store.state.envio.observado
+        },
+        rechazado () {
+            return this.$store.state.envio.rechazado
+        },
+        anulado () {
+            return this.$store.state.envio.anulado
+        },
+        aceptado () {
+            return this.$store.state.envio.aceptado
+        }
     },
     created(){
         this.$store.dispatch("getEstados");

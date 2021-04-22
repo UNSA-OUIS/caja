@@ -39,6 +39,12 @@ class PermisoSeeder extends Seeder
             'password' => bcrypt('password')
         ]);
 
+        User::create([
+            'name' => 'Edson Lipa Urbina', 
+            'email' => 'elipau@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
+
         //usuario administrador
         $user1 = User::find(1);
         $user1->assignRole('Administrador');
@@ -46,6 +52,8 @@ class PermisoSeeder extends Seeder
         $user2->assignRole('Administrador');
         $user3 = User::find(3);
         $user3->assignRole('Administrador');
+        $user4 = User::find(4);
+        $user4->assignRole('Administrador');
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
