@@ -348,6 +348,19 @@ export default {
           }
         });
     },
+    async filtrarFecha(docente) {
+      try {
+        let params =
+          "?fechaInicio=" + this.fechaInicio + "&fechaFin=" + this.fechaFin;
+        const response = await axios.get(`${this.app_url}/sunat/filtrar/`, {
+          params: { fechaInicio: this.fechaInicio, fechaFin: this.fechaFin },
+        });
+        console.log(response.data);
+        this.refreshTable();
+      } catch (error) {
+        console.log(error);
+      }
+    },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;

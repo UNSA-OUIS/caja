@@ -201,7 +201,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
-    //Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
+    Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
     Route::get('/sunat/filtrar', [SunatController::class, 'filtrar'])->name('sunat.filtrar');
 
 

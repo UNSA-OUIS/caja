@@ -503,8 +503,10 @@ class SunatController extends Controller
     }
     public function filtrar(Request $request)
     {
-        $boletas = Comprobante::with('detalles')->where("created_at", ">=", $request[0])
-            ->where("created_at", "<=", $request[1])
+        //dd($request->all());
+
+        $boletas = Comprobante::with('detalles')->where("created_at", ">=", $request->fechaInicio)
+            ->where("created_at", "<=", $request->fechaFin)
             ->where('serie', 'like', 'B' . '%')
             ->get();
 
