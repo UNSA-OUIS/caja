@@ -1,5 +1,21 @@
 <template>
     <div>
+        <!--<b-tabs
+                    active-nav-item-class="font-weight-bold text-uppercase text-danger"
+                    active-tab-class="font-weight-bold"
+                    content-class="mt-3"
+                >
+                    <b-tab title="Alumnos" active :href="route('reportes.cajero')"> 
+                    </b-tab>
+                    <b-tab title="Docentes" :href="route('reportes.descuentos')"> 
+                    </b-tab>
+                    <b-tab title="Dependencias">
+                        <tab-dependencias></tab-dependencias>  
+                    </b-tab>
+                    <b-tab title="Particulares">
+                        <tab-particulares></tab-particulares>                          
+                    </b-tab>
+                </b-tabs>-->
         <b-nav tabs fill>
             <b-nav-item :active="activeTab[0]" :disabled="activeTab[0]" >
                 <inertia-link :class="{'font-weight-bold text-uppercase text-danger': activeTab[0]}" :href="route('reportes.cajero')">Por cajero</inertia-link>

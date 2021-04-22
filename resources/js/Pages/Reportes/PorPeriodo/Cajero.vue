@@ -4,13 +4,6 @@
         <div class="card" ref="content">
             <div class="card-header">
                 <h1>Por cajero</h1>
-                <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
-                <b-button @click="dompdf">Descargar (dompdf)</b-button>
-                <a
-                    class="btn btn-success float-right" method="post"
-                    href="#" @click="dompdf"
-                    >Descargar (dompdf)</a
-                >
             </div>
             <div class="card-body">
                 <b-row>
@@ -25,13 +18,13 @@
                         >
                         <b-input-group size="sm">
                             <b-form-input
-                            v-model="dniCliente"
+                            v-model="filter.dniCliente"
                             type="search"
                             id="filterInput"
                             placeholder="Escriba el texto a buscar..."
                             ></b-form-input>
                             <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
+                            <b-button :disabled="!filter.dniCliente" @click="filter.dniCliente = ''"
                                 >Limpiar</b-button
                             >
                             </b-input-group-append>
@@ -49,7 +42,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="fechaInicio"
+                            v-model="filter.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -69,7 +62,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="fechaFin"
+                            v-model="filter.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -79,22 +72,24 @@
                          </b-form-group>
                     </b-col>
                 </b-row>
+                <b-button class="btn btn-success float-right mt-2 mb-2" @click="filterTable()">Generar reporte</b-button>
                 <b-table
-                            ref="tbl_comprobantes"
-                            show-empty
-                            striped
-                            hover
-                            sticky-header
-                            bordered
-                            small
-                            responsive
-                            :items="grupoFilter"
-                            :fields="fields"
-                            empty-text="No hay comprobantes para mostrar"
-                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-                        >
-                        </b-table>
-                
+                    ref="tbl_comprobantes"
+                    show-empty
+                    striped
+                    hover
+                    sticky-header
+                    bordered
+                    small
+                    responsive
+                    :items="comprobantes"
+                    :fields="fields"
+                    empty-text="No hay comprobantes para mostrar"
+                    empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                >
+                </b-table>
+                <b-button v-if="comprobantes.length" @click="html2pdf">Descargar (html2pdf)</b-button>
+                <a v-if="comprobantes.length" class="btn btn-success float-right" href="#" @click="dompdf">Descargar (dompdf)</a>
             </div>
 
             <vue-html2pdf
@@ -144,7 +139,7 @@
                                     
                                 </div>
                                 
-                                    <div v-for="(group) in grupoDividido">
+                                    <div v-for="(group, key) in grupoDividido" :key="key">
                                        <div class="card-body">
                                         <b-table
                                             ref="tbl_comprobantes"
@@ -173,13 +168,13 @@
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
 
 export default {
     name: "reportes.cajero",
-    props: ["comprobantes"],
     components: {
         AppLayout,
         VueHtml2pdf,
@@ -196,13 +191,15 @@ export default {
                 { key: "total", label: "Precio Total" },
 
             ],
+            comprobantes : [],
             filenamepdf: "Reporte_cobros",
             currentPage: 1,
             perPage: 5,
-            dniCliente: "",
-            fechaInicio: "",
-            fechaFin: "",
-            month: "",
+            filter: {
+                dniCliente: "",
+                fechaInicio: "",
+                fechaFin: "",
+            },
 
         };
     },
@@ -210,15 +207,22 @@ export default {
         refreshTable() {
             this.$refs.tbl_comprobantes.refresh();
         },
+        async filterTable() {
+            try {
+                let params = "?dniCliente=" + this.filter.dniCliente + "&fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
+                console.log(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
+                this.comprobantes = response.data.comprobantes
+            } catch (error) {
+                console.log(error)
+            }
+        },
         html2pdf(){
             this.$refs.html2Pdf.generatePdf()
         },
         dompdf(){
-            this.$inertia.post(
-                route("reportes.cajeropdf"),
-                this.grupoFilter
-            );
-            //indow.open(`${this.app_url}/reportes/pdf/${this.grupoFilter}`, '_blanck');
+            let params = "?dniCliente=" + this.filter.dniCliente + "&fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+            window.open(`${this.app_url}/reportes-periodo/cajero/pdf/${params}`, '_blanck');
         },
         async beforeDownload ({ html2pdf, options, pdfContent }) {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
@@ -270,7 +274,7 @@ export default {
             return group
         },
         grupoDividido(){
-            var group = this.grupoFilter;
+            var group = this.comprobantes;
             const groups = [];
             var i,j,temparray,chunk = 25;
             for (i=0,j=group.length; i<j; i+=chunk) {
