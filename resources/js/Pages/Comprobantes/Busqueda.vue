@@ -9,7 +9,7 @@
                         >
                     </li>
                     <li class="breadcrumb-item active">
-                        Lista de comprobantes
+                        Buscar usuario
                     </li>
                 </ol>                
             </div>

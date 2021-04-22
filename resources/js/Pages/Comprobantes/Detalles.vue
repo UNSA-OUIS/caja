@@ -4,14 +4,10 @@
             <div class="card-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
+                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item">
-                        <inertia-link :href="route('comprobantes.iniciar')"
-                            >Lista de comprobantes</inertia-link
-                        >
+                        <inertia-link :href="route('comprobantes.iniciar')">Buscar usuario</inertia-link>
                     </li>
                 </ol>
             </div>
@@ -20,154 +16,101 @@
                     <b-form>
                         <b-row>
                             <b-col>
-                                <b-form-group
-                                    id="input-group-6"
-                                    label="Serie:"
-                                    label-for="input-6"
-                                >
+                                <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
                                     <b-form-input
-                                        id="input-6"
+                                        id="input-1"
                                         v-model="comprobante.serie"
                                         placeholder="Serie"
-                                        :readonly="accion == 'Mostrar'"
+                                        readonly
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                             <b-col>
-                                <b-form-group
-                                    id="input-group-7"
-                                    label="Correlativo:"
-                                    label-for="input-7"
-                                >
+                                <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
                                     <b-form-input
-                                        id="input-7"
+                                        id="input-2"
                                         v-model="comprobante.correlativo"
                                         placeholder="Correlativo"
-                                        :readonly="accion == 'Mostrar'"
+                                        readonly
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
+                                    <b-form-input                                        
+                                        id="input-3"                                                                                
+                                        readonly
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>                            
+                            <b-col cols="2" v-if="comprobante.tipo_usuario !== 'dependencia'">
+                                <b-form-group id="input-group-4" label="DNI:" label-for="input-4">
+                                    <b-form-input
+                                        id="input-4"
+                                        v-model="comprobante.dni"                                        
+                                        readonly
+                                    ></b-form-input>                                    
+                                </b-form-group>
+                            </b-col>
                             <b-col>
-                                <b-form-group
-                                    id="input-group-8"
-                                    label="DNI:"
-                                    label-for="input-8"
-                                >
+                                <b-form-group id="input-group-5" label="Nombre:" label-for="input-5">
+                                    <b-form-input
+                                        id="input-5"
+                                        readonly
+                                        v-model="comprobante.usuario"                                        
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>               
+                            <b-col>
+                                <b-form-group id="input-group-6" label="Email:" label-for="input-6">
+                                    <b-form-input
+                                        id="input-6"
+                                        readonly
+                                        v-model="comprobante.email"
+                                        placeholder="Email"
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>                                    
+                        </b-row>
+                        <b-row v-if="comprobante.tipo_usuario === 'alumno'">      
+                            <b-col>
+                                <b-form-group id="input-group-7" label="CUI:" label-for="input-7">
+                                    <b-form-input
+                                        id="input-7"
+                                        v-model="comprobante.codigo"                                        
+                                        readonly
+                                    ></b-form-input>
+                                </b-form-group>
+                            </b-col>                      
+                            <b-col>
+                                <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
                                     <b-form-input
                                         id="input-8"
-                                        v-model="comprobante.dni"
-                                        list="clientes"
-                                        readonly
-                                    ></b-form-input>
-                                    <!--<datalist id="clientes">
-                                        <option
-                                            v-for="cliente in clientes"
-                                            v-bind:key="cliente.dni"
-                                            :value="cliente.dni"
-                                            >{{ cliente.nombre }}</option
-                                        >
-                                    </datalist>-->
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-9"
-                                    label="CUI:"
-                                    label-for="input-9"                                    
-                                >
-                                    <b-form-input
-                                        id="input-9"
-                                        v-model="comprobante.cui"
-                                        placeholder="Cui"
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-10"
-                                    label="Escuela:"
-                                    label-for="input-10"                                    
-                                >
-                                    <b-form-input
-                                        id="input-10"
                                         v-model="comprobante.escuela"                                        
                                         readonly
                                     ></b-form-input>
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                        <b-row>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-4"
-                                    label="Nombre:"
-                                    label-for="input-4"
-                                >
+                        <b-row v-else-if="comprobante.tipo_usuario === 'docente' || comprobante.tipo_usuario === 'dependencia'">
+                            <b-col cols="2">
+                                <b-form-group id="input-group-9" label="Código:" label-for="input-9">
                                     <b-form-input
-                                        id="input-4"
-                                        readonly
-                                        v-model="comprobante.usuario"                                        
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-10"
-                                    label="Email:"
-                                    label-for="input-10"
-                                >
-                                    <b-form-input
-                                        id="input-10"
-                                        readonly
-                                        v-model="cliente.email"
-                                        placeholder="Email"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-1"
-                                    label="Código:"
-                                    label-for="input-1"
-                                >
-                                    <b-form-input
-                                        id="input-1"
+                                        id="input-9"
                                         v-model="comprobante.codigo"
                                         placeholder="Código"
                                         :readonly="accion == 'Mostrar'"
                                     ></b-form-input>
                                 </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    id="input-group-5"
-                                    label="NUES:"
-                                    label-for="input-5"
-                                >
-                                    <b-form-input
-                                        id="input-5"
-                                        v-model="comprobante.nues"
-                                        placeholder="NUES"
-                                        :readonly="accion == 'Mostrar'"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
+                            </b-col>                            
                         </b-row>                        
                     </b-form>
                 </div>
-
                 <div class="container">
-                    <b-button @click="showModal" ref="btnShow"
-                        >Búsqueda avanzada de conceptos</b-button
-                    >
-                    <b-button @click="addDetalle" ref="btnAdd"
-                        >Añadir concepto</b-button
-                    >
+                    <b-button @click="showModal" ref="btnShow">Búsqueda avanzada de conceptos</b-button>
+                    <b-button @click="addDetalle" ref="btnAdd">Añadir concepto</b-button>
                 </div>
                 <!-- Modal nueva opcion para agregar conceptos -->
                 <b-modal id="modal-1" title="Selecciona concepto">
@@ -262,7 +205,6 @@
                         </b-col>
                     </b-row>
                 </b-modal>
-
                 <div>
                     <b-table
                         ref="tbl_detalle"
@@ -295,10 +237,9 @@
                             >
                                 <!-- This slot appears above the options from 'options' prop -->
                                 <template #first>
-                                    <b-form-select-option :value="null" disabled
-                                        >-- Por favor, seleccione un concepto
-                                        --</b-form-select-option
-                                    >
+                                    <b-form-select-option :value="null" disabled>
+                                        -- Por favor, seleccione un concepto --
+                                    </b-form-select-option>
                                     <b-form-select-option
                                         v-for="option in conceptos"
                                         v-bind:key="option.id"
@@ -336,29 +277,22 @@
                                 ></b-form-select>
                                 <b-form-input
                                     id="descuento"
-                                    @change="
-                                        calcularDescuento(
-                                            $event,
-                                            row.item.concepto_id
-                                        )
-                                    "
+                                    @change="calcularDescuento($event, row.item.concepto_id)"
                                     type="number"
                                     value="0.00"
                                 ></b-form-input>
                             </div>
                         </template>
-
                         <template v-slot:cell(subTotal)="row">
                             <div>
-                                <label
-                                    >S/.
+                                <label>S/.
                                     {{
                                         (row.item.valor_unitario *
                                             row.item.cantidad -
                                             row.item.descuento)
                                             | currency
-                                    }}</label
-                                >
+                                    }}
+                                </label>
                             </div>
                         </template>
 
@@ -398,28 +332,19 @@
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "comprobantes.mostrar",
+    name: "comprobantes.detalles",
     props: ["comprobante", "conceptos"],
     components: {
         AppLayout
     },
-
     data() {
         return {
             app_url: this.$root.app_url,
             accion: "",
-
-            tipoDescuento: "",
-            tipoCliente: "",
-            clienteDni: "",
+            tipoDescuento: "",                        
             cantidadState: null,
             conceptosFields: [
-                {
-                    key: "value",
-                    label: "Código",
-                    sortable: true,
-                    class: "text-center"
-                },
+                { key: "value", label: "Código", sortable: true, class: "text-center" },
                 { key: "text", label: "Descripción", sortable: true },
                 { key: "precio", label: "Precio", class: "text-center" },
                 { key: "anadir", label: "Añadir", class: "text-center" }
@@ -436,71 +361,12 @@ export default {
             tipo_descuento: [
                 { value: "A", text: "%" },
                 { value: "B", text: "S/." }
-            ],
-            tipos_cliente: [
-                { value: "A", text: "Alumno" },
-                { value: "B", text: "Docente" },
-                { value: "C", text: "Particular" }
-            ],
-            clientesCompleto: [
-                {
-                    dni: "77654321",
-                    nombre: "Carlos Duarte",
-                    email: "cduarte@unsa.edu.pe",
-                    codigo: "20167384",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "72345678",
-                    nombre: "Claudia Chaud",
-                    email: "cchaud@unsa.edu.pe",
-                    codigo: "20136858",
-                    tipo: "Alumno"
-                },
-                {
-                    dni: "76736251",
-                    nombre: "Aracely Zeballos",
-                    email: "azeballos@unsa.edu.pe",
-                    codigo: "20124343",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "74637281",
-                    nombre: "Martin Zegarra",
-                    email: "mzegarra@unsa.edu.pe",
-                    codigo: "20024367",
-                    tipo: "Docente"
-                },
-                {
-                    dni: "78462749",
-                    nombre: "Alfredo Zarate",
-                    email: "azarate@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                },
-                {
-                    dni: "74235656",
-                    nombre: "Maria Cuadros",
-                    email: "mcuadros@unsa.edu.pe",
-                    codigo: "",
-                    tipo: "Particular"
-                }
-            ],
-            cliente: {
-                dni: "",
-                email: "",
-                codigo: "",
-                nombre: ""
-            },
+            ],                                
             fields: [
                 { key: "codigo", label: "CÓDIGO", class: "text-center" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                {
-                    key: "valor_unitario",
-                    label: "PR. UNIT",
-                    class: "text-center"
-                },
+                { key: "valor_unitario", label: "PR. UNIT", class: "text-center" },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
                 { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
                 { key: "acciones", label: "ACCIONES", class: "text-center" }
@@ -514,14 +380,32 @@ export default {
             this.accion = "Mostrar";
         }
     },
+    filters: {
+        currency(value) {
+            return value.toFixed(2);
+        }
+    },
+    computed: {       
+        precioTotal() {
+            this.comprobante.total = this.comprobante.detalles.reduce(
+                (acc, item) => acc + (item.cantidad * item.valor_unitario - item.descuento), 0);
+
+            return this.comprobante.total;
+        },
+        conceptosDisponibles(){
+            return this.conceptos.filter(option => option.estado == true);
+        },
+        onFiltered(filteredItems) {
+            this.totalRows = filteredItems.length;
+            this.currentPage = 1;
+        }
+    },
     methods: {
         showModal() {
             this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
         },
         registrar() {
-            this.$bvModal
-                .msgBoxConfirm(
-                    "¿Esta seguro de querer enviar este comprobante?",
+            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer enviar este comprobante?",
                     {
                         title: "Enviar Comprobante",
                         okVariant: "success",
@@ -533,9 +417,7 @@ export default {
                 )
                 .then(async value => {
                     if (value) {
-                        this.$inertia.post(
-                            route("comprobantes.registrar", this.comprobante)
-                        );
+                        this.$inertia.post(route("comprobantes.registrar", this.comprobante));
                     }
                 });
         },
@@ -558,24 +440,24 @@ export default {
                 tipo_descuento: "",
                 descuento: "0.00"
             });
-            var concIndex = this.conceptos.findIndex(option => option.id == conc.id);
+            let concIndex = this.conceptos.findIndex(option => option.id == conc.id);
             this.conceptos[concIndex].estado = false;
         },
         eliminar(id) {
-            var index = this.comprobante.detalles.findIndex(
+            let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
-            var concIndex = this.conceptos.findIndex(option => option.id == id);
+            let concIndex = this.conceptos.findIndex(option => option.id == id);
             this.conceptos[concIndex].estado = true;
 
             this.comprobante.detalles.splice(index, 1);
         },
         completeConcepto(event, id) {
-            var index = this.comprobante.detalles.findIndex(
+            let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
-            var conc = this.conceptos.find(option => option.id == event);
-            var concIndex = this.conceptos.findIndex(option => option.id == event);
+            let conc = this.conceptos.find(option => option.id == event);
+            let concIndex = this.conceptos.findIndex(option => option.id == event);
             this.conceptos[concIndex].estado = false;
             this.comprobante.detalles[index].concepto_id = conc.id;
             this.comprobante.detalles[index].codigo = conc.value;
@@ -583,72 +465,24 @@ export default {
             this.comprobante.detalles[index].descuento = "0.00";
         },
         calcularDescuento(event, id) {
-            var index = this.comprobante.detalles.findIndex(
+            let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
             );
-            var conc = this.comprobante.detalles[index].tipo_descuento;
+            let conc = this.comprobante.detalles[index].tipo_descuento;
             if (conc == "A") {
                 this.comprobante.detalles[index].descuento =
                     (this.comprobante.detalles[index].valor_unitario *
                         this.comprobante.detalles[index].cantidad *
                         event) /
                     100;
-            } else if (conc == "B") {
+            } 
+            else if (conc == "B") {
                 this.comprobante.detalles[index].descuento = event;
-            } else {
+            } 
+            else {
                 this.comprobante.detalles[index].descuento = 0;
             }
-        },
-        getCliente(dni) {
-            var cli = this.clientesCompleto.find(cliente => cliente.dni == dni);
-            this.cliente.dni = cli.dni;
-            this.comprobante.cui = cli.dni;
-            this.cliente.nombre = cli.nombre;
-            this.cliente.email = cli.email;
-            this.cliente.codigo = cli.codigo;
-        }
-    },
-    filters: {
-        currency(value) {
-            return value.toFixed(2);
-        }
-    },
-    computed: {
-        clientes() {
-            if (this.tipoCliente == "A") {
-                return this.clientesCompleto.filter(
-                    cliente => cliente.tipo == "Alumno"
-                );
-            } else if (this.tipoCliente == "B") {
-                return this.clientesCompleto.filter(
-                    cliente => cliente.tipo == "Docente"
-                );
-            } else if (this.tipoCliente == "C") {
-                return this.clientesCompleto.filter(
-                    cliente => cliente.tipo == "Particular"
-                );
-            }
-            return [];
-        },
-
-        precioTotal() {
-            this.comprobante.total = this.comprobante.detalles.reduce(
-                (acc, item) =>
-                    acc +
-                    (item.cantidad * item.valor_unitario - item.descuento),
-                0
-            );
-            return this.comprobante.total;
-        },
-
-        conceptosDisponibles(){
-            return this.conceptos.filter(option => option.estado == true);
-        },
-
-        onFiltered(filteredItems) {
-            this.totalRows = filteredItems.length;
-            this.currentPage = 1;
-        }
-    }
+        },        
+    },    
 };
 </script>
