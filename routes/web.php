@@ -1,32 +1,21 @@
 <?php
 
-use App\Http\Controllers\ClasificadorController;
-use App\Http\Controllers\ParticularController;
-use App\Http\Controllers\ComprobanteController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ClasificadorController;
+use App\Http\Controllers\ParticularController;
+use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\LoginWithGoogleController;
-use App\Http\Controllers\SunatController;
 use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
+use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
-use App\Models\Concepto;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return Inertia::render('Auth/Login', [
@@ -160,7 +149,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/particulares/{particular}/restaurar', [ParticularController::class, 'restore'])->name('particulares.restaurar');
     /*********************************************************************/
 
-
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
         //return Inertia::render('Comprobantes/Listar');
@@ -184,10 +172,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');    
     /*******************************************************************/
 
-
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
-    Route::get('/getEstados', SunatController::class, 'getEstados')->name('sunat.getEstados');
+    Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
 
     Route::get('/sunat/facturas', function () {
         return Inertia::render('Sunat/ListarFacturas');
