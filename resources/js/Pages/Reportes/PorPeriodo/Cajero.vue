@@ -170,7 +170,7 @@
 <script>
 const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
-import VueHtml2pdf from 'vue-html2pdf'
+import VueHtml2pdf from "vue-html2pdf";
 import PeriodoMenu from "./PeriodoMenu";
 
 export default {
@@ -258,6 +258,25 @@ export default {
                 return comprobante || [];
             });
         },*/
+  },
+  computed: {
+    grupoFilter() {
+      var group = this.comprobantes;
+
+      group =
+        this.fechaInicio && this.fechaFin
+          ? group.filter(
+              (item) =>
+                new Date(item.created_at.slice(0, 10).split("-")) >=
+                  new Date(this.fechaInicio.split("-")) &&
+                new Date(item.created_at.slice(0, 10).split("-")) <=
+                  new Date(this.fechaFin.split("-"))
+            )
+          : group;
+      group = this.dniCliente
+        ? group.filter((item) => item.cui.includes(this.dniCliente))
+        : group;
+      return group;
     },
     computed:{
         grupoFilter(){
@@ -284,5 +303,6 @@ export default {
             return groups;
         }
     }
-};
+  }
+}
 </script>
