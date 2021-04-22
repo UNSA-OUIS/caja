@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
 use DateTime;
+use Dotenv\Util\Str;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
@@ -20,8 +21,6 @@ use Inertia\Inertia;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Luecano\NumeroALetras\NumeroALetras;
-
-//require 'D:\OUIS\Sistema de caja e ingresos\Codigo\caja\vendor\autoload.php';
 
 class SunatController extends Controller
 {
@@ -511,6 +510,18 @@ class SunatController extends Controller
         echo $statusResult->getCdrResponse()->getDescription();
         // Guardar CDR
         file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
+    }
+    public function filtrar(Request $request)
+    {
+        //dd($request->all());
+
+        $boletas = Comprobante::with('detalles')->where("created_at", ">=", $request->fechaInicio)
+            ->where("created_at", "<=", $request->fechaFin)
+            ->where('serie', 'like', 'B' . '%')
+            ->get();
+
+        //return Inertia::render('Sunat/ListarBoletas', compact('boletas'));
+        return $boletas;
     }
     public function anularFactura(Comprobante $factura)
     {
