@@ -44,11 +44,11 @@ class SunatController extends Controller
         return Inertia::render('Sunat/Tablero', compact('noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado'));
     }
     public function getEstados()
-    {             
+    {
         $noEnviado  = count(DB::table('comprobantes')
             ->where('estado', 'like', 'noEnviado')
             ->get());
-        
+
         $observado = count(DB::table('comprobantes')
             ->where('estado', 'like', 'observado')
             ->get());
@@ -513,15 +513,11 @@ class SunatController extends Controller
     }
     public function filtrar(Request $request)
     {
-        //dd($request->all());
-
-        $boletas = Comprobante::with('detalles')->where("created_at", ">=", $request->fechaInicio)
-            ->where("created_at", "<=", $request->fechaFin)
-            ->where('serie', 'like', 'B' . '%')
-            ->get();
-
-        //return Inertia::render('Sunat/ListarBoletas', compact('boletas'));
-        return $boletas;
+        $comprobantes = Comprobante::with('detalles')
+            ->whereDate('created_at', '>=', $request->fechaInicio)
+            ->whereDate('created_at', '<=', $request->fechaFin
+            )->where('serie', 'like', 'B' . '%')->get();
+        return ['comprobantes' => $comprobantes];
     }
     public function anularFactura(Comprobante $factura)
     {
