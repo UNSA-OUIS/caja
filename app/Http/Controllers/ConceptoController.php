@@ -10,6 +10,8 @@ use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use App\Http\Requests\ConceptoStoreRequest;
 use App\Http\Requests\ConceptoUpdateRequest;
+use App\Models\Dependencia;
+use Illuminate\Support\Facades\Log;
 
 class ConceptoController extends Controller
 {
@@ -43,6 +45,7 @@ class ConceptoController extends Controller
         $concepto->descripcion = "";
         $concepto->descripcion_imp = "";
         $concepto->precio = "";
+        $concepto->tipo_precio = "";
         $concepto->tipo_afectacion = "";
         $concepto->tipo_concepto_id = null;
         $concepto->clasificador_id = null;
@@ -74,6 +77,7 @@ class ConceptoController extends Controller
             $concepto->descripcion = $request->descripcion;
             $concepto->descripcion_imp = $request->descripcion_imp;
             $concepto->precio = $request->precio;
+            $concepto->tipo_precio = $request->tipo_precio;
             $concepto->tipo_afectacion = $request->tipo_afectacion;
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
@@ -84,7 +88,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto registrado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar el concepto'];
-            \Log::error('ConceptoController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('conceptos.iniciar')->with($result);
@@ -119,6 +123,7 @@ class ConceptoController extends Controller
             $concepto->descripcion = $request->descripcion;
             $concepto->descripcion_imp = $request->descripcion_imp;
             $concepto->precio = $request->precio;
+            $concepto->tipo_precio = $request->tipo_precio;
             $concepto->tipo_afectacion = $request->tipo_afectacion;
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
@@ -129,7 +134,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto actualizado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el concepto'];
-            \Log::error('ConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('conceptos.iniciar')->with($result);
@@ -142,7 +147,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto eliminado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo eliminar el concepto'];
-            \Log::error('ConceptoController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->back()->with($result);
@@ -156,9 +161,21 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto restaurado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo restaurar el concepto'];
-            \Log::error('ConceptoController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->back()->with($result);
+    }
+    public function buscarCentroCosto(Request $request)
+    {
+        $filtro = $request->filtro;
+
+        $centroCostos = Dependencia::where('codi_depe', 'like', '%' . $filtro . '%')
+                        ->orWhere('nomb_depe', 'like', '%' . $filtro . '%')
+                        ->select('codi_depe', 'nomb_depe', 'nomb_depe_ant', 'noms_depe', 'noms_depe_ant')
+                        ->orderBy('codi_depe', 'asc')
+                        ->get();
+
+        return $centroCostos;
     }
 }

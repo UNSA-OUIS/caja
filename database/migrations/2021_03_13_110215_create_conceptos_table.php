@@ -19,6 +19,7 @@ class CreateConceptosTable extends Migration
             $table->string('descripcion', 50);
             $table->string('descripcion_imp', 25)->comment('Descripción corta para impresión de comprobante');
             $table->string('precio', 10);
+            $table->string('tipo_precio', 10);
             $table->string('tipo_afectacion', 25)->comment('Tipo de afectación según sunat');
             $table->tinyInteger('tipo_concepto_id');
             $table->tinyInteger('clasificador_id');
