@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MiUsuarioUpdateRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Rol;
@@ -9,6 +10,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\UsuarioStoreRequest;
 use App\Http\Requests\UsuarioUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {    
@@ -128,5 +130,32 @@ class UsuarioController extends Controller
         }                      
         
         return redirect()->back()->with($result);            
+    }
+
+    public function showMyUser()
+    {
+        $usuario = Auth::user(); 
+        return Inertia::render('Usuarios/Perfil', compact('usuario'));
+    }
+
+    public function editMyUser(MiUsuarioUpdateRequest $request, User $usuario)
+    {
+        
+        try {                       
+            $usuario->celular = $request->celular;
+            $usuario->email_personal = $request->email_personal;
+            $usuario->direccion = $request->direccion;
+            if ($request->password != "") {
+                $usuario->password = bcrypt($request->password);
+            }
+            $usuario->update();
+            $result = ['successMessage' => 'Usuario actualizado con éxito'];   
+            Auth::login($usuario);   
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar el usuario'];
+            \Log::error('UsuarioController@editMyUser, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }                      
+        
+        return redirect()->route('usuarios.perfil')->with($result);
     }
 }

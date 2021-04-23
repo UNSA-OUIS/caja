@@ -30,6 +30,10 @@ class PermisoSeeder extends Seeder
         User::create([
             'name' => 'Gary Núñez Ccahuaya', 
             'email' => 'gnunezc@unsa.edu.pe',
+            'email' => 'gnunezc@unsa.edu.pe',
+            'email_personal' => 'garyfnc185@gmail.com',
+            'direccion' => 'Urb. las orquideas',
+            'celular' => '987314950',
             'password' => bcrypt('password')
         ]);
 

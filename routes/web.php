@@ -118,10 +118,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('usuarios.eliminar');
     Route::post('/usuarios/{usuario}/restaurar', [UsuarioController::class, 'restore'])->name('usuarios.restaurar');
 
-    Route::get('/perfil-usuario', function () {
-        return Inertia::render('Usuarios/Perfil');
-    })->name('usuarios.perfil');
-   /******************************************************************************/
+    Route::get('/perfil-usuario', [UsuarioController::class, 'showMyUser'])->name('usuarios.perfil');
+    Route::post('/perfil-usuario/{usuario}', [UsuarioController::class, 'editMyUser'])->name('usuarios.actualizarPerfil');
+    /******************************************************************************/
 
     /**************************** CONCEPTOS ***************************/
     Route::get('/conceptos', function () {
