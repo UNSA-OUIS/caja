@@ -12,7 +12,7 @@
                 </ol>
             </div>
             <div class="card-doby">
-                <div class="container">                    
+                <div class="container p-3">                    
                     <b-row>
                         <b-col>
                             <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
@@ -104,145 +104,144 @@
                                 ></b-form-input>
                             </b-form-group>
                         </b-col>                            
-                    </b-row>                                            
-                </div>
-                <div class="container">                    
-                    <b-button @click="addDetalle" ref="btnAdd">Añadir detalle</b-button>
-                </div>                
-                <div>
-                    <b-table
-                        ref="tbl_detalle"
-                        show-empty
-                        striped
-                        hover
-                        bordered
-                        small
-                        responsive
-                        stacked="md"
-                        :items="comprobante.detalles"
-                        :fields="fields"
-                        empty-text="No hay conceptos para mostrar"
-                    >
-                        <template v-slot:cell(codigo)="row">
-                            <label>{{ row.item.codigo }}</label>
-                        </template>
-                        <template v-slot:cell(concepto)="row">
-                            <!--<b-form-select v-model="row.item.concepto_id" @change="completeConcepto($event, row.item.id)" :options="conceptos"></b-form-select>-->
-                            <b-form-select
-                                v-model="row.item.concepto_id"
-                                @change="completeConcepto($event, row.item.concepto_id)"
-                                class="mb-3"
-                                :disabled="row.item.concepto_id != ''"
+                    </b-row>     
+                    <hr> 
+                    <b-row>
+                        <b-col cols="6">
+                            <v-select                  
+                                v-model="concepto"
+                                @search="buscarConcepto"                                
+                                :filterable="false"                                                    
+                                :options="conceptos"                                              
+                                :reduce="concepto => concepto"                 
+                                label="descripcion"                
+                                placeholder="Búsqueda por código o descripción del concepto"
                             >
-                                <!-- This slot appears above the options from 'options' prop -->
-                                <template #first>
-                                    <b-form-select-option :value="null" disabled>
-                                        -- Por favor, seleccione un concepto --
-                                    </b-form-select-option>
-                                    <b-form-select-option
-                                        v-for="option in conceptos"
-                                        v-bind:key="option.id"
-                                        :value="option.id"
-                                        :disabled="!option.estado"
-                                        >{{ option.text }}</b-form-select-option
-                                    >
+                                <template slot="no-options">
+                                    Lo sentimos, no hay resultados de coincidencia.
                                 </template>
-                            </b-form-select>
-                        </template>
-                        <template v-slot:cell(cantidad)="row">
-                            <div>
-                                <b-form-input
-                                    id="cantidad"
-                                    v-model="row.item.cantidad"
-                                    type="number"
-                                ></b-form-input>
+                            </v-select>
+                        </b-col>
+                        <b-col>                            
+                            <div class="h2 mb-0">
+                                <b-icon type="button" icon="plus-circle" variant="secondary" @click="agregarDetalle"></b-icon>
                             </div>
-                        </template>
-                        <template v-slot:cell(valor_unitario)="row">
-                            <b-form-input
-                                id="valor_unitario"
-                                v-model="row.item.valor_unitario"
-                                type="number"
-                                readonly
-                                :value="row.item.valor_unitario"
-                            ></b-form-input>
-                        </template>
-                        <template v-slot:cell(descuento)="row">
-                            <div>
-                                <b-form-select
-                                    :options="tipo_descuento"
-                                    v-model="row.item.tipo_descuento"
-                                ></b-form-select>
-                                <b-form-input
-                                    id="descuento"
-                                    @change="calcularDescuento($event, row.item.concepto_id)"
-                                    type="number"
-                                    value="0.00"
-                                ></b-form-input>
-                            </div>
-                        </template>
-                        <template v-slot:cell(subTotal)="row">
-                            <div>
-                                <label>S/.
-                                    {{
-                                        (row.item.valor_unitario *
-                                            row.item.cantidad -
-                                            row.item.descuento)
-                                            | currency
-                                    }}
-                                </label>
-                            </div>
-                        </template>
-                        <template v-slot:cell(acciones)="row">
-                            <b-button
-                                v-if="!row.item.deleted_at"
-                                variant="danger"
-                                size="sm"
-                                title="Eliminar"
-                                @click="eliminar(row.index)"
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-3">
+                        <b-col>
+                            <b-table                        
+                                show-empty
+                                striped
+                                hover
+                                bordered
+                                small
+                                responsive
+                                stacked="md"
+                                :items="comprobante.detalles"
+                                :fields="fields"
+                                empty-text="No hay conceptos para mostrar"
                             >
-                                <b-icon icon="trash"></b-icon>
-                            </b-button>
-                        </template>
-                        <template slot="bottom-row" slot-scope="">
-                            <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
-                            <b-td>S/.{{ precioTotal | currency }}</b-td
-                            ><b-td />
-                        </template>
-                    </b-table>
-                </div>
-                <div v-show="accion == 'Crear'" class="container">
-                    <b-button
-                        variant="success"
-                        size="sm"
-                        title="Registrar"
-                        @click="registrar()"
-                    >
-                        Registrar<b-icon icon="check"></b-icon>
-                    </b-button>
-                </div>
+                                <template v-slot:cell(codigo)="row">
+                                    <b-form-input                                
+                                        :value="row.item.codigo"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(concepto)="row">
+                                    <b-form-input                                
+                                        :value="row.item.descripcion"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(cantidad)="row">
+                                    <div>
+                                        <b-form-input                                    
+                                            v-model="row.item.cantidad"
+                                            type="number"
+                                        ></b-form-input>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(precio)="row">
+                                    <b-form-input                                
+                                        :value="row.item.precio"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(descuento)="row">
+                                    <div>
+                                        <b-form-select
+                                            :options="tipo_descuento"
+                                            v-model="row.item.tipo_descuento"
+                                        ></b-form-select>
+                                        <b-form-input
+                                            id="descuento"
+                                            @change="calcularDescuento($event, row.item.concepto_id)"
+                                            type="number"
+                                            value="0.00"
+                                        ></b-form-input>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(subTotal)="row">
+                                    <div>
+                                        <label>S/.
+                                            {{
+                                                (row.item.valor_unitario *
+                                                    row.item.cantidad -
+                                                    row.item.descuento)
+                                                    | currency
+                                            }}
+                                        </label>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(acciones)="row">
+                                    <b-button
+                                        v-if="!row.item.deleted_at"
+                                        variant="danger"
+                                        size="sm"
+                                        title="Eliminar"
+                                        @click="eliminarDetalle(row.index)"
+                                    >
+                                        <b-icon icon="trash"></b-icon>
+                                    </b-button>
+                                </template>
+                                <template slot="bottom-row" slot-scope="">
+                                    <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
+                                    <b-td>S/.{{ precioTotal | currency }}</b-td
+                                    ><b-td />
+                                </template>
+                            </b-table>
+                        </b-col>
+                    </b-row>                          
+                    <div v-show="accion == 'Crear'">
+                        <b-button variant="success" @click="registrar()">Registrar</b-button>
+                    </div>           
+                </div>                                                
             </div>
         </div>
     </app-layout>
 </template>
 <script>
+const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.detalles",
-    props: ["comprobante", "conceptos"],
+    props: ["comprobante"],
     components: {
         AppLayout
     },
     data() {
         return {
             app_url: this.$root.app_url,
+            concepto: null,
+            conceptos: [],
             accion: "",
             tipoDescuento: "",                        
             cantidadState: null,
             conceptosFields: [
-                { key: "value", label: "Código", sortable: true, class: "text-center" },
-                { key: "text", label: "Descripción", sortable: true },
+                { key: "codigo", label: "Código", sortable: true, class: "text-center" },
+                { key: "descripcion", label: "Descripción", sortable: true },
                 { key: "precio", label: "Precio", class: "text-center" },
                 { key: "anadir", label: "Añadir", class: "text-center" }
             ],
@@ -260,13 +259,13 @@ export default {
                 { value: "B", text: "S/." }
             ],                                
             fields: [
-                { key: "codigo", label: "CÓDIGO", class: "text-center" },
-                { key: "concepto", label: "CONCEPTO", class: "text-center" },
+                { key: "codigo", label: "CÓDIGO", class: "text-center", tdClass: "codigo" },
+                { key: "concepto", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "valor_unitario", label: "PR. UNIT", class: "text-center" },
+                { key: "precio", label: "PR. UNIT", class: "text-center" },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
-                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
-                { key: "acciones", label: "ELIMINAR", class: "text-center" }
+                { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
+                { key: "acciones", label: "", class: "text-center" }
             ]
         };
     },    
@@ -293,29 +292,25 @@ export default {
             this.accion = "Mostrar";
         }
     },    
-    methods: {    
-        addDetalle() {
-            this.comprobante.detalles.push({
-                codigo: "",
-                concepto_id: "",
-                cantidad: "1",
-                valor_unitario: "",
-                tipo_descuento: "",
-                descuento: "0.00"
-            });
-        },
-        agregarConcepto(conc) {
-            this.comprobante.detalles.push({
-                codigo: conc.value,
-                concepto_id: conc.id,
-                cantidad: "1",
-                valor_unitario: conc.precio,
-                tipo_descuento: "",
-                descuento: "0.00"
-            });
-            let concIndex = this.conceptos.findIndex(option => option.id == conc.id);
-            this.conceptos[concIndex].estado = false;
-        },    
+    methods: {  
+        buscarConcepto(search, loading) {                        
+            loading(true);            
+
+            axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
+                .then(response => {                                        
+                    this.conceptos = response.data;                    
+                    loading(false);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },       
+        agregarDetalle() {
+            this.comprobante.detalles.push(this.concepto)            
+        },        
+        eliminarDetalle(index) {                        
+            this.comprobante.detalles.splice(index, 1);
+        },  
         registrar() {
             this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar este comprobante?",
                     {
@@ -332,15 +327,7 @@ export default {
                         this.$inertia.post(route("comprobantes.registrar", this.comprobante));
                     }
                 });
-        },        
-        eliminar(index) {            
-            /*let index = this.comprobante.detalles.findIndex(
-                detalle => detalle.concepto_id == id
-            );
-            let concIndex = this.conceptos.findIndex(option => option.id == id);
-            this.conceptos[concIndex].estado = true;*/
-            this.comprobante.detalles.splice(index, 1);
-        },
+        },                
         completeConcepto(event, id) {
             let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
@@ -371,11 +358,15 @@ export default {
             else {
                 this.comprobante.detalles[index].descuento = 0;
             }
-        },  
-        onFiltered(filteredItems) {
-            this.totalRows = filteredItems.length;
-            this.currentPage = 1;
-        }      
+        },         
     },    
 };
 </script>
+<style>
+    .codigo {
+        width: 150px;
+    }
+    .concepto {
+        width: 400px;
+    }
+</style>
