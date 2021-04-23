@@ -126,6 +126,19 @@ class ComprobanteController extends Controller
         return $result;
     }
 
+    public function buscarConcepto(Request $request)
+    {
+        $filtro = $request->filtro;
+
+        $conceptos = Concepto::where('descripcion', 'like', '%' . $filtro . '%')
+                        ->orWhere('codigo', 'like', '%' . $filtro . '%')
+                        ->select('id', 'codigo', 'descripcion', 'precio', 'estado')
+                        ->orderBy('descripcion', 'asc')
+                        ->get();
+
+        return $conceptos;
+    }
+
     public function create(Request $request)
     {       
         //dd($request->dependencia);
@@ -181,11 +194,11 @@ class ComprobanteController extends Controller
             $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
         }
 
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio', 'estado')
+        $conceptos = Concepto::select('id', 'codigo', 'descripcion', 'precio', 'estado')
                         ->orderBy('descripcion', 'asc')
                         ->get();
 
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
     }
 
     public function store(Request $request)

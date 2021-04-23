@@ -12,340 +12,236 @@
                 </ol>
             </div>
             <div class="card-doby">
-                <div class="container">
-                    <b-form>
-                        <b-row>
-                            <b-col>
-                                <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
-                                    <b-form-input
-                                        id="input-1"
-                                        v-model="comprobante.serie"
-                                        placeholder="Serie"
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
-                                    <b-form-input
-                                        id="input-2"
-                                        v-model="comprobante.correlativo"
-                                        placeholder="Correlativo"
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
-                                    <b-form-input                                        
-                                        id="input-3"                                                                                
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <b-row>                            
-                            <b-col cols="2" v-if="comprobante.tipo_usuario !== 'dependencia'">
-                                <b-form-group id="input-group-4" label="DNI:" label-for="input-4">
-                                    <b-form-input
-                                        id="input-4"
-                                        v-model="comprobante.dni"                                        
-                                        readonly
-                                    ></b-form-input>                                    
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group id="input-group-5" label="Nombre:" label-for="input-5">
-                                    <b-form-input
-                                        id="input-5"
-                                        readonly
-                                        v-model="comprobante.usuario"                                        
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>               
-                            <b-col>
-                                <b-form-group id="input-group-6" label="Email:" label-for="input-6">
-                                    <b-form-input
-                                        id="input-6"
-                                        readonly
-                                        v-model="comprobante.email"
-                                        placeholder="Email"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>                                    
-                        </b-row>
-                        <b-row v-if="comprobante.tipo_usuario === 'alumno'">      
-                            <b-col>
-                                <b-form-group id="input-group-7" label="CUI:" label-for="input-7">
-                                    <b-form-input
-                                        id="input-7"
-                                        v-model="comprobante.codigo"                                        
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>                      
-                            <b-col>
-                                <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
-                                    <b-form-input
-                                        id="input-8"
-                                        v-model="comprobante.escuela"                                        
-                                        readonly
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
-                        <b-row v-else-if="comprobante.tipo_usuario === 'docente' || comprobante.tipo_usuario === 'dependencia'">
-                            <b-col cols="2">
-                                <b-form-group id="input-group-9" label="Código:" label-for="input-9">
-                                    <b-form-input
-                                        id="input-9"
-                                        v-model="comprobante.codigo"
-                                        placeholder="Código"
-                                        :readonly="accion == 'Mostrar'"
-                                    ></b-form-input>
-                                </b-form-group>
-                            </b-col>                            
-                        </b-row>                        
-                    </b-form>
-                </div>
-                <div class="container">
-                    <b-button @click="showModal" ref="btnShow">Búsqueda avanzada de conceptos</b-button>
-                    <b-button @click="addDetalle" ref="btnAdd">Añadir concepto</b-button>
-                </div>
-                <!-- Modal nueva opcion para agregar conceptos -->
-                <b-modal id="modal-1" title="Selecciona concepto">
+                <div class="container p-3">                    
                     <b-row>
-                        <b-col sm="12" md="4" lg="4" class="my-1">
-                            <b-form-group
-                                label="Registros por página: "
-                                label-cols-sm="6"
-                                label-align-sm="right"
-                                label-size="sm"
-                                label-for="perPageSelect"
-                                class="mb-0"
-                            >
-                                <b-form-select
-                                    v-model="perPage"
-                                    id="perPageSelect"
-                                    size="sm"
-                                    :options="pageOptions"
-                                ></b-form-select>
+                        <b-col>
+                            <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
+                                <b-form-input
+                                    id="input-1"
+                                    v-model="comprobante.serie"
+                                    placeholder="Serie"
+                                    readonly
+                                ></b-form-input>
                             </b-form-group>
                         </b-col>
-                        <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
-                            <b-form-group
-                                label="Buscar: "
-                                label-cols-sm="3"
-                                label-align-sm="right"
-                                label-size="sm"
-                                label-for="filterInput"
-                                class="mb-0"
-                            >
-                                <b-input-group size="sm">
-                                    <b-form-input
-                                        v-model="filter"
-                                        type="search"
-                                        id="filterInput"
-                                        placeholder="Escriba el texto a buscar..."
-                                    ></b-form-input>
-                                    <b-input-group-append>
-                                        <b-button
-                                            :disabled="!filter"
-                                            @click="filter = ''"
-                                            >Limpiar</b-button
-                                        >
-                                    </b-input-group-append>
-                                </b-input-group>
+                        <b-col>
+                            <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
+                                <b-form-input
+                                    id="input-2"
+                                    v-model="comprobante.correlativo"
+                                    placeholder="Correlativo"
+                                    readonly
+                                ></b-form-input>
+                            </b-form-group>
+                        </b-col>
+                        <b-col>
+                            <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
+                                <b-form-input                                        
+                                    id="input-3"                                                                                
+                                    readonly
+                                ></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-table
-                        ref="tbl_conceptos"
-                        show-empty
-                        striped
-                        hover
-                        bordered
-                        small
-                        responsive
-                        stacked="md"
-                        :items="conceptosDisponibles"
-                        :fields="conceptosFields"
-                        :current-page="currentPage"
-                        :per-page="perPage"
-                        :filter="filter"
-                        :sort-by.sync="sortBy"
-                        :sort-desc.sync="sortDesc"
-                        :sort-direction="sortDirection"
-                        @filtered="onFiltered"
-                        empty-text="No hay conceptos para mostrar"
-                        empty-filtered-text="No hay conceptos que coincidan con su búsqueda."
-                        
-                    >
-                        <template v-slot:cell(anadir)="row">
-                            <b-button
-                                variant="success"
-                                size="sm"
-                                title="Restaurar"
-                                @click="agregarConcepto(row.item)"
-                            >
-                                <b-icon icon="check"></b-icon>
-                            </b-button>
-                        </template>
-                    </b-table>
-                    <b-row>
-                        <b-col offset-md="8" md="4" class="my-1">
-                            <b-pagination
-                                v-model="currentPage"
-                                :total-rows="totalRows"
-                                :per-page="perPage"
-                                align="fill"
-                                size="sm"
-                                class="my-0"
-                            ></b-pagination>
+                    <b-row>                            
+                        <b-col cols="2" v-if="comprobante.tipo_usuario !== 'dependencia'">
+                            <b-form-group id="input-group-4" label="DNI:" label-for="input-4">
+                                <b-form-input
+                                    id="input-4"
+                                    v-model="comprobante.dni"                                        
+                                    readonly
+                                ></b-form-input>                                    
+                            </b-form-group>
+                        </b-col>
+                        <b-col>
+                            <b-form-group id="input-group-5" label="Nombre:" label-for="input-5">
+                                <b-form-input
+                                    id="input-5"
+                                    readonly
+                                    v-model="comprobante.usuario"                                        
+                                ></b-form-input>
+                            </b-form-group>
+                        </b-col>               
+                        <b-col>
+                            <b-form-group id="input-group-6" label="Email:" label-for="input-6">
+                                <b-form-input
+                                    id="input-6"
+                                    readonly
+                                    v-model="comprobante.email"
+                                    placeholder="Email"
+                                ></b-form-input>
+                            </b-form-group>
+                        </b-col>                                    
+                    </b-row>
+                    <b-row v-if="comprobante.tipo_usuario === 'alumno'">      
+                        <b-col>
+                            <b-form-group id="input-group-7" label="CUI:" label-for="input-7">
+                                <b-form-input
+                                    id="input-7"
+                                    v-model="comprobante.codigo"                                        
+                                    readonly
+                                ></b-form-input>
+                            </b-form-group>
+                        </b-col>                      
+                        <b-col>
+                            <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
+                                <b-form-input
+                                    id="input-8"
+                                    v-model="comprobante.escuela"                                        
+                                    readonly
+                                ></b-form-input>
+                            </b-form-group>
                         </b-col>
                     </b-row>
-                </b-modal>
-                <div>
-                    <b-table
-                        ref="tbl_detalle"
-                        show-empty
-                        striped
-                        hover
-                        bordered
-                        small
-                        responsive
-                        stacked="md"
-                        :items="comprobante.detalles"
-                        :fields="fields"
-                        empty-text="No hay conceptos para mostrar"
-                    >
-                        <template v-slot:cell(codigo)="row">
-                            <label>{{ row.item.codigo }}</label>
-                        </template>
-                        <template v-slot:cell(concepto)="row">
-                            <!--<b-form-select v-model="row.item.concepto_id" @change="completeConcepto($event, row.item.id)" :options="conceptos"></b-form-select>-->
-                            <b-form-select
-                                v-model="row.item.concepto_id"
-                                @change="
-                                    completeConcepto(
-                                        $event,
-                                        row.item.concepto_id
-                                    )
-                                "
-                                class="mb-3"
-                                :disabled="row.item.concepto_id != ''"
+                    <b-row v-else-if="comprobante.tipo_usuario === 'docente' || comprobante.tipo_usuario === 'dependencia'">
+                        <b-col cols="2">
+                            <b-form-group id="input-group-9" label="Código:" label-for="input-9">
+                                <b-form-input
+                                    id="input-9"
+                                    v-model="comprobante.codigo"
+                                    placeholder="Código"
+                                    :readonly="accion == 'Mostrar'"
+                                ></b-form-input>
+                            </b-form-group>
+                        </b-col>                            
+                    </b-row>     
+                    <hr> 
+                    <b-row>
+                        <b-col cols="6">
+                            <v-select                  
+                                v-model="concepto"
+                                @search="buscarConcepto"                                
+                                :filterable="false"                                                    
+                                :options="conceptos"                                              
+                                :reduce="concepto => concepto"                 
+                                label="descripcion"                
+                                placeholder="Búsqueda por código o descripción del concepto"
                             >
-                                <!-- This slot appears above the options from 'options' prop -->
-                                <template #first>
-                                    <b-form-select-option :value="null" disabled>
-                                        -- Por favor, seleccione un concepto --
-                                    </b-form-select-option>
-                                    <b-form-select-option
-                                        v-for="option in conceptos"
-                                        v-bind:key="option.id"
-                                        :value="option.id"
-                                        :disabled="!option.estado"
-                                        >{{ option.text }}</b-form-select-option
-                                    >
+                                <template slot="no-options">
+                                    Lo sentimos, no hay resultados de coincidencia.
                                 </template>
-                            </b-form-select>
-                        </template>
-                        <template v-slot:cell(cantidad)="row">
-                            <div>
-                                <b-form-input
-                                    id="cantidad"
-                                    v-model="row.item.cantidad"
-                                    type="number"
-                                ></b-form-input>
+                            </v-select>
+                        </b-col>
+                        <b-col>                            
+                            <div class="h2 mb-0">
+                                <b-icon type="button" icon="plus-circle" variant="secondary" @click="agregarDetalle"></b-icon>
                             </div>
-                        </template>
-                        <template v-slot:cell(valor_unitario)="row">
-                            <b-form-input
-                                id="valor_unitario"
-                                v-model="row.item.valor_unitario"
-                                type="number"
-                                readonly
-                                :value="row.item.valor_unitario"
-                            ></b-form-input>
-                        </template>
-
-                        <template v-slot:cell(descuento)="row">
-                            <div>
-                                <b-form-select
-                                    :options="tipo_descuento"
-                                    v-model="row.item.tipo_descuento"
-                                ></b-form-select>
-                                <b-form-input
-                                    id="descuento"
-                                    @change="calcularDescuento($event, row.item.concepto_id)"
-                                    type="number"
-                                    value="0.00"
-                                ></b-form-input>
-                            </div>
-                        </template>
-                        <template v-slot:cell(subTotal)="row">
-                            <div>
-                                <label>S/.
-                                    {{
-                                        (row.item.valor_unitario *
-                                            row.item.cantidad -
-                                            row.item.descuento)
-                                            | currency
-                                    }}
-                                </label>
-                            </div>
-                        </template>
-
-                        <template v-slot:cell(acciones)="row">
-                            <b-button
-                                v-if="!row.item.deleted_at"
-                                variant="danger"
-                                size="sm"
-                                title="Eliminar"
-                                @click="eliminar(row.item.concepto_id)"
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-3">
+                        <b-col>
+                            <b-table                        
+                                show-empty
+                                striped
+                                hover
+                                bordered
+                                small
+                                responsive
+                                stacked="md"
+                                :items="comprobante.detalles"
+                                :fields="fields"
+                                empty-text="No hay conceptos para mostrar"
                             >
-                                <b-icon icon="trash"></b-icon>
-                            </b-button>
-                        </template>
-                        <template slot="bottom-row" slot-scope="">
-                            <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
-                            <b-td>S/.{{ precioTotal | currency }}</b-td
-                            ><b-td />
-                        </template>
-                    </b-table>
-                </div>
-                <div v-show="accion == 'Crear'" class="container">
-                    <b-button
-                        variant="success"
-                        size="sm"
-                        title="Registrar"
-                        @click="registrar()"
-                    >
-                        Registrar<b-icon icon="check"></b-icon>
-                    </b-button>
-                </div>
+                                <template v-slot:cell(codigo)="row">
+                                    <b-form-input                                
+                                        :value="row.item.codigo"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(concepto)="row">
+                                    <b-form-input                                
+                                        :value="row.item.descripcion"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(cantidad)="row">
+                                    <div>
+                                        <b-form-input                                    
+                                            v-model="row.item.cantidad"
+                                            type="number"
+                                        ></b-form-input>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(precio)="row">
+                                    <b-form-input                                
+                                        :value="row.item.precio"                                
+                                        readonly                                
+                                    ></b-form-input>
+                                </template>
+                                <template v-slot:cell(descuento)="row">
+                                    <div>
+                                        <b-form-select
+                                            :options="tipo_descuento"
+                                            v-model="row.item.tipo_descuento"
+                                        ></b-form-select>
+                                        <b-form-input
+                                            id="descuento"
+                                            @change="calcularDescuento($event, row.item.concepto_id)"
+                                            type="number"
+                                            value="0.00"
+                                        ></b-form-input>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(subTotal)="row">
+                                    <div>
+                                        <label>S/.
+                                            {{
+                                                (row.item.valor_unitario *
+                                                    row.item.cantidad -
+                                                    row.item.descuento)
+                                                    | currency
+                                            }}
+                                        </label>
+                                    </div>
+                                </template>
+                                <template v-slot:cell(acciones)="row">
+                                    <b-button
+                                        v-if="!row.item.deleted_at"
+                                        variant="danger"
+                                        size="sm"
+                                        title="Eliminar"
+                                        @click="eliminarDetalle(row.index)"
+                                    >
+                                        <b-icon icon="trash"></b-icon>
+                                    </b-button>
+                                </template>
+                                <template slot="bottom-row" slot-scope="">
+                                    <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
+                                    <b-td>S/.{{ precioTotal | currency }}</b-td
+                                    ><b-td />
+                                </template>
+                            </b-table>
+                        </b-col>
+                    </b-row>                          
+                    <div v-show="accion == 'Crear'">
+                        <b-button variant="success" @click="registrar()">Registrar</b-button>
+                    </div>           
+                </div>                                                
             </div>
         </div>
     </app-layout>
 </template>
 <script>
+const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "comprobantes.detalles",
-    props: ["comprobante", "conceptos"],
+    props: ["comprobante"],
     components: {
         AppLayout
     },
     data() {
         return {
             app_url: this.$root.app_url,
+            concepto: null,
+            conceptos: [],
             accion: "",
             tipoDescuento: "",                        
             cantidadState: null,
             conceptosFields: [
-                { key: "value", label: "Código", sortable: true, class: "text-center" },
-                { key: "text", label: "Descripción", sortable: true },
+                { key: "codigo", label: "Código", sortable: true, class: "text-center" },
+                { key: "descripcion", label: "Descripción", sortable: true },
                 { key: "precio", label: "Precio", class: "text-center" },
                 { key: "anadir", label: "Añadir", class: "text-center" }
             ],
@@ -363,28 +259,16 @@ export default {
                 { value: "B", text: "S/." }
             ],                                
             fields: [
-                { key: "codigo", label: "CÓDIGO", class: "text-center" },
-                { key: "concepto", label: "CONCEPTO", class: "text-center" },
+                { key: "codigo", label: "CÓDIGO", class: "text-center", tdClass: "codigo" },
+                { key: "concepto", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "valor_unitario", label: "PR. UNIT", class: "text-center" },
+                { key: "precio", label: "PR. UNIT", class: "text-center" },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
-                { key: "subTotal", label: "SUB TOTAL", class: "text-right" },
-                { key: "acciones", label: "ACCIONES", class: "text-center" }
+                { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
+                { key: "acciones", label: "", class: "text-center" }
             ]
         };
-    },
-    created() {
-        if (!this.comprobante.id) {
-            this.accion = "Crear";
-        } else {
-            this.accion = "Mostrar";
-        }
-    },
-    filters: {
-        currency(value) {
-            return value.toFixed(2);
-        }
-    },
+    },    
     computed: {       
         precioTotal() {
             this.comprobante.total = this.comprobante.detalles.reduce(
@@ -394,18 +278,41 @@ export default {
         },
         conceptosDisponibles(){
             return this.conceptos.filter(option => option.estado == true);
-        },
-        onFiltered(filteredItems) {
-            this.totalRows = filteredItems.length;
-            this.currentPage = 1;
+        },        
+    },
+    filters: {
+        currency(value) {
+            return value.toFixed(2);
         }
     },
-    methods: {
-        showModal() {
-            this.$root.$emit("bv::show::modal", "modal-1", "#btnShow");
-        },
+    created() {
+        if (!this.comprobante.id) {
+            this.accion = "Crear";
+        } else {
+            this.accion = "Mostrar";
+        }
+    },    
+    methods: {  
+        buscarConcepto(search, loading) {                        
+            loading(true);            
+
+            axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
+                .then(response => {                                        
+                    this.conceptos = response.data;                    
+                    loading(false);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },       
+        agregarDetalle() {
+            this.comprobante.detalles.push(this.concepto)            
+        },        
+        eliminarDetalle(index) {                        
+            this.comprobante.detalles.splice(index, 1);
+        },  
         registrar() {
-            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer enviar este comprobante?",
+            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar este comprobante?",
                     {
                         title: "Enviar Comprobante",
                         okVariant: "success",
@@ -420,38 +327,7 @@ export default {
                         this.$inertia.post(route("comprobantes.registrar", this.comprobante));
                     }
                 });
-        },
-        addDetalle() {
-            this.comprobante.detalles.push({
-                codigo: "",
-                concepto_id: "",
-                cantidad: "1",
-                valor_unitario: "",
-                tipo_descuento: "",
-                descuento: "0.00"
-            });
-        },
-        agregarConcepto(conc) {
-            this.comprobante.detalles.push({
-                codigo: conc.value,
-                concepto_id: conc.id,
-                cantidad: "1",
-                valor_unitario: conc.precio,
-                tipo_descuento: "",
-                descuento: "0.00"
-            });
-            let concIndex = this.conceptos.findIndex(option => option.id == conc.id);
-            this.conceptos[concIndex].estado = false;
-        },
-        eliminar(id) {
-            let index = this.comprobante.detalles.findIndex(
-                detalle => detalle.concepto_id == id
-            );
-            let concIndex = this.conceptos.findIndex(option => option.id == id);
-            this.conceptos[concIndex].estado = true;
-
-            this.comprobante.detalles.splice(index, 1);
-        },
+        },                
         completeConcepto(event, id) {
             let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
@@ -482,7 +358,15 @@ export default {
             else {
                 this.comprobante.detalles[index].descuento = 0;
             }
-        },        
+        },         
     },    
 };
 </script>
+<style>
+    .codigo {
+        width: 150px;
+    }
+    .concepto {
+        width: 400px;
+    }
+</style>

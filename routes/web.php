@@ -169,10 +169,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarDniParticular/{dni}', [ComprobanteController::class, 'buscarDniParticular'])->name('comprobantes.buscarDniParticular');
     Route::post('/registrarParticular', [ComprobanteController::class, 'registrarParticular'])->name('comprobantes.registrarParticular');
     Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');
+    Route::get('/buscarConcepto', [ComprobanteController::class, 'buscarConcepto'])->name('comprobantes.buscarConcepto');
     /*******************************************************************/
 
     /**************************** Sunat ***************************/
-    Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');    
+    Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/sunat/filtrar', [SunatController::class, 'filtrar'])->name('sunat.filtrar');
     Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
 
@@ -202,6 +203,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/reportes-periodo/facturas', [ReportesController::class, 'facturas'])->name('reportes.facturas');
     Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
     Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
+    /*******************************************************************/
+
+    /**************************** CUENTAS CORRIENTES ***************************/
+    Route::get('/cuentas-corrientes', function () {
+        return Inertia::render('Cuentas_Corrientes/Listar');
+    })->name('cuentas-corrientes.iniciar');
+    Route::get('/cuentas-corrientes/listar', [ConceptoController::class, 'index'])->name('cuentas-corrientes.listar');
+    Route::get('/cuentas-corrientes/crear', [ConceptoController::class, 'create'])->name('cuentas-corrientes.crear');
+    Route::post('/cuentas-corrientes', [ConceptoController::class, 'store'])->name('cuentas-corrientes.registrar');
+    Route::get('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'show'])->name('cuentas-corrientes.mostrar');
+    Route::post('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'update'])->name('cuentas-corrientes.actualizar');
+    Route::delete('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'destroy'])->name('cuentas-corrientes.eliminar');
+    Route::post('/cuentas-corrientes/{cuenta_corriente}/restaurar', [ConceptoController::class, 'restore'])->name('cuentas-corrientes.restaurar');
     /*******************************************************************/
 });
 

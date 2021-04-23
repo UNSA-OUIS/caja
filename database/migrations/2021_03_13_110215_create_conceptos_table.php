@@ -20,13 +20,15 @@ class CreateConceptosTable extends Migration
             $table->string('descripcion_imp', 25)->comment('Descripción corta para impresión de comprobante');
             $table->string('precio', 10);
             $table->string('tipo_afectacion', 25)->comment('Tipo de afectación según sunat');
-            $table->tinyInteger('tipo_concepto_id');            
-            $table->tinyInteger('clasificador_id');            
+            $table->tinyInteger('tipo_concepto_id');
+            $table->tinyInteger('clasificador_id');
             $table->tinyInteger('unidad_medida_id');
-            $table->boolean('estado')->default(true);            
+            $table->string('cuenta_corriente');
+            $table->string('semestre');
+            $table->boolean('estado')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->foreign('tipo_concepto_id')->references('id')->on('tipos_concepto')
                 ->constrained()
                 ->onUpdate('cascade')
