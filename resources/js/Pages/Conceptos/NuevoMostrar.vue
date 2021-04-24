@@ -280,13 +280,13 @@
                 >
                 <v-select
                   v-if="selected == 'B'"
-                  v-model="concepto.centroCosto"
-                  @search="buscarCentroCostos"
+                  v-model="concepto.centro_costo"
+                  @search="buscarCentroCosto()"
                   :filterable="false"
                   :options="centroCostos"
                   :reduce="(centroCosto) => centroCosto"
                   label="descripcion"
-                  placeholder="Búsqueda por código o nombre del centro de costos"
+                  placeholder="Búsqueda por código o descripción del centro de costo"
                 >
                   <template slot="no-options">
                     Lo sentimos, no hay resultados de coincidencia.
@@ -368,10 +368,10 @@ export default {
     }
   },
   methods: {
-      buscarCentroCostos(search, loading) {
+    buscarCentroCosto(search, loading) {
             loading(true);
 
-            axios.get(`${this.app_url}/buscarCentroCostos?filtro=${search}`)
+            axios.get(`${this.app_url}/buscarCentroCosto?filtro=${search}`)
                 .then(response => {
                     this.centroCostos = response.data;
                     loading(false);

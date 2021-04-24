@@ -20,17 +20,16 @@ class ConceptoController extends Controller
         $this->authorize("viewAny", Concepto::class);
 
         $query = Concepto::with('tipo_concepto')
-                    ->with('clasificador')
-                    ->with('unidad_medida')
-                    ->where('descripcion', 'like', '%' . $request->filter . '%');
+            ->with('clasificador')
+            ->with('unidad_medida')
+            ->where('descripcion', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
             $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
             $query = $query->orderBy($sortby, $sortdirection);
-        }
-        else {
+        } else {
             $query = $query->withTrashed();
         }
 
@@ -54,19 +53,21 @@ class ConceptoController extends Controller
         $concepto->semestre = "";
 
         $tipos_concepto = TiposConcepto::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         $clasificadores = Clasificador::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         $unidades_medida = UnidadMedida::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
-        return Inertia::render('Conceptos/NuevoMostrar',
-            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida'));
+        return Inertia::render(
+            'Conceptos/NuevoMostrar',
+            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida')
+        );
     }
 
     public function store(ConceptoStoreRequest $request)
@@ -88,7 +89,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto registrado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar el concepto'];
-            Log::error('ConceptoController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('conceptos.iniciar')->with($result);
@@ -97,16 +98,16 @@ class ConceptoController extends Controller
     public function show(Concepto $concepto)
     {
         $tipos_concepto = TiposConcepto::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         $clasificadores = Clasificador::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         $unidades_medida = UnidadMedida::select('id as value', 'nombre as text')
-                            ->orderBy('nombre', 'asc')
-                            ->get();
+            ->orderBy('nombre', 'asc')
+            ->get();
 
         return Inertia::render('Conceptos/NuevoMostrar', compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida'));
     }
@@ -134,7 +135,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto actualizado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el concepto'];
-            Log::error('ConceptoController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@update, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('conceptos.iniciar')->with($result);
@@ -147,7 +148,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto eliminado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo eliminar el concepto'];
-            Log::error('ConceptoController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@destroy, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->back()->with($result);
@@ -161,7 +162,7 @@ class ConceptoController extends Controller
             $result = ['successMessage' => 'Concepto restaurado con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo restaurar el concepto'];
-            Log::error('ConceptoController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('ConceptoController@restore, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->back()->with($result);
@@ -171,10 +172,10 @@ class ConceptoController extends Controller
         $filtro = $request->filtro;
 
         $centroCostos = Dependencia::where('codi_depe', 'like', '%' . $filtro . '%')
-                        ->orWhere('nomb_depe', 'like', '%' . $filtro . '%')
-                        ->select('codi_depe', 'nomb_depe', 'nomb_depe_ant', 'noms_depe', 'noms_depe_ant')
-                        ->orderBy('codi_depe', 'asc')
-                        ->get();
+            ->orWhere('nomb_depe', 'like', '%' . $filtro . '%')
+            ->select('codi_depe', 'nomb_depe', 'nomb_depe_ant', 'noms_depe', 'noms_depe_ant')
+            ->orderBy('codi_depe', 'asc')
+            ->get();
 
         return $centroCostos;
     }
