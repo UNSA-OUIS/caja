@@ -12,17 +12,25 @@
                 </ol>
             </div>
             <div class="card-doby">
-                <div class="container p-3">                    
-                    <b-row>
+                <div class="container p-3">                                       
+                    <b-row>                        
                         <b-col>
-                            <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
+                            <!--<b-form-group id="input-group-1" label="Serie:" label-for="input-1">
                                 <b-form-input
                                     id="input-1"
                                     v-model="comprobante.serie"
                                     placeholder="Serie"
                                     readonly
                                 ></b-form-input>
-                            </b-form-group>
+                            </b-form-group>-->
+                            
+                                <label class="mr-sm-2" for="input-1">Serie: </label>
+                                <b-form-input
+                                    id="input-1"
+                                    v-model="comprobante.serie"
+                                    placeholder="Serie"
+                                    readonly
+                                ></b-form-input>                            
                         </b-col>
                         <b-col>
                             <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
@@ -36,12 +44,13 @@
                         </b-col>
                         <b-col>
                             <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
-                                <b-form-input                                        
-                                    id="input-3"                                                                                
-                                    readonly
+                                <b-form-input                                                                        
+                                    id="input-3"            
+                                    type="date" 
+                                    :value="getFechaActual()"                                                                        
                                 ></b-form-input>
                             </b-form-group>
-                        </b-col>
+                        </b-col>                        
                     </b-row>
                     <b-row>                            
                         <b-col cols="2" v-if="comprobante.tipo_usuario !== 'dependencia'">
@@ -54,22 +63,29 @@
                             </b-form-group>
                         </b-col>
                         <b-col>
-                            <b-form-group id="input-group-5" label="Nombre:" label-for="input-5">
-                                <b-form-input
-                                    id="input-5"
-                                    readonly
-                                    v-model="comprobante.usuario"                                        
-                                ></b-form-input>
+                            <b-form-group id="input-group-5" label="Usuario:" label-for="input-5">
+                                <b-input-group class="mb-2">
+                                    <b-input-group-prepend is-text>
+                                        <b-icon icon="person-fill"></b-icon>
+                                    </b-input-group-prepend>
+                                    <b-form-input
+                                        id="input-5"
+                                        readonly
+                                        v-model="comprobante.usuario"                                        
+                                    ></b-form-input>
+                                </b-input-group>
                             </b-form-group>
                         </b-col>               
                         <b-col>
                             <b-form-group id="input-group-6" label="Email:" label-for="input-6">
-                                <b-form-input
-                                    id="input-6"
-                                    readonly
-                                    v-model="comprobante.email"
-                                    placeholder="Email"
-                                ></b-form-input>
+                                <b-input-group prepend="@" class="mb-2 mr-sm-2 mb-sm-0">
+                                    <b-form-input
+                                        id="input-6"
+                                        readonly
+                                        v-model="comprobante.email"
+                                        placeholder="Email"
+                                    ></b-form-input>
+                                </b-input-group>
                             </b-form-group>
                         </b-col>                                    
                     </b-row>
@@ -106,28 +122,37 @@
                         </b-col>                            
                     </b-row>     
                     <hr> 
-                    <b-row>
-                        <b-col cols="6">
-                            <v-select                  
-                                v-model="concepto"
-                                @search="buscarConcepto"                                
-                                :filterable="false"                                                    
-                                :options="conceptos"                                              
-                                :reduce="concepto => concepto"                 
-                                label="descripcion"                
-                                placeholder="Búsqueda por código o descripción del concepto"
-                            >
-                                <template slot="no-options">
-                                    Lo sentimos, no hay resultados de coincidencia.
-                                </template>
-                            </v-select>
-                        </b-col>
-                        <b-col>                            
-                            <div class="h2 mb-0">
-                                <b-icon type="button" icon="plus-circle" variant="secondary" @click="agregarDetalle"></b-icon>
-                            </div>
-                        </b-col>
-                    </b-row>
+                    <form @submit.prevent="agregarDetalle">
+                        <b-row>                        
+                            <b-col cols="5">
+                                <v-select                  
+                                    v-model="concepto"
+                                    @search="buscarConcepto"                                    
+                                    :options="conceptos"                                              
+                                    :reduce="concepto => concepto"                 
+                                    label="descripcion"                
+                                    placeholder="Ingrese código o descripción del concepto"
+                                >
+                                    <template #search="{attributes, events}">
+                                        <input
+                                            class="vs__search"
+                                            :required="!concepto"
+                                            v-bind="attributes"
+                                            v-on="events"
+                                        />
+                                    </template>
+                                    <template slot="no-options">
+                                        Lo sentimos, no hay resultados de coincidencia.
+                                    </template>
+                                </v-select>
+                            </b-col>
+                            <b-col>                                      
+                                 <b-button style="height:34px" type="submit" variant="info" class="mb-2" title="Añadir concepto">
+                                    <b-icon icon="plus-circle"></b-icon>
+                                </b-button>                                
+                            </b-col>                        
+                        </b-row>
+                    </form>
                     <b-row class="mt-3">
                         <b-col>
                             <b-table                        
@@ -215,7 +240,7 @@
                     </b-row>                          
                     <div v-show="accion == 'Crear'">
                         <b-button variant="success" @click="registrar()">Registrar</b-button>
-                    </div>           
+                    </div>                           
                 </div>                                                
             </div>
         </div>
@@ -235,7 +260,7 @@ export default {
         return {
             app_url: this.$root.app_url,
             concepto: null,
-            conceptos: [],
+            conceptos: [],            
             accion: "",
             tipoDescuento: "",                        
             cantidadState: null,
@@ -290,23 +315,32 @@ export default {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
-        }
+        }        
     },    
     methods: {  
-        buscarConcepto(search, loading) {                        
-            loading(true);            
+        getFechaActual() {
+            let fecha_actual = new Date();                
+            let anio = fecha_actual.getFullYear()
+            let mes = fecha_actual.getMonth() + 1
+            let dia = fecha_actual.getDate()
+
+            return anio + '-' + mes.toString().padStart(2, "0") + '-' + dia
+        },
+        buscarConcepto(search, loading) {                       
+            loading(true)           
 
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
                 .then(response => {                                        
                     this.conceptos = response.data;                    
-                    loading(false);
+                    loading(false)
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    console.log(error)
                 });
         },       
         agregarDetalle() {
-            this.comprobante.detalles.push(this.concepto)            
+            this.comprobante.detalles.push(this.concepto)   
+            this.concepto = null         
         },        
         eliminarDetalle(index) {                        
             this.comprobante.detalles.splice(index, 1);

@@ -128,9 +128,9 @@ class ComprobanteController extends Controller
 
     public function buscarConcepto(Request $request)
     {
-        $filtro = $request->filtro;
+        $filtro = $request->filtro;       
 
-        $conceptos = Concepto::where('descripcion', 'like', '%' . $filtro . '%')
+        $conceptos = Concepto::whereRaw('LOWER(descripcion) like ? ', ['%' . trim(strtolower($filtro)) . '%'])                         
                         ->orWhere('codigo', 'like', '%' . $filtro . '%')
                         ->select('id', 'codigo', 'descripcion', 'precio', 'estado')
                         ->orderBy('descripcion', 'asc')

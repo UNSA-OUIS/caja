@@ -20,7 +20,9 @@
                             ></b-form-input>                                    
                         </td>
                         <td>
-                            <b-button form="dni_form_particular" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                            <b-button form="dni_form_particular" type="submit" class="ml-sm-2" variant="info">
+                                <b-icon icon="search"></b-icon> Buscar
+                            </b-button>
                         </td>
                     </tr> 
                     <tr>
@@ -40,7 +42,9 @@
                             ></b-form-input>                                
                         </td>
                         <td>
-                            <b-button form="apn_form_particular" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                            <b-button form="apn_form_particular" type="submit" class="ml-sm-2" variant="info">
+                                <b-icon icon="search"></b-icon> Buscar
+                            </b-button>
                         </td>
                     </tr>
                     <tr>
