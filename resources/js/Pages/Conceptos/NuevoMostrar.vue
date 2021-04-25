@@ -85,14 +85,12 @@
               >
                 <b-form-radio
                   v-model="concepto.tipo_precio"
-                  :aria-describedby="ariaDescribedby"
                   name="some-radios"
                   value="fijo"
                   >Fijo</b-form-radio
                 >
                 <b-form-radio
                   v-model="concepto.tipo_precio"
-                  :aria-describedby="ariaDescribedby"
                   name="some-radios"
                   value="variable"
                   >Variable</b-form-radio
@@ -262,18 +260,15 @@
             <b-col>
               <b-form-group
                 label="Centro de costos"
-                v-slot="{ ariaDescribedby }"
               >
                 <b-form-radio
                   v-model="selected"
-                  :aria-describedby="ariaDescribedby"
                   name="some-radios"
                   value="A"
                   >Sin centro de costos</b-form-radio
                 >
                 <b-form-radio
                   v-model="selected"
-                  :aria-describedby="ariaDescribedby"
                   name="some-radios"
                   value="B"
                   >Con centro de costos especifico</b-form-radio
@@ -281,12 +276,12 @@
                 <v-select
                   v-if="selected == 'B'"
                   v-model="concepto.centro_costo"
-                  @search="buscarCentroCosto()"
+                  @search="buscarConcepto"
                   :filterable="false"
                   :options="centroCostos"
-                  :reduce="(centroCosto) => centroCosto"
-                  label="descripcion"
-                  placeholder="Búsqueda por código o descripción del centro de costo"
+                  :reduce="(concepto) => concepto"
+                  label="nomb_depe"
+                  placeholder="Búsqueda por código o descripción del centro de costos"
                 >
                   <template slot="no-options">
                     Lo sentimos, no hay resultados de coincidencia.
@@ -294,7 +289,6 @@
                 </v-select>
                 <b-form-radio
                   v-model="selected"
-                  :aria-describedby="ariaDescribedby"
                   name="some-radios"
                   value="C"
                   >Con centro de costos multiple</b-form-radio
@@ -328,6 +322,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
+const axios = require("axios");
 
 export default {
   name: "conceptos.nuevo-mostrar",
@@ -337,9 +332,9 @@ export default {
   },
   data() {
     return {
+      app_url: this.$root.app_url,
       accion: "",
       selected: "",
-      centroCosto: null,
       centroCostos: [],
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
@@ -368,18 +363,20 @@ export default {
     }
   },
   methods: {
-    buscarCentroCosto(search, loading) {
-            loading(true);
+    buscarConcepto(search, loading) {
+      loading(true);
 
-            axios.get(`${this.app_url}/buscarCentroCosto?filtro=${search}`)
-                .then(response => {
-                    this.centroCostos = response.data;
-                    loading(false);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-        },
+      axios
+        .get(`${this.app_url}//buscarCentroCosto?filtro=${search}`)
+        .then((response) => {
+          this.centroCostos = response.data;
+          console.log(this.centroCostos);
+          loading(false);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     registrar() {
       this.$inertia.post(route("conceptos.registrar"), this.concepto);
     },

@@ -173,7 +173,7 @@ class ConceptoController extends Controller
 
         $centroCostos = Dependencia::where('codi_depe', 'like', '%' . $filtro . '%')
             ->orWhere('nomb_depe', 'like', '%' . $filtro . '%')
-            ->select('codi_depe', 'nomb_depe', 'nomb_depe_ant', 'noms_depe', 'noms_depe_ant')
+            ->select('codi_depe', 'nomb_depe')
             ->orderBy('codi_depe', 'asc')
             ->get();
 
