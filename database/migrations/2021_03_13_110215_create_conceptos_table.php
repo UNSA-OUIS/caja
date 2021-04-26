@@ -18,7 +18,7 @@ class CreateConceptosTable extends Migration
             $table->integer('codigo')->unique();
             $table->string('descripcion', 50);
             $table->string('descripcion_imp', 25)->comment('Descripción corta para impresión de comprobante');
-            $table->string('precio', 10)->nullable();
+            $table->string('precio', 10);
             $table->string('tipo_precio', 10);
             $table->string('tipo_afectacion', 25)->comment('Tipo de afectación según sunat');
             $table->tinyInteger('tipo_concepto_id');
@@ -26,7 +26,7 @@ class CreateConceptosTable extends Migration
             $table->tinyInteger('unidad_medida_id');
             $table->string('cuenta_corriente');
             $table->string('semestre');
-            $table->string('codi_depe')->nullable()->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
+            $table->string('codi_depe')->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
             $table->boolean('estado')->default(true);
             $table->timestamps();
             $table->softDeletes();

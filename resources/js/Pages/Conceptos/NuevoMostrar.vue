@@ -85,13 +85,13 @@
               >
                 <b-form-radio
                   v-model="concepto.tipo_precio"
-                  name="some-radios"
+                  name="tipo-precios"
                   value="fijo"
                   >Fijo</b-form-radio
                 >
                 <b-form-radio
                   v-model="concepto.tipo_precio"
-                  name="some-radios"
+                  name="tipo-precios"
                   value="variable"
                   >Variable</b-form-radio
                 >
@@ -259,10 +259,10 @@
             </b-col>
             <b-col>
               <b-form-group label="Centro de costos">
-                <b-form-radio v-model="selected" name="some-radios" value="A"
+                <b-form-radio v-model="selected" name="centro-costos" value="A"
                   >Sin centro de costos</b-form-radio
                 >
-                <b-form-radio v-model="selected" name="some-radios" value="B"
+                <b-form-radio v-model="selected" name="centro-costos" value="B"
                   >Con centro de costos especifico</b-form-radio
                 >
                 <v-select
@@ -271,7 +271,7 @@
                   @search="buscarConcepto"
                   :filterable="false"
                   :options="centroCostos"
-                  :reduce="(centroCosto) => centroCosto['codi_depe']"
+                  :reduce="(centroCosto) => centroCosto.codi_depe"
                   label="nomb_depe"
                   placeholder="Búsqueda por código o descripción del centro de costos"
                 >
@@ -279,7 +279,7 @@
                     Lo sentimos, no hay resultados de coincidencia.
                   </template>
                 </v-select>
-                <b-form-radio v-model="selected" name="some-radios" value="C"
+                <b-form-radio v-model="selected" name="centro-costos" value="C"
                   >Con centro de costos multiple</b-form-radio
                 >
               </b-form-group>

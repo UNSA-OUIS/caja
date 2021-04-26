@@ -150,87 +150,6 @@
         </b-row>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title mb-4">Latest Transaction</h4>
-            <div class="table-responsive">
-              <table class="table table-centered table-nowrap mb-0">
-                <thead class="thead-light">
-                  <tr>
-                    <th style="width: 20px">
-                      <div class="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          class="custom-control-input"
-                          id="customCheck1"
-                        />
-                        <label class="custom-control-label" for="customCheck1"
-                          >&nbsp;</label
-                        >
-                      </div>
-                    </th>
-                    <th>ID</th>
-                    <th>Codigo</th>
-                    <th>Descripcion</th>
-                    <th>Precio</th>
-                    <th>Condicion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="concepto in conceptos">
-                    <td>
-                      <div class="custom-control custom-checkbox">
-                        <input
-                          type="checkbox"
-                          class="custom-control-input"
-                          id="customCheck2"
-                        />
-                        <label class="custom-control-label" for="customCheck2"
-                          >&nbsp;</label
-                        >
-                      </div>
-                    </td>
-                    <td>
-                      <a
-                        href="javascript: void(0);"
-                        class="text-body font-weight-bold"
-                        >{{ concepto.id }}</a
-                      >
-                    </td>
-                    <td>{{ concepto.codigo }}</td>
-                    <td>{{ concepto.descripcion }}</td>
-                    <td>{{ concepto.precio }}</td>
-                    <td>
-                      <span
-                        v-if="concepto.estado == true"
-                        class="badge badge-pill badge-soft-success font-size-12"
-                        >Activo</span
-                      ><span
-                        v-else
-                        class="badge badge-pill badge-soft-danger font-size-12"
-                        >Inactivo</span
-                      >
-                    </td>
-                    <td>
-                      <!-- Button trigger modal -->
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-                      >
-                        View Details
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <!-- end table-responsive -->
-          </div>
-        </div>
-      </div>
-    </div>
   </app-layout>
 </template>
 
@@ -249,13 +168,23 @@ export default {
       conceptos: [],
       fields: [
         { key: "id", label: "ID", sortable: true, class: "text-center" },
-        { key: "codigo", label: "Código", sortable: true },
-        { key: "descripcion", label: "Descripción", sortable: true },
+        {
+          key: "codigo",
+          label: "Código",
+          sortable: true,
+          class: "text-center",
+        },
+        {
+          key: "descripcion",
+          label: "Descripción",
+          sortable: true,
+          class: "text-left",
+        },
         { key: "precio", label: "Precio", class: "text-center" },
-        { key: "tipo_concepto", label: "Tipo concepto", class: "text-center" },
-        { key: "clasificador", label: "Clasificador", class: "text-center" },
-        { key: "unidad_medida", label: "Unidad medida", class: "text-center" },
-        { key: "condicion", label: "Condición", class: "text-center" },
+        { key: "tipo_concepto", label: "Tipo concepto", class: "text-left" },
+        { key: "clasificador", label: "Clasificador", class: "text-left" },
+        { key: "unidad_medida", label: "Unidad medida", class: "text-left" },
+        { key: "condicion", label: "Condición", class: "text-left" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -329,11 +258,6 @@ export default {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
-  },
-  created: function () {
-    axios
-      .get(`${this.app_url}/conceptos/listar`)
-      .then((response) => (this.conceptos = response.data.data));
   },
 };
 </script>
