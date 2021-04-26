@@ -83,7 +83,21 @@
                 label="Precio:"
                 label-for="input-7"
               >
+                <b-form-radio
+                  v-model="concepto.tipo_precio"
+                  name="tipo-precios"
+                  value="fijo"
+                  >Fijo</b-form-radio
+                >
+                <b-form-radio
+                  v-model="concepto.tipo_precio"
+                  name="tipo-precios"
+                  value="variable"
+                  >Variable</b-form-radio
+                >
+
                 <b-form-input
+                  v-if="concepto.tipo_precio == 'fijo'"
                   id="input-7"
                   v-model="concepto.precio"
                   type="number"
@@ -243,6 +257,33 @@
                 </div>
               </b-form-group>
             </b-col>
+            <b-col>
+              <b-form-group label="Centro de costos">
+                <b-form-radio v-model="selected" name="centro-costos" value="A"
+                  >Sin centro de costos</b-form-radio
+                >
+                <b-form-radio v-model="selected" name="centro-costos" value="B"
+                  >Con centro de costos especifico</b-form-radio
+                >
+                <v-select
+                  v-if="selected == 'B'"
+                  v-model="concepto.codi_depe"
+                  @search="buscarConcepto"
+                  :filterable="false"
+                  :options="centroCostos"
+                  :reduce="(centroCosto) => centroCosto.codi_depe"
+                  label="nomb_depe"
+                  placeholder="Búsqueda por código o descripción del centro de costos"
+                >
+                  <template slot="no-options">
+                    Lo sentimos, no hay resultados de coincidencia.
+                  </template>
+                </v-select>
+                <b-form-radio v-model="selected" name="centro-costos" value="C"
+                  >Con centro de costos multiple</b-form-radio
+                >
+              </b-form-group>
+            </b-col>
           </b-row>
           <b-button
             v-if="accion == 'Crear'"
@@ -270,6 +311,7 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
+const axios = require("axios");
 
 export default {
   name: "conceptos.nuevo-mostrar",
@@ -279,16 +321,21 @@ export default {
   },
   data() {
     return {
+      app_url: this.$root.app_url,
       accion: "",
+      selected: "",
+      centroCostos: [],
+      centroCosto: null,
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
-        { value: 30, text: "Inafecta: Operacion Onerosa" },
+        { value: 20, text: "Exonerado: Operacion Onerosa" },
+        { value: 30, text: "Inafecto: Operacion Onerosa" },
       ],
       semestre: [
-        { value: 1, text: "2005-A" },
-        { value: 2, text: "2005-B" },
-        { value: 3, text: "2006-A" },
-        { value: 4, text: "2006-B" },
+        { value: 1, text: "2004-A" },
+        { value: 2, text: "2004-B" },
+        { value: 3, text: "2005-A" },
+        { value: 4, text: "2020-B" },
       ],
       cuentaCorriente: [
         { value: 1, text: "215-123456789-0-255 | BCP: Cuenta General" },
@@ -306,6 +353,20 @@ export default {
     }
   },
   methods: {
+    buscarConcepto(search, loading) {
+      loading(true);
+
+      axios
+        .get(`${this.app_url}//buscarCentroCosto?filtro=${search}`)
+        .then((response) => {
+          this.centroCostos = response.data;
+          console.log(this.centroCosto);
+          loading(false);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     registrar() {
       this.$inertia.post(route("conceptos.registrar"), this.concepto);
     },

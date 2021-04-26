@@ -249,7 +249,6 @@
 <script>
 const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
-
 export default {
     name: "comprobantes.detalles",
     props: ["comprobante"],
@@ -298,7 +297,6 @@ export default {
         precioTotal() {
             this.comprobante.total = this.comprobante.detalles.reduce(
                 (acc, item) => acc + (item.cantidad * item.valor_unitario - item.descuento), 0);
-
             return this.comprobante.total;
         },
         conceptosDisponibles(){
@@ -323,12 +321,10 @@ export default {
             let anio = fecha_actual.getFullYear()
             let mes = fecha_actual.getMonth() + 1
             let dia = fecha_actual.getDate()
-
             return anio + '-' + mes.toString().padStart(2, "0") + '-' + dia
         },
         buscarConcepto(search, loading) {                       
             loading(true)           
-
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
                 .then(response => {                                        
                     this.conceptos = response.data;                    

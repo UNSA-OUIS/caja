@@ -149,6 +149,7 @@ class SunatController extends Controller
             $total_exonerados = 0;
             $total_inafectos = 0;
             $subtotal = 0;
+            $igv = 0;
 
             $detalle = $factura->detalles;
             foreach ($detalle as $index => $value) {
@@ -166,6 +167,7 @@ class SunatController extends Controller
                     ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
                     ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
                 $total_agravadas += $value['valor_unitario'] * $value['cantidad'];
+                $igv += 18.00 / $value['cantidad'];
             }
 
             $formatter = new NumeroALetras();
@@ -189,11 +191,11 @@ class SunatController extends Controller
                 ->setCompany($company)
                 ->setClient($client)
                 ->setMtoOperGravadas($total_agravadas)
-                ->setMtoIGV(18.00)
-                ->setTotalImpuestos(18.00)
+                ->setMtoIGV($igv)
+                ->setTotalImpuestos($igv)
                 ->setValorVenta($total_agravadas)
-                ->setSubTotal($total_agravadas)
-                ->setMtoImpVenta($total_agravadas + 18.00);
+                ->setSubTotal($total_agravadas + $igv)
+                ->setMtoImpVenta($total_agravadas + $igv);
 
             $result = $see->send($invoice);
 
@@ -515,7 +517,10 @@ class SunatController extends Controller
     {
         $comprobantes = Comprobante::with('detalles')
             ->whereDate('created_at', '>=', $request->fechaInicio)
-            ->whereDate('created_at', '<=', $request->fechaFin
+            ->whereDate(
+                'created_at',
+                '<=',
+                $request->fechaFin
             )->where('serie', 'like', 'B' . '%')->get();
         return ['comprobantes' => $comprobantes];
     }
