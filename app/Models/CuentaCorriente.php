@@ -12,5 +12,5 @@ class CuentaCorriente extends Model
 
     protected $table = 'cuentas_corrientes';
 
-    protected $fillable = ['codigo', 'numeroCuenta', 'descripcion', 'moneda'];
+    protected $fillable = ['numeroCuenta', 'descripcion', 'moneda'];
 }

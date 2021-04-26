@@ -103,8 +103,32 @@
                                     <b-row>
                                         <b-col>
                                             <b-form-group
+                                                id="input-group-4"
+                                                label="Dirección:"
+                                                label-for="input-4"
+                                            >
+                                                <b-form-input
+                                                    id="input-4"
+                                                    v-model="editarUsuario.direccion"
+                                                    placeholder="Dirección"
+                                                    type="text"
+                                                ></b-form-input>
+                                                <div
+                                                    v-if="$page.props.errors.direccion"
+                                                    class="text-danger"
+                                                >
+                                                    {{ $page.props.errors.direccion[0] }}
+                                                </div>
+                                            </b-form-group>
+                                        </b-col> 
+                                    </b-row>
+                                    <label for="">Si desea cambiar su contraseña tendrá que iniciar sesión nuevamente cuando los cambios sean guardados.</label>
+                                    <b-alert :show="desiguales" variant="danger" dismissible>¡Los campos de la contraseña deben ser iguales!</b-alert>
+                                    <b-row>
+                                        <b-col>
+                                            <b-form-group
                                                 id="input-group-3"
-                                                label="Contraseña:"
+                                                label="Nueva contraseña:"
                                                 label-for="input-3"
                                             >
                                                 <b-form-input
@@ -123,24 +147,24 @@
                                         </b-col>
                                         <b-col>
                                             <b-form-group
-                                                id="input-group-4"
-                                                label="Dirección:"
-                                                label-for="input-4"
+                                                id="input-group-5"
+                                                label="Repita contraseña:"
+                                                label-for="input-5"
                                             >
                                                 <b-form-input
-                                                    id="input-4"
-                                                    v-model="editarUsuario.direccion"
-                                                    placeholder="Dirección"
-                                                    type="text"
+                                                    id="input-5"
+                                                    v-model="editarUsuario.passwordRepetido"
+                                                    placeholder="Contraseña"
+                                                    type="password"
                                                 ></b-form-input>
                                                 <div
-                                                    v-if="$page.props.errors.direccion"
+                                                    v-if="$page.props.errors.password"
                                                     class="text-danger"
                                                 >
-                                                    {{ $page.props.errors.direccion[0] }}
+                                                    {{ $page.props.errors.password[0] }}
                                                 </div>
                                             </b-form-group>
-                                        </b-col>                         
+                                        </b-col>                        
                                     </b-row>
                                     <b-button @click="actualizar" variant="success">Actualizar</b-button>
                                 </b-form>
@@ -174,8 +198,10 @@ export default {
                 celular: "",
                 email_personal: "",
                 direccion: "",
-                password: ""
-            }         
+                password: "",
+                passwordRepetido: ""
+            },
+            desiguales: false,    
         };
     },
     created() {        
@@ -223,10 +249,30 @@ export default {
             );
         },
         actualizar() {
-            this.$inertia.post(
-                route("usuarios.actualizarPerfil", [this.usuario.id]),
-                this.editarUsuario
-            );
+            if (this.editarUsuario.password == this.editarUsuario.passwordRepetido) {
+                this.$bvModal
+                    .msgBoxConfirm(
+                        "¿Esta seguro de querer editar su usuario?",
+                        {
+                            title: "Editar usuario",
+                            okVariant: "danger",
+                            okTitle: "SI",
+                            cancelTitle: "NO",
+                            centered: true
+                        }
+                    )
+                    .then(value => {
+                        if (value) {
+                            this.$inertia.post(
+                                route("usuarios.actualizarPerfil", [this.usuario.id]),
+                                this.editarUsuario
+                            );
+                        }
+                    });
+            }
+            else{
+                this.desiguales = true;
+            }
         }
     }
 };
