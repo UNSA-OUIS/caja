@@ -51,6 +51,7 @@ class ConceptoController extends Controller
         $concepto->unidad_medida_id = null;
         $concepto->cuenta_corriente = "";
         $concepto->semestre = "";
+        $concepto->codi_depe = "";
 
         $tipos_concepto = TiposConcepto::select('id as value', 'nombre as text')
             ->orderBy('nombre', 'asc')
@@ -85,6 +86,7 @@ class ConceptoController extends Controller
             $concepto->unidad_medida_id = $request->unidad_medida_id;
             $concepto->cuenta_corriente = $request->cuenta_corriente;
             $concepto->semestre = $request->semestre;
+            $concepto->codi_depe = $request->codi_depe;
             $concepto->save();
             $result = ['successMessage' => 'Concepto registrado con éxito'];
         } catch (\Exception $e) {
@@ -130,7 +132,8 @@ class ConceptoController extends Controller
             $concepto->clasificador_id = $request->clasificador_id;
             $concepto->unidad_medida_id = $request->unidad_medida_id;
             $concepto->cuenta_corriente = $request->cuenta_corriente;
-            $concepto->semstre = $request->semestre;
+            $concepto->semestre = $request->semestre;
+            $concepto->codi_depe = $request->codi_depe;
             $concepto->update();
             $result = ['successMessage' => 'Concepto actualizado con éxito'];
         } catch (\Exception $e) {
@@ -144,6 +147,8 @@ class ConceptoController extends Controller
     public function destroy(Concepto $concepto)
     {
         try {
+            $concepto->estado = false;
+            $concepto->update();
             $concepto->delete();
             $result = ['successMessage' => 'Concepto eliminado con éxito'];
         } catch (\Exception $e) {

@@ -258,28 +258,20 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group
-                label="Centro de costos"
-              >
-                <b-form-radio
-                  v-model="selected"
-                  name="some-radios"
-                  value="A"
+              <b-form-group label="Centro de costos">
+                <b-form-radio v-model="selected" name="some-radios" value="A"
                   >Sin centro de costos</b-form-radio
                 >
-                <b-form-radio
-                  v-model="selected"
-                  name="some-radios"
-                  value="B"
+                <b-form-radio v-model="selected" name="some-radios" value="B"
                   >Con centro de costos especifico</b-form-radio
                 >
                 <v-select
                   v-if="selected == 'B'"
-                  v-model="concepto.centro_costo"
+                  v-model="concepto.codi_depe"
                   @search="buscarConcepto"
                   :filterable="false"
                   :options="centroCostos"
-                  :reduce="(concepto) => concepto"
+                  :reduce="(centroCosto) => centroCosto['codi_depe']"
                   label="nomb_depe"
                   placeholder="Búsqueda por código o descripción del centro de costos"
                 >
@@ -287,10 +279,7 @@
                     Lo sentimos, no hay resultados de coincidencia.
                   </template>
                 </v-select>
-                <b-form-radio
-                  v-model="selected"
-                  name="some-radios"
-                  value="C"
+                <b-form-radio v-model="selected" name="some-radios" value="C"
                   >Con centro de costos multiple</b-form-radio
                 >
               </b-form-group>
@@ -336,6 +325,7 @@ export default {
       accion: "",
       selected: "",
       centroCostos: [],
+      centroCosto: null,
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
         { value: 20, text: "Exonerado: Operacion Onerosa" },
@@ -370,7 +360,7 @@ export default {
         .get(`${this.app_url}//buscarCentroCosto?filtro=${search}`)
         .then((response) => {
           this.centroCostos = response.data;
-          console.log(this.centroCostos);
+          console.log(this.centroCosto);
           loading(false);
         })
         .catch(function (error) {
