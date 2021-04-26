@@ -128,10 +128,10 @@ class ComprobanteController extends Controller
 
     public function buscarConcepto(Request $request)
     {
-        $filtro = $request->filtro;       
-
-        $conceptos = Concepto::whereRaw('LOWER(descripcion) like ? ', ['%' . trim(strtolower($filtro)) . '%'])                         
-                        ->orWhere('codigo', 'like', '%' . $filtro . '%')
+        $filtro = $request->filtro;              
+        
+        $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
+                        ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
                         ->select('id', 'codigo', 'descripcion', 'precio', 'estado')
                         ->orderBy('descripcion', 'asc')
                         ->get();
@@ -140,8 +140,7 @@ class ComprobanteController extends Controller
     }
 
     public function create(Request $request)
-    {       
-        //dd($request->dependencia);
+    {         
         $ultimo = Comprobante::latest('created_at')->first();                                     
         $comprobante = new Comprobante();
         $comprobante->tipo_usuario = $request->tipo_usuario;

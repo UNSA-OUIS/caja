@@ -15,22 +15,14 @@
                 <div class="container p-3">                                       
                     <b-row>                        
                         <b-col>
-                            <!--<b-form-group id="input-group-1" label="Serie:" label-for="input-1">
+                            <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
                                 <b-form-input
                                     id="input-1"
                                     v-model="comprobante.serie"
                                     placeholder="Serie"
                                     readonly
                                 ></b-form-input>
-                            </b-form-group>-->
-                            
-                                <label class="mr-sm-2" for="input-1">Serie: </label>
-                                <b-form-input
-                                    id="input-1"
-                                    v-model="comprobante.serie"
-                                    placeholder="Serie"
-                                    readonly
-                                ></b-form-input>                            
+                            </b-form-group>                                                
                         </b-col>
                         <b-col>
                             <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
@@ -127,7 +119,8 @@
                             <b-col cols="5">
                                 <v-select                  
                                     v-model="concepto"
-                                    @search="buscarConcepto"                                    
+                                    @search="buscarConcepto"   
+                                    :filterable="false"                                 
                                     :options="conceptos"                                              
                                     :reduce="concepto => concepto"                 
                                     label="descripcion"                
@@ -139,6 +132,7 @@
                                             :required="!concepto"
                                             v-bind="attributes"
                                             v-on="events"
+                                            v-model="filtro"                                          
                                         />
                                     </template>
                                     <template slot="no-options">
@@ -259,6 +253,7 @@ export default {
         return {
             app_url: this.$root.app_url,
             concepto: null,
+            filtro: "",
             conceptos: [],            
             accion: "",
             tipoDescuento: "",                        
@@ -303,6 +298,14 @@ export default {
             return this.conceptos.filter(option => option.estado == true);
         },        
     },
+    watch : {
+        filtro:function(val) {
+            this.filtro = val.trim()            
+        },        
+        concepto:function(val) {
+            this.filtro = ""
+        },        
+    },
     filters: {
         currency(value) {
             return value.toFixed(2);
@@ -323,10 +326,11 @@ export default {
             let dia = fecha_actual.getDate()
             return anio + '-' + mes.toString().padStart(2, "0") + '-' + dia
         },
-        buscarConcepto(search, loading) {                       
+        buscarConcepto(search, loading) {     
+            search = search.trim()        
             loading(true)           
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
-                .then(response => {                                        
+                .then(response => {                                             
                     this.conceptos = response.data;                    
                     loading(false)
                 })
