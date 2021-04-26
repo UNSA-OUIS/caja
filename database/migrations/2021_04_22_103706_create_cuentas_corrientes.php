@@ -15,11 +15,11 @@ class CreateCuentasCorrientes extends Migration
     {
         Schema::create('cuentas_corrientes', function (Blueprint $table) {
             $table->id();
-            $table->integer('codigo')->unique();
             $table->string('numeroCuenta');
             $table->string('descripcion');
             $table->string('moneda');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

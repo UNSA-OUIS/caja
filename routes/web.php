@@ -14,6 +14,7 @@ use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
+use App\Http\Controllers\CuentasCorrientesController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 
@@ -209,13 +210,13 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/cuentas-corrientes', function () {
         return Inertia::render('Cuentas_Corrientes/Listar');
     })->name('cuentas-corrientes.iniciar');
-    Route::get('/cuentas-corrientes/listar', [ConceptoController::class, 'index'])->name('cuentas-corrientes.listar');
-    Route::get('/cuentas-corrientes/crear', [ConceptoController::class, 'create'])->name('cuentas-corrientes.crear');
-    Route::post('/cuentas-corrientes', [ConceptoController::class, 'store'])->name('cuentas-corrientes.registrar');
-    Route::get('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'show'])->name('cuentas-corrientes.mostrar');
-    Route::post('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'update'])->name('cuentas-corrientes.actualizar');
-    Route::delete('/cuentas-corrientes/{cuenta_corriente}', [ConceptoController::class, 'destroy'])->name('cuentas-corrientes.eliminar');
-    Route::post('/cuentas-corrientes/{cuenta_corriente}/restaurar', [ConceptoController::class, 'restore'])->name('cuentas-corrientes.restaurar');
+    Route::get('/cuentas-corrientes/listar', [CuentasCorrientesController::class, 'index'])->name('cuentas-corrientes.listar');
+    Route::get('/cuentas-corrientes/crear', [CuentasCorrientesController::class, 'create'])->name('cuentas-corrientes.crear');
+    Route::post('/cuentas-corrientes', [CuentasCorrientesController::class, 'store'])->name('cuentas-corrientes.registrar');
+    Route::get('/cuentas-corrientes/{cuenta_corriente}', [CuentasCorrientesController::class, 'show'])->name('cuentas-corrientes.mostrar');
+    Route::post('/cuentas-corrientes/{cuenta_corriente}', [CuentasCorrientesController::class, 'update'])->name('cuentas-corrientes.actualizar');
+    Route::delete('/cuentas-corrientes/{cuenta_corriente}', [CuentasCorrientesController::class, 'destroy'])->name('cuentas-corrientes.eliminar');
+    Route::post('/cuentas-corrientes/{cuenta_corriente}/restaurar', [CuentasCorrientesController::class, 'restore'])->name('cuentas-corrientes.restaurar');
     /*******************************************************************/
 });
 
