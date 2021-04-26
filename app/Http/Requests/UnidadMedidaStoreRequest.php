@@ -24,14 +24,14 @@ class UnidadMedidaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:20|unique:unidades_medida',         
+            'nombre' => 'required|max:20|unique:unidades_medida',
         ];
     }
 
     public function messages()
     {
         return [
-            //'nombre.max' => 'El campo nombre no debe ser mayor que :max caracteres.',                        
+            //'nombre.max' => 'El campo nombre no debe ser mayor que :max caracteres.',
         ];
     }
 }
