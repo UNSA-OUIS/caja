@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CuentaCorrienteStoreRequest;
+use App\Http\Requests\CuentaCorrienteUpdateRequest;
 use App\Models\CuentaCorriente;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CuentasCorrientesController extends Controller
 {
@@ -14,9 +17,8 @@ class CuentasCorrientesController extends Controller
      */
     public function index(Request $request)
     {
-        //$this->authorize("viewAny", UnidadMedida::class);
 
-        $query = CuentaCorriente::where('nombre', 'like', '%' . $request->filter . '%');
+        $query = CuentaCorriente::where('descripcion', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 
@@ -38,7 +40,14 @@ class CuentasCorrientesController extends Controller
      */
     public function create()
     {
-        //
+        $cuentaCorriente = new CuentaCorriente();
+
+        $cuentaCorriente->numeroCuenta = "";
+        $cuentaCorriente->descripcion = "";
+        $cuentaCorriente->moneda = "";
+
+        return Inertia::render('Cuentas_Corrientes/NuevoMostrar', compact('cuentaCorriente'));
+
     }
 
     /**
@@ -47,9 +56,22 @@ class CuentasCorrientesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CuentaCorrienteStoreRequest $request)
     {
-        //
+        try {
+            $cuentaCorriente = new CuentaCorriente();
+
+            $cuentaCorriente->numeroCuenta = $request->numeroCuenta;
+            $cuentaCorriente->descripcion = $request->descripcion;
+            $cuentaCorriente->moneda = $request->moneda;
+            $cuentaCorriente->save();
+            $result = ['successMessage' => 'Cuenta corriente registrada con éxito'];
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo registrar la cuenta corriente'];
+            \Log::error('CuentasCorrientesController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }
+
+        return redirect()->route('cuentas-corrientes.iniciar')->with($result);
     }
 
     /**
@@ -58,9 +80,9 @@ class CuentasCorrientesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(CuentaCorriente $cuentaCorriente)
     {
-        //
+        return Inertia::render('Cuentas_Corrientes/NuevoMostrar', compact('cuentaCorriente'));
     }
 
     /**
@@ -81,9 +103,21 @@ class CuentasCorrientesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CuentaCorrienteUpdateRequest $request, CuentaCorriente $cuentaCorriente)
     {
-        //
+        try {
+            $cuentaCorriente->numeroCuenta = $request->numeroCuenta;
+            $cuentaCorriente->descripcion = $request->descripcion;
+            $cuentaCorriente->moneda = $request->moneda;
+            $cuentaCorriente->update();
+            $result = ['successMessage' => 'Cuenta corriente actualizada con éxito'];
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar la cuenta corriente'];
+            \Log::error('CuentasCorrientesController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }
+
+        return redirect()->route('cuentas-corrientes.iniciar')->with($result);
+    
     }
 
     /**
@@ -92,8 +126,30 @@ class CuentasCorrientesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(CuentaCorriente $cuentaCorriente)
     {
-        //
+        try {
+            $cuentaCorriente->delete();
+            $result = ['successMessage' => 'Cuenta corriente eliminada con éxito'];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo eliminar la cuenta corriente'];
+            \Log::error('CuentasCorrientesController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }
+
+        return redirect()->back()->with($result);
+    }
+
+    public function restore($cuentaCorriente_id)
+    {
+        try {
+            $cuentaCorriente = CuentaCorriente::withTrashed()->findOrFail($cuentaCorriente_id);
+            $cuentaCorriente->restore();
+            $result = ['successMessage' => 'Cuenta corriente restaurada con éxito'];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo restaurar la cuenta corriente'];
+            \Log::error('CuentasCorrientesController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }
+
+        return redirect()->back()->with($result);
     }
 }

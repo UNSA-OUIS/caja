@@ -169,10 +169,9 @@ export default {
                     sortable: true,
                     class: "text-center"
                 },
-                { key: "codigo", label: "Unidad de medida", sortable: true },
-                { key: "numeroCuenta", label: "Condición", class: "text-center" },
-                { key: "descripcion", label: "Condición", class: "text-center" },
-                { key: "moneda", label: "Condición", class: "text-center" },
+                { key: "numeroCuenta", label: "Cta. Corriente" },
+                { key: "descripcion", label: "Descripción" },
+                { key: "moneda", label: "Moneda", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,
@@ -202,22 +201,22 @@ export default {
             }
 
             const promise = axios.get(
-                `${this.app_url}/unidades-medida/listar${params}`
+                `${this.app_url}/cuentas-corrientes/listar${params}`
             );
 
             return promise.then(response => {
-                const unidadesMedida = response.data.data;
+                const cuentasCorrientes = response.data.data;
                 this.totalRows = response.data.total;
 
-                return unidadesMedida || [];
+                return cuentasCorrientes || [];
             });
         },
-        eliminar(unidad_medida) {
+        eliminar(cuenta_corriente) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer eliminar esta unidad de medida?",
+                    "¿Esta seguro de querer eliminar esta cuenta corriente?",
                     {
-                        title: "Eliminar unidad de medida",
+                        title: "Eliminar cuenta corriente",
                         okVariant: "danger",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -227,20 +226,20 @@ export default {
                 .then(value => {
                     if (value) {
                         this.$inertia.delete(
-                            route("unidades-medida.eliminar", [
-                                unidad_medida.id
+                            route("cuentas-corrientes.eliminar", [
+                                cuenta_corriente.id
                             ])
                         );
                         this.refreshTable();
                     }
                 });
         },
-        async restaurar(unidad_medida) {
+        async restaurar(cuenta_corriente) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer restaurar esta unidad de medida?",
+                    "¿Esta seguro de querer restaurar esta cuenta corriente?",
                     {
-                        title: "Restaurar unidad de medida",
+                        title: "Restaurar cuenta corriente",
                         okVariant: "primary",
                         okTitle: "SI",
                         cancelTitle: "NO",
@@ -250,8 +249,8 @@ export default {
                 .then(value => {
                     if (value) {
                         this.$inertia.post(
-                            route("unidades-medida.restaurar", [
-                                unidad_medida.id
+                            route("cuentas-corrientes.restaurar", [
+                                cuenta_corriente.id
                             ])
                         );
                         this.refreshTable();

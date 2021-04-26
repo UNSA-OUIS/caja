@@ -9,12 +9,12 @@
                         >
                     </li>
                     <li class="breadcrumb-item">
-                        <inertia-link :href="route('unidades-medida.iniciar')"
-                            >Lista de unidades de medida</inertia-link
+                        <inertia-link :href="route('cuentas-corrientes.iniciar')"
+                            >Lista de cuentas corrientes</inertia-link
                         >
                     </li>
                     <li class="breadcrumb-item active">
-                        {{ accion }} unidad de medida
+                        {{ accion }} cuenta corriente
                     </li>
                 </ol>
             </div>
@@ -22,20 +22,60 @@
                 <b-form>
                     <b-form-group
                         id="input-group-1"
-                        label="Nombre:"
+                        label="N° Cta. corriente:"
                         label-for="input-1"
                     >
                         <b-form-input
                             id="input-1"
-                            v-model="unidadMedida.nombre"
-                            placeholder="Nombre de unidad de medida"
+                            v-model="cuentaCorriente.numeroCuenta"
+                            placeholder="Número de cta. corriente"
                             :readonly="accion == 'Mostrar'"
                         ></b-form-input>
                         <div
-                            v-if="$page.props.errors.nombre"
+                            v-if="$page.props.errors.numeroCuenta"
                             class="text-danger"
                         >
-                            {{ $page.props.errors.nombre[0] }}
+                            {{ $page.props.errors.numeroCuenta[0] }}
+                        </div>
+                    </b-form-group>
+                    <b-form-group
+                        id="input-group-2"
+                        label="Descripción:"
+                        label-for="input-2"
+                    >
+                        <b-form-input
+                            id="input-2"
+                            v-model="cuentaCorriente.descripcion"
+                            placeholder="Descripción"
+                            :readonly="accion == 'Mostrar'"
+                        ></b-form-input>
+                        <div
+                            v-if="$page.props.errors.descripcion"
+                            class="text-danger"
+                        >
+                            {{ $page.props.errors.descripcion[0] }}
+                        </div>
+                    </b-form-group>
+                    <b-form-group
+                        id="input-group-3"
+                        label="Moneda:"
+                        label-for="input-3"
+                    >
+                        <b-form-select
+                            id="input-3"
+                            v-model="cuentaCorriente.moneda"
+                            :options="monedas"
+                            :disabled="accion == 'Mostrar'"
+                            >
+                            <template v-slot:first>
+                                <option :value="null" disabled>Seleccione...</option>
+                            </template>
+                        </b-form-select>
+                        <div
+                            v-if="$page.props.errors.descripcion"
+                            class="text-danger"
+                        >
+                            {{ $page.props.errors.descripcion[0] }}
                         </div>
                     </b-form-group>
                     <b-button
@@ -66,18 +106,23 @@
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "unidades-medida.mostrar",
-    props: ["unidadMedida"],
+    name: "cuentas-corrientes.mostrar",
+    props: ["cuentaCorriente"],
     components: {
         AppLayout
     },
     data() {
         return {
-            accion: ""
+            accion: "",
+            monedas: [
+                {value: "PEN", text: "Soles"},
+                {value: "USD", text: "Dólares"},
+                {value: "E", text: "Euros"},
+            ]
         };
     },
     created() {
-        if (!this.unidadMedida.id) {
+        if (!this.cuentaCorriente.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
@@ -86,14 +131,14 @@ export default {
     methods: {
         registrar() {
             this.$inertia.post(
-                route("unidades-medida.registrar"),
-                this.unidadMedida
+                route("cuentas-corrientes.registrar"),
+                this.cuentaCorriente
             );
         },
         actualizar() {
             this.$inertia.post(
-                route("unidades-medida.actualizar", [this.unidadMedida.id]),
-                this.unidadMedida
+                route("cuentas-corrientes.actualizar", [this.cuentaCorriente.id]),
+                this.cuentaCorriente
             );
         }
     }

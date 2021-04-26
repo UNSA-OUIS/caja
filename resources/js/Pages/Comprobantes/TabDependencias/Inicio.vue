@@ -18,7 +18,9 @@
                             ></b-form-input>                                    
                         </td>
                         <td>
-                            <b-button form="dependencia_form" type="submit" class="ml-sm-2" variant="primary">Buscar</b-button>
+                            <b-button form="dependencia_form" type="submit" class="ml-sm-2" variant="info">
+                                <b-icon icon="search"></b-icon> Buscar
+                            </b-button>
                         </td>
                     </tr>                                                                                                
                 </table>                                                                            
