@@ -103,36 +103,36 @@
             {{ row.item.unidad_medida.nombre }}
           </template>
           <template v-slot:cell(condicion)="row">
-            <b-badge v-if="!row.item.deleted_at" variant="success"
-              >Activo</b-badge
+            <span
+              v-if="!row.item.deleted_at"
+              class="badge badge-pill badge-soft-success font-size-12"
+              >Activo</span
             >
-            <b-badge v-else variant="secondary">Inactivo</b-badge>
+            <span v-else class="badge badge-pill badge-soft-danger font-size-12"
+              >Inactivo</span
+            >
           </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm"
+              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
               :href="route('conceptos.mostrar', row.item.id)"
             >
-              <b-icon icon="eye"></b-icon>
+              Ver
             </inertia-link>
             <b-button
               v-if="!row.item.deleted_at"
-              variant="danger"
-              size="sm"
-              title="Eliminar"
+              class="btn btn-danger btn-sm btn-rounded waves-effect waves-light"
               @click="eliminar(row.item)"
             >
-              <b-icon icon="trash"></b-icon>
+              Desactivar
             </b-button>
             <b-button
               v-else
-              variant="success"
-              size="sm"
-              title="Restaurar"
+              class="btn btn-success btn-sm btn-rounded waves-effect waves-light"
               @click="restaurar(row.item)"
             >
-              <b-icon icon="check"></b-icon>
+              Restaurar
             </b-button>
           </template>
         </b-table>
@@ -224,8 +224,8 @@ export default {
     },
     eliminar(concepto) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer eliminar este concepto?", {
-          title: "Eliminar concepto",
+        .msgBoxConfirm("¿Esta seguro de querer desactivar este concepto?", {
+          title: "Desactivar concepto",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -242,7 +242,7 @@ export default {
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer restaurar este concepto?", {
           title: "Restaurar concepto",
-          okVariant: "primary",
+          okVariant: "success",
           okTitle: "SI",
           cancelTitle: "NO",
           centered: true,

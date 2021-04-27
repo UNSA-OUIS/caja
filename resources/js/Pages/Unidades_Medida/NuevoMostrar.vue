@@ -44,7 +44,6 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-
 export default {
     name: "unidades-medida.mostrar",
     props: ["unidadMedida"],

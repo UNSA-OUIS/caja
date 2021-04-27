@@ -268,7 +268,6 @@ export default {
     computed: {       
         precioTotal() {
             this.comprobante.total = this.comprobante.detalles.reduce((acc, item) => acc + item.subtotal, 0)
-
             return this.comprobante.total
         },                
     },
@@ -336,7 +335,6 @@ export default {
         calcularSubTotal(id) {
             let objDetalle = this.comprobante.detalles.find(detalle => detalle.id === id)
             let subtotal_parcial = objDetalle.cantidad * objDetalle.precio
-
             if (objDetalle.tipo_descuento === 'S/.') {                
                 objDetalle.subtotal = subtotal_parcial - objDetalle.descuento
             }
