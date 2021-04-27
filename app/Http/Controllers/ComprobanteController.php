@@ -11,11 +11,13 @@ use App\Models\Docente;
 use App\Models\Dependencia;
 use App\Models\Particular;
 use App\Http\Requests\ParticularStoreRequest;
+use App\Mail\CobroRealizadoMailable;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ComprobanteController extends Controller
@@ -267,5 +269,12 @@ class ComprobanteController extends Controller
         }
 
         return redirect()->route('comprobantes.iniciar')->with($result);
+    }
+
+    public function enviarCorreo(Request $request)
+    {
+        Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
+        $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
+        return $result;
     }
 }
