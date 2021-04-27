@@ -25,7 +25,7 @@
                     >
                         <b-form-input
                             id="input-1"
-                            v-model="unidadMedida.nombre"
+                            v-model="formData.nombre"
                             placeholder="Nombre de unidad de medida"
                             :readonly="accion == 'Mostrar'"
                         ></b-form-input>
@@ -45,18 +45,20 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 export default {
-    name: "unidades-medida.mostrar",
+    name: "unidades-medida.mostrar",    
     props: ["unidadMedida"],
     components: {
         AppLayout
     },
+    remember: 'formData',
     data() {
         return {
-            accion: ""
+            accion: "",    
+            formData: this.unidadMedida
         };
     },
     created() {
-        if (!this.unidadMedida.id) {
+        if (!this.formData.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
@@ -75,16 +77,10 @@ export default {
             }
         },
         registrar() {
-            this.$inertia.post(
-                route("unidades-medida.registrar"),
-                this.unidadMedida
-            );
+            this.$inertia.post(route("unidades-medida.registrar"), this.formData)
         },
         actualizar() {            
-            this.$inertia.post(
-                route("unidades-medida.actualizar", [this.unidadMedida.id]),
-                this.unidadMedida
-            );
+            this.$inertia.post(route("unidades-medida.actualizar", [this.formData.id]), this.formData);
         }
     }
 };

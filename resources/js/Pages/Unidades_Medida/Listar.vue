@@ -4,19 +4,16 @@
             <div class="card-header">
                 <ol class="breadcrumb float-left">
                     <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
+                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
-                    <li class="breadcrumb-item active">
-                        Lista de unidades de medida
-                    </li>
+                    <li class="breadcrumb-item active">Lista de unidades de medida</li>
                 </ol>
                 <inertia-link
                     class="btn btn-success float-right"
                     :href="route('unidades-medida.crear')"
-                    >Nuevo</inertia-link
                 >
+                    Nuevo
+                </inertia-link>
             </div>
             <div class="card-body">
                 <b-alert
@@ -98,9 +95,7 @@
                     empty-filtered-text="No hay unidades de medida que coincidan con su búsqueda."
                 >
                     <template v-slot:cell(condicion)="row">
-                        <b-badge v-if="!row.item.deleted_at" variant="success"
-                            >Activo</b-badge
-                        >
+                        <b-badge v-if="!row.item.deleted_at" variant="success">Activo</b-badge>
                         <b-badge v-else variant="secondary">Inactivo</b-badge>
                     </template>
                     <template v-slot:cell(acciones)="row">
@@ -199,9 +194,7 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(
-                `${this.app_url}/unidades-medida/listar${params}`
-            );
+            const promise = axios.get(`${this.app_url}/unidades-medida/listar${params}`);
 
             return promise.then(response => {
                 const unidadesMedida = response.data.data;
@@ -224,11 +217,7 @@ export default {
                 )
                 .then(value => {
                     if (value) {
-                        this.$inertia.delete(
-                            route("unidades-medida.eliminar", [
-                                unidad_medida.id
-                            ])
-                        );
+                        this.$inertia.delete(route("unidades-medida.eliminar", [unidad_medida.id]));
                         this.refreshTable();
                     }
                 });
@@ -247,11 +236,7 @@ export default {
                 )
                 .then(value => {
                     if (value) {
-                        this.$inertia.post(
-                            route("unidades-medida.restaurar", [
-                                unidad_medida.id
-                            ])
-                        );
+                        this.$inertia.post(route("unidades-medida.restaurar", [unidad_medida.id]));
                         this.refreshTable();
                     }
                 });
