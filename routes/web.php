@@ -172,6 +172,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/registrarParticular', [ComprobanteController::class, 'registrarParticular'])->name('comprobantes.registrarParticular');
     Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');
     Route::get('/buscarConcepto', [ComprobanteController::class, 'buscarConcepto'])->name('comprobantes.buscarConcepto');
+    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
     /*******************************************************************/
 
     /**************************** Sunat ***************************/

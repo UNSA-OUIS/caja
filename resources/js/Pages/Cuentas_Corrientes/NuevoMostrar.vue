@@ -97,12 +97,14 @@
                         >Actualizar</b-button
                     >
                 </b-form>
+                <b-button @click="enviarCorreo()">Enviar correo</b-button>    
             </div>
         </div>
     </app-layout>
 </template>
 
 <script>
+const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
@@ -114,6 +116,7 @@ export default {
     data() {
         return {
             accion: "",
+            app_url: this.$root.app_url,
             monedas: [
                 {value: "PEN", text: "Soles"},
                 {value: "USD", text: "Dólares"},
@@ -128,7 +131,17 @@ export default {
             this.accion = "Mostrar";
         }
     },
-    methods: {
+    methods: {  
+        enviarCorreo() {
+            axios.get(`${this.app_url}/enviarCorreo?to=garyfnc185@gmail.com`)
+                .then(response => {                                             
+                    var success = response.data;                    
+                    consolo.log(success)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         registrar() {
             this.$inertia.post(
                 route("cuentas-corrientes.registrar"),
