@@ -12,8 +12,8 @@
                 </ol>
             </div>
             <div class="card-doby">
-                <div class="container p-3">                                       
-                    <b-row>                        
+                <div class="container p-3">
+                    <b-row>
                         <b-col>
                             <!--<b-form-group id="input-group-1" label="Serie:" label-for="input-1">
                                 <b-form-input
@@ -23,14 +23,14 @@
                                     readonly
                                 ></b-form-input>
                             </b-form-group>-->
-                            
+
                                 <label class="mr-sm-2" for="input-1">Serie: </label>
                                 <b-form-input
                                     id="input-1"
                                     v-model="comprobante.serie"
                                     placeholder="Serie"
                                     readonly
-                                ></b-form-input>                            
+                                ></b-form-input>
                         </b-col>
                         <b-col>
                             <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
@@ -44,22 +44,22 @@
                         </b-col>
                         <b-col>
                             <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
-                                <b-form-input                                                                        
-                                    id="input-3"            
-                                    type="date" 
-                                    :value="getFechaActual()"                                                                        
+                                <b-form-input
+                                    id="input-3"
+                                    type="date"
+                                    :value="getFechaActual()"
                                 ></b-form-input>
                             </b-form-group>
-                        </b-col>                        
+                        </b-col>
                     </b-row>
-                    <b-row>                            
+                    <b-row>
                         <b-col cols="2" v-if="comprobante.tipo_usuario !== 'dependencia'">
                             <b-form-group id="input-group-4" label="DNI:" label-for="input-4">
                                 <b-form-input
                                     id="input-4"
-                                    v-model="comprobante.dni"                                        
+                                    v-model="comprobante.dni"
                                     readonly
-                                ></b-form-input>                                    
+                                ></b-form-input>
                             </b-form-group>
                         </b-col>
                         <b-col>
@@ -71,11 +71,11 @@
                                     <b-form-input
                                         id="input-5"
                                         readonly
-                                        v-model="comprobante.usuario"                                        
+                                        v-model="comprobante.usuario"
                                     ></b-form-input>
                                 </b-input-group>
                             </b-form-group>
-                        </b-col>               
+                        </b-col>
                         <b-col>
                             <b-form-group id="input-group-6" label="Email:" label-for="input-6">
                                 <b-input-group prepend="@" class="mb-2 mr-sm-2 mb-sm-0">
@@ -87,23 +87,23 @@
                                     ></b-form-input>
                                 </b-input-group>
                             </b-form-group>
-                        </b-col>                                    
+                        </b-col>
                     </b-row>
-                    <b-row v-if="comprobante.tipo_usuario === 'alumno'">      
+                    <b-row v-if="comprobante.tipo_usuario === 'alumno'">
                         <b-col>
                             <b-form-group id="input-group-7" label="CUI:" label-for="input-7">
                                 <b-form-input
                                     id="input-7"
-                                    v-model="comprobante.codigo"                                        
+                                    v-model="comprobante.codigo"
                                     readonly
                                 ></b-form-input>
                             </b-form-group>
-                        </b-col>                      
+                        </b-col>
                         <b-col>
                             <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
                                 <b-form-input
                                     id="input-8"
-                                    v-model="comprobante.escuela"                                        
+                                    v-model="comprobante.escuela"
                                     readonly
                                 ></b-form-input>
                             </b-form-group>
@@ -119,18 +119,18 @@
                                     :readonly="accion == 'Mostrar'"
                                 ></b-form-input>
                             </b-form-group>
-                        </b-col>                            
-                    </b-row>     
-                    <hr> 
+                        </b-col>
+                    </b-row>
+                    <hr>
                     <form @submit.prevent="agregarDetalle">
-                        <b-row>                        
+                        <b-row>
                             <b-col cols="5">
-                                <v-select                  
+                                <v-select
                                     v-model="concepto"
-                                    @search="buscarConcepto"                                    
-                                    :options="conceptos"                                              
-                                    :reduce="concepto => concepto"                 
-                                    label="descripcion"                
+                                    @search="buscarConcepto"
+                                    :options="conceptos"
+                                    :reduce="concepto => concepto"
+                                    label="descripcion"
                                     placeholder="Ingrese código o descripción del concepto"
                                 >
                                     <template #search="{attributes, events}">
@@ -146,16 +146,16 @@
                                     </template>
                                 </v-select>
                             </b-col>
-                            <b-col>                                      
+                            <b-col>
                                  <b-button style="height:34px" type="submit" variant="info" class="mb-2" title="Añadir concepto">
                                     <b-icon icon="plus-circle"></b-icon>
-                                </b-button>                                
-                            </b-col>                        
+                                </b-button>
+                            </b-col>
                         </b-row>
                     </form>
                     <b-row class="mt-3">
                         <b-col>
-                            <b-table                        
+                            <b-table
                                 show-empty
                                 striped
                                 hover
@@ -168,29 +168,29 @@
                                 empty-text="No hay conceptos para mostrar"
                             >
                                 <template v-slot:cell(codigo)="row">
-                                    <b-form-input                                
-                                        :value="row.item.codigo"                                
-                                        readonly                                
+                                    <b-form-input
+                                        :value="row.item.codigo"
+                                        readonly
                                     ></b-form-input>
                                 </template>
                                 <template v-slot:cell(concepto)="row">
-                                    <b-form-input                                
-                                        :value="row.item.descripcion"                                
-                                        readonly                                
+                                    <b-form-input
+                                        :value="row.item.descripcion"
+                                        readonly
                                     ></b-form-input>
                                 </template>
                                 <template v-slot:cell(cantidad)="row">
                                     <div>
-                                        <b-form-input                                    
+                                        <b-form-input
                                             v-model="row.item.cantidad"
                                             type="number"
                                         ></b-form-input>
                                     </div>
                                 </template>
                                 <template v-slot:cell(precio)="row">
-                                    <b-form-input                                
-                                        :value="row.item.precio"                                
-                                        readonly                                
+                                    <b-form-input
+                                        :value="row.item.precio"
+                                        readonly
                                     ></b-form-input>
                                 </template>
                                 <template v-slot:cell(descuento)="row">
@@ -237,11 +237,11 @@
                                 </template>
                             </b-table>
                         </b-col>
-                    </b-row>                          
+                    </b-row>
                     <div v-show="accion == 'Crear'">
                         <b-button variant="success" @click="registrar()">Registrar</b-button>
-                    </div>                           
-                </div>                                                
+                    </div>
+                </div>
             </div>
         </div>
     </app-layout>
@@ -259,9 +259,9 @@ export default {
         return {
             app_url: this.$root.app_url,
             concepto: null,
-            conceptos: [],            
+            conceptos: [],
             accion: "",
-            tipoDescuento: "",                        
+            tipoDescuento: "",
             cantidadState: null,
             conceptosFields: [
                 { key: "codigo", label: "Código", sortable: true, class: "text-center" },
@@ -281,7 +281,7 @@ export default {
             tipo_descuento: [
                 { value: "A", text: "%" },
                 { value: "B", text: "S/." }
-            ],                                
+            ],
             fields: [
                 { key: "codigo", label: "CÓDIGO", class: "text-center", tdClass: "codigo" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
@@ -292,8 +292,8 @@ export default {
                 { key: "acciones", label: "", class: "text-center" }
             ]
         };
-    },    
-    computed: {       
+    },
+    computed: {
         precioTotal() {
             this.comprobante.total = this.comprobante.detalles.reduce(
                 (acc, item) => acc + (item.cantidad * item.valor_unitario - item.descuento), 0);
@@ -301,7 +301,7 @@ export default {
         },
         conceptosDisponibles(){
             return this.conceptos.filter(option => option.estado == true);
-        },        
+        },
     },
     filters: {
         currency(value) {
@@ -313,34 +313,34 @@ export default {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
-        }        
-    },    
-    methods: {  
+        }
+    },
+    methods: {
         getFechaActual() {
-            let fecha_actual = new Date();                
+            let fecha_actual = new Date();
             let anio = fecha_actual.getFullYear()
             let mes = fecha_actual.getMonth() + 1
             let dia = fecha_actual.getDate()
             return anio + '-' + mes.toString().padStart(2, "0") + '-' + dia
         },
-        buscarConcepto(search, loading) {                       
-            loading(true)           
+        buscarConcepto(search, loading) {
+            loading(true)
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
-                .then(response => {                                        
-                    this.conceptos = response.data;                    
+                .then(response => {
+                    this.conceptos = response.data;
                     loading(false)
                 })
                 .catch(function (error) {
                     console.log(error)
                 });
-        },       
+        },
         agregarDetalle() {
-            this.comprobante.detalles.push(this.concepto)   
-            this.concepto = null         
-        },        
-        eliminarDetalle(index) {                        
+            this.comprobante.detalles.push(this.concepto)
+            this.concepto = null
+        },
+        eliminarDetalle(index) {
             this.comprobante.detalles.splice(index, 1);
-        },  
+        },
         registrar() {
             this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar este comprobante?",
                     {
@@ -357,7 +357,7 @@ export default {
                         this.$inertia.post(route("comprobantes.registrar", this.comprobante));
                     }
                 });
-        },                
+        },
         completeConcepto(event, id) {
             let index = this.comprobante.detalles.findIndex(
                 detalle => detalle.concepto_id == id
@@ -381,15 +381,15 @@ export default {
                         this.comprobante.detalles[index].cantidad *
                         event) /
                     100;
-            } 
+            }
             else if (conc == "B") {
                 this.comprobante.detalles[index].descuento = event;
-            } 
+            }
             else {
                 this.comprobante.detalles[index].descuento = 0;
             }
-        },         
-    },    
+        },
+    },
 };
 </script>
 <style>
