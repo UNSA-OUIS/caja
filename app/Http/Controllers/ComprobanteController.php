@@ -132,7 +132,7 @@ class ComprobanteController extends Controller
         
         $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
                         ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-                        ->select('id', 'codigo', 'descripcion', 'precio', 'estado')
+                        ->select('id', 'codigo', 'descripcion', 'precio')
                         ->orderBy('descripcion', 'asc')
                         ->get();
 
@@ -140,64 +140,66 @@ class ComprobanteController extends Controller
     }
 
     public function create(Request $request)
-    {         
-        $ultimo = Comprobante::latest('created_at')->first();                                     
-        $comprobante = new Comprobante();
-        $comprobante->tipo_usuario = $request->tipo_usuario;
-        $comprobante->codigo = "";
-
-        if (!$ultimo) {
-            $comprobante->codigo = 1;
-        } 
-        else {
-            $ultimo->codigo += 1;
-            $comprobante->codigo = $ultimo->codigo;
-        }
+    {   
         
-        $comprobante->dni = "";
-        $comprobante->email = "";
-        $comprobante->escuela = "";
-        $comprobante->nues = "";
-        $comprobante->serie = "B001";
-        if (!$ultimo) {
-            $comprobante->correlativo = '00000001';
-        } else {
-            $ultimo->correlativo += 1;
-            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
-        }
-        $comprobante->total = "";
-        $comprobante->observaciones = "";
-        $comprobante->url_xml = "";
-        $comprobante->url_cdr = "";
-        $comprobante->detalles = array();        
+        if ($request->has('tipo_usuario')) {
+            $ultimo = Comprobante::latest('created_at')->first();                                     
+            $comprobante = new Comprobante();
+            $comprobante->tipo_usuario = $request->tipo_usuario;
+            $comprobante->codigo = "";
 
-        if ($comprobante->tipo_usuario == 'alumno') {
-            $comprobante->codigo = $request->alumno['cui'];
-            $comprobante->dni = $request->alumno['dic'];
-            $comprobante->escuela = $request->matricula['escuela']['nesc'];
-            $comprobante->nues = $request->matricula['nues'];
-            $comprobante->usuario = $request->alumno['apn'];
-        } 
-        else if ($comprobante->tipo_usuario == 'docente') {
-            $comprobante->codigo = $request->docente['codper'];
-            $comprobante->dni = $request->docente['dic'];
-            $comprobante->usuario = $request->docente['apn'];
-        }
-        else if ($comprobante->tipo_usuario == 'dependencia') {          
-            $comprobante->codigo = $request->dependencia['codi_depe'];            
-            $comprobante->usuario = $request->dependencia['nomb_depe'];            
-        }
-        else if ($comprobante->tipo_usuario == 'particular') {          
-            $comprobante->dni = $request->particular['dni'];                         
-            $comprobante->email = $request->particular['email'];                         
-            $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
-        }
+            if (!$ultimo) {
+                $comprobante->codigo = 1;
+            } 
+            else {
+                $ultimo->codigo += 1;
+                $comprobante->codigo = $ultimo->codigo;
+            }
+            
+            $comprobante->dni = "";
+            $comprobante->email = "";
+            $comprobante->escuela = "";
+            $comprobante->nues = "";
+            $comprobante->serie = "B001";
+            if (!$ultimo) {
+                $comprobante->correlativo = '00000001';
+            } else {
+                $ultimo->correlativo += 1;
+                $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
+            }
+            $comprobante->total = "";
+            $comprobante->observaciones = "";
+            $comprobante->url_xml = "";
+            $comprobante->url_cdr = "";
+            $comprobante->detalles = array();        
 
-        $conceptos = Concepto::select('id', 'codigo', 'descripcion', 'precio', 'estado')
-                        ->orderBy('descripcion', 'asc')
-                        ->get();
+            if ($comprobante->tipo_usuario == 'alumno') {
+                $comprobante->codigo = $request->alumno['cui'];
+                $comprobante->dni = $request->alumno['dic'];
+                $comprobante->escuela = $request->matricula['escuela']['nesc'];
+                $comprobante->nues = $request->matricula['nues'];
+                $comprobante->usuario = $request->alumno['apn'];
+            } 
+            else if ($comprobante->tipo_usuario == 'docente') {
+                $comprobante->codigo = $request->docente['codper'];
+                $comprobante->dni = $request->docente['dic'];
+                $comprobante->usuario = $request->docente['apn'];
+            }
+            else if ($comprobante->tipo_usuario == 'dependencia') {          
+                $comprobante->codigo = $request->dependencia['codi_depe'];            
+                $comprobante->usuario = $request->dependencia['nomb_depe'];            
+            }
+            else if ($comprobante->tipo_usuario == 'particular') {          
+                $comprobante->dni = $request->particular['dni'];                         
+                $comprobante->email = $request->particular['email'];                         
+                $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
+            }
 
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+            return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+        }
+        else {
+            return redirect()->route('comprobantes.iniciar');
+        }       
     }
 
     public function store(Request $request)

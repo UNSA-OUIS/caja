@@ -82,7 +82,7 @@
                         </b-col>                                    
                     </b-row>
                     <b-row v-if="comprobante.tipo_usuario === 'alumno'">      
-                        <b-col>
+                        <b-col cols="4">
                             <b-form-group id="input-group-7" label="CUI:" label-for="input-7">
                                 <b-form-input
                                     id="input-7"
@@ -91,7 +91,7 @@
                                 ></b-form-input>
                             </b-form-group>
                         </b-col>                      
-                        <b-col>
+                        <b-col cols="8">
                             <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
                                 <b-form-input
                                     id="input-8"
@@ -141,7 +141,7 @@
                                 </v-select>
                             </b-col>
                             <b-col>                                      
-                                 <b-button style="height:34px" type="submit" variant="info" class="mb-2" title="Añadir concepto">
+                                 <b-button style="height:34px" type="submit" variant="info" class="mb-2" title="Añadir detalle">
                                     <b-icon icon="plus-circle"></b-icon>
                                 </b-button>                                
                             </b-col>                        
@@ -162,7 +162,8 @@
                                 empty-text="No hay conceptos para mostrar"
                             >
                                 <template v-slot:cell(codigo)="row">
-                                    <b-form-input                                
+                                    <b-form-input          
+                                        class="text-center"                      
                                         :value="row.item.codigo"                                
                                         readonly                                
                                     ></b-form-input>
@@ -175,43 +176,39 @@
                                 </template>
                                 <template v-slot:cell(cantidad)="row">
                                     <div>
-                                        <b-form-input                                    
-                                            v-model="row.item.cantidad"
-                                            type="number"
+                                        <b-form-input          
+                                            class="text-center"                                                
+                                            v-model="row.item.cantidad"     
+                                            @change="calcularSubTotal(row.item.id)"
+                                            type="number"                                                                                        
+                                            min="1"                                             
                                         ></b-form-input>
                                     </div>
                                 </template>
                                 <template v-slot:cell(precio)="row">
-                                    <b-form-input                                
+                                    <b-form-input         
+                                        class="text-center"                                             
                                         :value="row.item.precio"                                
                                         readonly                                
                                     ></b-form-input>
                                 </template>
                                 <template v-slot:cell(descuento)="row">
                                     <div>
-                                        <b-form-select
-                                            :options="tipo_descuento"
-                                            v-model="row.item.tipo_descuento"
-                                        ></b-form-select>
+                                        <b-form-select v-model="row.item.tipo_descuento" @change="calcularSubTotal(row.item.id)">
+                                            <b-form-select-option value="S/.">S/.</b-form-select-option>
+                                            <b-form-select-option value="%">%</b-form-select-option>
+                                        </b-form-select>
                                         <b-form-input
-                                            id="descuento"
-                                            @change="calcularDescuento($event, row.item.concepto_id)"
-                                            type="number"
-                                            value="0.00"
+                                            class="text-center"                      
+                                            v-model="row.item.descuento"            
+                                            @keyup="calcularSubTotal(row.item.id)"                                                                                                                    
                                         ></b-form-input>
                                     </div>
                                 </template>
                                 <template v-slot:cell(subTotal)="row">
-                                    <div>
-                                        <label>S/.
-                                            {{
-                                                (row.item.valor_unitario *
-                                                    row.item.cantidad -
-                                                    row.item.descuento)
-                                                    | currency
-                                            }}
-                                        </label>
-                                    </div>
+                                    <span class="font-weight-bold">
+                                        S/. {{ row.item.subtotal | currency }}                                    
+                                    </span>                                    
                                 </template>
                                 <template v-slot:cell(acciones)="row">
                                     <b-button
@@ -225,9 +222,10 @@
                                     </b-button>
                                 </template>
                                 <template slot="bottom-row" slot-scope="">
-                                    <b-td /><b-td /><b-td /><b-td /><b-td>Total</b-td>
-                                    <b-td>S/.{{ precioTotal | currency }}</b-td
-                                    ><b-td />
+                                    <b-td /><b-td /><b-td /><b-td />
+                                    <b-td class="text-right font-weight-bold">TOTAL</b-td>
+                                    <b-td class="text-right font-weight-bold">S/. {{ precioTotal | currency }}</b-td>
+                                    <b-td />
                                 </template>
                             </b-table>
                         </b-col>
@@ -255,33 +253,12 @@ export default {
             concepto: null,
             filtro: "",
             conceptos: [],            
-            accion: "",
-            tipoDescuento: "",                        
-            cantidadState: null,
-            conceptosFields: [
-                { key: "codigo", label: "Código", sortable: true, class: "text-center" },
-                { key: "descripcion", label: "Descripción", sortable: true },
-                { key: "precio", label: "Precio", class: "text-center" },
-                { key: "anadir", label: "Añadir", class: "text-center" }
-            ],
-            index: 1,
-            totalRows: 1,
-            currentPage: 1,
-            perPage: 5,
-            pageOptions: [5, 10, 15],
-            sortBy: null,
-            sortDesc: false,
-            sortDirection: "asc",
-            filter: null,
-            tipo_descuento: [
-                { value: "A", text: "%" },
-                { value: "B", text: "S/." }
-            ],                                
+            accion: "",                           
             fields: [
                 { key: "codigo", label: "CÓDIGO", class: "text-center", tdClass: "codigo" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "precio", label: "PR. UNIT", class: "text-center" },
+                { key: "precio", label: "COSTO", class: "text-center" },
                 { key: "descuento", label: "DESCUENTO", class: "text-center" },
                 { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
                 { key: "acciones", label: "", class: "text-center" }
@@ -290,13 +267,10 @@ export default {
     },    
     computed: {       
         precioTotal() {
-            this.comprobante.total = this.comprobante.detalles.reduce(
-                (acc, item) => acc + (item.cantidad * item.valor_unitario - item.descuento), 0);
-            return this.comprobante.total;
-        },
-        conceptosDisponibles(){
-            return this.conceptos.filter(option => option.estado == true);
-        },        
+            this.comprobante.total = this.comprobante.detalles.reduce((acc, item) => acc + item.subtotal, 0)
+
+            return this.comprobante.total
+        },                
     },
     watch : {
         filtro:function(val) {
@@ -326,8 +300,7 @@ export default {
             let dia = fecha_actual.getDate()
             return anio + '-' + mes.toString().padStart(2, "0") + '-' + dia
         },
-        buscarConcepto(search, loading) {     
-            search = search.trim()        
+        buscarConcepto(search, loading) {                 
             loading(true)           
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
                 .then(response => {                                             
@@ -337,14 +310,40 @@ export default {
                 .catch(function (error) {
                     console.log(error)
                 });
-        },       
+        },          
         agregarDetalle() {
-            this.comprobante.detalles.push(this.concepto)   
+            if (this.comprobante.detalles.filter(obj => obj.id == this.concepto.id).length == 0) {
+                this.$set( this.concepto, 'cantidad', 1)
+                this.$set( this.concepto, 'tipo_descuento', 'S/.')                
+                this.$set( this.concepto, 'descuento', 0)
+                this.$set( this.concepto, 'subtotal', parseFloat(this.concepto.precio))                
+                this.comprobante.detalles.push(this.concepto)   
+            }
+            else {
+                this.$bvToast.toast('El concepto del detalle ya existe', {
+                    title: 'Añadir detalle',
+                    variant: 'warning',
+                    toaster: 'b-toaster-bottom-right',
+                    solid: true
+                })                
+            }
+            
             this.concepto = null         
         },        
         eliminarDetalle(index) {                        
             this.comprobante.detalles.splice(index, 1);
         },  
+        calcularSubTotal(id) {
+            let objDetalle = this.comprobante.detalles.find(detalle => detalle.id === id)
+            let subtotal_parcial = objDetalle.cantidad * objDetalle.precio
+
+            if (objDetalle.tipo_descuento === 'S/.') {                
+                objDetalle.subtotal = subtotal_parcial - objDetalle.descuento
+            }
+            else if (objDetalle.tipo_descuento === '%') {
+                objDetalle.subtotal = subtotal_parcial - (subtotal_parcial * objDetalle.descuento / 100)
+            }            
+        },
         registrar() {
             this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar este comprobante?",
                     {
@@ -356,49 +355,18 @@ export default {
                         centered: true
                     }
                 )
-                .then(async value => {
+                .then(value => {
                     if (value) {
                         this.$inertia.post(route("comprobantes.registrar", this.comprobante));
                     }
                 });
-        },                
-        completeConcepto(event, id) {
-            let index = this.comprobante.detalles.findIndex(
-                detalle => detalle.concepto_id == id
-            );
-            let conc = this.conceptos.find(option => option.id == event);
-            let concIndex = this.conceptos.findIndex(option => option.id == event);
-            this.conceptos[concIndex].estado = false;
-            this.comprobante.detalles[index].concepto_id = conc.id;
-            this.comprobante.detalles[index].codigo = conc.value;
-            this.comprobante.detalles[index].valor_unitario = conc.precio;
-            this.comprobante.detalles[index].descuento = "0.00";
-        },
-        calcularDescuento(event, id) {
-            let index = this.comprobante.detalles.findIndex(
-                detalle => detalle.concepto_id == id
-            );
-            let conc = this.comprobante.detalles[index].tipo_descuento;
-            if (conc == "A") {
-                this.comprobante.detalles[index].descuento =
-                    (this.comprobante.detalles[index].valor_unitario *
-                        this.comprobante.detalles[index].cantidad *
-                        event) /
-                    100;
-            } 
-            else if (conc == "B") {
-                this.comprobante.detalles[index].descuento = event;
-            } 
-            else {
-                this.comprobante.detalles[index].descuento = 0;
-            }
-        },         
+        },                                         
     },    
 };
 </script>
 <style>
     .codigo {
-        width: 150px;
+        width: 150px;        
     }
     .concepto {
         width: 400px;

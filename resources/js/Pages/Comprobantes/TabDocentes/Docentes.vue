@@ -47,7 +47,7 @@ export default {
             }      
         },
         mostrarComprobante(docente) {       
-            this.$inertia.post(route('comprobantes.crear'), {
+            this.$inertia.get(route('comprobantes.crear'), {
                 'tipo_usuario' : 'docente',
                 'docente': docente
             })
