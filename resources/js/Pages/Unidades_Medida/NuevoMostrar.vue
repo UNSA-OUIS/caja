@@ -33,10 +33,10 @@
                             {{ $page.props.errors.nombre[0] }}
                         </div>
                     </b-form-group>
-                    <b-button v-if="accion == 'Crear'" type="submit" variant="success">Registrar</b-button>
-                    <b-button v-else-if="accion == 'Mostrar'" type="submit" variant="warning">Editar</b-button>
+                    <b-button v-if="accion == 'Crear'" type="submit" variant="success">Registrar</b-button>               
+                    <b-button v-else-if="accion == 'Mostrar'" type="submit" variant="warning">Editar</b-button>     
                     <b-button v-else-if="accion == 'Editar'" type="submit" variant="success">Actualizar</b-button>
-                </b-form>
+                </b-form>               
             </div>
         </div>
     </app-layout>
@@ -63,7 +63,7 @@ export default {
         }
     },
     methods: {
-        enviar() {
+        enviar() {            
             if (this.accion == 'Crear') {
                 this.registrar()
             }
@@ -80,7 +80,7 @@ export default {
                 this.unidadMedida
             );
         },
-        actualizar() {
+        actualizar() {            
             this.$inertia.post(
                 route("unidades-medida.actualizar", [this.unidadMedida.id]),
                 this.unidadMedida

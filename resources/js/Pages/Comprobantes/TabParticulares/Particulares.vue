@@ -46,7 +46,7 @@ export default {
             }      
         },
         mostrarComprobante(particular) {       
-            this.$inertia.post(route('comprobantes.crear'), {
+            this.$inertia.get(route('comprobantes.crear'), {
                 'tipo_usuario' : 'particular',
                 'particular' : particular,                
             })
