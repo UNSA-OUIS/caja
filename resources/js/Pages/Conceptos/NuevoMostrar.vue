@@ -11,7 +11,9 @@
               >Lista de conceptos</inertia-link
             >
           </li>
-          <li class="breadcrumb-item active">{{ accion }} concepto</li>
+          <li class="breadcrumb-item active">
+            {{ accion }} {{ cuentas_corrientes }} concepto
+          </li>
         </ol>
       </div>
       <div class="card-body">
@@ -186,6 +188,37 @@
             <b-col>
               <b-form-group
                 id="input-group-5"
+                label="Centro de costos"
+                label-for="input-5"
+              >
+                <b-form-radio v-model="selected" name="centro-costos" value="A"
+                  >Sin centro de costos</b-form-radio
+                >
+                <b-form-radio v-model="selected" name="centro-costos" value="B"
+                  >Con centro de costos especifico</b-form-radio
+                >
+                <v-select
+                  v-if="selected == 'B'"
+                  v-model="concepto.codi_depe"
+                  @search="buscarConcepto"
+                  :filterable="false"
+                  :options="centroCostos"
+                  :reduce="(centroCosto) => centroCosto.codi_depe"
+                  label="nomb_depe"
+                  placeholder="Búsqueda por código o descripción del centro de costos"
+                >
+                  <template slot="no-options">
+                    Lo sentimos, no hay resultados de coincidencia.
+                  </template>
+                </v-select>
+                <b-form-radio v-model="selected" name="centro-costos" value="C"
+                  >Con centro de costos multiple</b-form-radio
+                >
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group
+                id="input-group-5"
                 label="Semestre:"
                 label-for="input-5"
               >
@@ -242,7 +275,7 @@
                 <b-form-select
                   id="input-5"
                   v-model="concepto.cuenta_corriente"
-                  :options="cuentaCorriente"
+                  :options="cuentas_corrientes"
                   :readonly="accion == 'Mostrar'"
                 >
                   <template v-slot:first>
@@ -255,33 +288,6 @@
                 >
                   {{ $page.props.errors.unidad_medida_id[0] }}
                 </div>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group label="Centro de costos">
-                <b-form-radio v-model="selected" name="centro-costos" value="A"
-                  >Sin centro de costos</b-form-radio
-                >
-                <b-form-radio v-model="selected" name="centro-costos" value="B"
-                  >Con centro de costos especifico</b-form-radio
-                >
-                <v-select
-                  v-if="selected == 'B'"
-                  v-model="concepto.codi_depe"
-                  @search="buscarConcepto"
-                  :filterable="false"
-                  :options="centroCostos"
-                  :reduce="(centroCosto) => centroCosto.codi_depe"
-                  label="nomb_depe"
-                  placeholder="Búsqueda por código o descripción del centro de costos"
-                >
-                  <template slot="no-options">
-                    Lo sentimos, no hay resultados de coincidencia.
-                  </template>
-                </v-select>
-                <b-form-radio v-model="selected" name="centro-costos" value="C"
-                  >Con centro de costos multiple</b-form-radio
-                >
               </b-form-group>
             </b-col>
           </b-row>
@@ -315,7 +321,13 @@ const axios = require("axios");
 
 export default {
   name: "conceptos.nuevo-mostrar",
-  props: ["concepto", "tipos_concepto", "clasificadores", "unidades_medida"],
+  props: [
+    "concepto",
+    "tipos_concepto",
+    "clasificadores",
+    "unidades_medida",
+    "cuentas_corrientes",
+  ],
   components: {
     AppLayout,
   },
@@ -336,12 +348,6 @@ export default {
         { value: 2, text: "2004-B" },
         { value: 3, text: "2005-A" },
         { value: 4, text: "2020-B" },
-      ],
-      cuentaCorriente: [
-        { value: 1, text: "215-123456789-0-255 | BCP: Cuenta General" },
-        { value: 2, text: "215-123456789-0-255 | BCP: Cuenta General" },
-        { value: 3, text: "215-123456789-0-255 | BCP: Cuenta General" },
-        { value: 4, text: "215-123456789-0-255 | BCP: Cuenta General" },
       ],
     };
   },

@@ -42,7 +42,7 @@ class CuentasCorrientesController extends Controller
     {
         $cuentaCorriente = new CuentaCorriente();
 
-        $cuentaCorriente->numeroCuenta = "";
+        $cuentaCorriente->numero_cuenta = "";
         $cuentaCorriente->descripcion = "";
         $cuentaCorriente->moneda = "";
 
@@ -61,7 +61,7 @@ class CuentasCorrientesController extends Controller
         try {
             $cuentaCorriente = new CuentaCorriente();
 
-            $cuentaCorriente->numeroCuenta = $request->numeroCuenta;
+            $cuentaCorriente->numero_cuenta = $request->numero_cuenta;
             $cuentaCorriente->descripcion = $request->descripcion;
             $cuentaCorriente->moneda = $request->moneda;
             $cuentaCorriente->save();
@@ -106,7 +106,7 @@ class CuentasCorrientesController extends Controller
     public function update(CuentaCorrienteUpdateRequest $request, CuentaCorriente $cuentaCorriente)
     {
         try {
-            $cuentaCorriente->numeroCuenta = $request->numeroCuenta;
+            $cuentaCorriente->numero_cuenta = $request->numero_cuenta;
             $cuentaCorriente->descripcion = $request->descripcion;
             $cuentaCorriente->moneda = $request->moneda;
             $cuentaCorriente->update();
@@ -117,7 +117,7 @@ class CuentasCorrientesController extends Controller
         }
 
         return redirect()->route('cuentas-corrientes.iniciar')->with($result);
-    
+
     }
 
     /**

@@ -118,7 +118,7 @@ class SunatController extends Controller
         $factura = Comprobante::with('detalles')->where('id', 'like', $factura->id)->first();
 
         try {
-            $see = require storage_path() . '\app\public\config.php';
+            $see = require config_path('Sunat\config.php');
 
             // Cliente
             $client = (new Client())
@@ -301,6 +301,7 @@ class SunatController extends Controller
         } catch (\Exception $e) {
             $factura->observaciones = 'Error al enviar la factura' . $e;
             $factura->update();
+            return $e;
         }
 
         return redirect()->route('sunat.iniciarFacturas');

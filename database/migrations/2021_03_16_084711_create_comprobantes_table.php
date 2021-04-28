@@ -16,7 +16,7 @@ class CreateComprobantesTable extends Migration
         Schema::create('comprobantes', function (Blueprint $table) {
             $table->id();
             $table->string('codigo', 20)->unique();
-            $table->char('cui', 8);
+            $table->char('cui', 8)->nullable();
             $table->char('nues', 3);
             $table->string('serie', 4);
             $table->string('correlativo', 8);

@@ -10,8 +10,11 @@ use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use App\Http\Requests\ConceptoStoreRequest;
 use App\Http\Requests\ConceptoUpdateRequest;
+use App\Models\CuentaCorriente;
 use App\Models\Dependencia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Expr\AssignOp\Concat;
 
 class ConceptoController extends Controller
 {
@@ -65,9 +68,13 @@ class ConceptoController extends Controller
             ->orderBy('nombre', 'asc')
             ->get();
 
+        $cuentas_corrientes = CuentaCorriente::select('id as value',DB::raw("CONCAT(numero_cuenta, ' | ', descripcion) as text"))
+            ->orderBy('id', 'asc')
+            ->get();
+
         return Inertia::render(
             'Conceptos/NuevoMostrar',
-            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida')
+            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida', 'cuentas_corrientes')
         );
     }
 
