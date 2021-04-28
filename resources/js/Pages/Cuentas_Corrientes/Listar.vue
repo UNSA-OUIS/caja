@@ -169,7 +169,7 @@ export default {
                     sortable: true,
                     class: "text-center"
                 },
-                { key: "numeroCuenta", label: "Cta. Corriente" },
+                { key: "numero_cuenta", label: "Cta. Corriente" },
                 { key: "descripcion", label: "Descripción" },
                 { key: "moneda", label: "Moneda", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }

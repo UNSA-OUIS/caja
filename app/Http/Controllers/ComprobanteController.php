@@ -131,39 +131,35 @@ class ComprobanteController extends Controller
 
     public function buscarConcepto(Request $request)
     {
-        $filtro = $request->filtro;              
-        
+        $filtro = $request->filtro;
+
         $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
-                        ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-                        ->select('id', 'codigo', 'descripcion', 'precio')
-                        ->orderBy('descripcion', 'asc')
-                        ->get();
+            ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
+            ->select('id', 'codigo', 'descripcion', 'precio')
+            ->orderBy('descripcion', 'asc')
+            ->get();
 
         return $conceptos;
     }
 
     public function create(Request $request)
-    {   
-        
+    {
+
         if ($request->has('tipo_usuario')) {
-            $ultimo = Comprobante::latest('created_at')->first();                                     
+            $ultimo = Comprobante::latest('created_at')->first();
             $comprobante = new Comprobante();
             $comprobante->tipo_usuario = $request->tipo_usuario;
-            $comprobante->codigo = "";
-
             if (!$ultimo) {
                 $comprobante->codigo = 1;
-            } 
-            else {
+            } else {
                 $ultimo->codigo += 1;
                 $comprobante->codigo = $ultimo->codigo;
             }
-            
             $comprobante->dni = "";
             $comprobante->email = "";
             $comprobante->escuela = "";
             $comprobante->nues = "";
-            $comprobante->serie = "B001";
+            $comprobante->serie = "F001";
             if (!$ultimo) {
                 $comprobante->correlativo = '00000001';
             } else {
@@ -174,7 +170,7 @@ class ComprobanteController extends Controller
             $comprobante->observaciones = "";
             $comprobante->url_xml = "";
             $comprobante->url_cdr = "";
-            $comprobante->detalles = array();        
+            $comprobante->detalles = array();
 
             if ($comprobante->tipo_usuario == 'alumno') {
                 $comprobante->codigo = $request->alumno['cui'];
@@ -182,27 +178,23 @@ class ComprobanteController extends Controller
                 $comprobante->escuela = $request->matricula['escuela']['nesc'];
                 $comprobante->nues = $request->matricula['nues'];
                 $comprobante->usuario = $request->alumno['apn'];
-            } 
-            else if ($comprobante->tipo_usuario == 'docente') {
+            } else if ($comprobante->tipo_usuario == 'docente') {
                 $comprobante->codigo = $request->docente['codper'];
                 $comprobante->dni = $request->docente['dic'];
                 $comprobante->usuario = $request->docente['apn'];
-            }
-            else if ($comprobante->tipo_usuario == 'dependencia') {          
-                $comprobante->codigo = $request->dependencia['codi_depe'];            
-                $comprobante->usuario = $request->dependencia['nomb_depe'];            
-            }
-            else if ($comprobante->tipo_usuario == 'particular') {          
-                $comprobante->dni = $request->particular['dni'];                         
-                $comprobante->email = $request->particular['email'];                         
+            } else if ($comprobante->tipo_usuario == 'dependencia') {
+                $comprobante->codigo = $request->dependencia['codi_depe'];
+                $comprobante->usuario = $request->dependencia['nomb_depe'];
+            } else if ($comprobante->tipo_usuario == 'particular') {
+                $comprobante->dni = $request->particular['dni'];
+                $comprobante->email = $request->particular['email'];
                 $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
             }
 
             return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
-        }
-        else {
+        } else {
             return redirect()->route('comprobantes.iniciar');
-        }       
+        }
     }
 
     public function store(Request $request)
@@ -225,20 +217,20 @@ class ComprobanteController extends Controller
             $comprobante->url_pdf = '';
             $comprobante->save();
 
-            $detalle = $request->detalles;
-            foreach ($detalle as $index => $value) {
-                $detalles = new DetallesComprobante();
-                $detalles->cantidad = $value['cantidad'];
-                $detalles->valor_unitario =  $value['valor_unitario'];
-                $detalles->descuento =  $value['descuento'];
-                $detalles->concepto_id =  $value['concepto_id'];
-                $detalles->comprobante_id =  $comprobante->id;
-                $detalles->save();
+            $detalles = $request->detalles;
+            foreach ($detalles as $index => $detalle) {
+                $detalle_comprobante = new DetallesComprobante();
+                $detalle_comprobante->cantidad = $detalle['cantidad'];
+                $detalle_comprobante->valor_unitario =  $detalle['precio'];
+                $detalle_comprobante->descuento =  $detalle['descuento'];
+                $detalle_comprobante->concepto_id =  $detalle['id'];
+                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                $detalle_comprobante->save();
             }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            return $e->getMessage();
+            return $e;
         }
         return redirect()->route('comprobantes.iniciar');
     }

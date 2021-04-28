@@ -246,24 +246,7 @@ export default {
                 return factura || [];
             });
         },
-        anular(factura) {
-            this.$bvModal
-                .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
-                    title: "Anular factura",
-                    okVariant: "danger",
-                    okTitle: "SI",
-                    cancelTitle: "NO",
-                    centered: true
-                })
-                .then(async value => {
-                    if (value) {
-                        this.$inertia.post(
-                            route("sunat.anularFactura", [factura])
-                        );
-                        this.refreshTable();
-                    }
-                });
-        },
+
         enviar(factura) {
             this.$bvModal
                 .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
@@ -277,6 +260,24 @@ export default {
                     if (value) {
                         this.$inertia.post(
                             route("sunat.enviarFactura", [factura])
+                        );
+                        this.refreshTable();
+                    }
+                });
+        },
+        anular(factura) {
+            this.$bvModal
+                .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
+                    title: "Anular factura",
+                    okVariant: "danger",
+                    okTitle: "SI",
+                    cancelTitle: "NO",
+                    centered: true
+                })
+                .then(async value => {
+                    if (value) {
+                        this.$inertia.post(
+                            route("sunat.anularFactura", [factura])
                         );
                         this.refreshTable();
                     }

@@ -26,7 +26,7 @@ class CreateConceptosTable extends Migration
             $table->tinyInteger('unidad_medida_id');
             $table->string('cuenta_corriente');
             $table->string('semestre');
-            $table->string('codi_depe')->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
+            $table->string('codi_depe')->nullable()->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
             $table->boolean('estado')->default(true);
             $table->timestamps();
             $table->softDeletes();
