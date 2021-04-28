@@ -19,7 +19,7 @@
                 </ol>
             </div>
             <div class="card-body">
-                <b-form>
+                <b-form @submit.prevent="enviar">
                     <b-row>
                         <b-col>
                             <b-form-group
@@ -29,7 +29,7 @@
                             >
                                 <b-form-input
                                     id="input-1"
-                                    v-model="usuario.name"
+                                    v-model="formData.name"
                                     placeholder="Nombre de usuario"
                                     :readonly="accion == 'Mostrar'"
                                 ></b-form-input>
@@ -49,7 +49,7 @@
                             >
                                 <b-form-input
                                     id="input-2"
-                                    v-model="usuario.email"
+                                    v-model="formData.email"
                                     placeholder="Correo eletrónico"
                                     :readonly="accion == 'Mostrar'"
                                 ></b-form-input>
@@ -71,7 +71,7 @@
                             >
                                 <b-form-input
                                     id="input-3"
-                                    v-model="usuario.password"
+                                    v-model="formData.password"
                                     placeholder="Contraseña"
                                     :readonly="accion == 'Mostrar'"
                                 ></b-form-input>
@@ -87,7 +87,7 @@
                             <b-form-group id="input-group-4" label="Rol (es):" label-for="input-4">
                                 <b-form-select
                                     id="input-4"
-                                    v-model="usuario.roles_seleccionados"
+                                    v-model="formData.roles_seleccionados"
                                     :options="roles"              
                                     multiple 
                                     :select-size="4"
@@ -111,13 +111,27 @@
                                         class="custom-control-input" 
                                         :id="permiso.id" 
                                         type="checkbox"
-                                        v-model="usuario.permisos_seleccionados"                        
+                                        v-model="formData.permisos_seleccionados"                        
                                         :value="permiso.id"
                                         :disabled="accion == 'Mostrar'"
                                     >
                                     <label class="cursor-pointer font-italic d-block custom-control-label" :for="permiso.id">{{ permiso.nombre }}</label>
                                 </div>                           
                             </template>
+                            <template v-slot:cell(acciones)="rowacciones">
+                            <div class="custom-control custom-checkbox custom-control-inline" >
+                                <input 
+                                    class="custom-control-input"
+                                    type="checkbox"
+                                    :id="rowacciones.index+49"
+                                    v-model="bool_allSelecteds"
+                                    :value="rowacciones.index"
+                                    :disabled="accion == 'Mostrar'"
+                                    @click="selectAll(rowacciones.index,$event)"
+                                >
+                                <label class="cursor-pointer font-italic d-block custom-control-label" :for="rowacciones.index+49">{{ rowacciones.item.acciones }}</label>
+                            </div>
+                        </template>
                         </b-table>
                         <hr>                                                                                      
                     </template>                                    
@@ -154,14 +168,18 @@ export default {
     components: {
         AppLayout
     },
+    remember: 'formData',
     data() {
         return {
             accion: "",            
             fields: [                
                 { key: "categoria", label: "Menú", sortable: true },
-                { key: "permisos", label: "Permisos" },                
+                { key: "permisos", label: "Permisos" },
+                { key: "acciones", label: "Acciones" },                
             ],
-            categoria_permisos: [],            
+            formData:this.usuario,
+            categoria_permisos: [],   
+            bool_allSelecteds: []         
         };
     },
     created() {
@@ -173,6 +191,17 @@ export default {
         }
     },
     methods: {
+        enviar() {            
+            if (this.accion == 'Crear') {
+                this.registrar()
+            }
+            else if (this.accion == 'Mostrar') {
+                this.accion = 'Editar'
+            }
+            else if (this.accion == 'Editar') {
+                this.actualizar()
+            }
+        },
         mostrar_permisos() {
             if (this.permissions.length > 0) {                            
                 let permisos = []            
@@ -187,7 +216,8 @@ export default {
                     if (categoria !== categoria_anterior) {                                                    
                         this.categoria_permisos.push({
                             'categoria': categoria_anterior,
-                            'permisos': permisos
+                            'permisos': permisos,
+                            'acciones': "Seleccionar Todo"
                         })
                         permisos = []
                     }
@@ -201,21 +231,40 @@ export default {
 
                 this.categoria_permisos.push({
                     'categoria': categoria_anterior,
-                    'permisos': permisos
+                    'permisos': permisos,
+                    'acciones': "Seleccionar Todo"
                 })                           
             }            
         },
         registrar() {            
             this.$inertia.post(
                 route("usuarios.registrar"),
-                this.usuario
+                this.formData
             );
         },
         actualizar() {
             this.$inertia.post(
-                route("usuarios.actualizar", [this.usuario.id]),
-                this.usuario
+                route("usuarios.actualizar", [this.formData.id]),
+                this.formData
             );
+        },
+        selectAll(val,e){
+            //console.log("codigo de inicio ",val)
+            //console.log(e.target.checked)
+            let permisos_por_rol=6
+            for (let code = (val*permisos_por_rol)+1; code < ((val+1)*permisos_por_rol)+1; code++) {
+                //console.log(code)
+                if(e.target.checked){//if is true add to permissions array
+                    if(!this.formData.permisos_seleccionados.includes(code)){
+                        this.formData.permisos_seleccionados.push(code)
+                    }
+                }else{
+                    const index = this.formData.permisos_seleccionados.indexOf(code);
+                    if (index > -1) {
+                    this.formData.permisos_seleccionados.splice(index, 1);
+                    }
+                }
+            }
         }
     }
 };
