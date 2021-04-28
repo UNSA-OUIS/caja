@@ -11,6 +11,7 @@ use App\Models\Docente;
 use App\Models\Dependencia;
 use App\Models\Particular;
 use App\Http\Requests\ParticularStoreRequest;
+use App\Jobs\EnviarCorreosJob;
 use App\Mail\CobroRealizadoMailable;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
@@ -273,8 +274,10 @@ class ComprobanteController extends Controller
 
     public function enviarCorreo(Request $request)
     {
-        Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
-        $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
-        return $result;
+        EnviarCorreosJob::dispatch($request->to);
+
+        //Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
+        //$result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
+        //return $result;
     }
 }
