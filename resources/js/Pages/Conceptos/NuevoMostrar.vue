@@ -11,13 +11,11 @@
               >Lista de conceptos</inertia-link
             >
           </li>
-          <li class="breadcrumb-item active">
-            {{ accion }} {{ cuentas_corrientes }} concepto
-          </li>
+          <li class="breadcrumb-item active">{{ accion }} concepto</li>
         </ol>
       </div>
       <div class="card-body">
-        <b-form>
+        <b-form @submit.prevent="enviar">
           <b-row>
             <b-col cols="2">
               <b-form-group
@@ -27,7 +25,7 @@
               >
                 <b-form-input
                   id="input-6"
-                  v-model="concepto.codigo"
+                  v-model="formData.codigo"
                   type="number"
                   placeholder="Ingrese código"
                   :readonly="accion == 'Mostrar'"
@@ -45,7 +43,7 @@
               >
                 <b-form-input
                   id="input-1"
-                  v-model="concepto.descripcion"
+                  v-model="formData.descripcion"
                   type="text"
                   placeholder="Ingrese descripción"
                   :readonly="accion == 'Mostrar'"
@@ -64,7 +62,7 @@
               >
                 <b-form-input
                   id="input-2"
-                  v-model="concepto.descripcion_imp"
+                  v-model="formData.descripcion_imp"
                   type="text"
                   placeholder="Ingrese descripción corta"
                   :readonly="accion == 'Mostrar'"
@@ -86,22 +84,22 @@
                 label-for="input-7"
               >
                 <b-form-radio
-                  v-model="concepto.tipo_precio"
+                  v-model="formData.tipo_precio"
                   name="tipo-precios"
                   value="fijo"
                   >Fijo</b-form-radio
                 >
                 <b-form-radio
-                  v-model="concepto.tipo_precio"
+                  v-model="formData.tipo_precio"
                   name="tipo-precios"
                   value="variable"
                   >Variable</b-form-radio
                 >
 
                 <b-form-input
-                  v-if="concepto.tipo_precio == 'fijo'"
+                  v-if="formData.tipo_precio == 'fijo'"
                   id="input-7"
-                  v-model="concepto.precio"
+                  v-model="formData.precio"
                   type="number"
                   placeholder="Ingrese precio"
                   :readonly="accion == 'Mostrar'"
@@ -119,7 +117,7 @@
               >
                 <b-form-select
                   id="input-3"
-                  v-model="concepto.tipo_concepto_id"
+                  v-model="formData.tipo_concepto_id"
                   :options="tipos_concepto"
                   :readonly="accion == 'Mostrar'"
                 >
@@ -143,7 +141,7 @@
               >
                 <b-form-select
                   id="input-4"
-                  v-model="concepto.clasificador_id"
+                  v-model="formData.clasificador_id"
                   :options="clasificadores"
                   :readonly="accion == 'Mostrar'"
                 >
@@ -167,7 +165,7 @@
               >
                 <b-form-select
                   id="input-5"
-                  v-model="concepto.unidad_medida_id"
+                  v-model="formData.unidad_medida_id"
                   :options="unidades_medida"
                   :readonly="accion == 'Mostrar'"
                 >
@@ -199,7 +197,7 @@
                 >
                 <v-select
                   v-if="selected == 'B'"
-                  v-model="concepto.codi_depe"
+                  v-model="formData.codi_depe"
                   @search="buscarConcepto"
                   :filterable="false"
                   :options="centroCostos"
@@ -224,20 +222,15 @@
               >
                 <b-form-select
                   id="input-5"
-                  v-model="concepto.semestre"
+                  v-model="formData.semestre"
                   :options="semestre"
                   :readonly="accion == 'Mostrar'"
+                  required
                 >
                   <template v-slot:first>
                     <option :value="null" disabled>Seleccione...</option>
                   </template>
                 </b-form-select>
-                <div
-                  v-if="$page.props.errors.unidad_medida_id"
-                  class="text-danger"
-                >
-                  {{ $page.props.errors.unidad_medida_id[0] }}
-                </div>
               </b-form-group>
             </b-col>
             <b-col>
@@ -248,46 +241,15 @@
               >
                 <b-form-select
                   id="input-5"
-                  v-model="concepto.tipo_afectacion"
+                  v-model="formData.tipo_afectacion"
                   :options="tipoAfectacionIGV"
                   :readonly="accion == 'Mostrar'"
+                  required
                 >
                   <template v-slot:first>
                     <option :value="null" disabled>Seleccione...</option>
                   </template>
                 </b-form-select>
-                <div
-                  v-if="$page.props.errors.unidad_medida_id"
-                  class="text-danger"
-                >
-                  {{ $page.props.errors.unidad_medida_id[0] }}
-                </div>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-form-group
-                id="input-group-5"
-                label="Cuenta Corriente:"
-                label-for="input-5"
-              >
-                <b-form-select
-                  id="input-5"
-                  v-model="concepto.cuenta_corriente"
-                  :options="cuentas_corrientes"
-                  :readonly="accion == 'Mostrar'"
-                >
-                  <template v-slot:first>
-                    <option :value="null" disabled>Seleccione...</option>
-                  </template>
-                </b-form-select>
-                <div
-                  v-if="$page.props.errors.unidad_medida_id"
-                  class="text-danger"
-                >
-                  {{ $page.props.errors.unidad_medida_id[0] }}
-                </div>
               </b-form-group>
             </b-col>
           </b-row>
@@ -321,19 +283,15 @@ const axios = require("axios");
 
 export default {
   name: "conceptos.nuevo-mostrar",
-  props: [
-    "concepto",
-    "tipos_concepto",
-    "clasificadores",
-    "unidades_medida",
-    "cuentas_corrientes",
-  ],
+  props: ["concepto", "tipos_concepto", "clasificadores", "unidades_medida"],
   components: {
     AppLayout,
   },
+  remember: "formData",
   data() {
     return {
       app_url: this.$root.app_url,
+      formData: this.concepto,
       accion: "",
       selected: "",
       centroCostos: [],
@@ -352,13 +310,22 @@ export default {
     };
   },
   created() {
-    if (!this.concepto.id) {
+    if (!this.formData.id) {
       this.accion = "Crear";
     } else {
       this.accion = "Mostrar";
     }
   },
   methods: {
+    enviar() {
+      if (this.accion == "Crear") {
+        this.registrar();
+      } else if (this.accion == "Mostrar") {
+        this.accion = "Editar";
+      } else if (this.accion == "Editar") {
+        this.actualizar();
+      }
+    },
     buscarConcepto(search, loading) {
       loading(true);
 
@@ -374,12 +341,12 @@ export default {
         });
     },
     registrar() {
-      this.$inertia.post(route("conceptos.registrar"), this.concepto);
+      this.$inertia.post(route("conceptos.registrar"), this.formData);
     },
     actualizar() {
       this.$inertia.post(
-        route("conceptos.actualizar", [this.concepto.id]),
-        this.concepto
+        route("conceptos.actualizar", [this.formData.id]),
+        this.formData
       );
     },
   },

@@ -19,7 +19,7 @@
                 </ol>
             </div>
             <div class="card-body">
-                <b-form>
+                <b-form @submit.prevent="enviar">
                     <b-form-group
                         id="input-group-1"
                         label="Nombre:"
@@ -27,7 +27,7 @@
                     >
                         <b-form-input
                             id="input-1"
-                            v-model="tiposConcepto.nombre"
+                            v-model="formData.nombre"
                             placeholder="Nombre de tipo de concepto"
                             :readonly="accion == 'Mostrar'"
                         ></b-form-input>
@@ -38,24 +38,9 @@
                             {{ $page.props.errors.nombre[0] }}
                         </div>
                     </b-form-group>
-                    <b-button
-                        v-if="accion == 'Crear'"
-                        @click="registrar"
-                        variant="success"
-                        >Registrar</b-button
-                    >
-                    <b-button
-                        v-else-if="accion == 'Mostrar'"
-                        @click="accion = 'Editar'"
-                        variant="warning"
-                        >Editar</b-button
-                    >
-                    <b-button
-                        v-else-if="accion == 'Editar'"
-                        @click="actualizar"
-                        variant="success"
-                        >Actualizar</b-button
-                    >
+                    <b-button v-if="accion == 'Crear'" @click="registrar" variant="success">Registrar</b-button>
+                    <b-button v-else-if="accion == 'Mostrar'" @click="accion = 'Editar'" variant="warning">Editar</b-button>
+                    <b-button v-else-if="accion == 'Editar'" @click="actualizar" variant="success">Actualizar</b-button>
                 </b-form>
             </div>
         </div>
@@ -72,29 +57,42 @@ export default {
     components: {
         AppLayout
     },
+    remember: 'formData',
     data() {
         return {
             accion: "",
+            formData: this.tiposConcepto,
         };
     },
     created() {
-        if (!this.tiposConcepto.id) {
+        if (!this.formData.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
         }
     },
     methods: {
+        enviar() {
+            if (this.accion == 'Crear') {
+                this.registrar()
+            }
+            else if (this.accion == 'Mostrar') {
+                this.accion = 'Editar'
+            }
+            else if (this.accion == 'Editar') {
+                this.actualizar()
+            }
+        },
         registrar() {
           this.$inertia.post(
                 route("tipos-concepto.registrar"),
-                this.tiposConcepto
+                this.formData
             );
         },
         actualizar() {
             this.$inertia.post(
-                route("tipos-concepto.actualizar", [this.tiposConcepto.id]),
-                this.tiposConcepto
+                route("tipos-concepto.actualizar", [this.formData.id]),
+                this.formData
             );
         }
     }

@@ -19,7 +19,7 @@
                 </ol>
             </div>
             <div class="card-body">
-                <b-form>
+                <b-form @submit.prevent="enviar">
                     <b-form-group
                         id="input-group-1"
                         label="Nombre:"
@@ -27,7 +27,7 @@
                     >
                         <b-form-input
                             id="input-1"
-                            v-model="tipoComprobante.nombre"
+                            v-model="formData.nombre"
                             placeholder="Nombre de tipo de comprobante"
                             :readonly="accion == 'Mostrar'"
                         ></b-form-input>
@@ -71,29 +71,42 @@ export default {
     components: {
         AppLayout
     },
+    remember: 'formData',
     data() {
         return {
-            accion: ""
+            accion: "",
+            formData: this.tipoComprobante
         };
     },
     created() {
-        if (!this.tipoComprobante.id) {
+        if (!this.formData.id) {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
         }
     },
     methods: {
-        async registrar() {
+        enviar() {
+            if (this.accion == 'Crear') {
+                this.registrar()
+            }
+            else if (this.accion == 'Mostrar') {
+                this.accion = 'Editar'
+            }
+            else if (this.accion == 'Editar') {
+                this.actualizar()
+            }
+        },
+        registrar() {
             this.$inertia.post(
                 route("tipo-comprobante.registrar"),
-                this.tipoComprobante
+                this.formData
             );
         },
         actualizar() {
             this.$inertia.post(
-                route("tipo-comprobante.actualizar", [this.tipoComprobante.id]),
-                this.tipoComprobante
+                route("tipo-comprobante.actualizar", [this.formData.id]),
+                this.formData
             );
         }
     }

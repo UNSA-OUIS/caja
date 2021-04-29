@@ -52,7 +52,6 @@ class ConceptoController extends Controller
         $concepto->tipo_concepto_id = null;
         $concepto->clasificador_id = null;
         $concepto->unidad_medida_id = null;
-        $concepto->cuenta_corriente = "";
         $concepto->semestre = "";
         $concepto->codi_depe = "";
 
@@ -74,7 +73,7 @@ class ConceptoController extends Controller
 
         return Inertia::render(
             'Conceptos/NuevoMostrar',
-            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida', 'cuentas_corrientes')
+            compact('concepto', 'tipos_concepto', 'clasificadores', 'unidades_medida')
         );
     }
 
@@ -91,13 +90,12 @@ class ConceptoController extends Controller
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
             $concepto->unidad_medida_id = $request->unidad_medida_id;
-            $concepto->cuenta_corriente = $request->cuenta_corriente;
             $concepto->semestre = $request->semestre;
             $concepto->codi_depe = $request->codi_depe;
             $concepto->save();
             $result = ['successMessage' => 'Concepto registrado con éxito'];
         } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo registrar el concepto'];
+            $result = ['errorMessage' => 'No se pudo registrar el concepto'. $e];
             Log::error('ConceptoController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
@@ -138,7 +136,6 @@ class ConceptoController extends Controller
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
             $concepto->unidad_medida_id = $request->unidad_medida_id;
-            $concepto->cuenta_corriente = $request->cuenta_corriente;
             $concepto->semestre = $request->semestre;
             $concepto->codi_depe = $request->codi_depe;
             $concepto->update();

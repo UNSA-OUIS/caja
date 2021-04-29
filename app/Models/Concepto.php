@@ -8,19 +8,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Concepto extends Model
 {
-    use HasFactory, SoftDeletes;   
+    use HasFactory, SoftDeletes;
 
     protected $table = 'conceptos';
 
     protected $fillable = [
         'codigo',
-        'descripcion', 
-        'descripcion_imp', 
+        'descripcion',
+        'descripcion_imp',
         'precio',
         'tipo_afectacion',
         'tipo_concepto_id',
         'clasificador_id',
-        'unidad_medida_id'
+        'unidad_medida_id',
+        'semestre',
+        'codi_depe'
     ];
 
     public function tipo_concepto()
