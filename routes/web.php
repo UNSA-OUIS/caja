@@ -152,9 +152,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
-        //return Inertia::render('Comprobantes/Listar');
-        return Inertia::render('Comprobantes/Busqueda');
+        return Inertia::render('Comprobantes/Listar');        
     })->name('comprobantes.iniciar');
+    Route::get('/buscarUsuario', function () {        
+        return Inertia::render('Comprobantes/Busqueda');
+    })->name('comprobantes.buscarUsuario');
 
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');

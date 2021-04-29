@@ -7,7 +7,7 @@
                         <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item">
-                        <inertia-link :href="route('comprobantes.iniciar')">Buscar usuario</inertia-link>
+                        <inertia-link :href="route('comprobantes.iniciar')">Lista de comprobantes</inertia-link>
                     </li>
                 </ol>
             </div>

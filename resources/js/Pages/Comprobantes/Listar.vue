@@ -4,14 +4,11 @@
             <div class="card-header">
                 <ol class="breadcrumb float-left">
                     <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
+                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
-                    <li class="breadcrumb-item active">
-                        Lista de comprobantes
-                    </li>
-                </ol>                
+                    <li class="breadcrumb-item active">Lista de comprobantes</li>
+                </ol>      
+                <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo</inertia-link>
             </div>
             <div class="card-body">
                 <b-alert
@@ -19,15 +16,17 @@
                     dismissible
                     variant="success"
                     v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
                 >
+                    {{ $page.props.successMessage }}
+                </b-alert>
                 <b-alert
                     show
                     dismissible
                     variant="danger"
                     v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
                 >
+                    {{ $page.props.errorMessage }}
+                </b-alert>
                 <b-row>
                     <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
