@@ -24,10 +24,10 @@ class ParticularStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'dni' => 'required|unique:particulares',
+            'dni' => 'required|numeric|digits:8|unique:particulares',
             'nombres' => 'required|max:75',
             'apellidos' => 'required|max:75',
-            'email' => 'nullable|max:100',            
+            'email' => 'nullable|max:100|unique:particulares',            
         ];
     }
 

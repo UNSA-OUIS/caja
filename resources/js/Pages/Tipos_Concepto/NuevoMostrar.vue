@@ -4,9 +4,7 @@
             <div class="card-header">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
+                        <inertia-link :href="route('dashboard')">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item">
                         <inertia-link :href="route('tipos-concepto.iniciar')"

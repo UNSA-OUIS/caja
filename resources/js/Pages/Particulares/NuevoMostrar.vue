@@ -9,13 +9,13 @@
                 </ol>              
             </div>
             <div class="card-body">                  
-                <b-form>
+                <b-form @submit.prevent="enviar">
                     <b-row>
                         <b-col cols="6">
                             <b-form-group id="input-group-1" label="DNI:" label-for="input-1">
                                 <b-form-input
                                     id="input-1"
-                                    v-model="particular.dni"
+                                    v-model="formData.dni"
                                     type="text"
                                     placeholder="Ingrese DNI" 
                                     :readonly="accion == 'Mostrar'"                           
@@ -29,7 +29,7 @@
                             <b-form-group id="input-group-2" label="Email:" label-for="input-2">
                                 <b-form-input
                                     id="input-2"
-                                    v-model="particular.email"
+                                    v-model="formData.email"
                                     type="text"
                                     placeholder="Ingrese correo electrónico" 
                                     :readonly="accion == 'Mostrar'"                           
@@ -45,7 +45,7 @@
                             <b-form-group id="input-group-3" label="Nombres:" label-for="input-3">
                                 <b-form-input
                                     id="input-3"
-                                    v-model="particular.nombres"
+                                    v-model="formData.nombres"
                                     type="text"
                                     placeholder="Ingrese Nombres" 
                                     :readonly="accion == 'Mostrar'"                           
@@ -59,7 +59,7 @@
                             <b-form-group id="input-group-4" label="Apellidos:" label-for="input-4">
                                 <b-form-input
                                     id="input-4"
-                                    v-model="particular.apellidos"
+                                    v-model="formData.apellidos"
                                     type="text"
                                     placeholder="Ingrese apellidos" 
                                     :readonly="accion == 'Mostrar'"                           
@@ -70,9 +70,9 @@
                             </b-form-group>
                         </b-col>                        
                     </b-row>                                 
-                    <b-button v-if="accion == 'Crear'" @click="registrar"  variant="success">Registrar</b-button>
-                    <b-button v-else-if="accion == 'Mostrar'" @click="accion = 'Editar'" variant="warning">Editar</b-button>
-                    <b-button v-else-if="accion == 'Editar'" @click="actualizar" variant="success">Actualizar</b-button>
+                    <b-button v-if="accion == 'Crear'" type="submit" variant="success">Registrar</b-button>               
+                    <b-button v-else-if="accion == 'Mostrar'" type="submit" variant="warning">Editar</b-button>     
+                    <b-button v-else-if="accion == 'Editar'" type="submit" variant="success">Actualizar</b-button>
                 </b-form>                                
             </div>
         </div>            
@@ -88,25 +88,38 @@
         components: {
             AppLayout,                      
         },
+        remember: 'formData',
         data() {
             return {                
-                accion: '',               
-            };
+                accion: '',
+                formData: this.particular              
+            }
         },       
         created() {                        
-            if (!this.particular.id) {               
+            if (!this.formData.id) {               
                 this.accion = 'Crear'
             }
             else {                
                 this.accion = 'Mostrar'
             }            
         },
-        methods: {            
+        methods: {   
+            enviar() {            
+                if (this.accion == 'Crear') {
+                    this.registrar()
+                }
+                else if (this.accion == 'Mostrar') {
+                    this.accion = 'Editar'
+                }
+                else if (this.accion == 'Editar') {
+                    this.actualizar()
+                }
+            },         
             registrar() {                                         
-                this.$inertia.post(route('particulares.registrar'), this.particular)
+                this.$inertia.post(route('particulares.registrar'), this.formData)
             },       
             actualizar() {                
-                this.$inertia.post(route('particulares.actualizar', [this.particular.id]), this.particular)                
+                this.$inertia.post(route('particulares.actualizar', [this.formData.id]), this.formData)                
             }            
         },
     }
