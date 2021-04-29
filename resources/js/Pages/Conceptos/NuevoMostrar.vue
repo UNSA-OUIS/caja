@@ -111,6 +111,23 @@
             </b-col>
             <b-col>
               <b-form-group
+                id="input-group-7"
+                label="Sujeto a Detraccion :"
+                label-for="input-7"
+              >
+                <b-form-radio v-model="detraccion" name="detraccion" value="si"
+                  >Si</b-form-radio
+                >
+                <b-form-radio v-model="detraccion" name="detraccion" value="no"
+                  >No</b-form-radio
+                >
+                <div v-if="$page.props.errors.precio" class="text-danger">
+                  {{ $page.props.errors.precio[0] }}
+                </div>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group
                 id="input-group-3"
                 label="Tipo de concepto:"
                 label-for="input-3"
@@ -190,13 +207,10 @@
                 label-for="input-5"
               >
                 <b-form-radio v-model="selected" name="centro-costos" value="A"
-                  >Sin centro de costos</b-form-radio
-                >
-                <b-form-radio v-model="selected" name="centro-costos" value="B"
                   >Con centro de costos especifico</b-form-radio
                 >
                 <v-select
-                  v-if="selected == 'B'"
+                  v-if="selected == 'A'"
                   v-model="formData.codi_depe"
                   @search="buscarConcepto"
                   :filterable="false"
@@ -209,7 +223,7 @@
                     Lo sentimos, no hay resultados de coincidencia.
                   </template>
                 </v-select>
-                <b-form-radio v-model="selected" name="centro-costos" value="C"
+                <b-form-radio v-model="formData.codi_depe" name="centro-costos" value="Centro de costos multiple"
                   >Con centro de costos multiple</b-form-radio
                 >
               </b-form-group>
@@ -294,6 +308,7 @@ export default {
       formData: this.concepto,
       accion: "",
       selected: "",
+      detraccion: "",
       centroCostos: [],
       centroCosto: null,
       tipoAfectacionIGV: [
@@ -341,6 +356,11 @@ export default {
         });
     },
     registrar() {
+      if (this.detraccion == "si") {
+        this.formData.detraccion = true;
+      } else if (this.detraccion == "no") {
+        this.formData.detraccion = false;
+      }
       this.$inertia.post(route("conceptos.registrar"), this.formData);
     },
     actualizar() {
