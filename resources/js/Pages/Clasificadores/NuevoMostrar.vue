@@ -13,7 +13,7 @@
                     <b-form-group id="input-group-1" label="Nombre:" label-for="input-1">
                         <b-form-input
                             id="input-1"
-                            v-model="clasificador.nombre"
+                            v-model="formData.nombre"
                             placeholder="Nombre de clasificador"   
                             :readonly="accion == 'Mostrar'"              
                         ></b-form-input>
@@ -39,13 +39,15 @@
         components: {
             AppLayout,                      
         },
+        remember: 'formData',
         data() {
             return {                     
                 accion: '',
+                formData: this.clasificador
             };
         },       
         created() {
-            if (!this.clasificador.id) {
+            if (!this.formData.id) {
                 this.accion = 'Crear'
             }
             else {
@@ -54,10 +56,10 @@
         },
         methods: {            
             registrar() {
-                this.$inertia.post(route('clasificadores.registrar'), this.clasificador)
+                this.$inertia.post(route('clasificadores.registrar'), this.formData)
             },       
             actualizar() {
-                this.$inertia.post(route('clasificadores.actualizar', [this.clasificador.id]), this.clasificador)
+                this.$inertia.post(route('clasificadores.actualizar', [this.formData.id]), this.formData)
             },     
         },
     }

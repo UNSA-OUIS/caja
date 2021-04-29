@@ -23,7 +23,7 @@
           >
             <b-form-input
               id="input-1"
-              v-model="cuentaCorriente.numero_cuenta"
+              v-model="formData.numero_cuenta"
               placeholder="Número de cta. corriente"
               :readonly="accion == 'Mostrar'"
             ></b-form-input>
@@ -38,7 +38,7 @@
           >
             <b-form-input
               id="input-2"
-              v-model="cuentaCorriente.descripcion"
+              v-model="formData.descripcion"
               placeholder="Descripción"
               :readonly="accion == 'Mostrar'"
             ></b-form-input>
@@ -49,7 +49,7 @@
           <b-form-group id="input-group-3" label="Moneda:" label-for="input-3">
             <b-form-select
               id="input-3"
-              v-model="cuentaCorriente.moneda"
+              v-model="formData.moneda"
               :options="monedas"
               :disabled="accion == 'Mostrar'"
             >
@@ -96,9 +96,11 @@ export default {
   components: {
     AppLayout,
   },
+  remember: 'formData',
   data() {
     return {
       accion: "",
+      formData: this.cuentaCorriente,
       app_url: this.$root.app_url,
       monedas: [
         { value: "PEN", text: "Soles" },
@@ -108,7 +110,7 @@ export default {
     };
   },
   created() {
-    if (!this.cuentaCorriente.id) {
+    if (!this.formData.id) {
       this.accion = "Crear";
     } else {
       this.accion = "Mostrar";
@@ -127,16 +129,16 @@ export default {
         });
     },
     registrar() {
-      console.log(this.cuentaCorriente);
+      console.log(this.formData);
       this.$inertia.post(
         route("cuentas-corrientes.registrar"),
-        this.cuentaCorriente
+        this.formData
       );
     },
     actualizar() {
       this.$inertia.post(
-        route("cuentas-corrientes.actualizar", [this.cuentaCorriente.id]),
-        this.cuentaCorriente
+        route("cuentas-corrientes.actualizar", [this.formData.id]),
+        this.formData
       );
     },
   },
