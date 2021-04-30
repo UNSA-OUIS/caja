@@ -117,6 +117,13 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Eliminar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
 
+        Permission::create(['name' => 'Listar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Crear Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Mostrar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Editar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Eliminar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Restaurar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+
     }
 }
 

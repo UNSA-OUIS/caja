@@ -132,6 +132,7 @@
                   path == 'conceptos' ||
                   path == 'tipo-comprobante' ||
                   path == 'particulares' ||
+                  path == 'empresas' ||
                   path == 'cuentas-corrientes',
               }"
             >
@@ -217,6 +218,15 @@
                   v-if="$permissions.can([{ name: 'Listar Particulares' }])"
                 >
                   Particulares
+                </inertia-link>
+              </li>
+              <li :class="{ 'mm-active': path == 'empresas' }">
+                <inertia-link
+                  :href="route('empresas.iniciar')"
+                  :class="{ active: path == 'empresas' }"
+                  v-if="$permissions.can([{ name: 'Listar Empresas' }])"
+                >
+                  Empresas
                 </inertia-link>
               </li>
               <li
