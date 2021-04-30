@@ -219,7 +219,7 @@ class SunatController extends Controller
                 // Mostrar error al conectarse a SUNAT.
                 $factura->observaciones = 'Codigo Error: ' . $result->getError()->getCode() . '\n' . 'Mensaje Error: ' . $result->getError()->getMessage();
                 $factura->update();
-                //return $factura;
+                return $factura;
                 exit();
             }
 

@@ -163,6 +163,19 @@
                         </div>
                     </section>
                 </vue-html2pdf>
+                
+                <json-excel
+                v-if="comprobantes.length"
+                :data="comprobantes"
+                type="xls"
+                :fields="json_fields"
+                worksheet="My Worksheet"
+                name="filename.xls"
+                >
+                    <b-button class="btn btn-success">
+                        Download Excel
+                    </b-button>
+                </json-excel>
         </div>
     </app-layout>
 </template>
@@ -172,17 +185,57 @@ const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from "vue-html2pdf";
 import PeriodoMenu from "./PeriodoMenu";
+import JsonExcel from "vue-json-excel";
 
 export default {
     name: "reportes.cajero",
     components: {
         AppLayout,
         VueHtml2pdf,
-        PeriodoMenu
+        PeriodoMenu,
+        JsonExcel
     },
     data() {
         return {
             app_url: this.$root.app_url,
+            json_fields: {
+                "Código": "codigo",
+                Serie: "serie",
+                Correlativo: "correlativo",
+                Cliente: "cui",
+                Cliente: "cui",
+                "Precio Total": "total",
+                },
+            json_data: [
+                {
+                    name: "Tony Peña",
+                    city: "New York",
+                    country: "United States",
+                    birthdate: "1978-03-15",
+                    phone: {
+                    mobile: "1-541-754-3010",
+                    landline: "(541) 754-3010",
+                    },
+                },
+                {
+                    name: "Thessaloniki",
+                    city: "Athens",
+                    country: "Greece",
+                    birthdate: "1987-11-23",
+                    phone: {
+                    mobile: "+1 855 275 5071",
+                    landline: "(2741) 2621-244",
+                    },
+                },
+            ],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
+            ],
             fields: [
                 { key: "codigo", label: "Código" },
                 { key: "serie", label: "Serie" },
@@ -204,6 +257,12 @@ export default {
         };
     },
     methods: {
+        startDownload(){
+        alert('show loading');
+    },
+    finishDownload(){
+        alert('hide loading');
+    },
         refreshTable() {
             this.$refs.tbl_comprobantes.refresh();
         },
@@ -235,29 +294,6 @@ export default {
                 } 
             }).save()
         },
-        /*myProvider(ctx) {
-            let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-            if (ctx.filter !== "" && ctx.filter !== null) {
-                params += "&filter=" + ctx.filter;
-            }
-
-            if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-                params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-            }
-
-            const promise = axios.get(
-                `${this.app_url}/comprobantes/listar${params}`
-            );
-
-            return promise.then(response => {
-                const comprobante = response.data.data;
-                console.log(comprobante);
-                this.totalRows = response.data.total;
-
-                return comprobante || [];
-            });
-        },*/
   },
   computed: {
     grupoFilter() {

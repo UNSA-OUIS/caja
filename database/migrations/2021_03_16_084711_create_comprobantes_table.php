@@ -17,23 +17,29 @@ class CreateComprobantesTable extends Migration
             $table->id();
             $table->string('codigo', 20)->unique();
             $table->char('cui', 8)->nullable();
-            $table->char('nues', 3);
-            $table->enum('tipo_comprobante', ['boleta', 'factura', 'nota_debito', 'nota_credito']);
+            $table->char('nues', 3);            
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total');
             $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
+            $table->tinyInteger('tipo_comprobante_id');
             $table->text('observaciones');
             $table->string('url_xml');
             $table->string('url_cdr');
             $table->string('url_pdf');
             $table->bigInteger('usuario_id');            
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('usuario_id')->references('id')->on('users')
                 ->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->onDelete('cascade');            
+
+            $table->foreign('tipo_comprobante_id')->references('id')->on('tipo_comprobante')
+            ->constrained()
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
         });
     }
 
