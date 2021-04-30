@@ -41,6 +41,10 @@ class ComprobanteSeeder extends Seeder
                 'correlativo' => $faker->randomNumber(8, false),
                 'total' => $faker->randomFloat(2, 10, 200),
                 'estado' => 'noEnviado',
+                'observaciones' => $faker->text(200),
+                'url_xml' => $faker->url,
+                'url_cdr' => $faker->url,
+                'url_pdf' => $faker->url,
             ]);
         }
     }
