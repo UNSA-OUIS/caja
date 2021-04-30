@@ -24,6 +24,26 @@ use Luecano\NumeroALetras\NumeroALetras;
 
 class SunatController extends Controller
 {
+    private $empresa;
+
+    function __construct() 
+    {         
+        $direccion_empresa = (new Address())
+            ->setUbigueo(config('caja.direccion.ubigeo'))
+            ->setDepartamento(config('caja.direccion.departamento'))
+            ->setProvincia(config('caja.direccion.provincia'))
+            ->setDistrito(config('caja.direccion.distrito'))
+            ->setUrbanizacion(config('caja.direccion.urbanizacion'))
+            ->setDireccion(config('caja.direccion.direccion'))
+            ->setCodLocal(config('caja.direccion.codigo_local')); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
+        
+        $this->empresa = (new Company())
+            ->setRuc(config('caja.empresa.ruc'))
+            ->setRazonSocial(config('caja.empresa.razon_social'))
+            ->setNombreComercial(config('caja.empresa.nombre_comercial'))
+            ->setAddress($direccion_empresa);
+    } 
+    
     public function __invoke()
     {
         $noEnviado  = count(DB::table('comprobantes')
@@ -124,23 +144,7 @@ class SunatController extends Controller
             $client = (new Client())
                 ->setTipoDoc('6')
                 ->setNumDoc('10723516108')
-                ->setRznSocial('Jesus Ruben Ortiz Chavez');
-
-            // Emisor
-            $address = (new Address())
-                ->setUbigueo('150101')
-                ->setDepartamento('AREQUIPA')
-                ->setProvincia('AREQUIPA')
-                ->setDistrito('AREQUIPA')
-                ->setUrbanizacion('-')
-                ->setDireccion('CALLE SANTA CATALINA 117')
-                ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
-
-            $company = (new Company())
-                ->setRuc('20163646499')
-                ->setRazonSocial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
-                ->setNombreComercial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
-                ->setAddress($address);
+                ->setRznSocial('Jesus Ruben Ortiz Chavez');          
 
             // Venta
             $invoice = new Invoice();
@@ -188,7 +192,7 @@ class SunatController extends Controller
                 ->setFechaEmision(new DateTime(now())) // Zona horaria: Lima
                 ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
                 ->setTipoMoneda('PEN') // Sol - Catalog. 02
-                ->setCompany($company)
+                ->setCompany($this->empresa)
                 ->setClient($client)
                 ->setMtoOperGravadas($total_agravadas)
                 ->setMtoIGV($igv)
@@ -315,22 +319,7 @@ class SunatController extends Controller
             $client = new Client();
             $client->setTipoDoc('1')
                 ->setNumDoc('46712369')
-                ->setRznSocial('MARIA RAMOS ARTEAGA');
-
-            // Emisor
-            $address = new Address();
-            $address->setUbigueo('150101')
-                ->setDepartamento('LIMA')
-                ->setProvincia('LIMA')
-                ->setDistrito('LIMA')
-                ->setUrbanizacion('-')
-                ->setDireccion('AV LOS GERUNDIOS');
-
-            $company = new Company();
-            $company->setRuc('20000000001')
-                ->setRazonSocial('EMPRESA SAC')
-                ->setNombreComercial('EMPRESA')
-                ->setAddress($address);
+                ->setRznSocial('MARIA RAMOS ARTEAGA');          
 
             // Venta
             $invoice = new Invoice();
@@ -375,7 +364,7 @@ class SunatController extends Controller
                 ->setValorVenta(100.00)
                 ->setSubTotal(118.00)
                 ->setMtoImpVenta(118.00)
-                ->setCompany($company);
+                ->setCompany($this->empresa);
 
             $xml = $see->getXmlSigned($invoice);
 

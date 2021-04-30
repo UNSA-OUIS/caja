@@ -18,6 +18,7 @@ class CreateComprobantesTable extends Migration
             $table->string('codigo', 20)->unique();
             $table->char('cui', 8)->nullable();
             $table->char('nues', 3);
+            $table->enum('tipo_comprobante', ['boleta', 'factura', 'nota_debito', 'nota_credito']);
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total');
@@ -26,7 +27,13 @@ class CreateComprobantesTable extends Migration
             $table->string('url_xml');
             $table->string('url_cdr');
             $table->string('url_pdf');
+            $table->bigInteger('usuario_id');            
             $table->timestamps();
+
+            $table->foreign('usuario_id')->references('id')->on('users')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
