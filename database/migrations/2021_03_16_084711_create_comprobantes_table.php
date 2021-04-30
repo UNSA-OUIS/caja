@@ -22,11 +22,18 @@ class CreateComprobantesTable extends Migration
             $table->string('correlativo', 8);
             $table->decimal('total');
             $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
+            $table->tinyInteger('tipo_comprobante_id');
             $table->text('observaciones');
             $table->string('url_xml');
             $table->string('url_cdr');
             $table->string('url_pdf');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('tipo_comprobante_id')->references('id')->on('tipo_comprobante')
+            ->constrained()
+            ->onUpdate('cascade')
+            ->onDelete('cascade');
         });
     }
 

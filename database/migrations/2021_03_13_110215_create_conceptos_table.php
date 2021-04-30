@@ -27,6 +27,7 @@ class CreateConceptosTable extends Migration
             $table->string('semestre');
             $table->string('codi_depe')->nullable()->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
             $table->boolean('estado')->default(true);
+            $table->boolean('detraccion')->default(false);
             $table->timestamps();
             $table->softDeletes();
 

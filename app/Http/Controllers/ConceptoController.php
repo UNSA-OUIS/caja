@@ -54,6 +54,7 @@ class ConceptoController extends Controller
         $concepto->unidad_medida_id = null;
         $concepto->semestre = "";
         $concepto->codi_depe = "";
+        $concepto->detraccion = false;
 
         $tipos_concepto = TiposConcepto::select('id as value', 'nombre as text')
             ->orderBy('nombre', 'asc')
@@ -67,7 +68,7 @@ class ConceptoController extends Controller
             ->orderBy('nombre', 'asc')
             ->get();
 
-        $cuentas_corrientes = CuentaCorriente::select('id as value',DB::raw("CONCAT(numero_cuenta, ' | ', descripcion) as text"))
+        $cuentas_corrientes = CuentaCorriente::select('id as value', DB::raw("CONCAT(numero_cuenta, ' | ', descripcion) as text"))
             ->orderBy('id', 'asc')
             ->get();
 
@@ -84,18 +85,23 @@ class ConceptoController extends Controller
             $concepto->codigo = $request->codigo;
             $concepto->descripcion = $request->descripcion;
             $concepto->descripcion_imp = $request->descripcion_imp;
-            $concepto->precio = $request->precio;
             $concepto->tipo_precio = $request->tipo_precio;
+            if ($concepto->tipo_precio == "variable") {
+                $concepto->precio = "";
+            } elseif ($concepto->tipo_precio == "fijo") {
+                $concepto->precio = $request->precio;
+            }
             $concepto->tipo_afectacion = $request->tipo_afectacion;
             $concepto->tipo_concepto_id = $request->tipo_concepto_id;
             $concepto->clasificador_id = $request->clasificador_id;
             $concepto->unidad_medida_id = $request->unidad_medida_id;
             $concepto->semestre = $request->semestre;
             $concepto->codi_depe = $request->codi_depe;
+            $concepto->detraccion = $request->detraccion;
             $concepto->save();
             $result = ['successMessage' => 'Concepto registrado con éxito'];
         } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo registrar el concepto'. $e];
+            $result = ['errorMessage' => 'No se pudo registrar el concepto' . $e];
             Log::error('ConceptoController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
