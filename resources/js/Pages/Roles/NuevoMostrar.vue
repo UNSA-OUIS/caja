@@ -50,6 +50,7 @@
                                     type="checkbox"
                                     v-model="formData.permisos_seleccionados"                        
                                     :value="permiso.id"
+                                    @change="loadSelectAll()"
                                     :disabled="accion == 'Mostrar'"
                                 >
                                 <label class="cursor-pointer font-italic d-block custom-control-label" :for="permiso.id">{{ permiso.nombre }}</label>
@@ -117,8 +118,8 @@ export default {
             accion: "",
             fields: [                
                 { key: "categoria", label: "Menú", sortable: true },
-                { key: "permisos", label: "Permisos" },
-                { key: "acciones", label: "Acciones" },                
+                { key: "permisos",stickyColumn: true, label: "Permisos" },
+                { key: "acciones", label: "Seleccionar" },                
             ],
             formData:this.rol,
             categoria_permisos: [],
@@ -130,8 +131,11 @@ export default {
             this.accion = "Crear";
         } else {
             this.accion = "Mostrar";
+            
         }
         this.mostrar_permisos()
+        this.loadSelectAll()
+        
     },
     methods: {
         enviar() {            
@@ -161,7 +165,7 @@ export default {
                         this.categoria_permisos.push({
                             'categoria': categoria_anterior,
                             'permisos': permisos,
-                            'acciones': "Seleccionar Todo"
+                            'acciones': "Todo"
                         })
                         permisos = []
                     }
@@ -175,7 +179,7 @@ export default {
                 this.categoria_permisos.push({
                     'categoria': categoria_anterior,
                     'permisos': permisos,
-                    'acciones': "Seleccionar Todo"
+                    'acciones': "Todo"
 
                 })                           
             }                
@@ -209,6 +213,29 @@ export default {
                     }
                 }
             }
+        },
+        loadSelectAll(){
+            let permisos_por_rol=6
+            let base_id=0
+            let dic={}
+            this.bool_allSelecteds=[]
+            this.formData.permisos_seleccionados.forEach(element => {
+                base_id=Math.trunc((element-1)/permisos_por_rol)
+                //console.log(base_id)
+                
+                if(dic[base_id] === undefined ){
+                    dic[base_id]=1    
+                }else{
+                    dic[base_id]=dic[base_id]+1
+                }  
+            });
+            for (const [key, value] of Object.entries(dic)) {
+                if(value===6){
+                    if(!this.bool_allSelecteds.includes(Number(key)))
+                        this.bool_allSelecteds.push(Number(key))
+                }
+            }
+            
         }
     }
 };
