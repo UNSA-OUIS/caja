@@ -8,6 +8,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClasificadorController;
 use App\Http\Controllers\ParticularController;
+use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\TipoComprobanteController;
@@ -36,6 +37,16 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
+    
+    /**************************** API RENIEC SUNAT ***********************************/
+    Route::get('/api_dni/{dni}', function ($dni) {                
+        return file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+    });
+    Route::get('/api_ruc/{ruc}', function ($ruc) {                
+        return file_get_contents("https://dniruc.apisperu.com/api/v1/ruc/$ruc?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+    });
+    /*********************************************************************************/
+
     /**************************** CRUD ROLES ***********************************/
     Route::get('/roles', [RolController::class, 'index'])->name('roles.listar');
     Route::get('/roles/create', [RolController::class, 'create'])->name('roles.crear');
@@ -148,6 +159,19 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/particulares/{particular}', [ParticularController::class, 'update'])->name('particulares.actualizar');
     Route::delete('/particulares/{particular}', [ParticularController::class, 'destroy'])->name('particulares.eliminar');
     Route::post('/particulares/{particular}/restaurar', [ParticularController::class, 'restore'])->name('particulares.restaurar');
+    /*********************************************************************/
+
+    /******************************* EMPRESAS ***************************/
+    Route::get('/empresas', function () {
+        return Inertia::render('Empresas/Listar');
+    })->name('empresas.iniciar');
+    Route::get('/empresas/listar', [EmpresaController::class, 'index'])->name('empresas.listar');
+    Route::get('/empresas/crear', [EmpresaController::class, 'create'])->name('empresas.crear');
+    Route::post('/empresas', [EmpresaController::class, 'store'])->name('empresas.registrar');
+    Route::get('/empresas/{empresa}', [EmpresaController::class, 'show'])->name('empresas.mostrar');
+    Route::post('/empresas/{empresa}', [EmpresaController::class, 'update'])->name('empresas.actualizar');
+    Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy'])->name('empresas.eliminar');
+    Route::post('/empresas/{empresa}/restaurar', [EmpresaController::class, 'restore'])->name('empresas.restaurar');
     /*********************************************************************/
 
     /**************************** COMPROBANTES ***************************/
