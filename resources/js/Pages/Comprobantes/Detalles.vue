@@ -9,6 +9,7 @@
                     <li class="breadcrumb-item">
                         <inertia-link :href="route('comprobantes.iniciar')">Lista de comprobantes</inertia-link>
                     </li>
+                    <li class="breadcrumb-item active">Nuevo comprobante</li>
                 </ol>
             </div>
             <div class="card-doby">

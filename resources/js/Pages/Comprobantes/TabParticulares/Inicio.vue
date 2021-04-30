@@ -5,7 +5,7 @@
                 <form @submit.prevent="buscarDniParticular" id="dni_form_particular"></form> 
                 <form @submit.prevent="buscarApnParticular" id="apn_form_particular"></form>                                                          
                 <table>
-                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR PARTICULAR</caption>                        
+                    <caption class="mb-3" style="caption-side: top; text-align:center;">BÚSQUEDA POR PARTICULAR</caption>                        
                     <tr>
                         <th class="text-right">
                             <label class="mr-sm-2" for="dni_particular">DNI</label>

@@ -5,7 +5,7 @@
                 <form @submit.prevent="buscarCodigoDocente" id="codigo_form"></form> 
                 <form @submit.prevent="buscarApnDocente" id="apn_docente_form"></form>                                                          
                 <table>
-                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR DOCENTE</caption>                        
+                    <caption class="mb-3" style="caption-side: top; text-align:center;">BÚSQUEDA POR DOCENTE</caption>                        
                     <tr>
                         <th class="text-right">
                             <label class="mr-sm-2" for="codigo">Código</label>

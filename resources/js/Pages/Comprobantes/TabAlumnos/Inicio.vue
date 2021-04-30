@@ -5,7 +5,7 @@
                 <form @submit.prevent="buscarCuiAlumno" id="cui_form"></form> 
                 <form @submit.prevent="buscarApnAlumno" id="apn_form"></form>                                                          
                 <table>
-                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR ALUMNO</caption>                        
+                    <caption class="mb-3" style="caption-side: top; text-align:center;">BÚSQUEDA POR ALUMNO</caption>                        
                     <tr>
                         <th class="text-right">
                             <label class="mr-sm-2" for="cui">CUI</label>

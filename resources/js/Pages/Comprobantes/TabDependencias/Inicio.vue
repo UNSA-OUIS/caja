@@ -4,7 +4,7 @@
             <div class="d-flex justify-content-center mb-3">    
                 <form @submit.prevent="buscarDependencia" id="dependencia_form"></form>                                                                         
                 <table>
-                    <caption class="mb-3" style="caption-side: top;">BÚSQUEDA POR DEPENDENCIA</caption>
+                    <caption class="mb-3" style="caption-side: top; text-align:center;">BÚSQUEDA POR DEPENDENCIA</caption>
                     <tr>
                         <th class="text-right">
                             <label class="mr-sm-2" for="nombre">NOMBRE</label>

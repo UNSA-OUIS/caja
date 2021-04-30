@@ -8,7 +8,7 @@
                     </li>
                     <li class="breadcrumb-item active">Lista de comprobantes</li>
                 </ol>      
-                <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo</inertia-link>
+                <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo comprobante</inertia-link>
             </div>
             <div class="card-body">
                 <b-alert
