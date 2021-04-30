@@ -110,17 +110,14 @@
               </b-form-group>
             </b-col>
             <b-col>
+
               <b-form-group
                 id="input-group-7"
                 label="Sujeto a Detraccion :"
                 label-for="input-7"
               >
-                <b-form-radio v-model="detraccion" name="detraccion" value="si"
-                  >Si</b-form-radio
-                >
-                <b-form-radio v-model="detraccion" name="detraccion" value="no"
-                  >No</b-form-radio
-                >
+                 <b-form-radio-group v-model="formData.detraccion" :options="options" name="detraccion">
+                </b-form-radio-group>
                 <div v-if="$page.props.errors.precio" class="text-danger">
                   {{ $page.props.errors.precio[0] }}
                 </div>
@@ -311,6 +308,10 @@ export default {
       detraccion: "",
       centroCostos: [],
       centroCosto: null,
+      options: [
+          { text: 'Si', value: true },
+          { text: 'No', value: false },
+        ],
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
         { value: 20, text: "Exonerado: Operacion Onerosa" },
@@ -356,11 +357,6 @@ export default {
         });
     },
     registrar() {
-      if (this.detraccion == "si") {
-        this.formData.detraccion = true;
-      } else if (this.detraccion == "no") {
-        this.formData.detraccion = false;
-      }
       this.$inertia.post(route("conceptos.registrar"), this.formData);
     },
     actualizar() {
