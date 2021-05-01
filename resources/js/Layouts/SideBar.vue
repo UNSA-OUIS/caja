@@ -274,7 +274,7 @@
                   path == 'notas-debito',
               }"
             >
-              <i class="uil-upload"></i>
+              <i class="fas fa-upload"></i>
               <span>Sunat</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
@@ -298,7 +298,7 @@
                 }"
               >
                 <inertia-link
-                  :href="route('sunat.iniciarBoletas')"
+                  :href="route('boletas.iniciar')"
                   :class="{
                     active: path == 'boletas',
                   }"
@@ -312,7 +312,7 @@
                 }"
               >
                 <inertia-link
-                  :href="route('sunat.iniciarFacturas')"
+                  :href="route('facturas.iniciar')"
                   :class="{
                     active: path == 'facturas',
                   }"
@@ -326,7 +326,7 @@
                 }"
               >
                 <inertia-link
-                  :href="route('sunat.iniciarFacturas')"
+                  :href="route('notas-credito.iniciar')"
                   :class="{
                     active: path == 'notas-credito',
                   }"
@@ -340,7 +340,7 @@
                 }"
               >
                 <inertia-link
-                  :href="route('sunat.iniciarFacturas')"
+                  :href="route('facturas.iniciar')"
                   :class="{
                     active: path == 'notas-debito',
                   }"

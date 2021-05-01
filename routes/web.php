@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BoletaController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -15,8 +16,12 @@ use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
 use App\Http\Controllers\CuentasCorrientesController;
+use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\NotaCreditoController;
+use App\Http\Controllers\NotaDebitoController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\ResumenDiarioController;
 
 Route::get('/', function () {
     return Inertia::render('Auth/Login', [
@@ -152,9 +157,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
-        return Inertia::render('Comprobantes/Listar');        
+        return Inertia::render('Comprobantes/Listar');
     })->name('comprobantes.iniciar');
-    Route::get('/buscarUsuario', function () {        
+    Route::get('/buscarUsuario', function () {
         return Inertia::render('Comprobantes/Busqueda');
     })->name('comprobantes.buscarUsuario');
 
@@ -179,23 +184,45 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
-    Route::get('/sunat/filtrar', [SunatController::class, 'filtrar'])->name('sunat.filtrar');
     Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
+
+
+    Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
+    Route::get('/sunat/resumenDiario', [ResumenDiarioController::class, 'resumenDiario'])->name('resumen.enviar');
+
 
     Route::get('/sunat/facturas', function () {
         return Inertia::render('Sunat/ListarFacturas');
-    })->name('sunat.iniciarFacturas');
-    Route::get('/sunat/listarFacturas', [SunatController::class, 'indexFactura'])->name('sunat.listarFacturas');
-    Route::post('/sunat/enviarFactura/{factura}', [SunatController::class, 'enviarFactura'])->name('sunat.enviarFactura');
-    Route::post('/sunat/anularFactura/{factura}', [SunatController::class, 'anularFactura'])->name('sunat.anularFactura');
+    })->name('facturas.iniciar');
+    Route::get('/sunat/listarFacturas', [FacturaController::class, 'index'])->name('facturas.listar');
+    Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
+    Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
+
 
     Route::get('/sunat/boletas', function () {
         return Inertia::render('Sunat/ListarBoletas');
-    })->name('sunat.iniciarBoletas');
-    Route::get('/sunat/listarBoletas', [SunatController::class, 'indexBoleta'])->name('sunat.listarBoletas');
-    Route::post('/sunat/enviarBoleta/{boleta}', [SunatController::class, 'enviarBoleta'])->name('sunat.enviarBoleta');
-    Route::post('/sunat/anularBoleta/{boleta}', [SunatController::class, 'anularBoleta'])->name('sunat.anularBoleta');
-    Route::get('/sunat/resumenDiario', [SunatController::class, 'resumenDiario'])->name('sunat.resumenDiario');
+    })->name('boletas.iniciar');
+    Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
+    Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
+    Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');
+
+    Route::get('/notas-credito', function () {
+        return Inertia::render('Sunat/ListarNotasCredito');
+    })->name('notas-credito.iniciar');
+    Route::get('/notas-credito/listar', [NotaCreditoController::class, 'index'])->name('notas-credito.listar');
+    Route::get('/notas-credito/crear', [NotaCreditoController::class, 'create'])->name('notas-credito.crear');
+    Route::get('/notas-credito', [NotaCreditoController::class, 'store'])->name('notas-credito.registrar');
+    Route::post('/notas-credito/enviar/{comprobantes}', [NotaCreditoController::class, 'enviar'])->name('notas-credito.enviar');
+    Route::post('/notas-credito/anular/{comprobantes}', [NotaCreditoController::class, 'anular'])->name('notas-credito.anular');
+
+    Route::get('/notas-debito', function () {
+        return Inertia::render('Sunat/ListarNotasDebito');
+    })->name('notas-debito.iniciar');
+    Route::get('/notas-debito/listar', [NotadebitoController::class, 'index'])->name('notas-debito.listar');
+    Route::get('/notas-debito/crear', [NotaDebitoController::class, 'create'])->name('notas-debito.crear');
+    Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
+    Route::post('/notas-debito/enviar/{comprobantes}', [NotadebitoController::class, 'enviar'])->name('notas-debito.enviar');
+    Route::post('/notas-debito/anular/{comprobantes}', [NotadebitoController::class, 'anular'])->name('notas-debito.anular');
     /*******************************************************************/
 
     /**************************** Reportes ***************************/

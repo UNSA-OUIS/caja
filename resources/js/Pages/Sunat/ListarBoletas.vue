@@ -115,9 +115,6 @@ export default {
         const response = await axios.get(
           `${this.app_url}/sunat/filtrar${params}`
         );
-        console.log(
-          `${this.app_url}/sunat/filtrar${params}`
-        );
         this.comprobantes = response.data.comprobantes;
       } catch (error) {
         console.log(error);
