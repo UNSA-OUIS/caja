@@ -3,7 +3,7 @@
         <template v-if="!showRegistro && !showParticulares">
             <div class="d-flex justify-content-center mb-3">    
                 <form @submit.prevent="buscarDniParticular" id="dni_form_particular"></form> 
-                <form @submit.prevent="buscarApnParticular" id="apn_form_particular"></form>                                                          
+                <form @submit.prevent="buscarApnParticular" id="apn_form_particular"></form>                                                                          
                 <table>
                     <caption class="mb-3" style="caption-side: top; text-align:center;">BÚSQUEDA POR PARTICULAR</caption>                        
                     <tr>
@@ -14,9 +14,10 @@
                             <b-form-input
                                 id="dni_particular"
                                 v-model="dni"
-                                class="mb-2 mr-sm-2 mb-sm-0"   
+                                class="mb-2 mr-sm-2 mb-sm-0 text-center"   
                                 required           
-                                form="dni_form_particular"                              
+                                form="dni_form_particular"   
+                                maxlength="8"                                                          
                             ></b-form-input>                                    
                         </td>
                         <td>
@@ -127,7 +128,7 @@ export default {
                 console.log(error)
             }      
         },
-        async buscarApnParticular() {
+        async buscarApnParticular() {            
             try {
                 const response = await axios.get(`${this.app_url}/buscarApnParticular`, { 
                                         params: { 

@@ -14,9 +14,10 @@
                             <b-form-input
                                 id="ruc_empresa"
                                 v-model="ruc"
-                                class="mb-2 mr-sm-2 mb-sm-0"   
+                                class="mb-2 mr-sm-2 mb-sm-0 text-center"   
                                 required           
-                                form="ruc_form_empresa"                              
+                                form="ruc_form_empresa"  
+                                maxlength="11"                            
                             ></b-form-input>                                    
                         </td>
                         <td>
@@ -38,7 +39,7 @@
                                 v-model="razon_social"                               
                                 class="mb-2 mr-sm-2 mb-sm-0"  
                                 required        
-                                form="apn_form_particular"                                                              
+                                form="razon_social_form_empresa"                                                              
                             ></b-form-input>                                
                         </td>
                         <td>
@@ -105,8 +106,7 @@ export default {
                                         params: { 
                                             razon_social: this.razon_social,                                            
                                         }
-                                })
-                
+                                })                
                 this.empresas= response.data
                 this.showEmpresas = true
                 this.showRegistro = false

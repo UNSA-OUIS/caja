@@ -194,4 +194,18 @@ class ConceptoController extends Controller
 
         return $centroCostos;
     }
+
+    public function buscarConcepto(Request $request)
+    {
+        $filtro = $request->filtro;
+
+        $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
+            ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
+            ->select('id', 'codigo', 'descripcion', 'precio', 
+                      DB::raw("(CONCAT(codigo, ' - ', descripcion)) AS vista_concepto"))
+            ->orderBy('descripcion', 'asc')
+            ->get();
+
+        return $conceptos;
+    }
 }

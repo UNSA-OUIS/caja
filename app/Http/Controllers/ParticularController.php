@@ -113,4 +113,38 @@ class ParticularController extends Controller
         
         return redirect()->back()->with($result);
     }
+
+    public function buscarDniParticular($dni)
+    {
+        $particular = Particular::where('dni', $dni)->first();
+
+        return json_encode($particular);
+    }
+
+    public function buscarApnParticular(Request $request)
+    {
+        $particulares = Particular::where('apellidos', 'ilike', $request->ap_paterno . '%')
+                            ->take(10)
+                            ->get();
+
+        return $particulares;
+    }
+
+    public function registrarParticular(ParticularStoreRequest $request)
+    {
+        try {
+            $particular = new Particular();
+            $particular->dni = $request->dni;
+            $particular->nombres = $request->nombres;
+            $particular->apellidos = $request->apellidos;
+            $particular->email = $request->email;
+            $particular->save();
+            $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo registrar al particular', 'error' => true];
+            Log::error('ParticularController@registrarParticular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+
+        return $result;
+    }
 }

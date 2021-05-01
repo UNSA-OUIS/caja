@@ -8,14 +8,13 @@
                             <b-col cols="6">
                                 <b-form-group id="input-group-1" label="DNI:" label-for="input-1">
                                     <b-form-input
+                                        class="text-center"
                                         id="input-1"
                                         v-model="particular.dni"
                                         type="text"
                                         readonly                                                                   
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.dni" class="text-danger">
-                                        {{ $page.props.errors.dni[0] }}
-                                    </div>   
+                                    <span v-if="errors.dni" class="text-danger">{{ errors.dni[0] }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col cols="6">
@@ -26,9 +25,7 @@
                                         type="text"
                                         placeholder="Ingrese correo electrónico"                                                                   
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.email" class="text-danger">
-                                        {{ $page.props.errors.email[0] }}
-                                    </div>   
+                                    <span v-if="errors.email" class="text-danger">{{ errors.email[0] }}</span>
                                 </b-form-group>
                             </b-col>                        
                         </b-row>
@@ -41,9 +38,7 @@
                                         type="text"
                                         placeholder="Ingrese Nombres"                                                                 
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.nombres" class="text-danger">
-                                        {{ $page.props.errors.nombres[0] }}
-                                    </div>   
+                                    <span v-if="errors.nombres" class="text-danger">{{ errors.nombres[0] }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col cols="6">
@@ -54,9 +49,7 @@
                                         type="text"
                                         placeholder="Ingrese apellidos"                                                                 
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.apellidos" class="text-danger">
-                                        {{ $page.props.errors.apellidos[0] }}
-                                    </div>   
+                                    <span v-if="errors.apellidos" class="text-danger">{{ errors.apellidos[0] }}</span>
                                 </b-form-group>
                             </b-col>                        
                         </b-row>                                 
@@ -76,22 +69,31 @@ export default {
     props: ["particular"],    
     data() {
         return {
-            app_url: this.$root.app_url,                            
+            app_url: this.$root.app_url,   
+            errors: []                         
         };
     },        
     methods: {        
         async registrar() {
             try {
-                const response = await axios.post(`${this.app_url}/registrarParticular`, this.particular)
-                console.log(response.data)
+                const response = await axios.post(`${this.app_url}/registrarParticular`, this.particular)                
                 if (!response.data.error) {
                     this.mostrarComprobante(this.particular)                    
                 }
                 else {
                     alert(response.data.errorMessage)
                 }               
-            } catch (error) {
-                console.log(error)
+            } catch (error) {                
+                if (error.response.status == 422) {                    
+                  this.errors = error.response.data.errors;
+                } else {
+                  this.$bvToast.toast('No se pudo registrar el particular.', {
+                        title: 'Registro particular',
+                        variant: 'danger',
+                        toaster: 'b-toaster-bottom-right',
+                        solid: true
+                    })
+                }
             }      
         },
         mostrarComprobante(particular) {       
