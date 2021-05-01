@@ -13,7 +13,7 @@ class CreateNotacreditoTable extends Migration
      */
     public function up()
     {
-        Schema::create('notacredito', function (Blueprint $table) {
+        Schema::create('nota_credito', function (Blueprint $table) {
             $table->id();
             $table->string('codigo', 20)->unique();
             $table->char('cui', 8)->nullable();
@@ -58,6 +58,6 @@ class CreateNotacreditoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notacredito');
+        Schema::dropIfExists('nota_credito');
     }
 }
