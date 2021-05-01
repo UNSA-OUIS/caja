@@ -267,9 +267,11 @@
               @click="mostrarMenu(3)"
               :class="{
                 'mm-active':
-                  path == 'dashboard sunat' ||
+                  path == 'dashboard-sunat' ||
                   path == 'facturas' ||
-                  path == 'boletas',
+                  path == 'boletas' ||
+                  path == 'notas-credito' ||
+                  path == 'notas-debito',
               }"
             >
               <i class="uil-upload"></i>
@@ -278,16 +280,30 @@
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
               <li
                 :class="{
-                  'mm-active': path == 'dashboard sunat',
+                  'mm-active': path == 'dashboard-sunat',
                 }"
               >
                 <inertia-link
                   :href="route('sunat.tablero')"
                   :class="{
-                    active: path == 'dashboard sunat',
+                    active: path == 'dashboard-sunat',
                   }"
                 >
                   Dashboard Sunat
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'boletas',
+                }"
+              >
+                <inertia-link
+                  :href="route('sunat.iniciarBoletas')"
+                  :class="{
+                    active: path == 'boletas',
+                  }"
+                >
+                  Boletas
                 </inertia-link>
               </li>
               <li
@@ -306,16 +322,30 @@
               </li>
               <li
                 :class="{
-                  'mm-active': path == 'boletas',
+                  'mm-active': path == 'notas-credito',
                 }"
               >
                 <inertia-link
-                  :href="route('sunat.iniciarBoletas')"
+                  :href="route('sunat.iniciarFacturas')"
                   :class="{
-                    active: path == 'boletas',
+                    active: path == 'notas-credito',
                   }"
                 >
-                  Boletas
+                  Notas de Credito
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'notas-debito',
+                }"
+              >
+                <inertia-link
+                  :href="route('sunat.iniciarFacturas')"
+                  :class="{
+                    active: path == 'notas-debito',
+                  }"
+                >
+                  Notas de Debito
                 </inertia-link>
               </li>
             </ul>
