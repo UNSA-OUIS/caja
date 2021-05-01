@@ -8,14 +8,13 @@
                             <b-col cols="6">
                                 <b-form-group id="input-group-1" label="RUC:" label-for="input-1">
                                     <b-form-input
+                                        class="text-center"
                                         id="input-1"
                                         v-model="empresa.ruc"
                                         type="text"
                                         readonly                                                                   
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.ruc" class="text-danger">
-                                        {{ $page.props.errors.ruc[0] }}
-                                    </div>   
+                                    <span v-if="errors.ruc" class="text-danger">{{ errors.ruc[0] }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col cols="6">
@@ -26,9 +25,7 @@
                                         type="text"
                                         placeholder="Ingrese correo electrónico"                                                                   
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.email" class="text-danger">
-                                        {{ $page.props.errors.email[0] }}
-                                    </div>   
+                                    <span v-if="errors.email" class="text-danger">{{ errors.email[0] }}</span>
                                 </b-form-group>
                             </b-col>                        
                         </b-row>
@@ -41,9 +38,7 @@
                                         type="text"
                                         placeholder="Ingrese razón social"                                                                 
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.razon_social" class="text-danger">
-                                        {{ $page.props.errors.razon_social[0] }}
-                                    </div>   
+                                    <span v-if="errors.razon_social" class="text-danger">{{ errors.razon_social[0] }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col cols="6">
@@ -54,9 +49,7 @@
                                         type="text"
                                         placeholder="Ingrese domicilio legal"                                                                 
                                     ></b-form-input>
-                                    <div v-if="$page.props.errors.direccion" class="text-danger">
-                                        {{ $page.props.errors.direccion[0] }}
-                                    </div>   
+                                    <span v-if="errors.direccion" class="text-danger">{{ errors.direccion[0] }}</span>
                                 </b-form-group>
                             </b-col>                        
                         </b-row>                                 
@@ -76,7 +69,8 @@ export default {
     props: ["empresa"],    
     data() {
         return {
-            app_url: this.$root.app_url,                            
+            app_url: this.$root.app_url, 
+            errors: []                           
         };
     },        
     methods: {        
@@ -90,7 +84,16 @@ export default {
                     alert(response.data.errorMessage)
                 }               
             } catch (error) {
-                console.log(error)
+                if (error.response.status == 422) {                    
+                  this.errors = error.response.data.errors;
+                } else {
+                  this.$bvToast.toast('No se pudo registrar la empresa.', {
+                        title: 'Registro empresa',
+                        variant: 'danger',
+                        toaster: 'b-toaster-bottom-right',
+                        solid: true
+                    })
+                }
             }      
         },
         mostrarComprobante(empresa) {       

@@ -2,22 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Comprobante;
-use App\Models\Concepto;
-use App\Models\Matricula;
-use App\Models\Escuela;
-use App\Models\Alumno;
-use App\Models\Docente;
 use App\Models\Dependencia;
-use App\Models\Particular;
-use App\Http\Requests\ParticularStoreRequest;
 use App\Jobs\EnviarCorreosJob;
 use App\Mail\CobroRealizadoMailable;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -37,47 +30,7 @@ class ComprobanteController extends Controller
         }
 
         return $query->paginate($request->size);
-    }
-
-    public function buscarCuiAlumno($cui)
-    {
-        $alumno = Alumno::where('cui', $cui)->first();
-        $matriculas = Matricula::with('escuela')->where('cui', $cui)->get();
-
-        return [
-            'alumno' => $alumno,
-            'matriculas' => $matriculas
-        ];
-    }
-
-    public function buscarApnAlumno(Request $request)
-    {
-        $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
-            //->orWhere('apn', 'like', '%' . $request->ap_materno)
-            //->orWhere('apn', 'like', $request->nombres)
-            ->take(10)
-            ->get();
-
-        return $alumnos;
-    }
-
-    public function buscarCodigoDocente($codigo)
-    {
-        $docente = Docente::where('codper', $codigo)->first();
-
-        return json_encode($docente);
-    }
-
-    public function buscarApnDocente(Request $request)
-    {
-        $docentes = Docente::where('apn', 'like', $request->ap_paterno . '%')
-            //->orWhere('apn', 'like', '%' . $request->ap_materno)
-            //->orWhere('apn', 'like', $request->nombres)
-            ->take(10)
-            ->get();
-
-        return $docentes;
-    }
+    }        
 
     public function buscarCodigoDependencia($codigo)
     {
@@ -93,58 +46,10 @@ class ComprobanteController extends Controller
             ->get();
 
         return $dependencias;
-    }
-
-    public function buscarDniParticular($dni)
-    {
-        $particular = Particular::where('dni', $dni)->first();
-
-        return json_encode($particular);
-    }
-
-    public function buscarApnParticular(Request $request)
-    {
-        $particulares = Particular::where('apellidos', 'like', $request->ap_paterno . '%')
-            ->take(10)
-            ->get();
-
-        return $particulares;
-    }
-
-    public function registrarParticular(ParticularStoreRequest $request)
-    {
-        try {
-            $particular = new Particular();
-            $particular->dni = $request->dni;
-            $particular->nombres = $request->nombres;
-            $particular->apellidos = $request->apellidos;
-            $particular->email = $request->email;
-            $particular->save();
-            $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
-        } catch (\Exception $e) {
-            $result = ['errorMessage' => 'No se pudo registrar al particular', 'error' => true];
-            Log::error('ComprobanteController@registrarParticular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
-        }
-
-        return $result;
-    }
-
-    public function buscarConcepto(Request $request)
-    {
-        $filtro = $request->filtro;
-
-        $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
-            ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-            ->select('id', 'codigo', 'descripcion', 'precio')
-            ->orderBy('descripcion', 'asc')
-            ->get();
-
-        return $conceptos;
-    }
+    }        
 
     public function create(Request $request)
     {
-
         if ($request->has('tipo_usuario')) {
             $ultimo = Comprobante::latest('created_at')->first();
             $comprobante = new Comprobante();
@@ -156,6 +61,9 @@ class ComprobanteController extends Controller
                 $comprobante->codigo = $ultimo->codigo;
             }
             $comprobante->dni = "";
+            $comprobante->ruc = "";
+            $comprobante->razon_social = "";
+            $comprobante->direccion = "";
             $comprobante->email = "";
             $comprobante->escuela = "";
             $comprobante->nues = "";
@@ -189,6 +97,12 @@ class ComprobanteController extends Controller
                 $comprobante->dni = $request->particular['dni'];
                 $comprobante->email = $request->particular['email'];
                 $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
+            }
+            else if ($comprobante->tipo_usuario == 'empresa') {
+                $comprobante->ruc = $request->empresa['ruc'];
+                $comprobante->razon_social = $request->empresa['razon_social'];
+                $comprobante->email = $request->empresa['email'];
+                $comprobante->direccion = $request->empresa['direccion'];                
             }
 
             return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
@@ -239,10 +153,7 @@ class ComprobanteController extends Controller
     {
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
 
-        $conceptos = Concepto::select('id', 'codigo as value', 'descripcion as text', 'precio')
-            ->orderBy('descripcion', 'asc')
-            ->get();
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante', 'conceptos'));
+        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
     }
 
     public function edit($id)

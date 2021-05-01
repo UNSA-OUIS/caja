@@ -124,7 +124,7 @@
                                     :filterable="false"
                                     :options="conceptos"
                                     :reduce="concepto => concepto"
-                                    label="descripcion"
+                                    label="vista_concepto"
                                     placeholder="Ingrese código o descripción del concepto"
                                 >
                                     <template #search="{attributes, events}">
