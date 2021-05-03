@@ -188,7 +188,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
-    Route::get('/sunat/resumenDiario', [ResumenDiarioController::class, 'resumenDiario'])->name('resumen.enviar');
+    Route::post('/sunat/resumenDiario', [ResumenDiarioController::class, 'resumenDiario'])->name('resumen.enviar');
 
 
     Route::get('/sunat/facturas', function () {

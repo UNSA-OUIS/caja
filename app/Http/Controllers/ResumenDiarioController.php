@@ -4,57 +4,59 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Comprobante;
-use DateTime;
-use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
-use Greenter\Model\Sale\Invoice;
-use Greenter\Model\Sale\Legend;
-use Greenter\Model\Sale\SaleDetail;
+use Greenter\Model\Sale\Document;
 use Greenter\Model\Summary\Summary;
 use Greenter\Model\Summary\SummaryDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Luecano\NumeroALetras\NumeroALetras;
 
 class ResumenDiarioController extends Controller
 {
+    private $empresa;
+
+    function __construct()
+    {
+        $direccion_empresa = (new Address())
+            ->setUbigueo(config('caja.direccion.ubigeo'))
+            ->setDepartamento(config('caja.direccion.departamento'))
+            ->setProvincia(config('caja.direccion.provincia'))
+            ->setDistrito(config('caja.direccion.distrito'))
+            ->setUrbanizacion(config('caja.direccion.urbanizacion'))
+            ->setDireccion(config('caja.direccion.direccion'))
+            ->setCodLocal(config('caja.direccion.codigo_local')); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
+
+        $this->empresa = (new Company())
+            ->setRuc(config('caja.empresa.ruc'))
+            ->setRazonSocial(config('caja.empresa.razon_social'))
+            ->setNombreComercial(config('caja.empresa.nombre_comercial'))
+            ->setAddress($direccion_empresa);
+    }
 
     public function resumenDiario(Request $request)
     {
-        //$this->authorize("viewAny", Comprobante::class);
-
-        $see = require storage_path() . '\app\public\config.php';
-
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'B' . '%');
-
-        $sortby = $request->sortby;
-
-        if ($sortby && !empty($sortby)) {
-            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
-            $query = $query->orderBy($sortby, $sortdirection);
-        }
-
-        $boletas = $query->paginate($request->size)->all();
-        //return $boletas;
-
-        $company = new Company();
-        $company->setRuc('20163646499')
-            ->setRazonSocial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
-            ->setNombreComercial('UNIVERSIDAD NACIONAL DE SAN AGUSTIN')
-            ->setAddress((new Address())
-                ->setUbigueo('150101')
-                ->setDepartamento('AREQUIPA')
-                ->setProvincia('AREQUIPA')
-                ->setDistrito('AREQUIPA')
-                ->setUrbanizacion('-')
-                ->setDireccion('CALLE SANTA CATALINA 117')
-                ->setCodLocal('0000'));
+        $see = require config_path('Sunat\config.php');
 
         $detail = new SummaryDetail();
-        $detail->setTipoDoc('03') // Boleta
+        $detail->setTipoDoc('07') // Nota de Credito
+            ->setSerieNro('B001-4')
+            ->setDocReferencia((new Document()) // Documento relacionado (Boleta)
+                ->setTipoDoc('03')
+                ->setNroDoc('B001-1'))
+            ->setEstado('1') // Emisión
+            ->setClienteTipo('1') // Tipo documento identidad: DNI
+            ->setClienteNro('00000000') // Nro de documento identidad
+            ->setTotal(200)
+            ->setMtoOperGravadas(40)
+            ->setMtoOperExoneradas(50)
+            ->setMtoOperInafectas(100)
+            ->setMtoIGV(7.2)
+            ->setMtoISC(2.8);
+
+        $detail2 = new SummaryDetail();
+        $detail2->setTipoDoc('03') // Boleta
             ->setSerieNro('B001-2')
             ->setEstado('3') // Anulación
             ->setClienteTipo('1')
@@ -70,8 +72,8 @@ class ResumenDiarioController extends Controller
         $resumen->setFecGeneracion(new \DateTime('2020-08-01')) // Fecha de emisión de las boletas.
             ->setFecResumen(new \DateTime('2020-08-02')) // Fecha de envío del resumen diario.
             ->setCorrelativo('001') // Correlativo, necesario para diferenciar de otros Resumen diario del mismo día.
-            ->setCompany($company)
-            ->setDetails([$detail]);
+            ->setCompany($this->empresa)
+            ->setDetails([$detail, $detail2]);
 
         $result = $see->send($resumen);
         // Guardar XML
@@ -99,6 +101,45 @@ class ResumenDiarioController extends Controller
         echo $statusResult->getCdrResponse()->getDescription();
         // Guardar CDR
         file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
+
+        $html = new HtmlReport();
+        $html->setTemplate('invoice.html.twig');
+
+        $report = new PdfReport($html);
+
+        $report->setOptions([
+            'no-outline',
+            'viewport-size' => '1280x1024',
+            'page-width' => '21cm',
+            'page-height' => '29.7cm',
+        ]);
+        $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+        $params = [
+            'system' => [
+                'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+            ],
+            'user' => [
+                'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                'extras'     => [
+                    // Leyendas adicionales
+                    ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                    ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
+                ],
+                'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+            ]
+        ];
+
+        $pdf = $report->render($resumen, $params);
+
+        if ($pdf === null) {
+            $error = $report->getExporter()->getError();
+            echo 'Error: ' . $error;
+            return;
+        }
+
+        file_put_contents($resumen->getName() . '.pdf', $pdf);
     }
     public function filtrar(Request $request)
     {
@@ -111,5 +152,4 @@ class ResumenDiarioController extends Controller
             )->where('serie', 'like', 'B' . '%')->get();
         return ['comprobantes' => $comprobantes];
     }
-
 }

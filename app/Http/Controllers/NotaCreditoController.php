@@ -10,6 +10,8 @@ use Greenter\Model\Company\Company;
 use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\Note;
 use Greenter\Model\Sale\SaleDetail;
+use Greenter\Report\HtmlReport;
+use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -167,5 +169,44 @@ class NotaCreditoController extends Controller
             /*code: 0100 a 1999 */
             echo 'rechazado';
         }
+
+        $html = new HtmlReport();
+        $html->setTemplate('invoice.html.twig');
+
+        $report = new PdfReport($html);
+
+        $report->setOptions([
+            'no-outline',
+            'viewport-size' => '1280x1024',
+            'page-width' => '21cm',
+            'page-height' => '29.7cm',
+        ]);
+        $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+        $params = [
+            'system' => [
+                'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+            ],
+            'user' => [
+                'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                'extras'     => [
+                    // Leyendas adicionales
+                    ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                    ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
+                ],
+                'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+            ]
+        ];
+
+        $pdf = $report->render($note, $params);
+
+        if ($pdf === null) {
+            $error = $report->getExporter()->getError();
+            echo 'Error: ' . $error;
+            return;
+        }
+
+        file_put_contents($note->getName() . '.pdf', $pdf);
     }
 }

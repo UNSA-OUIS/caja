@@ -106,7 +106,7 @@ export default {
       this.$refs.tbl_comprobantes.refresh();
     },
     async filterTable() {
-      try {
+      /*try {
         let params =
           "&fechaInicio=" +
           this.filter.fechaInicio +
@@ -118,7 +118,8 @@ export default {
         this.comprobantes = response.data.comprobantes;
       } catch (error) {
         console.log(error);
-      }
+      }*/
+      this.$inertia.post(route("resumen.enviar"));
     },
   },
   computed: {
