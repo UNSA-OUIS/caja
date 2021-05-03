@@ -206,23 +206,23 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');
 
-    Route::get('/notas-credito', function () {
+    Route::get('/sunat/notas-credito', function () {
         return Inertia::render('Sunat/ListarNotasCredito');
     })->name('notas-credito.iniciar');
     Route::get('/notas-credito/listar', [NotaCreditoController::class, 'index'])->name('notas-credito.listar');
     Route::get('/notas-credito/crear', [NotaCreditoController::class, 'create'])->name('notas-credito.crear');
     Route::get('/notas-credito', [NotaCreditoController::class, 'store'])->name('notas-credito.registrar');
-    Route::post('/notas-credito/enviar/{comprobantes}', [NotaCreditoController::class, 'enviar'])->name('notas-credito.enviar');
-    Route::post('/notas-credito/anular/{comprobantes}', [NotaCreditoController::class, 'anular'])->name('notas-credito.anular');
+    Route::post('/notas-credito/enviar', [NotaCreditoController::class, 'enviar'])->name('notas-credito.enviar');
+    Route::post('/notas-credito/anular', [NotaCreditoController::class, 'anular'])->name('notas-credito.anular');
 
-    Route::get('/notas-debito', function () {
+    Route::get('/sunat/notas-debito', function () {
         return Inertia::render('Sunat/ListarNotasDebito');
     })->name('notas-debito.iniciar');
     Route::get('/notas-debito/listar', [NotadebitoController::class, 'index'])->name('notas-debito.listar');
     Route::get('/notas-debito/crear', [NotaDebitoController::class, 'create'])->name('notas-debito.crear');
     Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
-    Route::post('/notas-debito/enviar/{comprobantes}', [NotadebitoController::class, 'enviar'])->name('notas-debito.enviar');
-    Route::post('/notas-debito/anular/{comprobantes}', [NotadebitoController::class, 'anular'])->name('notas-debito.anular');
+    Route::post('/notas-debito/enviar', [NotaDebitoController::class, 'enviar'])->name('notas-debito.enviar');
+    Route::post('/notas-debito/anular', [NotaDebitoController::class, 'anular'])->name('notas-debito.anular');
     /*******************************************************************/
 
     /**************************** Reportes ***************************/

@@ -71,7 +71,7 @@
           </b-col>
         </b-row>
         <b-table
-          ref="tbl_tipo_comprobante"
+          ref="tbl_notas_credito"
           show-empty
           striped
           hover
@@ -88,8 +88,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay tipos de comprobante para mostrar"
-          empty-filtered-text="No hay tipos de comprobante que coincidan con su búsqueda."
+          empty-text="No hay notas de credito para mostrar"
+          empty-filtered-text="No hay notas de credito que coincidan con su búsqueda."
         >
           <template v-slot:cell(condicion)="row">
             <b-badge v-if="!row.item.deleted_at" variant="success"
@@ -147,7 +147,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "tipo-comprobante.listar",
+  name: "notas-credito.listar",
   components: {
     AppLayout,
   },
@@ -156,8 +156,11 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "id", label: "ID", sortable: true, class: "text-center" },
-        { key: "nombre", label: "Tipo de Comprobante", sortable: true },
-        { key: "condicion", label: "Condición", class: "text-center" },
+        { key: "codigo", label: "Codigo", sortable: true },
+        { key: "serie", label: "Serie", class: "text-center" },
+        { key: "correlativo", label: "Correlativo", class: "text-center" },
+        { key: "codigo_motivo", label: "Codigo Motivo", class: "text-center" },
+        { key: "descripcion_motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -173,7 +176,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_tipo_comprobante.refresh();
+      this.$refs.tbl_notas_credito.refresh();
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -187,14 +190,14 @@ export default {
       }
 
       const promise = axios.get(
-        `${this.app_url}/tipo-comprobante/listar${params}`
+        `${this.app_url}/notas-credito/listar${params}`
       );
 
       return promise.then((response) => {
-        const tipoComprobante = response.data.data;
+        const notaCredito = response.data.data;
         this.totalRows = response.data.total;
 
-        return tipoComprobante || [];
+        return notaCredito || [];
       });
     },
     eliminar(tipo_comprobante) {

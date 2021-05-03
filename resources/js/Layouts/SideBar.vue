@@ -340,7 +340,7 @@
                 }"
               >
                 <inertia-link
-                  :href="route('facturas.iniciar')"
+                  :href="route('notas-debito.iniciar')"
                   :class="{
                     active: path == 'notas-debito',
                   }"
