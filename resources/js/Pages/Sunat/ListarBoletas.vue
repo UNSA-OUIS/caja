@@ -1,73 +1,160 @@
 <template>
   <app-layout>
-    <PeriodoMenu :tab="0" />
-    <div class="card" ref="content">
+    <div class="card">
       <div class="card-header">
         <h1>Boletas</h1>
       </div>
       <div class="card-body">
         <b-row>
-          <b-col cols="4">
+          <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
-              label="Fecha inicio: "
-              label-cols-sm="5"
+              label="Registros por página: "
+              label-cols-sm="6"
               label-align-sm="right"
               label-size="sm"
-              label-for="startDate"
+              label-for="perPageSelect"
               class="mb-0"
             >
-              <b-form-datepicker
-                id="startDate"
-                v-model="filter.fechaInicio"
-                today-button
-                reset-button
-                close-button
-                placeholder="Elige una fecha"
+              <b-form-select
+                v-model="perPage"
+                id="perPageSelect"
                 size="sm"
-              ></b-form-datepicker>
+                :options="pageOptions"
+              ></b-form-select>
             </b-form-group>
           </b-col>
-          <b-col cols="4">
+          <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
             <b-form-group
-              label="Fecha fin: "
-              label-cols-sm="4"
+              label="Buscar: "
+              label-cols-sm="3"
               label-align-sm="right"
               label-size="sm"
-              label-for="endDate"
+              label-for="filterInput"
               class="mb-0"
             >
-              <b-form-datepicker
-                id="endDate"
-                v-model="filter.fechaFin"
-                today-button
-                reset-button
-                close-button
-                placeholder="Elige una fecha"
-                size="sm"
-              ></b-form-datepicker>
+              <b-input-group size="sm">
+                <b-form-input
+                  v-model="filter"
+                  type="search"
+                  id="filterInput"
+                  placeholder="Escriba el texto a buscar..."
+                ></b-form-input>
+                <b-input-group-append>
+                  <b-button :disabled="!filter" @click="filter = ''"
+                    >Limpiar</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
             </b-form-group>
           </b-col>
         </b-row>
-        <b-button
-          class="btn btn-success float-right mt-2 mb-2"
-          @click="filterTable()"
-          >Generar reporte</b-button
-        >
         <b-table
-          ref="tbl_comprobantes"
+          ref="tbl_boletas"
           show-empty
           striped
           hover
-          sticky-header
           bordered
           small
           responsive
-          :items="comprobantes"
+          stacked="md"
+          :items="myProvider"
           :fields="fields"
-          empty-text="No hay comprobantes para mostrar"
-          empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+          :current-page="currentPage"
+          :per-page="perPage"
+          :filter="filter"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          :sort-direction="sortDirection"
+          @filtered="onFiltered"
+          empty-text="No hay boletas para mostrar"
+          empty-filtered-text="No hay boletas que coincidan con su búsqueda."
         >
+          <template v-slot:cell(estado)="row">
+            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
+              >No Enviado</b-badge
+            >
+            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
+              >Observado
+            </b-badge>
+            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
+              >Rechazado</b-badge
+            >
+            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
+              >Anulado</b-badge
+            >
+            <div v-if="row.item.estado == 'aceptado'">
+              <b-badge variant="success">Aceptado</b-badge>
+              <br />
+              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
+              <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
+            </div>
+          </template>
+          <template v-slot:cell(acciones)="row">
+            <b-button
+              v-if="
+                row.item.estado == 'aceptado' || row.item.estado == 'observado'
+              "
+              target="_blank"
+              variant="primary"
+              size="sm"
+              title="Ver"
+              :href="`${app_url}/${row.item.url_pdf}`"
+            >
+              <b-icon icon="printer"></b-icon>
+            </b-button>
+            <b-button
+              v-if="row.item.estado == 'noEnviado'"
+              variant="danger"
+              size="sm"
+              title="Anular"
+              @click="anular(row.item)"
+            >
+              <b-icon icon="x-circle"></b-icon>
+            </b-button>
+            <b-button
+              v-if="
+                row.item.estado == 'observado' || row.item.estado == 'noEnviado'
+              "
+              variant="success"
+              size="sm"
+              title="Enviar"
+              @click="enviar(row.item)"
+            >
+              <b-icon icon="cloud-arrow-up"></b-icon>
+            </b-button>
+            <b-button
+              v-if="
+                row.item.estado == 'observado' || row.item.estado == 'aceptado'
+              "
+              size="sm"
+              @click="row.toggleDetails"
+            >
+              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
+              <b-icon v-else icon="plus-circle"></b-icon>
+            </b-button>
+          </template>
+          <template #row-details="row">
+            <b-card>
+              <ul>
+                <li>
+                  {{ row.item.observaciones }}
+                </li>
+              </ul>
+            </b-card>
+          </template>
         </b-table>
+        <b-row>
+          <b-col offset-md="8" md="4" class="my-1">
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="fill"
+              size="sm"
+              class="my-0"
+            ></b-pagination>
+          </b-col>
+        </b-row>
       </div>
     </div>
   </app-layout>
@@ -78,7 +165,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.filtrar",
+  name: "sunat.listarBoletas",
   components: {
     AppLayout,
   },
@@ -86,74 +173,100 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "codigo", label: "Código" },
-        { key: "serie", label: "Serie" },
-        { key: "correlativo", label: "Correlativo" },
-        { key: "cui", label: "Cliente" },
-        { key: "total", label: "Precio Total" },
+        {
+          key: "tipo_comprobante.nombre",
+          label: "Tipo comprobante",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "codi_usuario",
+          label: "Código usuario",
+          class: "text-center",
+          sortable: true,
+        },
+        { key: "serie", label: "Serie", class: "text-center", sortable: true },
+        {
+          key: "correlativo",
+          label: "Correlativo",
+          class: "text-center",
+          sortable: true,
+        },
+        { key: "estado", label: "Estado", class: "text-center" },
+        { key: "acciones", label: "Acciones", class: "text-center" },
       ],
-      comprobantes: [],
+      index: 1,
+      totalRows: 1,
       currentPage: 1,
       perPage: 5,
-      filter: {
-        fechaInicio: "",
-        fechaFin: "",
-      },
+      pageOptions: [5, 10, 15],
+      sortBy: null,
+      sortDesc: false,
+      sortDirection: "asc",
+      filter: null,
     };
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_comprobantes.refresh();
+      this.$refs.tbl_boletas.refresh();
     },
-    async filterTable() {
-      /*try {
-        let params =
-          "&fechaInicio=" +
-          this.filter.fechaInicio +
-          "&fechaFin=" +
-          this.filter.fechaFin;
-        const response = await axios.get(
-          `${this.app_url}/sunat/filtrar${params}`
-        );
-        this.comprobantes = response.data.comprobantes;
-      } catch (error) {
-        console.log(error);
-      }*/
-      this.$inertia.post(route("resumen.enviar"));
-    },
-  },
-  computed: {
-    grupoFilter() {
-      var group = this.comprobantes;
+    myProvider(ctx) {
+      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
 
-      group =
-        this.fechaInicio && this.fechaFin
-          ? group.filter(
-              (item) =>
-                new Date(item.created_at.slice(0, 10).split("-")) >=
-                  new Date(this.fechaInicio.split("-")) &&
-                new Date(item.created_at.slice(0, 10).split("-")) <=
-                  new Date(this.fechaFin.split("-"))
-            )
-          : group;
-      return group;
-    },
-    computed: {
-      grupoFilter() {
-        var group = this.comprobantes;
+      if (ctx.filter !== "" && ctx.filter !== null) {
+        params += "&filter=" + ctx.filter;
+      }
 
-        group =
-          this.fechaInicio && this.fechaFin
-            ? group.filter(
-                (item) =>
-                  new Date(item.created_at.slice(0, 10).split("-")) >=
-                    new Date(this.fechaInicio.split("-")) &&
-                  new Date(item.created_at.slice(0, 10).split("-")) <=
-                    new Date(this.fechaFin.split("-"))
-              )
-            : group;
-        return group;
-      },
+      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
+        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
+      }
+
+      const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
+
+      return promise.then((response) => {
+        const boleta = response.data.data;
+        console.log(boleta);
+        this.totalRows = response.data.total;
+
+        return boleta || [];
+      });
+    },
+
+    enviar(factura) {
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
+          title: "Enviar factura",
+          okVariant: "success",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            this.$inertia.post(route("facturas.enviar", [factura]));
+            this.refreshTable();
+          }
+        });
+    },
+    anular(factura) {
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
+          title: "Anular factura",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            this.$inertia.post(route("facturas.anular", [factura]));
+            this.refreshTable();
+          }
+        });
+    },
+    onFiltered(filteredItems) {
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     },
   },
 };

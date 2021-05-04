@@ -12,7 +12,7 @@ use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Luecano\NumeroALetras\NumeroALetras;
 
@@ -46,7 +46,8 @@ class BoletaController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'B' . '%');
+        $query = Comprobante::with('tipo_comprobante')
+            ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 

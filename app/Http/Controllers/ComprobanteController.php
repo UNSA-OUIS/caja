@@ -22,8 +22,8 @@ class ComprobanteController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('tipo_comprobante')
-                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
-         
+            ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
+
 
         $sortby = $request->sortby;
 
@@ -33,7 +33,7 @@ class ComprobanteController extends Controller
         }
 
         return $query->paginate($request->size);
-    }        
+    }
 
     public function buscarCodigoDependencia($codigo)
     {
@@ -49,11 +49,11 @@ class ComprobanteController extends Controller
             ->get();
 
         return $dependencias;
-    }        
+    }
 
     public function crear_alumno(Request $request)
-    {   
-        $comprobante = new Comprobante();      
+    {
+        $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "alumno";
         $comprobante->codi_usuario = $request->alumno['cui'];
@@ -63,15 +63,15 @@ class ComprobanteController extends Controller
         $comprobante->correlativo = "00000001";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
-        $comprobante->total = "";             
+        $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->alumno['dic'],
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',            
+            'email' => 'sizaisi@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -79,8 +79,8 @@ class ComprobanteController extends Controller
     }
 
     public function crear_docente(Request $request)
-    {   
-        $comprobante = new Comprobante();      
+    {
+        $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "docente";
         $comprobante->codi_usuario = $request->docente['codper'];
@@ -90,15 +90,15 @@ class ComprobanteController extends Controller
         $comprobante->correlativo = "00000001";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
-        $comprobante->total = "";            
+        $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => $request->docente['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',      
-            'departamento' => 'Informática y Sistemas',            
+            'email' => 'sizaisi@unsa.edu.pe',
+            'departamento' => 'Informática y Sistemas',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -106,8 +106,8 @@ class ComprobanteController extends Controller
     }
 
     public function crear_dependencia(Request $request)
-    {   
-        $comprobante = new Comprobante();      
+    {
+        $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "dependencia";
         $comprobante->codi_usuario = $request->dependencia['codi_depe'];
@@ -117,13 +117,13 @@ class ComprobanteController extends Controller
         $comprobante->correlativo = "00000001";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
-        $comprobante->total = "";            
+        $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         $data = [
-            'tipo_comprobante' => 'BOLETA',            
+            'tipo_comprobante' => 'BOLETA',
             'dependencia' => $request->dependencia['nomb_depe'],
-            'email' => 'sizaisi@unsa.edu.pe',                             
+            'email' => 'sizaisi@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -131,8 +131,8 @@ class ComprobanteController extends Controller
     }
 
     public function crear_particular(Request $request)
-    {   
-        $comprobante = new Comprobante();      
+    {
+        $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "particular";
         $comprobante->codi_usuario = $request->particular['dni'];
@@ -142,11 +142,11 @@ class ComprobanteController extends Controller
         $comprobante->correlativo = "00000001";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
-        $comprobante->total = "";         
+        $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         $data = [
-            'tipo_comprobante' => 'BOLETA',            
+            'tipo_comprobante' => 'BOLETA',
             'particular' => $request->particular['apellidos'] . ", " . $request->particular['nombres'],
             'email' => $request->particular['email'],
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
@@ -156,8 +156,8 @@ class ComprobanteController extends Controller
     }
 
     public function crear_empresa(Request $request)
-    {   
-        $comprobante = new Comprobante();      
+    {
+        $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "empresa";
         $comprobante->codi_usuario = $request->empresa['ruc'];
@@ -167,11 +167,11 @@ class ComprobanteController extends Controller
         $comprobante->correlativo = "00000001";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
-        $comprobante->total = "";            
+        $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         $data = [
-            'tipo_comprobante' => 'FACTURA',            
+            'tipo_comprobante' => 'FACTURA',
             'razon_social' => $request->empresa['razon_social'],
             'email' => $request->empresa['email'],
             'direccion' => $request->empresa['direccion'],
@@ -182,7 +182,7 @@ class ComprobanteController extends Controller
     }
 
     public function create(Request $request)
-    {        
+    {
         $ultimo = Comprobante::latest('created_at')->first();
         $comprobante = new Comprobante();
         $comprobante->tipo_usuario = $request->tipo_usuario;
@@ -220,19 +220,19 @@ class ComprobanteController extends Controller
         try {
             $comprobante = new Comprobante();
 
-            $comprobante->tipo_usuario = $request->tipo_usuario;  
-            $comprobante->codi_usuario = $request->codi_usuario;            
+            $comprobante->tipo_usuario = $request->tipo_usuario;
+            $comprobante->codi_usuario = $request->codi_usuario;
             $comprobante->nues_espe = $request->nues_espe;
-            $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;            
+            $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total_descuento = 10.00;
             $comprobante->total_impuesto = 100.00;
             $comprobante->total = $request->total;
-            $comprobante->estado = 'noEnviado';   
-            $comprobante->cajero_id = \Auth::user()->id;                        
+            $comprobante->estado = 'noEnviado';
+            $comprobante->cajero_id = \Auth::user()->id;
             $comprobante->save();
-            
+
             foreach ($request->detalles as $index => $detalle) {
                 $detalle_comprobante = new DetallesComprobante();
                 $detalle_comprobante->cantidad = $detalle['cantidad'];
