@@ -12,6 +12,12 @@ class Escuela extends Model
     protected $connection = "mysql";
     protected $table = 'actescu';
 
+    protected $hidden = [
+        'area', 'cegre', 'ctes', 'escu', 'muj', 'hom', 'total', 'facu',
+        'ffin', 'fin', 'flc', 'fln', 'napr', 'ncua', 'ninv', 'nive',
+        'nnor', 'nseg', 'nter', 'nues', 'espe',
+    ];
+
     public function matricula()
     {        
         return $this->belongsTo(Matricula::class, 'nues', 'nues');

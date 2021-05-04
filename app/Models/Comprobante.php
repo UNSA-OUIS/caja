@@ -11,7 +11,12 @@ class Comprobante extends Model
 
     protected $table = 'comprobantes';
 
-    protected $fillable = ['codigo', 'nues', 'serie', 'correlativo', 'total', 'estado'];
+    protected $fillable = ['codi_usuario', 'nues_depe', 'serie', 'correlativo', 'total', 'estado'];
+
+    public function tipo_comprobante()
+    {        
+        return $this->belongsTo(TipoComprobante::class);
+    }
 
     public function detalles()
     {

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Rol;
+use App\Models\TipoComprobante;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 //use Spatie\Permission\Models\Role;
@@ -60,6 +61,11 @@ class PermisoSeeder extends Seeder
         $user4->assignRole('Administrador');
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        TipoComprobante::create(['id' => '1', 'nombre' => 'BOLETA']);
+        TipoComprobante::create(['id' => '2', 'nombre' => 'FACTURA']);
+        TipoComprobante::create(['id' => '3', 'nombre' => 'NOTA DE DÉBITO']);
+        TipoComprobante::create(['id' => '4', 'nombre' => 'NOTA DE CRÉDITO']);
 
         Permission::create(['name' => 'Listar Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
@@ -123,6 +129,13 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Editar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Eliminar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+
+        Permission::create(['name' => 'Listar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Crear Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Mostrar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Editar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Eliminar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Restaurar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
 
     }
 }

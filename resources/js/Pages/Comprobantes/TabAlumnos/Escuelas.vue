@@ -47,8 +47,7 @@ export default {
     },    
     methods: {        
         mostrarComprobante(matricula) {       
-            this.$inertia.get(route('comprobantes.crear'), {
-                'tipo_usuario' : 'alumno',
+            this.$inertia.get(route('comprobantes.crear_alumno'), {                
                 'alumno' : this.alumno,
                 'matricula': matricula
             })

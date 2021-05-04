@@ -47,8 +47,7 @@ export default {
             }      
         },
         mostrarComprobante(dependencia) {       
-            this.$inertia.get(route('comprobantes.crear'), {
-                'tipo_usuario' : 'dependencia',
+            this.$inertia.get(route('comprobantes.crear_dependencia'), {                
                 'dependencia': dependencia
             })
         },  

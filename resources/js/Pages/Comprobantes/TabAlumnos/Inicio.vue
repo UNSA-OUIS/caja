@@ -14,9 +14,10 @@
                             <b-form-input
                                 id="cui"
                                 v-model="cui"
-                                class="mb-2 mr-sm-2 mb-sm-0"   
+                                class="mb-2 mr-sm-2 mb-sm-0 text-center"   
                                 required           
-                                form="cui_form"                              
+                                form="cui_form"                         
+                                maxlength="8"     
                             ></b-form-input>                                    
                         </td>
                         <td>
@@ -127,7 +128,7 @@ export default {
                 console.log(error)
             }      
         },
-        async buscarApnAlumno() {
+        async buscarApnAlumno() {            
             try {
                 const response = await axios.get(`${this.app_url}/buscarApnAlumno`, { 
                                         params: { 
@@ -152,8 +153,7 @@ export default {
             }      
         },
         mostrarComprobante(matricula) {       
-            this.$inertia.get(route('comprobantes.crear'), {
-                'tipo_usuario' : 'alumno',
+            this.$inertia.get(route('comprobantes.crear_alumno'), {                
                 'alumno' : this.alumno,
                 'matricula': matricula
             })

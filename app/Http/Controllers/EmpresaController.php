@@ -113,4 +113,38 @@ class EmpresaController extends Controller
         
         return redirect()->back()->with($result);
     }
+
+    public function buscarRucEmpresa($ruc)
+    {
+        $empresa = Empresa::where('ruc', $ruc)->first();
+
+        return json_encode($empresa);
+    }    
+
+    public function buscarRazonSocialEmpresa(Request $request)
+    {
+        $empresas = Empresa::where('razon_social', 'ilike', '%' . $request->razon_social . '%')
+                            ->take(10)
+                            ->get();
+
+        return $empresas;
+    }
+
+    public function registrarEmpresa(EmpresaStoreRequest $request)
+    {
+        try {
+            $empresa = new Empresa();
+            $empresa->ruc = $request->ruc;
+            $empresa->razon_social = $request->razon_social;
+            $empresa->email = $request->email;
+            $empresa->direccion = $request->direccion;            
+            $empresa->save();
+            $result = ['successMessage' => 'Empresa registrada con éxito', 'error' => false];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo registrar lar empresa', 'error' => true];
+            Log::error('EmpresaController@registrarEmpresa, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+
+        return $result;
+    }    
 }

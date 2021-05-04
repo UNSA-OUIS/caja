@@ -10,7 +10,7 @@
                     :fields="fields" 
                     :items="empresas"
                 >                       
-                    <template v-slot:cell(apn)="row">
+                    <template v-slot:cell(razon_social)="row">
                         <a href="#" @click="buscarRucEmpresa(row.item)">{{ row.item.razon_social }}</a>
                     </template>
                 </b-table>                
@@ -46,8 +46,7 @@ export default {
             }      
         },
         mostrarComprobante(empresa) {       
-            this.$inertia.get(route('comprobantes.crear'), {
-                'tipo_usuario' : 'empresa',
+            this.$inertia.get(route('comprobantes.crear_empresa'), {                
                 'empresa' : empresa,                
             })
         },  

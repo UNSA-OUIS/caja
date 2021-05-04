@@ -13,4 +13,9 @@ class TipoComprobante extends Model
     protected $table = 'tipo_comprobante';
 
     protected $fillable = ['nombre'];
+
+    public function comprobantes()
+    {
+        return $this->hasMany(Comprobante::class);
+    }
 }

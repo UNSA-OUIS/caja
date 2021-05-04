@@ -17,13 +17,13 @@
     </div>
 </template>
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-MLJWX7PGRH"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JPBL69C8V5"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-MLJWX7PGRH');
+  gtag('config', 'G-JPBL69C8V5');
 </script>
 <script>
     import JetApplicationMark from '@/Jetstream/ApplicationMark'
