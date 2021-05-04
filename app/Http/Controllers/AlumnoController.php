@@ -10,7 +10,7 @@ class AlumnoController extends Controller
 {
     public function buscarCuiAlumno($cui)
     {
-        $alumno = Alumno::where('cui', $cui)->first();
+        $alumno = Alumno::where('cui', $cui)->select('cui', 'dic', 'apn')->first();
         $matriculas = Matricula::with('escuela')->where('cui', $cui)->get();
 
         return [

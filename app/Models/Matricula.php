@@ -12,6 +12,11 @@ class Matricula extends Model
     protected $connection = "mysql";
     protected $table = 'acdidal';
 
+    protected $hidden = [
+        'cod0', 'cona', 'fcon', 'flc', 'fnc', 'cond', 'deta', 'digi', 'muj', 'fdig', 'sede',
+        'nmat', 'fln', 
+    ];
+
     public function escuela()
     {        
         return $this->hasOne(Escuela::class, 'nues', 'nues');

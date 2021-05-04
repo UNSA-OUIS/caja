@@ -97,8 +97,7 @@ export default {
             }      
         },
         mostrarComprobante(empresa) {       
-            this.$inertia.get(route('comprobantes.crear'), {
-                'tipo_usuario' : 'empresa',
+            this.$inertia.get(route('comprobantes.crear_empresa'), {                
                 'empresa': empresa
             })
         },  

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Comprobante;
 use App\Models\Dependencia;
@@ -20,7 +21,9 @@ class ComprobanteController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%');
+        $query = Comprobante::with('tipo_comprobante')
+                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
+         
 
         $sortby = $request->sortby;
 
@@ -48,67 +51,166 @@ class ComprobanteController extends Controller
         return $dependencias;
     }        
 
+    public function crear_alumno(Request $request)
+    {   
+        $comprobante = new Comprobante();      
+
+        $comprobante->tipo_usuario = "alumno";
+        $comprobante->codi_usuario = $request->alumno['cui'];
+        $comprobante->nues_espe = $request->matricula['nues'];
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
+        $comprobante->serie = "B001";
+        $comprobante->correlativo = "00000001";
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";             
+        $comprobante->detalles = array();
+        
+        $data = [
+            'tipo_comprobante' => 'BOLETA',
+            'dni' => $request->alumno['dic'],
+            'escuela' => $request->matricula['escuela']['nesc'],
+            'alumno' => $request->alumno['apn'],
+            'email' => 'sizaisi@unsa.edu.pe',            
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
+    public function crear_docente(Request $request)
+    {   
+        $comprobante = new Comprobante();      
+
+        $comprobante->tipo_usuario = "docente";
+        $comprobante->codi_usuario = $request->docente['codper'];
+        $comprobante->nues_espe = "";
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
+        $comprobante->serie = "B001";
+        $comprobante->correlativo = "00000001";
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";            
+        $comprobante->detalles = array();
+        
+        $data = [
+            'tipo_comprobante' => 'BOLETA',
+            'dni' => $request->docente['dic'],
+            'docente' => $request->docente['apn'],
+            'email' => 'sizaisi@unsa.edu.pe',      
+            'departamento' => 'Informática y Sistemas',            
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
+    public function crear_dependencia(Request $request)
+    {   
+        $comprobante = new Comprobante();      
+
+        $comprobante->tipo_usuario = "dependencia";
+        $comprobante->codi_usuario = $request->dependencia['codi_depe'];
+        $comprobante->nues_espe = "";
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
+        $comprobante->serie = "B001";
+        $comprobante->correlativo = "00000001";
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";            
+        $comprobante->detalles = array();
+        
+        $data = [
+            'tipo_comprobante' => 'BOLETA',            
+            'dependencia' => $request->dependencia['nomb_depe'],
+            'email' => 'sizaisi@unsa.edu.pe',                             
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
+    public function crear_particular(Request $request)
+    {   
+        $comprobante = new Comprobante();      
+
+        $comprobante->tipo_usuario = "particular";
+        $comprobante->codi_usuario = $request->particular['dni'];
+        $comprobante->nues_espe = "";
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
+        $comprobante->serie = "B001";
+        $comprobante->correlativo = "00000001";
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";         
+        $comprobante->detalles = array();
+        
+        $data = [
+            'tipo_comprobante' => 'BOLETA',            
+            'particular' => $request->particular['apellidos'] . ", " . $request->particular['nombres'],
+            'email' => $request->particular['email'],
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
+    public function crear_empresa(Request $request)
+    {   
+        $comprobante = new Comprobante();      
+
+        $comprobante->tipo_usuario = "empresa";
+        $comprobante->codi_usuario = $request->empresa['ruc'];
+        $comprobante->nues_espe = "";
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.FACTURA');
+        $comprobante->serie = "F001";
+        $comprobante->correlativo = "00000001";
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";            
+        $comprobante->detalles = array();
+        
+        $data = [
+            'tipo_comprobante' => 'FACTURA',            
+            'razon_social' => $request->empresa['razon_social'],
+            'email' => $request->empresa['email'],
+            'direccion' => $request->empresa['direccion'],
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
     public function create(Request $request)
-    {
-        if ($request->has('tipo_usuario')) {
-            $ultimo = Comprobante::latest('created_at')->first();
-            $comprobante = new Comprobante();
-            $comprobante->tipo_usuario = $request->tipo_usuario;
-            if (!$ultimo) {
-                $comprobante->codigo = 1;
-            } else {
-                $ultimo->codigo += 1;
-                $comprobante->codigo = $ultimo->codigo;
-            }
-            $comprobante->dni = "";
-            $comprobante->ruc = "";
-            $comprobante->razon_social = "";
-            $comprobante->direccion = "";
-            $comprobante->email = "";
-            $comprobante->escuela = "";
-            $comprobante->nues = "";
-            $comprobante->serie = "F001";
-            if (!$ultimo) {
-                $comprobante->correlativo = '00000001';
-            } else {
-                $ultimo->correlativo += 1;
-                $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
-            }
-            $comprobante->total = "";
-            $comprobante->observaciones = "";
-            $comprobante->url_xml = "";
-            $comprobante->url_cdr = "";
-            $comprobante->detalles = array();
-
-            if ($comprobante->tipo_usuario == 'alumno') {
-                $comprobante->codigo = $request->alumno['cui'];
-                $comprobante->dni = $request->alumno['dic'];
-                $comprobante->escuela = $request->matricula['escuela']['nesc'];
-                $comprobante->nues = $request->matricula['nues'];
-                $comprobante->usuario = $request->alumno['apn'];
-            } else if ($comprobante->tipo_usuario == 'docente') {
-                $comprobante->codigo = $request->docente['codper'];
-                $comprobante->dni = $request->docente['dic'];
-                $comprobante->usuario = $request->docente['apn'];
-            } else if ($comprobante->tipo_usuario == 'dependencia') {
-                $comprobante->codigo = $request->dependencia['codi_depe'];
-                $comprobante->usuario = $request->dependencia['nomb_depe'];
-            } else if ($comprobante->tipo_usuario == 'particular') {
-                $comprobante->dni = $request->particular['dni'];
-                $comprobante->email = $request->particular['email'];
-                $comprobante->usuario = $request->particular['apellidos'] . ", " . $request->particular['nombres'];
-            }
-            else if ($comprobante->tipo_usuario == 'empresa') {
-                $comprobante->ruc = $request->empresa['ruc'];
-                $comprobante->razon_social = $request->empresa['razon_social'];
-                $comprobante->email = $request->empresa['email'];
-                $comprobante->direccion = $request->empresa['direccion'];                
-            }
-
-            return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+    {        
+        $ultimo = Comprobante::latest('created_at')->first();
+        $comprobante = new Comprobante();
+        $comprobante->tipo_usuario = $request->tipo_usuario;
+        if (!$ultimo) {
+            $comprobante->codigo = 1;
         } else {
-            return redirect()->route('comprobantes.iniciar');
+            $ultimo->codigo += 1;
+            $comprobante->codigo = $ultimo->codigo;
         }
+        $comprobante->dni = "";
+        $comprobante->ruc = "";
+        $comprobante->razon_social = "";
+        $comprobante->direccion = "";
+        $comprobante->email = "";
+        $comprobante->escuela = "";
+        $comprobante->nues = "";
+        $comprobante->serie = "F001";
+        if (!$ultimo) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultimo->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        $comprobante->total = "";
+        $comprobante->observaciones = "";
+        $comprobante->url_xml = "";
+        $comprobante->url_cdr = "";
+        $comprobante->detalles = array();
     }
 
     public function store(Request $request)
@@ -118,26 +220,25 @@ class ComprobanteController extends Controller
         try {
             $comprobante = new Comprobante();
 
-            $comprobante->codigo = $request->codigo;
-            $comprobante->cui = $request->cui;
-            $comprobante->nues = $request->nues;
+            $comprobante->tipo_usuario = $request->tipo_usuario;  
+            $comprobante->codi_usuario = $request->codi_usuario;            
+            $comprobante->nues_espe = $request->nues_espe;
+            $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;            
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
+            $comprobante->total_descuento = 10.00;
+            $comprobante->total_impuesto = 100.00;
             $comprobante->total = $request->total;
-            $comprobante->estado = 'noEnviado';
-            $comprobante->observaciones = '';
-            $comprobante->url_xml = '';
-            $comprobante->url_cdr = '';
-            $comprobante->url_pdf = '';
+            $comprobante->estado = 'noEnviado';   
+            $comprobante->cajero_id = \Auth::user()->id;                        
             $comprobante->save();
-
-            $detalles = $request->detalles;
-            foreach ($detalles as $index => $detalle) {
+            
+            foreach ($request->detalles as $index => $detalle) {
                 $detalle_comprobante = new DetallesComprobante();
                 $detalle_comprobante->cantidad = $detalle['cantidad'];
                 $detalle_comprobante->valor_unitario =  $detalle['precio'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
-                $detalle_comprobante->concepto_id =  $detalle['id'];
+                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
                 $detalle_comprobante->comprobante_id =  $comprobante->id;
                 $detalle_comprobante->save();
             }
