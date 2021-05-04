@@ -7,6 +7,7 @@ use DateTime;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
+use Greenter\Model\Sale\Detraction;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
@@ -105,7 +106,9 @@ class FacturaController extends Controller
                 ->setCode('1000') // Monto en letras - Catalog. 52
                 ->setValue($montoLetras);
 
-            $invoice->setDetails($items)->setLegends([$legend]);
+            $invoice->setDetails($items)->setLegends([$legend, (new Legend())
+                ->setCode('2006')
+                ->setValue('Operación sujeta a detracción')]);
 
             $invoice
                 ->setUblVersion('2.1')
@@ -123,7 +126,18 @@ class FacturaController extends Controller
                 ->setTotalImpuestos($igv)
                 ->setValorVenta($total_agravadas)
                 ->setSubTotal($total_agravadas + $igv)
-                ->setMtoImpVenta($total_agravadas + $igv);
+                ->setMtoImpVenta($total_agravadas + $igv)
+                ->setDetraccion(
+                    // MONEDA SIEMPRE EN SOLES
+                    (new Detraction())
+                        // Carnes y despojos comestibles
+                        ->setCodBienDetraccion('014') // catalog. 54
+                        // Deposito en cuenta
+                        ->setCodMedioPago('001') // catalog. 59
+                        ->setCtaBanco('0004-3342343243')
+                        ->setPercent(4.00)
+                        ->setMount(37.76)
+                );
 
             $result = $see->send($invoice);
 
