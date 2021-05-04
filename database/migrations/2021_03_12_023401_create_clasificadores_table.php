@@ -14,7 +14,7 @@ class CreateClasificadoresTable extends Migration
     public function up()
     {
         Schema::create('clasificadores', function (Blueprint $table) {
-            $table->tinyIncrements('id');
+            $table->increments('id');
             $table->string('nombre', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
