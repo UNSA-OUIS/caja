@@ -121,7 +121,10 @@
                         >
                     </template>
                     <template v-slot:cell(acciones)="row">
-                        <inertia-link class="btn btn-info btn-sm">
+                        <inertia-link 
+                            class="btn btn-info btn-sm"
+                            :href="route('comprobantes.mostrar', row.item)"
+                        >
                             <b-icon icon="printer"></b-icon>
                         </inertia-link>
                         <inertia-link
@@ -171,9 +174,10 @@ export default {
         return {
             app_url: this.$root.app_url,
             fields: [
-                { key: "codigo", label: "Codigo", sortable: true },
-                { key: "serie", label: "Serie", sortable: true },
-                { key: "correlativo", label: "Correlativo", sortable: true },
+                { key: "tipo_comprobante.nombre", label: "Tipo comprobante", class: "text-center", sortable: true },
+                { key: "codi_usuario", label: "Código usuario", class: "text-center", sortable: true },
+                { key: "serie", label: "Serie", class: "text-center", sortable: true },
+                { key: "correlativo", label: "Correlativo", class: "text-center", sortable: true },
                 { key: "estado", label: "Estado", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
@@ -203,16 +207,13 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(
-                `${this.app_url}/comprobantes/listar${params}`
-            );
+            const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
 
             return promise.then(response => {
-                const comprobante = response.data.data;
-                console.log(comprobante);
+                const comprobantes = response.data.data;                
                 this.totalRows = response.data.total;
 
-                return comprobante || [];
+                return comprobantes || [];
             });
         },
         anular(comprobante) {

@@ -4,9 +4,8 @@
             <div class="card-header">
                 <ol class="breadcrumb float-left">
                     <li class="breadcrumb-item"><inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item active">Lista de particulares</li>                    
+                    <li class="breadcrumb-item active">Lista de dependencias</li>                    
                 </ol>              
-                <inertia-link class="btn btn-success float-right" :href="route('particulares.crear')">Nuevo</inertia-link>
             </div>
             <div class="card-body">      
                 <b-alert show variant="success" v-if="$page.props.successMessage">{{ $page.props.successMessage }}</b-alert>
@@ -48,7 +47,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_particulares"
+                    ref="tbl_dependencias"
                     show-empty
                     striped
                     hover
@@ -65,48 +64,20 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"   
-                    empty-text="No hay particulares para mostrar"
-                    empty-filtered-text="No hay particulares que coincidan con su búsqueda." 
+                    empty-text="No hay dependencias para mostrar"
+                    empty-filtered-text="No hay dependencias que coincidan con su búsqueda." 
                 >
-                    <template v-slot:cell(tipo_concepto)="row">
-                        {{ row.item.tipo_concepto.nombre }}
-                    </template>
-                    <template v-slot:cell(clasificador)="row">
-                        {{ row.item.clasificador.nombre }}
-                    </template>
-                    <template v-slot:cell(unidad_medida)="row">
-                        {{ row.item.unidad_medida.nombre }}
-                    </template>
-                    <template v-slot:cell(condicion)="row">
+                    <!-- <template v-slot:cell(condicion)="row">
                         <b-badge v-if="!row.item.deleted_at" variant="success">Activo</b-badge>
                         <b-badge v-else variant="secondary">Inactivo</b-badge>
-                    </template>
+                    </template> -->
                     <template v-slot:cell(acciones)="row">                        
                         <inertia-link 
-                            v-if="!row.item.deleted_at"
                             class="btn btn-primary btn-sm"
-                            :href="route('particulares.mostrar', row.item.id)"
+                            :href="route('dependencias.mostrar', row.item.codi_depe)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>             
-                        <b-button
-                            v-if="!row.item.deleted_at"
-                            variant="danger"
-                            size="sm"
-                            title="Eliminar"
-                            @click="eliminar(row.item)"
-                        >
-                            <b-icon icon="trash"></b-icon>
-                        </b-button>
-                        <b-button
-                            v-else
-                            variant="success"
-                            size="sm"
-                            title="Restaurar"
-                            @click="restaurar(row.item)"
-                        >
-                            <b-icon icon="check"></b-icon>
-                        </b-button>
                     </template>
                 </b-table>
                 <b-row>
@@ -132,7 +103,7 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "particulares.listar",        
+        name: "dependencias.listar",        
         components: {
             AppLayout,            
         },
@@ -140,12 +111,13 @@
             return {
                 app_url: this.$root.app_url,
                 fields: [
-                    { key: "id", label: "ID", sortable: true, class: "text-center" },
-                    { key: "dni", label: "DNI", sortable: true, class: "text-center" },
-                    { key: "nombres", label: "Nombres", sortable: true },
-                    { key: "apellidos", label: "Apellidos", sortable: true },
-                    { key: "email", label: "E-mail", sortable: true },  
-                    { key: "condicion", label: "Condición", class: "text-center" },                
+                    { key: "codi_depe", label: "Codigo", sortable: true, class: "text-center" },
+                    { key: "nomb_depe", label: "Nombre", sortable: true },
+                    { key: "noms_depe", label: "Nombre Impresion", sortable: true },
+                    { key: "nues_depe", label: "Nues", sortable: true },
+                    { key: "sigl_depe", label: "Sigla", sortable: true },                    
+                    { key: "codi_tipo", label: "Tipo" },                    
+                    // { key: "condicion", label: "Condición", class: "text-center" },                
                     { key: "acciones", label: "Acciones", class: "text-center" },
                 ],
                 index: 1,
@@ -161,9 +133,9 @@
         },        
         methods: {
             refreshTable() {
-                this.$refs.tbl_particulares.refresh();
+                this.$refs.tbl_dependencias.refresh();
             },     
-            myProvider(ctx) {                
+            myProvider(ctx) {     
                 let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
 
                 if (ctx.filter !== "" && ctx.filter !== null) {                    
@@ -174,44 +146,16 @@
                     params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
                 }
 
-                const promise = axios.get(`${this.app_url}/particulares/listar${params}`)
-                
-                return promise.then(response => {                       
-                    const particulares = response.data.data                                   
+                const promise = axios.get(`${this.app_url}/dependencias/listar${params}`)
+                return promise.then(response => {    
+                    const dependencias = response.data.data;                                   
                     this.totalRows = response.data.total;
 
-                    return particulares || []
-                })
-            },  
-            eliminar(particular) {                
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer eliminar este particular?", {
-                        title: "Eliminar particular",
-                        okVariant: "danger",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true,
-                    })
-                    .then((value) => {
-                        if (value) {                            
-                            this.$inertia.delete(route('particulares.eliminar', [particular.id]))                            
-                            this.refreshTable()
-                        }
-                    })     
-            },
-            async restaurar(particular) {
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer restaurar este particular?", {
-                        title: "Restaurar particular",
-                        okVariant: "primary",
-                        okTitle: "SI",
-                        cancelTitle: "NO",
-                        centered: true,
-                    })
-                    .then((value) => {
-                        if (value) { 
-                            this.$inertia.post(route('particulares.restaurar', [particular.id]))
-                            this.refreshTable()
-                        }
-                    })                   
+                    return dependencias || []
+                }).catch((e) => {
+                    console.log('Algo salió mal');
+                    console.log(e);
+                });
             },
             onFiltered(filteredItems) {
                 this.totalRows = filteredItems.length;

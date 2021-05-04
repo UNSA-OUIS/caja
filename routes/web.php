@@ -8,7 +8,10 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClasificadorController;
+use App\Http\Controllers\AlumnoController;
+use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ParticularController;
+use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\TipoComprobanteController;
@@ -19,6 +22,7 @@ use App\Http\Controllers\CuentasCorrientesController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\NotaDebitoController;
+use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ResumenDiarioController;
@@ -41,6 +45,16 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
+    
+    /**************************** API RENIEC SUNAT ***********************************/
+    Route::get('/api_dni/{dni}', function ($dni) {                
+        return file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+    });
+    Route::get('/api_ruc/{ruc}', function ($ruc) {                
+        return file_get_contents("https://dniruc.apisperu.com/api/v1/ruc/$ruc?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+    });
+    /*********************************************************************************/
+
     /**************************** CRUD ROLES ***********************************/
     Route::get('/roles', [RolController::class, 'index'])->name('roles.listar');
     Route::get('/roles/create', [RolController::class, 'create'])->name('roles.crear');
@@ -140,7 +154,18 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])->name('conceptos.eliminar');
     Route::post('/conceptos/{concepto}/restaurar', [ConceptoController::class, 'restore'])->name('conceptos.restaurar');
     Route::get('/buscarCentroCosto', [ConceptoController::class, 'buscarCentroCosto'])->name('conceptos.buscarCentroCosto');
+    Route::get('/buscarConcepto', [ConceptoController::class, 'buscarConcepto'])->name('conceptos.buscarConcepto');
     /*******************************************************************/
+    
+    /******************************* ALUMNOS *****************************/    
+    Route::get('/buscarCuiAlumno/{cui}', [AlumnoController::class, 'buscarCuiAlumno'])->name('alumnos.buscarCuiAlumno');
+    Route::get('/buscarApnAlumno', [AlumnoController::class, 'buscarApnAlumno'])->name('alumnos.buscarApnAlumno');
+    /*********************************************************************/
+
+    /******************************* DOCENTES ****************************/    
+    Route::get('/buscarCodigoDocente/{codigo}', [DocenteController::class, 'buscarCodigoDocente'])->name('docentes.buscarCodigoDocente');
+    Route::get('/buscarApnDocente', [DocenteController::class, 'buscarApnDocente'])->name('docentes.buscarApnDocente');
+    /*********************************************************************/
 
     /**************************** PARTICULARES ***************************/
     Route::get('/particulares', function () {
@@ -153,7 +178,35 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/particulares/{particular}', [ParticularController::class, 'update'])->name('particulares.actualizar');
     Route::delete('/particulares/{particular}', [ParticularController::class, 'destroy'])->name('particulares.eliminar');
     Route::post('/particulares/{particular}/restaurar', [ParticularController::class, 'restore'])->name('particulares.restaurar');
+    Route::get('/buscarDniParticular/{dni}', [ParticularController::class, 'buscarDniParticular'])->name('particulares.buscarDniParticular');
+    Route::post('/registrarParticular', [ParticularController::class, 'registrarParticular'])->name('particulares.registrarParticular');
+    Route::get('/buscarApnParticular', [ParticularController::class, 'buscarApnParticular'])->name('particulares.buscarApnParticular');
     /*********************************************************************/
+
+    /******************************* EMPRESAS ***************************/
+    Route::get('/empresas', function () {
+        return Inertia::render('Empresas/Listar');
+    })->name('empresas.iniciar');
+    Route::get('/empresas/listar', [EmpresaController::class, 'index'])->name('empresas.listar');
+    Route::get('/empresas/crear', [EmpresaController::class, 'create'])->name('empresas.crear');
+    Route::post('/empresas', [EmpresaController::class, 'store'])->name('empresas.registrar');
+    Route::get('/empresas/{empresa}', [EmpresaController::class, 'show'])->name('empresas.mostrar');
+    Route::post('/empresas/{empresa}', [EmpresaController::class, 'update'])->name('empresas.actualizar');
+    Route::delete('/empresas/{empresa}', [EmpresaController::class, 'destroy'])->name('empresas.eliminar');
+    Route::post('/empresas/{empresa}/restaurar', [EmpresaController::class, 'restore'])->name('empresas.restaurar');
+    Route::get('/buscarRucEmpresa/{ruc}', [EmpresaController::class, 'buscarRucEmpresa'])->name('empresas.buscarRucEmpresa');
+    Route::post('/registrarEmpresa', [EmpresaController::class, 'registrarEmpresa'])->name('empresas.registrarEmpresa');
+    Route::get('/buscarRazonSocialEmpresa', [EmpresaController::class, 'buscarRazonSocialEmpresa'])->name('empresas.buscarRazonSocialEmpresa');
+    /*********************************************************************/
+
+    /******************************* DEPENDENCIAS ***************************/
+    Route::get('/dependencias', function () {
+        return Inertia::render('Dependencias/Listar');
+    })->name('dependencias.iniciar');
+    Route::get('/dependencias/listar', [DependenciaController::class, 'index'])->name('dependencias.listar');
+    Route::get('/dependencias/{dependencia}', [DependenciaController::class, 'show'])->name('dependencias.mostrar');
+    /*********************************************************************/
+
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
@@ -165,21 +218,18 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
+    Route::get('/crear_alumno', [ComprobanteController::class, 'crear_alumno'])->name('comprobantes.crear_alumno');
+    Route::get('/crear_docente', [ComprobanteController::class, 'crear_docente'])->name('comprobantes.crear_docente');
+    Route::get('/crear_dependencia', [ComprobanteController::class, 'crear_dependencia'])->name('comprobantes.crear_dependencia');
+    Route::get('/crear_particular', [ComprobanteController::class, 'crear_particular'])->name('comprobantes.crear_particular');
+    Route::get('/crear_empresa', [ComprobanteController::class, 'crear_empresa'])->name('comprobantes.crear_empresa');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
-
-    Route::get('/buscarCuiAlumno/{cui}', [ComprobanteController::class, 'buscarCuiAlumno'])->name('comprobantes.buscarCuiAlumno');
-    Route::get('/buscarApnAlumno', [ComprobanteController::class, 'buscarApnAlumno'])->name('comprobantes.buscarApnAlumno');
-    Route::get('/buscarCodigoDocente/{codigo}', [ComprobanteController::class, 'buscarCodigoDocente'])->name('comprobantes.buscarCodigoDocente');
-    Route::get('/buscarApnDocente', [ComprobanteController::class, 'buscarApnDocente'])->name('comprobantes.buscarApnDocente');
+        
     Route::get('/buscarCodigoDependencia/{codigo}', [ComprobanteController::class, 'buscarCodigoDependencia'])->name('comprobantes.buscarCodigoDependencia');
-    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');
-    Route::get('/buscarDniParticular/{dni}', [ComprobanteController::class, 'buscarDniParticular'])->name('comprobantes.buscarDniParticular');
-    Route::post('/registrarParticular', [ComprobanteController::class, 'registrarParticular'])->name('comprobantes.registrarParticular');
-    Route::get('/buscarApnParticular', [ComprobanteController::class, 'buscarApnParticular'])->name('comprobantes.buscarApnParticular');
-    Route::get('/buscarConcepto', [ComprobanteController::class, 'buscarConcepto'])->name('comprobantes.buscarConcepto');
-    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
+    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');        
+    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');    
     /*******************************************************************/
 
     /**************************** Sunat ***************************/

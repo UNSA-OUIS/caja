@@ -4,68 +4,68 @@
             <div class="card-header">                
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><inertia-link :href="route('dashboard')">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item"><inertia-link :href="route('particulares.iniciar')">Lista de particulares</inertia-link></li>
-                    <li class="breadcrumb-item active">{{ accion }} particular</li>
+                    <li class="breadcrumb-item"><inertia-link :href="route('empresas.iniciar')">Lista de empresas</inertia-link></li>
+                    <li class="breadcrumb-item active">{{ accion }} empresa</li>
                 </ol>              
             </div>
             <div class="card-body">                  
                 <b-form @submit.prevent="enviar">
                     <b-row>
                         <b-col cols="6">
-                            <b-form-group id="input-group-1" label="DNI:" label-for="input-1">
+                            <b-form-group id="input-group-1" label="RUC:" label-for="input-1">
                                 <b-form-input
                                     id="input-1"
-                                    v-model="formData.dni"
+                                    v-model="formData.ruc"
                                     type="text"
-                                    placeholder="Ingrese DNI" 
+                                    placeholder="Ingrese RUC" 
                                     :readonly="accion == 'Mostrar'"                           
                                 ></b-form-input>
-                                <div v-if="$page.props.errors.dni" class="text-danger">
-                                    {{ $page.props.errors.dni[0] }}
+                                <div v-if="$page.props.errors.ruc" class="text-danger">
+                                    {{ $page.props.errors.ruc[0] }}
                                 </div>   
                             </b-form-group>
                         </b-col>
                         <b-col cols="6">
-                            <b-form-group id="input-group-2" label="Email:" label-for="input-2">
+                            <b-form-group id="input-group-2" label="Razón social:" label-for="input-2">
                                 <b-form-input
                                     id="input-2"
-                                    v-model="formData.email"
+                                    v-model="formData.razon_social"
                                     type="text"
-                                    placeholder="Ingrese correo electrónico" 
+                                    placeholder="Ingrese razón social" 
                                     :readonly="accion == 'Mostrar'"                           
                                 ></b-form-input>
-                                <div v-if="$page.props.errors.email" class="text-danger">
-                                    {{ $page.props.errors.email[0] }}
+                                <div v-if="$page.props.errors.razon_social" class="text-danger">
+                                    {{ $page.props.errors.razon_social[0] }}
                                 </div>   
                             </b-form-group>
                         </b-col>                        
                     </b-row>
                     <b-row>
                         <b-col cols="6">
-                            <b-form-group id="input-group-3" label="Nombres:" label-for="input-3">
+                            <b-form-group id="input-group-3" label="Email:" label-for="input-3">
                                 <b-form-input
                                     id="input-3"
-                                    v-model="formData.nombres"
+                                    v-model="formData.email"
                                     type="text"
-                                    placeholder="Ingrese Nombres" 
+                                    placeholder="Ingrese correo eletrónico" 
                                     :readonly="accion == 'Mostrar'"                           
                                 ></b-form-input>
-                                <div v-if="$page.props.errors.nombres" class="text-danger">
-                                    {{ $page.props.errors.nombres[0] }}
+                                <div v-if="$page.props.errors.email" class="text-danger">
+                                    {{ $page.props.errors.email[0] }}
                                 </div>   
                             </b-form-group>
                         </b-col>
                         <b-col cols="6">
-                            <b-form-group id="input-group-4" label="Apellidos:" label-for="input-4">
+                            <b-form-group id="input-group-4" label="Dirección:" label-for="input-4">
                                 <b-form-input
                                     id="input-4"
-                                    v-model="formData.apellidos"
+                                    v-model="formData.direccion"
                                     type="text"
-                                    placeholder="Ingrese apellidos" 
+                                    placeholder="Ingrese dirección" 
                                     :readonly="accion == 'Mostrar'"                           
                                 ></b-form-input>
-                                <div v-if="$page.props.errors.apellidos" class="text-danger">
-                                    {{ $page.props.errors.apellidos[0] }}
+                                <div v-if="$page.props.errors.direccion" class="text-danger">
+                                    {{ $page.props.errors.direccion[0] }}
                                 </div>   
                             </b-form-group>
                         </b-col>                        
@@ -84,32 +84,30 @@
     import AppLayout from '@/Layouts/AppLayout'    
 
     export default {
-        name: "particulares.nuevo-mostrar",
-        props: ["particular"],
+        name: "empresas.nuevo-mostrar",
+        props: ["empresa"],
         components: {
             AppLayout,                      
         },
         remember: 'formData',
         data() {
-            return {       
-                app_url: this.$root.app_url,             
+            return {        
+                app_url: this.$root.app_url,        
                 accion: '',
-                formData: this.particular              
+                formData: this.empresa
             }
-        },       
+        },    
         watch: {
-            'formData.dni': async function (val) {                
-                if (this.accion == 'Crear' && val.length == 8) { 
-                    this.formData.nombres = ''
-                    this.formData.apellidos = ''
+            'formData.ruc': async function (val) {                
+                if (this.accion == 'Crear' && val.length == 11) { 
+                    this.formData.razon_social = ''
+                    this.formData.direccion = ''
 
                     try {
-                        const response = await axios.get(`${this.app_url}/api_dni/${val}`)
+                        const response = await axios.get(`${this.app_url}/api_ruc/${val}`)
                         if (response.data) {                                                                                                         
-                                this.formData.nombres = response.data.nombres
-                                let apPaterno = response.data.apellidoPaterno
-                                let apMaterno = response.data.apellidoMaterno
-                                this.formData.apellidos = `${apPaterno} ${apMaterno}` 
+                                this.formData.razon_social = response.data.razonSocial
+                                this.formData.direccion = response.data.direccion
                         }
                     } catch (error) {
                         console.log(error)
@@ -138,10 +136,10 @@
                 }
             },         
             registrar() {                                         
-                this.$inertia.post(route('particulares.registrar'), this.formData)
+                this.$inertia.post(route('empresas.registrar'), this.formData)
             },       
             actualizar() {                
-                this.$inertia.post(route('particulares.actualizar', [this.formData.id]), this.formData)                
+                this.$inertia.post(route('empresas.actualizar', [this.formData.id]), this.formData)
             }            
         },
     }

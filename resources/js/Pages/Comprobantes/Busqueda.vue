@@ -35,16 +35,8 @@
                             </b-tab>
                         </b-tabs>                        
                     </b-tab>
-                    <b-tab title="Factura">                        
-                        <b-tabs
-                            active-nav-item-class="font-weight-bold text-uppercase text-danger"
-                            active-tab-class="font-weight-bold"
-                            content-class="mt-3"                                                                
-                        >
-                            <b-tab title="Empresas" active>                        
-                                <tab-empresas></tab-empresas>   
-                            </b-tab>                                
-                        </b-tabs>                        
+                    <b-tab title="Factura">                                                                   
+                        <tab-empresas></tab-empresas>                               
                     </b-tab>           
                     <b-tab title="Nota de débito">                                                                  
                     </b-tab>                    

@@ -15,4 +15,10 @@ return 	[
 		'direccion' => 'CALLE SANTA CATALINA 117',
 		'codigo_local' => '0000',		
 	],
+	'tipo_comprobante' => [
+		'BOLETA' => 1, 
+		'FACTURA' => 2,	
+		'NOTA_DEBITO' => 3,	
+		'NOTA_CREDITO' => 4,
+	],
 ];

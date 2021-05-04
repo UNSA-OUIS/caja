@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Dependencia extends Model
 {
@@ -11,4 +12,7 @@ class Dependencia extends Model
 
     protected $connection = "mysql2";
     protected $table = 'depe';
+    protected $primaryKey = 'codi_depe';
+    //protected $guarded = [];
+
 }
