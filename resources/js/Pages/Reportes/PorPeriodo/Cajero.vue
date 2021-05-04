@@ -237,11 +237,17 @@ export default {
                 ],
             ],
             fields: [
-                { key: "codigo", label: "Código" },
+                /*{ key: "codigo", label: "Código" },
                 { key: "serie", label: "Serie" },
                 { key: "correlativo", label: "Correlativo" },
                 { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },
+                { key: "total", label: "Precio Total" },*/
+                { key: "created_at", label: "Fecha" },
+                { key: "email", label: "Email" },
+                { key: "name", label: "Nombre" },
+                { key: "cobros", label: "# Cobros" },
+                { key: "anulados", label: "# Anulados" },
+                { key: "monto", label: "Monto" },
 
             ],
             comprobantes : [],

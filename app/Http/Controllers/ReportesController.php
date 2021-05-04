@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
 
 class ReportesController extends Controller
 {
@@ -19,17 +21,29 @@ class ReportesController extends Controller
 
     public function filtrarCajero(Request $request)
     {
-        $comprobantes = Comprobante::where('cui', 'like', '%' . $request->dniCliente . '%')
+
+        /*$user = User::where('email', 'like', '%' . $request->dniCliente . '%')->first();
+        $comprobantes = Comprobante::where('usuario_id', $user->id)
                                     ->whereDate('created_at','>=',$request->fechaInicio)
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();
-        return ['comprobantes' => $comprobantes];
+        return ['comprobantes' => $comprobantes];*/
+
+        $comprobantes = User::select('comprobantes.created_at', 'users.email', 'users.name', 'users.email', DB::raw('count(comprobantes.id) as cobros'), DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), DB::raw('SUM(comprobantes.total) As monto'))
+                                    ->leftJoin('comprobantes', 'comprobantes.usuario_id', '=', 'users.id')
+                                    ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
+                                    ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
+                                    ->groupBy('comprobantes.created_at', 'users.id')
+                                    ->get();
+        //dd($comprobantes);
+        return ['comprobantes' => $comprobantes];;
     }
 
     public function porCajeroPDF(Request $request)
     {
         //$comprobantes = (array)json_decode($request->getContent());
            
-        $comprobantes = Comprobante::where('cui', 'like', '%' . $request->dniCliente . '%')
+        $user = User::where('email', 'like', '%' . $request->dniCliente . '%')->first();
+        $comprobantes = Comprobante::where('usuario_id', $user->id)
                                     ->whereDate('created_at','>=',$request->fechaInicio)
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();     
         $pdf = PDF::loadView('reportes.cajero', compact('comprobantes'));
