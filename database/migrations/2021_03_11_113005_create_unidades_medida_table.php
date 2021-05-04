@@ -15,7 +15,8 @@ class CreateUnidadesMedidaTable extends Migration
     {
         Schema::create('unidades_medida', function (Blueprint $table) {
             $table->tinyIncrements('id');
-            $table->string('nombre', 20)->unique();
+            $table->string('codigo', 5)->unique();
+            $table->string('nombre', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
         });
