@@ -2,9 +2,31 @@
   <app-layout>
     <div class="card">
       <div class="card-header">
-        <h1>Facturas</h1>
+        <ol class="breadcrumb float-left">
+          <li class="breadcrumb-item">
+            <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
+          </li>
+          <li class="breadcrumb-item active">Lista de notas de credito</li>
+        </ol>
+        <inertia-link
+          class="btn btn-success float-right"
+          :href="route('notas-credito.crear')"
+          >Nuevo</inertia-link
+        >
       </div>
       <div class="card-body">
+        <b-alert
+                    show
+                    variant="success"
+                    v-if="$page.props.successMessage"
+                    >{{ $page.props.successMessage }}</b-alert
+                >
+                <b-alert
+                    show
+                    variant="danger"
+                    v-if="$page.props.errorMessage"
+                    >{{ $page.props.errorMessage }}</b-alert
+                >
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -49,7 +71,7 @@
           </b-col>
         </b-row>
         <b-table
-          ref="tbl_facturas"
+          ref="tbl_notas_credito"
           show-empty
           striped
           hover
@@ -66,81 +88,41 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay facturas para mostrar"
-          empty-filtered-text="No hay facturas que coincidan con su búsqueda."
+          empty-text="No hay notas de credito para mostrar"
+          empty-filtered-text="No hay notas de credito que coincidan con su búsqueda."
         >
-          <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-              >No Enviado</b-badge
+          <template v-slot:cell(condicion)="row">
+            <b-badge v-if="!row.item.deleted_at" variant="success"
+              >Activo</b-badge
             >
-            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-              >Observado
-            </b-badge>
-            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-              >Rechazado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-              >Anulado</b-badge
-            >
-            <div v-if="row.item.estado == 'aceptado'">
-              <b-badge variant="success">Aceptado</b-badge>
-              <br />
-              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-              <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
-            </div>
+            <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="primary"
-              size="sm"
-              title="Ver"
-              :href="`${app_url}/${row.item.url_pdf}`"
+            <inertia-link
+              v-if="!row.item.deleted_at"
+              class="btn btn-primary btn-sm"
+              :href="route('tipo-comprobante.mostrar', row.item.id)"
             >
-              <b-icon icon="printer"></b-icon>
-            </b-button>
+              <b-icon icon="eye"></b-icon>
+            </inertia-link>
             <b-button
-              v-if="row.item.estado == 'noEnviado'"
+              v-if="!row.item.deleted_at"
               variant="danger"
               size="sm"
-              title="Anular"
-              @click="anular(row.item)"
+              title="Eliminar"
+              @click="eliminar(row.item)"
             >
-              <b-icon icon="x-circle"></b-icon>
+              <b-icon icon="trash"></b-icon>
             </b-button>
             <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'noEnviado'
-              "
+              v-else
               variant="success"
               size="sm"
-              title="Enviar"
-              @click="enviar(row.item)"
+              title="Restaurar"
+              @click="restaurar(row.item)"
             >
-              <b-icon icon="cloud-arrow-up"></b-icon>
+              <b-icon icon="check"></b-icon>
             </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'aceptado'
-              "
-              size="sm"
-              @click="row.toggleDetails"
-            >
-              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-              <b-icon v-else icon="plus-circle"></b-icon>
-            </b-button>
-          </template>
-          <template #row-details="row">
-            <b-card>
-              <ul>
-                <li>
-                  {{ row.item.observaciones }}
-                </li>
-              </ul>
-            </b-card>
           </template>
         </b-table>
         <b-row>
@@ -165,7 +147,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.listarFacturas",
+  name: "notas-credito.listar",
   components: {
     AppLayout,
   },
@@ -173,15 +155,12 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
+        { key: "id", label: "ID", sortable: true, class: "text-center" },
         { key: "codigo", label: "Codigo", sortable: true },
-        { key: "serie", label: "Serie", sortable: true },
-        { key: "correlativo", label: "Correlativo", sortable: true },
-        {
-          key: "estado",
-          label: "Estado",
-          class: "text-center",
-          sortable: true,
-        },
+        { key: "serie", label: "Serie", class: "text-center" },
+        { key: "correlativo", label: "Correlativo", class: "text-center" },
+        { key: "codigo_motivo", label: "Codigo Motivo", class: "text-center" },
+        { key: "descripcion_motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -197,7 +176,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_facturas.refresh();
+      this.$refs.tbl_notas_credito.refresh();
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -211,47 +190,59 @@ export default {
       }
 
       const promise = axios.get(
-        `${this.app_url}/sunat/listarFacturas${params}`
+        `${this.app_url}/notas-credito/listar${params}`
       );
 
       return promise.then((response) => {
-        const factura = response.data.data;
-        console.log(factura);
+        const notaCredito = response.data.data;
         this.totalRows = response.data.total;
 
-        return factura || [];
+        return notaCredito || [];
       });
     },
-
-    enviar(factura) {
+    eliminar(tipo_comprobante) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
-          title: "Enviar factura",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer eliminar este tipo de comprobante?",
+          {
+            title: "Eliminar tipo de comprobante",
+            okVariant: "danger",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("facturas.enviar", [factura]));
-            this.refreshTable();
+            this.$inertia.delete(
+                            route("tipo-comprobante.eliminar", [
+                                tipo_comprobante.id
+                            ])
+                        );
+                        this.refreshTable();
           }
         });
     },
-    anular(factura) {
+    async restaurar(tipo_comprobante) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
-          title: "Anular factura",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer restaurar este tipo de comprobante?",
+          {
+            title: "Restaurar tipo de comprobante",
+            okVariant: "primary",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("facturas.anular", [factura]));
-            this.refreshTable();
+            this.$inertia.post(
+                            route("tipo-comprobante.restaurar", [
+                                tipo_comprobante.id
+                            ])
+                        );
+                        this.refreshTable();
           }
         });
     },

@@ -106,7 +106,7 @@ export default {
       this.$refs.tbl_comprobantes.refresh();
     },
     async filterTable() {
-      try {
+      /*try {
         let params =
           "&fechaInicio=" +
           this.filter.fechaInicio +
@@ -115,13 +115,11 @@ export default {
         const response = await axios.get(
           `${this.app_url}/sunat/filtrar${params}`
         );
-        console.log(
-          `${this.app_url}/sunat/filtrar${params}`
-        );
         this.comprobantes = response.data.comprobantes;
       } catch (error) {
         console.log(error);
-      }
+      }*/
+      this.$inertia.post(route("resumen.enviar"));
     },
   },
   computed: {
