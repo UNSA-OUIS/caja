@@ -18,6 +18,7 @@ use App\Http\Controllers\TiposConceptoController;
 use App\Http\Controllers\UnidadMedidaController;
 use App\Http\Controllers\ConceptoController;
 use App\Http\Controllers\CuentasCorrientesController;
+use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 
@@ -192,6 +193,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/registrarEmpresa', [EmpresaController::class, 'registrarEmpresa'])->name('empresas.registrarEmpresa');
     Route::get('/buscarRazonSocialEmpresa', [EmpresaController::class, 'buscarRazonSocialEmpresa'])->name('empresas.buscarRazonSocialEmpresa');
     /*********************************************************************/
+
+    /******************************* DEPENDENCIAS ***************************/
+    Route::get('/dependencias', function () {
+        return Inertia::render('Dependencias/Listar');
+    })->name('dependencias.iniciar');
+    Route::get('/dependencias/listar', [DependenciaController::class, 'index'])->name('dependencias.listar');
+    Route::get('/dependencias/{dependencia}', [DependenciaController::class, 'show'])->name('dependencias.mostrar');
+    /*********************************************************************/
+
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {
