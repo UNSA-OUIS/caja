@@ -90,7 +90,7 @@
           small
           responsive
           stacked="md"
-          :items="myProvider"
+          :items="items"
           :fields="fields"
           :current-page="currentPage"
           :per-page="perPage"
@@ -211,6 +211,7 @@ export default {
         fechaInicio: "",
         fechaFin: "",
       },
+      items: [],
       fields: [
         {
           key: "codi_usuario",
@@ -222,6 +223,12 @@ export default {
         {
           key: "correlativo",
           label: "Correlativo",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "created_at",
+          label: "Fecha de Creacion",
           class: "text-center",
           sortable: true,
         },
@@ -248,27 +255,6 @@ export default {
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
-
-      return promise.then((response) => {
-        const boleta = response.data.data;
-        console.log(boleta);
-        this.totalRows = response.data.total;
-
-        return boleta || [];
-      });
-    },
     enviarResumenDiario() {
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
@@ -280,10 +266,7 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("boletas.resumen-diario"), [
-              this.filtro.fechaInicio,
-              this.filtro.fechaFin,
-            ]);
+            this.$inertia.post(route("boletas.resumen-diario"), this.items);
             this.refreshTable();
           }
         });
@@ -302,7 +285,25 @@ export default {
         this.filtrado = true;
         this.alerta = false;
         this.mensajeAlerta = "";
-        this.refreshTable();
+
+        const promise = axios.get(`${this.app_url}/sunat/listarBoletas`, {
+          params: {
+            fechaInicio: this.filtro.fechaInicio,
+            fechaFin: this.filtro.fechaFin,
+          },
+        });
+
+        return promise
+          .then((response) => {
+            this.items = response.data.data;
+            this.totalRows = response.data.total;
+            this.refreshTable();
+
+            return this.items || [];
+          })
+          .catch((error) => {
+            console.log(error.response);
+          });
       }
     },
     limpiar() {

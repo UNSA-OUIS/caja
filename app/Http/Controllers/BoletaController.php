@@ -53,7 +53,8 @@ class BoletaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('tipo_comprobante')
-            ->with('detalles')->where('tipo_comprobante_id', 'like', 1);
+            ->with('detalles')->where('tipo_comprobante_id', 'like', 1)->whereDate('created_at', '>=', $request->fechaInicio)
+            ->whereDate('created_at', '<=', $request->fechaFin);
 
         $sortby = $request->sortby;
 
@@ -69,16 +70,14 @@ class BoletaController extends Controller
         return Inertia::render('Sunat/ListarResumenDiario');
     }
 
-    public function resumenDiario(Request $filtro)
+    public function resumenDiario(Request $request)
     {
-        //dd($filtro->all());
         $see = require config_path('Sunat\config.php');
+        $boletas = $request;
         $correlativo = '';
 
         try {
 
-            $boletas = Comprobante::with('tipo_comprobante')
-                ->with('detalles')->where('tipo_comprobante_id', 'like', 1)->get();
             $ultimo = ResumenDiario::latest('created_at')->first();
             if (!$ultimo) {
                 $correlativo = '00000001';
@@ -86,7 +85,6 @@ class BoletaController extends Controller
                 $ultimo->correlativo += 1;
                 $correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             }
-
 
             foreach ($boletas as $index => $value) {
                 $details[$index] = (new SummaryDetail())
@@ -149,7 +147,7 @@ class BoletaController extends Controller
             $resumen_diario->estado = 'aceptado';
             $resumen_diario->save();
         } catch (\Throwable $th) {
-            echo $th;
+            return $th;
         }
 
         return redirect()->route('boletas.iniciar');
