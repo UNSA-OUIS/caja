@@ -11,6 +11,16 @@ class Particular extends Model
     use HasFactory, SoftDeletes;   
 
     protected $table = 'particulares';
+    protected $primaryKey = 'dni';
+    protected $keyType = 'string';
 
     protected $fillable = ['dni', 'apn', 'email'];
+
+    /**
+     * Obtener todos los comprobantes del particular.
+     */
+    public function comprobantes()
+    {
+        return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
 }

@@ -11,4 +11,13 @@ class Alumno extends Model
 
     protected $connection = "mysql";
     protected $table = 'acdiden';
+    protected $primaryKey = 'cui';
+
+    /**
+     * Obtener todos los comprobantes del alumno.
+     */
+    public function comprobantes()
+    {
+        return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
 }

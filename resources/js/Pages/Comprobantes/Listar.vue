@@ -93,6 +93,14 @@
                     empty-text="No hay comprobantes para mostrar"
                     empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                 >
+                    <template v-slot:cell(usuario)="row">
+                        <span v-if="row.item.tipo_usuario === 'alumno'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'empresa'">
+                            {{ row.item.comprobanteable.razon_social }}
+                        </span>                        
+                    </template>
                     <template v-slot:cell(estado)="row">
                         <b-badge
                             v-if="row.item.estado == 'noEnviado'"
@@ -175,7 +183,8 @@ export default {
             app_url: this.$root.app_url,
             fields: [
                 { key: "tipo_comprobante.nombre", label: "Tipo comprobante", class: "text-center", sortable: true },
-                { key: "codi_usuario", label: "Código usuario", class: "text-center", sortable: true },
+                { key: "tipo_usuario", label: "Tipo usuario", class: "text-center", sortable: true },
+                { key: "usuario", label: "Usuario", class: "text-center", sortable: true },
                 { key: "serie", label: "Serie", class: "text-center", sortable: true },
                 { key: "correlativo", label: "Correlativo", class: "text-center", sortable: true },
                 { key: "estado", label: "Estado", class: "text-center" },
@@ -209,7 +218,7 @@ export default {
 
             const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
 
-            return promise.then(response => {
+            return promise.then(response => {                
                 const comprobantes = response.data.data;                
                 this.totalRows = response.data.total;
 
