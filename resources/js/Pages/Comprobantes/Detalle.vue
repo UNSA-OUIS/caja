@@ -120,7 +120,7 @@
         <div>
             <b-button variant="success" @click="registrar()">Registrar</b-button>
         </div>
-    </div>  
+    </div>
 </template>
 <script>
 const axios = require("axios");
@@ -167,8 +167,8 @@ export default {
         currency(value) {
             return value.toFixed(2);
         }
-    },    
-    methods: {        
+    },
+    methods: {
         buscarConcepto(search, loading) {
             loading(true)
             axios.get(`${this.app_url}/buscarConcepto?filtro=${search}`)
@@ -181,7 +181,7 @@ export default {
                 });
         },
         agregarDetalle() {
-            if (this.comprobante.detalles.filter(obj => obj.id == this.concepto.id).length == 0) {
+            if (this.comprobante.detalles.filter(obj => obj.concepto_id == this.concepto.concepto_id).length == 0) {
                 this.$set( this.concepto, 'cantidad', 1)
                 this.$set( this.concepto, 'tipo_descuento', 'S/.')
                 this.$set( this.concepto, 'descuento', 0)

@@ -45,12 +45,12 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
-    
+
     /**************************** API RENIEC SUNAT ***********************************/
-    Route::get('/api_dni/{dni}', function ($dni) {                
+    Route::get('/api_dni/{dni}', function ($dni) {
         return file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
     });
-    Route::get('/api_ruc/{ruc}', function ($ruc) {                
+    Route::get('/api_ruc/{ruc}', function ($ruc) {
         return file_get_contents("https://dniruc.apisperu.com/api/v1/ruc/$ruc?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
     });
     /*********************************************************************************/
@@ -156,13 +156,13 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarCentroCosto', [ConceptoController::class, 'buscarCentroCosto'])->name('conceptos.buscarCentroCosto');
     Route::get('/buscarConcepto', [ConceptoController::class, 'buscarConcepto'])->name('conceptos.buscarConcepto');
     /*******************************************************************/
-    
-    /******************************* ALUMNOS *****************************/    
+
+    /******************************* ALUMNOS *****************************/
     Route::get('/buscarCuiAlumno/{cui}', [AlumnoController::class, 'buscarCuiAlumno'])->name('alumnos.buscarCuiAlumno');
     Route::get('/buscarApnAlumno', [AlumnoController::class, 'buscarApnAlumno'])->name('alumnos.buscarApnAlumno');
     /*********************************************************************/
 
-    /******************************* DOCENTES ****************************/    
+    /******************************* DOCENTES ****************************/
     Route::get('/buscarCodigoDocente/{codigo}', [DocenteController::class, 'buscarCodigoDocente'])->name('docentes.buscarCodigoDocente');
     Route::get('/buscarApnDocente', [DocenteController::class, 'buscarApnDocente'])->name('docentes.buscarApnDocente');
     /*********************************************************************/
@@ -226,19 +226,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
-        
+
     Route::get('/buscarCodigoDependencia/{codigo}', [ComprobanteController::class, 'buscarCodigoDependencia'])->name('comprobantes.buscarCodigoDependencia');
-    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');        
-    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');    
+    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');
+    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
     /*******************************************************************/
 
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
-
-
-    Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
-    Route::post('/sunat/resumenDiario', [ResumenDiarioController::class, 'resumenDiario'])->name('resumen.enviar');
 
 
     Route::get('/sunat/facturas', function () {
@@ -253,7 +249,10 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/ListarBoletas');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
-    Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
+    Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
+    Route::get('/sunat/resumenDiario/listar', [BoletaController::class, 'listarResumenDiario'])->name('boletas.resumen-diario-listar');
+    //Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
+    //Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');
 
     Route::get('/sunat/notas-credito', function () {

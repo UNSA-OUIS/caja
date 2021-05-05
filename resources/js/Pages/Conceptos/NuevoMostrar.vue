@@ -110,13 +110,16 @@
               </b-form-group>
             </b-col>
             <b-col>
-
               <b-form-group
                 id="input-group-7"
                 label="Sujeto a Detraccion :"
                 label-for="input-7"
               >
-                 <b-form-radio-group v-model="formData.detraccion" :options="options" name="detraccion">
+                <b-form-radio-group
+                  v-model="formData.detraccion"
+                  :options="options"
+                  name="detraccion"
+                >
                 </b-form-radio-group>
                 <div v-if="$page.props.errors.precio" class="text-danger">
                   {{ $page.props.errors.precio[0] }}
@@ -220,7 +223,10 @@
                     Lo sentimos, no hay resultados de coincidencia.
                   </template>
                 </v-select>
-                <b-form-radio v-model="formData.codi_depe" name="centro-costos" value="Centro de costos multiple"
+                <b-form-radio
+                  v-model="formData.codi_depe"
+                  name="centro-costos"
+                  value="Centro de costos multiple"
                   >Con centro de costos multiple</b-form-radio
                 >
               </b-form-group>
@@ -251,6 +257,7 @@
                 label-for="input-5"
               >
                 <b-form-select
+                  v-if="formData.detraccion == false"
                   id="input-5"
                   v-model="formData.tipo_afectacion"
                   :options="tipoAfectacionIGV"
@@ -259,6 +266,17 @@
                 >
                   <template v-slot:first>
                     <option :value="null" disabled>Seleccione...</option>
+                  </template>
+                </b-form-select>
+                <b-form-select
+                  v-else
+                  id="input-5"
+                  v-model="formData.tipo_afectacion"
+                >
+                  <template v-slot:first>
+                    <option :value="30">
+                      Inafecto: Operacion Onerosa
+                    </option>
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -309,9 +327,9 @@ export default {
       centroCostos: [],
       centroCosto: null,
       options: [
-          { text: 'Si', value: true },
-          { text: 'No', value: false },
-        ],
+        { text: "Si", value: true },
+        { text: "No", value: false },
+      ],
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
         { value: 20, text: "Exonerado: Operacion Onerosa" },
