@@ -22,4 +22,12 @@ class Comprobante extends Model
     {
         return $this->hasMany(DetallesComprobante::class);
     }
+
+    /**
+     * Get the parent comprobanteable model (alumno or docente or dependencia or particular or empresa).
+     */
+    public function comprobanteable()
+    {
+        return $this->morphTo(__FUNCTION__, 'tipo_usuario', 'codi_usuario');
+    }
 }

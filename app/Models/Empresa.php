@@ -11,6 +11,16 @@ class Empresa extends Model
     use HasFactory, SoftDeletes;   
 
     protected $table = 'empresas';
+    protected $primaryKey = 'ruc';
+    protected $keyType = 'string';
 
-    protected $fillable = ['ruc', 'razon_social', 'direccion', 'email'];
+    //protected $fillable = ['ruc', 'razon_social', 'direccion', 'email'];
+
+    /**
+     * Obtener todos los comprobantes de la empresa.
+     */
+    public function comprobantes()
+    {
+        return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
 }
