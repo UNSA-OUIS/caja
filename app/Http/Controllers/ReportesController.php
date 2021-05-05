@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\Persona;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,14 +29,31 @@ class ReportesController extends Controller
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();
         return ['comprobantes' => $comprobantes];*/
 
-        $comprobantes = User::select('comprobantes.created_at', 'users.email', 'users.name', 'users.email', DB::raw('count(comprobantes.id) as cobros'), DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), DB::raw('SUM(comprobantes.total) As monto'), DB::raw('SUM(comprobantes.total_descuento) As descuento'), DB::raw('SUM(comprobantes.total_impuesto) As impuesto'))
-                                    ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'users.id')
+        $comprobantes = Persona::select('comprobantes.created_at', 'personas.codigo', 'personas.nombre', 
+                                    DB::raw('count(case when comprobantes.estado != \'anulado\' then 1 else null end) as cobros'), 
+                                    DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), 
+                                    DB::raw('SUM(comprobantes.total) As monto'), DB::raw('SUM(comprobantes.total_descuento) As descuento'), 
+                                    DB::raw('SUM(comprobantes.total_impuesto) As impuesto'))
+                                    ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'personas.user_id')
                                     ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
                                     ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
-                                    ->groupBy('comprobantes.created_at', 'users.id')
+                                    ->groupBy('comprobantes.created_at', 'personas.codigo','personas.nombre')
                                     ->get();
         //dd($comprobantes);
-        return ['comprobantes' => $comprobantes];;
+        $totalRegistros = $comprobantes->count();
+        $totalCobros = $comprobantes->sum('cobros');
+        $totalDescuentos = $comprobantes->sum('descuento');
+        $totalIGV = $comprobantes->sum('impuesto');
+        $totalMontos = $comprobantes->sum('monto');
+        $totalAnulados = $comprobantes->sum('anulados');
+
+        return ['comprobantes' => $comprobantes,
+                'totalRegistros' => $totalRegistros,
+                'totalCobros' => $totalCobros,
+                'totalDescuentos' => $totalDescuentos,
+                'totalIGV' => $totalIGV,
+                'totalMontos' => $totalMontos,
+                'totalAnulados' => $totalAnulados,];
     }
 
     public function porCajeroPDF(Request $request)
@@ -55,6 +73,19 @@ class ReportesController extends Controller
         //return file(storage_path().'fdjfdh.pdf');
         return $pdf->stream('customers.pdf');
         //return $pdf->download('file.pdf');
+    }
+
+    public function buscarCajero(Request $request)
+    {
+        $filtro = $request->filtro;
+
+        $cajeros = Persona::where('codigo', 'ilike', '%' . $filtro . '%')
+            ->orWhere('nombre', 'ilike', '%' . $filtro . '%')
+            ->select('id as cajero_id', 'codigo', 'nombre')
+            ->orderBy('codigo', 'asc')
+            ->get();
+
+        return $cajeros;
     }
 
     public function descuentos()

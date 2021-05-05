@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Persona;
 use App\Models\User;
 use App\Models\Rol;
 use App\Models\TipoComprobante;
@@ -59,6 +60,23 @@ class PermisoSeeder extends Seeder
         $user3->assignRole('Administrador');
         $user4 = User::find(4);
         $user4->assignRole('Administrador');
+
+        //Datos adicionales
+        Persona::create([
+            'codigo' => 'cajero1',
+            'nombre' => 'CAJERO' . $user1->name,
+            'user_id' => $user1->id
+        ]);
+        Persona::create([
+            'codigo' => 'cajero2',
+            'nombre' => 'CAJERO' . $user2->name,
+            'user_id' => $user2->id
+        ]);
+        Persona::create([
+            'codigo' => 'cajero3',
+            'nombre' => 'CAJERO' . $user3->name,
+            'user_id' => $user3->id
+        ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
