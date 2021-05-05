@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\ResumenDiario;
 use DateTime;
+use Exception;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
+use Greenter\Model\Sale\Document;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\SaleDetail;
+use Greenter\Model\Summary\Summary;
+use Greenter\Model\Summary\SummaryDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
@@ -47,7 +52,7 @@ class BoletaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('tipo_comprobante')
-            ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
+            ->with('detalles')->where('tipo_comprobante_id', 'like', 1);
 
         $sortby = $request->sortby;
 
@@ -59,120 +64,89 @@ class BoletaController extends Controller
         return $query->paginate($request->size);
     }
 
-    public function enviar(Comprobante $boleta)
+    public function resumenDiario(Request $request)
     {
-        $see = require storage_path() . '\app\public\config.php';
+        $see = require config_path('Sunat\config.php');
+        $correlativo = '';
 
         try {
-            // Cliente
-            $client = new Client();
-            $client->setTipoDoc('1')
-                ->setNumDoc('46712369')
-                ->setRznSocial('MARIA RAMOS ARTEAGA');
 
-            // Venta
-            $invoice = new Invoice();
-
-            $detalle = $boleta->detalles;
-            foreach ($detalle as $index => $value) {
-                $items[$index] = (new SaleDetail())
-                    ->setCodProducto($value['concepto_id'])
-                    ->setUnidad('NIU') // Unidad - Catalog. 03
-                    ->setCantidad($value['cantidad'])
-                    ->setMtoValorUnitario($value['valor_unitario'])
-                    ->setDescripcion('PRODUCTO - ' . $index)
-                    ->setMtoBaseIgv(100.00)
-                    ->setPorcentajeIgv(18.00) // 18%
-                    ->setIgv(18.00)
-                    ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
-                    ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
-                    ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
-                    ->setMtoPrecioUnitario($value['valor_unitario'] + $value['valor_unitario'] * 18.00);
+            $boletas = Comprobante::with('tipo_comprobante')
+                ->with('detalles')->where('tipo_comprobante_id', 'like', 1)->get();
+            $ultimo = ResumenDiario::latest('created_at')->first();
+            if (!$ultimo) {
+                $correlativo = '00000001';
+            } else {
+                $ultimo->correlativo += 1;
+                $correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
             }
 
-            $formatter = new NumeroALetras();
-            $montoLetras = $formatter->toInvoice($boleta->total, 2, 'soles');
 
-            $legend = (new Legend())
-                ->setCode('1000') // Monto en letras - Catalog. 52
-                ->setValue($montoLetras);
+            foreach ($boletas as $index => $value) {
+                $details[$index] = (new SummaryDetail())
+                    ->setTipoDoc('03') // Boleta
+                    ->setSerieNro('B00' . $index . '-' . $value['correlativo']);
+                if ($value['estado'] == 'anulado') {
+                    $details[$index]->setEstado('3'); // Anulación
+                } else {
+                    $details[$index]->setEstado('2');
+                }
+                if ($value['tipo_usuario'] == 'alumno') {
+                    $details[$index]
+                        ->setClienteTipo('1')
+                        ->setClienteNro($value['codi_usuario']);
+                }
+                $details[$index]->setTotal($value['total'])
+                    ->setMtoOperGravadas($value['total_impuesto'])
+                    ->setMtoIGV(18.00);
+            }
 
-            $invoice->setDetails($items)->setLegends([$legend]);
+            $resumen = new Summary();
+            $resumen->setFecGeneracion(new \DateTime(now())) // Fecha de emisión de las boletas.
+                ->setFecResumen(new \DateTime(now())) // Fecha de envío del resumen diario.
+                ->setCorrelativo('001') // Correlativo, necesario para diferenciar de otros Resumen diario del mismo día.
+                ->setCompany($this->empresa)
+                ->setDetails($details);
 
-            $invoice->setUblVersion('2.1')
-                ->setTipoOperacion('0101') // Catalog. 51
-                ->setTipoDoc('03')
-                ->setSerie('B001')
-                ->setCorrelativo('1')
-                ->setFechaEmision(new DateTime())
-                ->setTipoMoneda('PEN')
-                ->setClient($client)
-                ->setMtoOperGravadas(100.00)
-                ->setMtoIGV(18.00)
-                ->setTotalImpuestos(18.00)
-                ->setValorVenta(100.00)
-                ->setSubTotal(118.00)
-                ->setMtoImpVenta(118.00)
-                ->setCompany($this->empresa);
-
-            $xml = $see->getXmlSigned($invoice);
-
+            $result = $see->send($resumen);
             // Guardar XML
-            $xmlGuardado = file_put_contents($invoice->getName() . '.xml', $xml);
+            file_put_contents(
+                $resumen->getName() . '.xml',
+                $see->getFactory()->getLastXml()
+            );
 
-            if ($xmlGuardado) {
-                $boleta->url_xml = $invoice->getName() . '.xml';
-                $boleta->update();
+            if (!$result->isSuccess()) {
+                // Si hubo error al conectarse al servicio de SUNAT.
+                var_dump($result->getError());
+                exit();
             }
 
-            $html = new HtmlReport();
-            $html->setTemplate('invoice.html.twig');
+            $ticket = $result->getTicket();
+            echo 'Ticket : ' . $ticket . PHP_EOL;
 
-            $report = new PdfReport($html);
-
-            $report->setOptions([
-                'no-outline',
-                'viewport-size' => '1280x1024',
-                'page-width' => '21cm',
-                'page-height' => '29.7cm',
-            ]);
-            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
-
-            $params = [
-                'system' => [
-                    'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
-                    'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
-                ],
-                'user' => [
-                    'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
-                    'extras'     => [
-                        // Leyendas adicionales
-                        ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
-                        ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
-                    ],
-                    'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
-                ]
-            ];
-
-            $pdf = $report->render($invoice, $params);
-
-            if ($pdf === null) {
-                $error = $report->getExporter()->getError();
-                echo 'Error: ' . $error;
+            $statusResult = $see->getStatus($ticket);
+            if (!$statusResult->isSuccess()) {
+                // Si hubo error al conectarse al servicio de SUNAT.
+                var_dump($statusResult->getError());
                 return;
             }
 
-            $pdfGuardado = file_put_contents($invoice->getName() . '.pdf', $pdf);
-            if ($pdfGuardado) {
-                $boleta->url_pdf = $invoice->getName() . '.pdf';
-                $boleta->update();
-            }
-            $boleta->estado = 'aceptado';
-            $boleta->update();
+            echo $statusResult->getCdrResponse()->getDescription();
+            // Guardar CDR
+            file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
+
+            $resumen_diario = new ResumenDiario();
+            $resumen_diario->fecha_envio = now();
+            $resumen_diario->fecha_emision = now();
+            $resumen_diario->serie = 'RC';
+            $resumen_diario->correlativo = $correlativo;
+            $resumen_diario->estado = 'aceptado';
+            $resumen_diario->save();
         } catch (\Throwable $th) {
-            return 'Error' . $th;
+            echo $th;
         }
-        return redirect()->route('sunat.iniciarBoletas');
+
+        return redirect()->route('boletas.iniciar');
     }
     public function anular(Comprobante $boleta)
     {
@@ -184,6 +158,6 @@ class BoletaController extends Controller
             Log::error('SunatController@anularBoleta, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
-        return redirect()->route('sunat.iniciarBoletas');
+        return redirect()->route('boletas.iniciar');
     }
 }

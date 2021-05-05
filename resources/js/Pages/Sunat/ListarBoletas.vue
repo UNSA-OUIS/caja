@@ -113,17 +113,6 @@
             </b-button>
             <b-button
               v-if="
-                row.item.estado == 'observado' || row.item.estado == 'noEnviado'
-              "
-              variant="success"
-              size="sm"
-              title="Enviar"
-              @click="enviar(row.item)"
-            >
-              <b-icon icon="cloud-arrow-up"></b-icon>
-            </b-button>
-            <b-button
-              v-if="
                 row.item.estado == 'observado' || row.item.estado == 'aceptado'
               "
               size="sm"
@@ -155,6 +144,16 @@
             ></b-pagination>
           </b-col>
         </b-row>
+        <b-row>
+          <b-button
+            variant="success"
+            size="sm"
+            title="Enviar"
+            @click="enviarResumenDiario()"
+          >
+            Enviar Resumen Diario <b-icon icon="cloud-arrow-up"></b-icon>
+          </b-button>
+        </b-row>
       </div>
     </div>
   </app-layout>
@@ -174,12 +173,6 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         {
-          key: "tipo_comprobante.nombre",
-          label: "Tipo comprobante",
-          class: "text-center",
-          sortable: true,
-        },
-        {
           key: "codi_usuario",
           label: "Código usuario",
           class: "text-center",
@@ -192,7 +185,12 @@ export default {
           class: "text-center",
           sortable: true,
         },
-        { key: "estado", label: "Estado", class: "text-center" },
+        {
+          key: "estado",
+          label: "Estado",
+          class: "text-center",
+          sortable: true,
+        },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -232,10 +230,10 @@ export default {
       });
     },
 
-    enviar(factura) {
+    enviarResumenDiario() {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
-          title: "Enviar factura",
+        .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
+          title: "Enviar resumen diario",
           okVariant: "success",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -243,15 +241,15 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("facturas.enviar", [factura]));
+            this.$inertia.post(route("boletas.resumen-diario"));
             this.refreshTable();
           }
         });
     },
-    anular(factura) {
+    anular(boleta) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
-          title: "Anular factura",
+        .msgBoxConfirm("¿Esta seguro de querer anular esta boleta?", {
+          title: "Anular boleta",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -259,7 +257,7 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("facturas.anular", [factura]));
+            this.$inertia.post(route("boletas.anular", [boleta]));
             this.refreshTable();
           }
         });
