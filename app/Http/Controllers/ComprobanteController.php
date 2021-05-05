@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\User;
+use App\Models\Alumno;
 use App\Models\Comprobante;
 use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
@@ -21,9 +23,8 @@ class ComprobanteController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('tipo_comprobante')
-            ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');
-
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
+                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');                
 
         $sortby = $request->sortby;
 

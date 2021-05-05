@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Comprobante;
+use App\Models\TipoComprobante;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +20,9 @@ class ComprobanteSeeder extends Seeder
     {
         /*DB::table('comprobantes')->insert(
             [
-                'codigo' => Str::random(20),
-                'cui' => '20143377',
-                'nues' => '044',
+                'nro_recibo' => Str::random(20),
+                'codi_usuario' => '20143377',
+                'nues_espe' => '044',
                 'serie' => 'F001',
                 'correlativo' => '00000001',
                 'total' => 0,
@@ -31,20 +32,68 @@ class ComprobanteSeeder extends Seeder
         );*/
 
         $faker = Factory::create();
+        
 
-        for($i = 0; $i < 100; $i++) {
+        for($i = 0; $i < 25; $i++) {
             Comprobante::create([
-                'codigo' => $faker->randomNumber(9, false),
-                'cui' => $faker->randomNumber(8, true),
-                'nues' => $faker->randomNumber(3, true),
+                'nro_recibo' => $faker->randomNumber(9, false),
+                'tipo_usuario' => 'alumno',
+                'codi_usuario' => $faker->randomNumber(8, true),
+                'nues_espe' => $faker->randomNumber(3, true),
                 'serie' => 'F'.$faker->randomNumber(3, false),
                 'correlativo' => $faker->randomNumber(8, false),
                 'total' => $faker->randomFloat(2, 10, 200),
+                'total_descuento' => $faker->randomFloat(2, 10, 200),
+                'total_impuesto' => $faker->randomFloat(2, 10, 200),
                 'estado' => 'noEnviado',
                 'observaciones' => $faker->text(200),
                 'url_xml' => $faker->url,
                 'url_cdr' => $faker->url,
                 'url_pdf' => $faker->url,
+                'cajero_id' => 1,
+                'tipo_comprobante_id' => 1,
+            ]);
+        }
+
+        for($i = 0; $i < 25; $i++) {
+            Comprobante::create([
+                'nro_recibo' => $faker->randomNumber(9, false),
+                'tipo_usuario' => 'alumno',
+                'codi_usuario' => $faker->randomNumber(8, true),
+                'nues_espe' => $faker->randomNumber(3, true),
+                'serie' => 'F'.$faker->randomNumber(3, false),
+                'correlativo' => $faker->randomNumber(8, false),
+                'total' => $faker->randomFloat(2, 10, 200),
+                'total_descuento' => $faker->randomFloat(2, 10, 200),
+                'total_impuesto' => $faker->randomFloat(2, 10, 200),
+                'estado' => 'noEnviado',
+                'observaciones' => $faker->text(200),
+                'url_xml' => $faker->url,
+                'url_cdr' => $faker->url,
+                'url_pdf' => $faker->url,
+                'cajero_id' => 2,
+                'tipo_comprobante_id' => 1,
+            ]);
+        }
+
+        for($i = 0; $i < 25; $i++) {
+            Comprobante::create([
+                'nro_recibo' => $faker->randomNumber(9, false),
+                'tipo_usuario' => 'alumno',
+                'codi_usuario' => $faker->randomNumber(8, true),
+                'nues_espe' => $faker->randomNumber(3, true),
+                'serie' => 'F'.$faker->randomNumber(3, false),
+                'correlativo' => $faker->randomNumber(8, false),
+                'total' => $faker->randomFloat(2, 10, 200),
+                'total_descuento' => $faker->randomFloat(2, 10, 200),
+                'total_impuesto' => $faker->randomFloat(2, 10, 200),
+                'estado' => 'anulado',
+                'observaciones' => $faker->text(200),
+                'url_xml' => $faker->url,
+                'url_cdr' => $faker->url,
+                'url_pdf' => $faker->url,
+                'cajero_id' => 3,
+                'tipo_comprobante_id' => 1,
             ]);
         }
     }

@@ -11,4 +11,13 @@ class Docente extends Model
     
     protected $connection = "mysql";
     protected $table = 'siac_doc';
+    protected $primaryKey = 'codper';
+
+    /**
+     * Obtener todos los comprobantes del docente.
+     */
+    public function comprobantes()
+    {
+        return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
 }

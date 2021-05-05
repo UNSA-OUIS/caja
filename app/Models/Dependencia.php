@@ -15,4 +15,12 @@ class Dependencia extends Model
     protected $primaryKey = 'codi_depe';
     //protected $guarded = [];
 
+    /**
+     * Obtener todos los comprobantes de la dependencia.
+     */
+    public function comprobantes()
+    {
+        return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
+
 }

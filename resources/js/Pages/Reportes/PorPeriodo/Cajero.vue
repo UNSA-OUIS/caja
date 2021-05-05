@@ -8,7 +8,7 @@
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <b-form-group
+                        <!--<b-form-group
                         label="Buscar cajero: "
                         label-cols-sm="3"
                         label-align-sm="right"
@@ -29,7 +29,29 @@
                             >
                             </b-input-group-append>
                         </b-input-group>
-                        </b-form-group>
+                        </b-form-group>-->
+                        <v-select
+                        v-model="cajero"
+                        @search="buscarCajero"
+                        :filterable="false"
+                        :options="cajeros"
+                        :reduce="cajero => cajero"
+                        label="codigo"
+                        placeholder="Ingrese código o nombre del cajero"
+                    >
+                        <template #search="{attributes, events}">
+                            <input
+                                class="vs__search"
+                                :required="!cajero"
+                                v-bind="attributes"
+                                v-on="events"
+                                v-model="filtro"
+                            />
+                        </template>
+                        <template slot="no-options">
+                            Lo sentimos, no hay resultados de coincidencia.
+                        </template>
+                    </v-select>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -87,6 +109,15 @@
                     empty-text="No hay comprobantes para mostrar"
                     empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                 >
+                    <template v-if="comprobantes.length" slot="bottom-row" slot-scope="">
+                        <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td><b-td />
+                        <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalCobros}}</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalAnulados}}</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalDescuentos}}</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalIGV}}</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                    </template>
                 </b-table>
                 <b-button v-if="comprobantes.length" @click="html2pdf">Descargar (html2pdf)</b-button>
                 <a v-if="comprobantes.length" class="btn btn-success float-right" href="#" @click="dompdf">Descargar (dompdf)</a>
@@ -104,8 +135,6 @@
                     pdf-format="a4"
                     pdf-orientation="portrait"
                     pdf-content-width="800px"
-            
-                    @progress="onProgress($event)"
                     @hasStartedGeneration="hasStartedGeneration()"
                     @beforeDownload="beforeDownload($event)"
                     @hasGenerated="hasGenerated($event)"
@@ -155,7 +184,17 @@
                                             empty-text="No hay comprobantes para mostrar"
                                             empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                                         >
+                                        <template slot="bottom-row" slot-scope="">
+                                            <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td><b-td />
+                                            <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalCobros}}</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalAnulados}}</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalDescuentos}}</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalIGV}}</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                                        </template>
                                         </b-table>
+                                        
                                         <div class="html2pdf__page-break"/>
                                     </div>
                                 </div>
@@ -167,10 +206,10 @@
                 <json-excel
                 v-if="comprobantes.length"
                 :data="comprobantes"
-                type="xls"
+                type="xlsx"
                 :fields="json_fields"
-                worksheet="My Worksheet"
-                name="filename.xls"
+                worksheet="Reporte_periodo_x_cajero"
+                :name="filename"
                 >
                     <b-button class="btn btn-success">
                         Download Excel
@@ -198,13 +237,18 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            cajero: null,
+            cajeros: [],
+            filtro: "",
             json_fields: {
+                Fecha: "created_at",
                 "Código": "codigo",
-                Serie: "serie",
-                Correlativo: "correlativo",
-                Cliente: "cui",
-                Cliente: "cui",
-                "Precio Total": "total",
+                Nombre: "nombre",
+                "# Cobros": "cobros",
+                "# Anulados": "anulados",
+                "Dscto.": "descuento",
+                IGV: "impuesto",
+                "Monto": "monto",
                 },
             json_data: [
                 {
@@ -237,14 +281,29 @@ export default {
                 ],
             ],
             fields: [
-                { key: "codigo", label: "Código" },
+                /*{ key: "codigo", label: "Código" },
                 { key: "serie", label: "Serie" },
                 { key: "correlativo", label: "Correlativo" },
                 { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },
+                { key: "total", label: "Precio Total" },*/
+                { key: "created_at", label: "Fecha" },
+                { key: "codigo", label: "Código" },
+                { key: "nombre", label: "Nombre" },
+                { key: "cobros", label: "# Cobros" },
+                { key: "anulados", label: "# Anulados" },
+                { key: "descuento", label: "Dscto." },
+                { key: "impuesto", label: "IGV" },
+                { key: "monto", label: "Monto" },
 
             ],
+            filename: "",
             comprobantes : [],
+            totalRegistros: 0,
+            totalCobros: 0,
+            totalDescuentos: 0,
+            totalIGV: 0,
+            totalMontos: 0,
+            totalAnulados: 0,
             filenamepdf: "Reporte_cobros",
             currentPage: 1,
             perPage: 5,
@@ -256,13 +315,30 @@ export default {
 
         };
     },
+    watch : {
+        filtro:function(val) {
+            this.filtro = val.trim()
+        },
+        cajero:function(val) {
+            this.filtro = ""
+        },
+    },
+    created(){
+        var today = new Date().toISOString().slice(0, 10);
+        this.filename = "Reporte_periodo_x_cajero_" + today + ".xls"
+    },
     methods: {
-        startDownload(){
-        alert('show loading');
-    },
-    finishDownload(){
-        alert('hide loading');
-    },
+        buscarCajero(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCajero?filtro=${search}`)
+                .then(response => {
+                    this.cajeros = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         refreshTable() {
             this.$refs.tbl_comprobantes.refresh();
         },
@@ -272,6 +348,13 @@ export default {
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
                 this.comprobantes = response.data.comprobantes
+                this.totalRegistros = response.data.totalRegistros
+                this.totalCobros = response.data.totalCobros
+                this.totalDescuentos = response.data.totalDescuentos
+                this.totalIGV = response.data.totalIGV
+                this.totalMontos = response.data.totalMontos
+                this.totalAnulados = response.data.totalAnulados
+                
             } catch (error) {
                 console.log(error)
             }
@@ -314,31 +397,16 @@ export default {
         : group;
       return group;
     },
-    computed:{
-        grupoFilter(){
-            var group = this.comprobantes;
-            
-            group = this.fechaInicio && this.fechaFin
-            ? group.filter(item => 
-            new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
-            new Date(item.created_at.slice(0, 10).split('-')) <= new Date(this.fechaFin.split('-')))
-            : group
-            group = this.dniCliente
-            ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group
-            return group
-        },
-        grupoDividido(){
-            var group = this.comprobantes;
-            const groups = [];
-            var i,j,temparray,chunk = 25;
-            for (i=0,j=group.length; i<j; i+=chunk) {
-                temparray = group.slice(i,i+chunk);
-                groups.push(temparray);
-            }
-            return groups;
+    grupoDividido(){
+        var group = this.comprobantes;
+        const groups = [];
+        var i,j,temparray,chunk = 25;
+        for (i=0,j=group.length; i<j; i+=chunk) {
+            temparray = group.slice(i,i+chunk);
+            groups.push(temparray);
         }
-    }
+        return groups;
+    } 
   }
 }
 </script>
