@@ -323,7 +323,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Boletas
+                  Resumen Diario
                 </inertia-link>
               </li>
               <li

@@ -2,9 +2,42 @@
   <app-layout>
     <div class="card">
       <div class="card-header">
-        <h1>Boletas</h1>
+        <h1>Seleccionar boletas</h1>
+        <div>
+          <label for="example-datepicker">Fecha Inicio</label>
+          <b-form-datepicker
+            name="fechaInicio"
+            v-model="filtro.fechaInicio"
+            class="mb-2"
+          ></b-form-datepicker>
+          <label for="example-datepicker">Fecha Fin</label>
+          <b-form-datepicker
+            name="fechaFin"
+            v-model="filtro.fechaFin"
+            class="mb-2"
+          ></b-form-datepicker>
+          <b-button
+            variant="success"
+            size="sm"
+            title="Buscar Boletas"
+            @click="buscarBoletas()"
+          >
+            Buscar Boletas <b-icon icon="search"></b-icon>
+          </b-button>
+          <b-button
+            variant="primary"
+            size="sm"
+            title="Limpiar"
+            @click="limpiar()"
+          >
+            Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+          </b-button>
+        </div>
       </div>
-      <div class="card-body">
+      <b-alert variant="danger" show v-show="alerta">
+        {{ this.mensajeAlerta }}
+      </b-alert>
+      <div class="card-body" v-show="filtrado">
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -171,6 +204,13 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      filtrado: false,
+      alerta: false,
+      mensajeAlerta: "",
+      filtro: {
+        fechaInicio: "",
+        fechaFin: "",
+      },
       fields: [
         {
           key: "codi_usuario",
@@ -229,7 +269,6 @@ export default {
         return boleta || [];
       });
     },
-
     enviarResumenDiario() {
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
@@ -241,10 +280,38 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("boletas.resumen-diario"));
+            this.$inertia.post(route("boletas.resumen-diario"), [
+              this.filtro.fechaInicio,
+              this.filtro.fechaFin,
+            ]);
             this.refreshTable();
           }
         });
+    },
+    buscarBoletas() {
+      if (!this.filtro.fechaInicio && !this.filtro.fechaFin) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de inicio y fin";
+      } else if (!this.filtro.fechaInicio) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de inicio";
+      } else if (!this.filtro.fechaFin) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de fin";
+      } else {
+        this.filtrado = true;
+        this.alerta = false;
+        this.mensajeAlerta = "";
+        this.refreshTable();
+      }
+    },
+    limpiar() {
+      this.filtrado = false;
+      this.alerta = false;
+      this.filtro.fechaInicio = "";
+      this.filtro.fechaFin = "";
+      this.mensajeAlerta = "";
+      this.refreshTable();
     },
     anular(boleta) {
       this.$bvModal

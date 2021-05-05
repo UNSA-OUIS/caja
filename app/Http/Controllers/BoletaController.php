@@ -64,8 +64,9 @@ class BoletaController extends Controller
         return $query->paginate($request->size);
     }
 
-    public function resumenDiario(Request $request)
+    public function resumenDiario(Request $filtro)
     {
+        //dd($filtro->all());
         $see = require config_path('Sunat\config.php');
         $correlativo = '';
 
