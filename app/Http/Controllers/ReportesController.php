@@ -28,8 +28,8 @@ class ReportesController extends Controller
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();
         return ['comprobantes' => $comprobantes];*/
 
-        $comprobantes = User::select('comprobantes.created_at', 'users.email', 'users.name', 'users.email', DB::raw('count(comprobantes.id) as cobros'), DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), DB::raw('SUM(comprobantes.total) As monto'))
-                                    ->leftJoin('comprobantes', 'comprobantes.usuario_id', '=', 'users.id')
+        $comprobantes = User::select('comprobantes.created_at', 'users.email', 'users.name', 'users.email', DB::raw('count(comprobantes.id) as cobros'), DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), DB::raw('SUM(comprobantes.total) As monto'), DB::raw('SUM(comprobantes.total_descuento) As descuento'), DB::raw('SUM(comprobantes.total_impuesto) As impuesto'))
+                                    ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'users.id')
                                     ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
                                     ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
                                     ->groupBy('comprobantes.created_at', 'users.id')

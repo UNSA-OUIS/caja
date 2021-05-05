@@ -247,6 +247,8 @@ export default {
                 { key: "name", label: "Nombre" },
                 { key: "cobros", label: "# Cobros" },
                 { key: "anulados", label: "# Anulados" },
+                { key: "descuento", label: "Dscto." },
+                { key: "impuesto", label: "IGV" },
                 { key: "monto", label: "Monto" },
 
             ],
