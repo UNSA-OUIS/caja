@@ -133,7 +133,6 @@
                   path == 'tipo-comprobante' ||
                   path == 'particulares' ||
                   path == 'empresas' ||
-                  path == 'dependencias' ||
                   path == 'cuentas-corrientes',
               }"
             >
@@ -230,15 +229,6 @@
                   Empresas
                 </inertia-link>
               </li>
-              <li :class="{ 'mm-active': path == 'dependencias' }">
-                <inertia-link
-                  :href="route('dependencias.iniciar')"
-                  :class="{ active: path == 'dependencias' }"
-                  v-if="$permissions.can([{ name: 'Listar Dependencias' }])"
-                >
-                  Dependencias
-                </inertia-link>
-              </li>
               <li
                 :class="{
                   'mm-active': path == 'cuentas-corrientes',
@@ -294,7 +284,7 @@
                   path == 'notas-debito',
               }"
             >
-              <i class="fas fa-upload"></i>
+              <i class="fas fa-cloud-upload-alt"></i>
               <span>Sunat</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
@@ -383,7 +373,7 @@
                   path == 'reportes-conceptos',
               }"
             >
-              <i class="fas fa-cloud-upload-alt"></i>
+              <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
@@ -417,6 +407,39 @@
                   :class="{ 'mm-active': path == 'reportes-conceptos' }"
                 >
                   Conceptos
+                </inertia-link>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a
+              href="javascript: void(0);"
+              class="has-arrow waves-effect"
+              @click="mostrarMenu(5)"
+              :class="{
+                'mm-active':
+                  path == 'consultas-dependencias' ||
+                  path == 'consultas-resumen-diario',
+              }"
+            >
+              <i class="fas fa-clipboard-list"></i>
+              <span>Consultas</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
+              <li>
+                <inertia-link
+                  :href="route('dependencias.iniciar')"
+                  :class="{ 'mm-active': path == 'consultas-dependencias' }"
+                >
+                  Dependencias
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('boletas.resumen-diario-listar')"
+                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
+                >
+                  Resumenes Diarios
                 </inertia-link>
               </li>
             </ul>

@@ -250,6 +250,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
+    Route::get('/sunat/resumenDiario/listar', [BoletaController::class, 'listarResumenDiario'])->name('boletas.resumen-diario-listar');
     //Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
     //Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');

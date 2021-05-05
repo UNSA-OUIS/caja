@@ -19,6 +19,7 @@ use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 use Luecano\NumeroALetras\NumeroALetras;
 
 class BoletaController extends Controller
@@ -62,6 +63,10 @@ class BoletaController extends Controller
         }
 
         return $query->paginate($request->size);
+    }
+    public function listarResumenDiario()
+    {
+        return Inertia::render('Sunat/ListarResumenDiario');
     }
 
     public function resumenDiario(Request $filtro)
