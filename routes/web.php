@@ -245,14 +245,18 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
 
 
+    Route::get('/sunat/resumenDiario', function () {
+        return Inertia::render('Sunat/ListarResumenDiario');
+    })->name('resumen-diario.iniciar');
+    Route::get('/sunat/listarResumenDiario', [ResumenDiarioController::class, 'index'])->name('resumen-diario.listar');
+    Route::get('/sunat/resumenDiario/{resumenDiario}', [ResumenDiarioController::class, 'show'])->name('resumen-diario.mostrar');
+
+
     Route::get('/sunat/boletas', function () {
         return Inertia::render('Sunat/ListarBoletas');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
-    Route::get('/sunat/resumenDiario/listar', [BoletaController::class, 'listarResumenDiario'])->name('boletas.resumen-diario-listar');
-    //Route::get('/sunat/filtrar', [ResumenDiarioController::class, 'filtrar'])->name('resumen.filtrar');
-    //Route::post('/sunat/enviarBoleta/{boleta}', [BoletaController::class, 'enviar'])->name('boletas.enviar');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');
 
     Route::get('/sunat/notas-credito', function () {

@@ -436,7 +436,7 @@
               </li>
               <li>
                 <inertia-link
-                  :href="route('boletas.resumen-diario-listar')"
+                  :href="route('resumen-diario.iniciar')"
                   :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
                 >
                   Resumenes Diarios

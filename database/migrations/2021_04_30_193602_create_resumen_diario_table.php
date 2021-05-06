@@ -17,11 +17,14 @@ class CreateResumenDiarioTable extends Migration
             $table->id();
             $table->string('fecha_envio');
             $table->string('fecha_emision');
-            $table->string('serie', 4);
+            //$table->string('serie', 4);
             $table->string('correlativo', 8);
-            $table->string('ticket');
+            $table->string('ticket')->nullable();
             $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
-            $table->text('observaciones');
+            $table->text('observaciones')->nullable();
+            $table->string('url_xml')->nullable();
+            $table->string('url_cdr')->nullable();
+            $table->string('url_pdf')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

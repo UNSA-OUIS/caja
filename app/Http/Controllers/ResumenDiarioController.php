@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Comprobante;
+use App\Models\ResumenDiario;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
 use Illuminate\Http\Request;
@@ -31,15 +32,30 @@ class ResumenDiarioController extends Controller
     }
 
 
-    public function filtrar(Request $request)
+    public function index(Request $request)
     {
-        $comprobantes = Comprobante::with('detalles')
-            ->whereDate('created_at', '>=', $request->fechaInicio)
-            ->whereDate(
-                'created_at',
-                '<=',
-                $request->fechaFin
-            )->where('serie', 'like', 'B' . '%')->get();
-        return ['comprobantes' => $comprobantes];
+        $query = ResumenDiario::where('correlativo', 'like', '%' . $request->filter . '%');
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
+    }
+    public function show(Request $request)
+    {
+        $query = ResumenDiario::where('correlativo', 'like', '%' . $request->filter . '%');
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
     }
 }

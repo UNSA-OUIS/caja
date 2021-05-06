@@ -164,6 +164,9 @@
               </ul>
             </b-card>
           </template>
+          <template #table-caption
+            >Se encontraron {{cantidad_items}} boletas</template
+          >
         </b-table>
         <b-row>
           <b-col offset-md="8" md="4" class="my-1">
@@ -212,6 +215,7 @@ export default {
         fechaFin: "",
       },
       items: [],
+      cantidad_items: 0,
       fields: [
         {
           key: "codi_usuario",
@@ -243,8 +247,8 @@ export default {
       index: 1,
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
+      perPage: 500,
+      pageOptions: [500, 1000, 1500],
       sortBy: null,
       sortDesc: false,
       sortDirection: "asc",
@@ -256,6 +260,7 @@ export default {
       this.$refs.tbl_boletas.refresh();
     },
     enviarResumenDiario() {
+      console.log(this.items);
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
           title: "Enviar resumen diario",
@@ -296,6 +301,8 @@ export default {
         return promise
           .then((response) => {
             this.items = response.data.data;
+            this.cantidad_items = this.items.length;
+            console.log(this.items.length);
             this.totalRows = response.data.total;
             this.refreshTable();
 
