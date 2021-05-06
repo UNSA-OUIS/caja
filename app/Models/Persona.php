@@ -9,12 +9,17 @@ class Persona extends Model
 {
     use HasFactory;
     protected $table = 'personas';
-    protected $fillable = ['codigo', 'nombre'];
+    protected $fillable = [
+        'codigo',
+        'nombre',
+        'email_personal',
+        'celular',
+        'direccion',
+    ];
 
-    public function persona()
+    public function user()
     {
-        $persona = Persona::where('user_id', $this->id)->first();
-        return $persona;
+        return $this->belongsTo(User::class);
     }
 
 }

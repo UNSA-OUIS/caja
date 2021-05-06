@@ -8,35 +8,13 @@
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <!--<b-form-group
-                        label="Buscar cajero: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="filter.dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!filter.dniCliente" @click="filter.dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>-->
                         <v-select
                         v-model="cajero"
                         @search="buscarCajero"
                         :filterable="false"
                         :options="cajeros"
                         :reduce="cajero => cajero"
-                        label="codigo"
+                        label="vista_cajero"
                         placeholder="Ingrese código o nombre del cajero"
                     >
                         <template #search="{attributes, events}">
@@ -119,8 +97,18 @@
                         <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
                     </template>
                 </b-table>
-                <b-button v-if="comprobantes.length" @click="html2pdf">Descargar (html2pdf)</b-button>
-                <a v-if="comprobantes.length" class="btn btn-success float-right" href="#" @click="dompdf">Descargar (dompdf)</a>
+                <b-button v-if="comprobantes.length" @click="html2pdf">Descargar PDF</b-button>
+                <json-excel
+                    v-if="comprobantes.length"
+                    :data="json_data"
+                    type="xlsx"
+                    :fields="json_fields"
+                    worksheet="Reporte_periodo_x_cajero"
+                    :name="filename"
+                    class="btn btn-success">
+                        Descargar Excel
+                </json-excel>
+                <!--<a v-if="comprobantes.length" class="btn btn-success float-right" href="#" @click="dompdf">Descargar (dompdf)</a>-->
             </div>
 
             <vue-html2pdf
@@ -203,18 +191,6 @@
                     </section>
                 </vue-html2pdf>
                 
-                <json-excel
-                v-if="comprobantes.length"
-                :data="comprobantes"
-                type="xlsx"
-                :fields="json_fields"
-                worksheet="Reporte_periodo_x_cajero"
-                :name="filename"
-                >
-                    <b-button class="btn btn-success">
-                        Download Excel
-                    </b-button>
-                </json-excel>
         </div>
     </app-layout>
 </template>
@@ -241,7 +217,7 @@ export default {
             cajeros: [],
             filtro: "",
             json_fields: {
-                Fecha: "created_at",
+                Fecha: "date",
                 "Código": "codigo",
                 Nombre: "nombre",
                 "# Cobros": "cobros",
@@ -250,28 +226,7 @@ export default {
                 IGV: "impuesto",
                 "Monto": "monto",
                 },
-            json_data: [
-                {
-                    name: "Tony Peña",
-                    city: "New York",
-                    country: "United States",
-                    birthdate: "1978-03-15",
-                    phone: {
-                    mobile: "1-541-754-3010",
-                    landline: "(541) 754-3010",
-                    },
-                },
-                {
-                    name: "Thessaloniki",
-                    city: "Athens",
-                    country: "Greece",
-                    birthdate: "1987-11-23",
-                    phone: {
-                    mobile: "+1 855 275 5071",
-                    landline: "(2741) 2621-244",
-                    },
-                },
-            ],
+            json_data: [],
             json_meta: [
                 [
                     {
@@ -281,19 +236,14 @@ export default {
                 ],
             ],
             fields: [
-                /*{ key: "codigo", label: "Código" },
-                { key: "serie", label: "Serie" },
-                { key: "correlativo", label: "Correlativo" },
-                { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },*/
-                { key: "created_at", label: "Fecha" },
+                { key: "date", label: "Fecha"},
                 { key: "codigo", label: "Código" },
                 { key: "nombre", label: "Nombre" },
-                { key: "cobros", label: "# Cobros" },
-                { key: "anulados", label: "# Anulados" },
-                { key: "descuento", label: "Dscto." },
-                { key: "impuesto", label: "IGV" },
-                { key: "monto", label: "Monto" },
+                { key: "cobros", label: "# Cobros" ,class: "text-right" },
+                { key: "anulados", label: "# Anulados" ,class: "text-right" },
+                { key: "descuento", label: "Dscto." ,class: "text-right" },
+                { key: "impuesto", label: "IGV" ,class: "text-right" },
+                { key: "monto", label: "Monto" ,class: "text-right" },
 
             ],
             filename: "",
@@ -308,7 +258,7 @@ export default {
             currentPage: 1,
             perPage: 5,
             filter: {
-                dniCliente: "",
+                cajeroId: "",
                 fechaInicio: "",
                 fechaFin: "",
             },
@@ -324,8 +274,12 @@ export default {
         },
     },
     created(){
-        var today = new Date().toISOString().slice(0, 10);
-        this.filename = "Reporte_periodo_x_cajero_" + today + ".xls"
+        var today = new Date()
+        today.setHours(today.getHours() - 5)
+        var dateString = today.toISOString().split("T")[0]
+        this.filename = "Reporte_periodo_x_cajero_" + dateString + ".xls"
+        this.filter.fechaInicio = dateString;
+        this.filter.fechaFin = dateString;
     },
     methods: {
         buscarCajero(search, loading) {
@@ -344,7 +298,10 @@ export default {
         },
         async filterTable() {
             try {
-                let params = "?dniCliente=" + this.filter.dniCliente + "&fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                if (this.cajero != null){
+                    params = params + "&cajeroId=" + this.cajero.cajero_id
+                }
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
                 this.comprobantes = response.data.comprobantes
@@ -354,6 +311,17 @@ export default {
                 this.totalIGV = response.data.totalIGV
                 this.totalMontos = response.data.totalMontos
                 this.totalAnulados = response.data.totalAnulados
+                this.json_data = this.comprobantes.slice()
+                this.json_data.push({
+                    date: "" + this.totalRegistros + " registros",
+                    codigo: "",
+                    nombre: "TOTALES:",
+                    cobros: this.totalCobros,
+                    anulados: this.totalAnulados,
+                    descuento: this.totalDescuentos,
+                    impuesto: this.totalIGV,
+                    monto: this.totalMontos
+                })
                 
             } catch (error) {
                 console.log(error)
@@ -363,7 +331,7 @@ export default {
             this.$refs.html2Pdf.generatePdf()
         },
         dompdf(){
-            let params = "?dniCliente=" + this.filter.dniCliente + "&fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+            let params = "?cajeroId=" + this.filter.cajeroId + "&fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
             window.open(`${this.app_url}/reportes-periodo/cajero/pdf/${params}`, '_blanck');
         },
         async beforeDownload ({ html2pdf, options, pdfContent }) {
@@ -392,8 +360,8 @@ export default {
                   new Date(this.fechaFin.split("-"))
             )
           : group;
-      group = this.dniCliente
-        ? group.filter((item) => item.cui.includes(this.dniCliente))
+      group = this.cajeroId
+        ? group.filter((item) => item.cui.includes(this.cajeroId))
         : group;
       return group;
     },

@@ -17,6 +17,9 @@ class CreatePersonasTable extends Migration
             $table->id();
             $table->string('codigo');
             $table->string('nombre');
+            $table->string('email_personal')->unique()->nullable();
+            $table->integer('celular')->nullable();
+            $table->string('direccion', 250)->nullable();
             $table->bigInteger('user_id')->unique();  
             $table->timestamps();
             $table->softDeletes();

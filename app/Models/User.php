@@ -34,9 +34,6 @@ class User extends Authenticatable
     protected $fillable = [        
         'name',
         'email',
-        'email_personal',
-        'celular',
-        'direccion',
         'password',        
         'google_id',        
         'profile_photo_path',
@@ -76,5 +73,10 @@ class User extends Authenticatable
     public function getAllPermissionsAttribute()
     {
         return $this->getAllPermissions();
+    }
+
+    public function persona()
+    {
+        return $this->hasOne(Persona::class);
     }
 }

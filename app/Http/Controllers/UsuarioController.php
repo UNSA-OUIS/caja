@@ -134,7 +134,9 @@ class UsuarioController extends Controller
 
     public function showMyUser()
     {
-        $usuario = Auth::user(); 
+        $usuario = Auth::user();
+        $usuario->persona = Auth::user()->persona;
+        
         return Inertia::render('Usuarios/Perfil', compact('usuario'));
     }
 
@@ -142,13 +144,14 @@ class UsuarioController extends Controller
     {
         
         try {                       
-            $usuario->celular = $request->celular;
-            $usuario->email_personal = $request->email_personal;
-            $usuario->direccion = $request->direccion;
+            $usuario->persona->celular = $request->celular;
+            $usuario->persona->email_personal = $request->email_personal;
+            $usuario->persona->direccion = $request->direccion;
             if ($request->password != "") {
                 $usuario->password = bcrypt($request->password);
+                $usuario->update();
             }
-            $usuario->update();
+            $usuario->persona->update();
             $result = ['successMessage' => 'Usuario actualizado con éxito'];   
             Auth::login($usuario);   
         } catch (\Exception $e) {
