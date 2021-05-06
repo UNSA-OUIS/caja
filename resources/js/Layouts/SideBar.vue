@@ -58,13 +58,13 @@
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>
           <li>
-            <a href="#">
+            <inertia-link :href="route('dashboard')">            
               <i class="uil-home-alt"></i
               ><span class="badge badge-pill badge-primary float-right"
                 >01</span
               >
               <span>Dashboard</span>
-            </a>
+            </inertia-link>
           </li>
 
           <li
@@ -367,6 +367,39 @@
               @click="mostrarMenu(4)"
               :class="{
                 'mm-active':
+                  path == 'consultas-dependencias' ||
+                  path == 'consultas-resumen-diario',
+              }"
+            >
+              <i class="fas fa-clipboard-list"></i>
+              <span>Consultas</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+              <li>
+                <inertia-link
+                  :href="route('dependencias.iniciar')"
+                  :class="{ 'mm-active': path == 'consultas-dependencias' }"
+                >
+                  Dependencias
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('resumen-diario.iniciar')"
+                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
+                >
+                  Resumenes Diarios
+                </inertia-link>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a
+              href="javascript: void(0);"
+              class="has-arrow waves-effect"
+              @click="mostrarMenu(5)"
+              :class="{
+                'mm-active':
                   path == 'reportes-diario' ||
                   path == 'reportes-periodo' ||
                   path == 'reportes-ingresos' ||
@@ -376,7 +409,7 @@
               <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
               <li>
                 <inertia-link
                   href="#"
@@ -410,40 +443,7 @@
                 </inertia-link>
               </li>
             </ul>
-          </li>
-          <li>
-            <a
-              href="javascript: void(0);"
-              class="has-arrow waves-effect"
-              @click="mostrarMenu(5)"
-              :class="{
-                'mm-active':
-                  path == 'consultas-dependencias' ||
-                  path == 'consultas-resumen-diario',
-              }"
-            >
-              <i class="fas fa-clipboard-list"></i>
-              <span>Consultas</span>
-            </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
-              <li>
-                <inertia-link
-                  :href="route('dependencias.iniciar')"
-                  :class="{ 'mm-active': path == 'consultas-dependencias' }"
-                >
-                  Dependencias
-                </inertia-link>
-              </li>
-              <li>
-                <inertia-link
-                  :href="route('resumen-diario.iniciar')"
-                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
-                >
-                  Resumenes Diarios
-                </inertia-link>
-              </li>
-            </ul>
-          </li>
+          </li>          
         </ul>
       </div>
     </div>

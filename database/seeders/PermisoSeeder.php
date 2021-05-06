@@ -72,10 +72,17 @@ class PermisoSeeder extends Seeder
             'celular' => '987314950',
             'user_id' => $user2->id
         ]);
+
         Persona::create([
             'codigo' => 'cajero3',
             'nombre' => 'CAJERO ' . $user3->name,
             'user_id' => $user3->id
+        ]);
+
+        Persona::create([
+            'codigo' => 'cajero4',
+            'nombre' => 'CAJERO ' . $user4->name,
+            'user_id' => $user4->id
         ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

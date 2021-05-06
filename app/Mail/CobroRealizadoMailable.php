@@ -30,7 +30,7 @@ class CobroRealizadoMailable extends Mailable
     public function build()
     {
         return $this->subject('Cobro realizado')
-                    ->attach('D:\PROJECTS\OUIS\caja\public\20000000001-03-B001-1.pdf')
+                    //->attach('D:\PROJECTS\OUIS\caja\public\20000000001-03-B001-1.pdf')
                     ->view('emails.cobro');
     }
 }
