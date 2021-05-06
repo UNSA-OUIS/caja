@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comprobante;
+use App\Models\Concepto;
 use DateTime;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
@@ -47,7 +48,8 @@ class FacturaController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%')->where('serie', 'like', 'F' . '%');
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
+            ->with('detalles')->where('tipo_comprobante_id', 'like', 2)->where('codi_usuario', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 
@@ -60,7 +62,10 @@ class FacturaController extends Controller
     }
     public function enviar(Comprobante $factura)
     {
-        $factura = Comprobante::with('detalles')->where('id', 'like', $factura->id)->first();
+        $factura = Comprobante::with('comprobanteable')->with('tipo_comprobante')
+            ->with('detalles')->where('id', 'like', $factura->id)->first();
+        //return $factura->detalles[0]->concepto_id;
+
 
         try {
             $see = require config_path('Sunat\config.php');
@@ -68,8 +73,8 @@ class FacturaController extends Controller
             // Cliente
             $client = (new Client())
                 ->setTipoDoc('6')
-                ->setNumDoc('10723516108')
-                ->setRznSocial('Jesus Ruben Ortiz Chavez');
+                ->setNumDoc($factura->comprobanteable->ruc)
+                ->setRznSocial($factura->comprobanteable->razon_social);
 
             // Venta
             $invoice = new Invoice();
@@ -82,6 +87,10 @@ class FacturaController extends Controller
 
             $detalle = $factura->detalles;
             foreach ($detalle as $index => $value) {
+                $concepto = Concepto::with('tipo_concepto')
+                    ->with('clasificador')
+                    ->with('unidad_medida')
+                    ->where('id', 'like', $factura->detalles[$index]->concepto_id)->get();
                 $items[$index] = (new SaleDetail())
                     ->setCodProducto($value['concepto_id'])
                     ->setUnidad('NIU') // Unidad - Catalog. 03
@@ -95,7 +104,13 @@ class FacturaController extends Controller
                     ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
                     ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
                     ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
-                $total_agravadas += $value['valor_unitario'] * $value['cantidad'];
+                //if ($concepto[$index]->tipo_afectacion == 10) {
+                    $total_agravadas += $value['valor_unitario'] * $value['cantidad'];
+                /*} elseif ($concepto[$index]->tipo_afectacion == 20) {
+                /   $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
+                } elseif ($concepto[$index]->tipo_afectacion == 30) {
+                    $total_inafectos += $value['valor_unitario'] * $value['cantidad'];
+                }*/
                 $igv += 18.00 / $value['cantidad'];
             }
 
@@ -106,9 +121,7 @@ class FacturaController extends Controller
                 ->setCode('1000') // Monto en letras - Catalog. 52
                 ->setValue($montoLetras);
 
-            $invoice->setDetails($items)->setLegends([$legend, (new Legend())
-                ->setCode('2006')
-                ->setValue('Operación sujeta a detracción')]);
+            $invoice->setDetails($items)->setLegends([$legend]);
 
             $invoice
                 ->setUblVersion('2.1')
@@ -122,12 +135,14 @@ class FacturaController extends Controller
                 ->setCompany($this->empresa)
                 ->setClient($client)
                 ->setMtoOperGravadas($total_agravadas)
+                //->setMtoOperExoneradas($total_exonerados)
+                //->setMtoOperInafectas($total_inafectos)
                 ->setMtoIGV($igv)
                 ->setTotalImpuestos($igv)
                 ->setValorVenta($total_agravadas)
                 ->setSubTotal($total_agravadas + $igv)
-                ->setMtoImpVenta($total_agravadas + $igv)
-                ->setDetraccion(
+                ->setMtoImpVenta($total_agravadas + $igv);
+            /*->setDetraccion(
                     // MONEDA SIEMPRE EN SOLES
                     (new Detraction())
                         // Carnes y despojos comestibles
@@ -137,7 +152,7 @@ class FacturaController extends Controller
                         ->setCtaBanco('0004-3342343243')
                         ->setPercent(4.00)
                         ->setMount(37.76)
-                );
+                )*/
 
             $result = $see->send($invoice);
 
@@ -246,7 +261,7 @@ class FacturaController extends Controller
             return $e;
         }
 
-        return redirect()->route('sunat.iniciarFacturas');
+        return redirect()->route('facturas.iniciar');
     }
     public function anular(Comprobante $factura)
     {

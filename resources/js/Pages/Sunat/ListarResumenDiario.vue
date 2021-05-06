@@ -2,42 +2,20 @@
   <app-layout>
     <div class="card">
       <div class="card-header">
-        <h1>Seleccionar boletas</h1>
-        <div>
-          <label for="example-datepicker">Fecha Inicio</label>
-          <b-form-datepicker
-            name="fechaInicio"
-            v-model="filtro.fechaInicio"
-            class="mb-2"
-          ></b-form-datepicker>
-          <label for="example-datepicker">Fecha Fin</label>
-          <b-form-datepicker
-            name="fechaFin"
-            v-model="filtro.fechaFin"
-            class="mb-2"
-          ></b-form-datepicker>
-          <b-button
-            variant="success"
-            size="sm"
-            title="Buscar Boletas"
-            @click="buscarBoletas()"
-          >
-            Buscar Boletas <b-icon icon="search"></b-icon>
-          </b-button>
-          <b-button
-            variant="primary"
-            size="sm"
-            title="Limpiar"
-            @click="limpiar()"
-          >
-            Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-          </b-button>
-        </div>
+        <ol class="breadcrumb float-left">
+          <li class="breadcrumb-item">
+            <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
+          </li>
+          <li class="breadcrumb-item active">Lista de resumenes diarios</li>
+        </ol>
       </div>
-      <b-alert variant="danger" show v-show="alerta">
-        {{ this.mensajeAlerta }}
-      </b-alert>
-      <div class="card-body" v-show="filtrado">
+      <div class="card-body">
+        <b-alert show variant="success" v-if="$page.props.successMessage">{{
+          $page.props.successMessage
+        }}</b-alert>
+        <b-alert show variant="danger" v-if="$page.props.errorMessage">{{
+          $page.props.errorMessage
+        }}</b-alert>
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -82,7 +60,7 @@
           </b-col>
         </b-row>
         <b-table
-          ref="tbl_boletas"
+          ref="tbl_resumen_diario"
           show-empty
           striped
           hover
@@ -99,8 +77,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay boletas para mostrar"
-          empty-filtered-text="No hay boletas que coincidan con su búsqueda."
+          empty-text="No hay resumenes diarios para mostrar"
+          empty-filtered-text="No hay resumenes diarios que coincidan con su búsqueda."
         >
           <template v-slot:cell(estado)="row">
             <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
@@ -123,46 +101,13 @@
             </div>
           </template>
           <template v-slot:cell(acciones)="row">
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="primary"
-              size="sm"
-              title="Ver"
-              :href="`${app_url}/${row.item.url_pdf}`"
+            <inertia-link
+              v-if="!row.item.deleted_at"
+              class="btn btn-primary btn-sm"
+              :href="route('resumen-diario.mostrar', row.item.id)"
             >
-              <b-icon icon="printer"></b-icon>
-            </b-button>
-            <b-button
-              v-if="row.item.estado == 'noEnviado'"
-              variant="danger"
-              size="sm"
-              title="Anular"
-              @click="anular(row.item)"
-            >
-              <b-icon icon="x-circle"></b-icon>
-            </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'aceptado'
-              "
-              size="sm"
-              @click="row.toggleDetails"
-            >
-              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-              <b-icon v-else icon="plus-circle"></b-icon>
-            </b-button>
-          </template>
-          <template #row-details="row">
-            <b-card>
-              <ul>
-                <li>
-                  {{ row.item.observaciones }}
-                </li>
-              </ul>
-            </b-card>
+              <b-icon icon="eye"></b-icon>
+            </inertia-link>
           </template>
         </b-table>
         <b-row>
@@ -177,16 +122,6 @@
             ></b-pagination>
           </b-col>
         </b-row>
-        <b-row>
-          <b-button
-            variant="success"
-            size="sm"
-            title="Enviar"
-            @click="enviarResumenDiario()"
-          >
-            Enviar Resumen Diario <b-icon icon="cloud-arrow-up"></b-icon>
-          </b-button>
-        </b-row>
       </div>
     </div>
   </app-layout>
@@ -197,40 +132,25 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.listarBoletas",
+  name: "resumen-diario.listar",
   components: {
     AppLayout,
   },
   data() {
     return {
       app_url: this.$root.app_url,
-      filtrado: false,
-      alerta: false,
-      mensajeAlerta: "",
-      filtro: {
-        fechaInicio: "",
-        fechaFin: "",
-      },
       fields: [
         {
-          key: "codi_usuario",
-          label: "Código usuario",
-          class: "text-center",
+          key: "id",
+          label: "ID",
           sortable: true,
-        },
-        { key: "serie", label: "Serie", class: "text-center", sortable: true },
-        {
-          key: "correlativo",
-          label: "Correlativo",
           class: "text-center",
-          sortable: true,
         },
-        {
-          key: "estado",
-          label: "Estado",
-          class: "text-center",
-          sortable: true,
-        },
+        { key: "fecha_envio", label: "Fecha de Envio" },
+        { key: "fecha_emision", label: "Fecha de Emision" },
+        { key: "correlativo", label: "Correlativo", class: "text-center" },
+        { key: "ticket", label: "Ticket", class: "text-center" },
+        { key: "estado", label: "Estado", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -246,7 +166,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_boletas.refresh();
+      this.$refs.tbl_resumen_diario.refresh();
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -259,75 +179,16 @@ export default {
         params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
       }
 
-      const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
+      const promise = axios.get(
+        `${this.app_url}/sunat/listarResumenDiario${params}`
+      );
 
       return promise.then((response) => {
-        const boleta = response.data.data;
-        console.log(boleta);
+        const resumenDiario = response.data.data;
         this.totalRows = response.data.total;
 
-        return boleta || [];
+        return resumenDiario || [];
       });
-    },
-    enviarResumenDiario() {
-      this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
-          title: "Enviar resumen diario",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(route("boletas.resumen-diario"), [
-              this.filtro.fechaInicio,
-              this.filtro.fechaFin,
-            ]);
-            this.refreshTable();
-          }
-        });
-    },
-    buscarBoletas() {
-      if (!this.filtro.fechaInicio && !this.filtro.fechaFin) {
-        this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar una fecha de inicio y fin";
-      } else if (!this.filtro.fechaInicio) {
-        this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar una fecha de inicio";
-      } else if (!this.filtro.fechaFin) {
-        this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar una fecha de fin";
-      } else {
-        this.filtrado = true;
-        this.alerta = false;
-        this.mensajeAlerta = "";
-        this.refreshTable();
-      }
-    },
-    limpiar() {
-      this.filtrado = false;
-      this.alerta = false;
-      this.filtro.fechaInicio = "";
-      this.filtro.fechaFin = "";
-      this.mensajeAlerta = "";
-      this.refreshTable();
-    },
-    anular(boleta) {
-      this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular esta boleta?", {
-          title: "Anular boleta",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(route("boletas.anular", [boleta]));
-            this.refreshTable();
-          }
-        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

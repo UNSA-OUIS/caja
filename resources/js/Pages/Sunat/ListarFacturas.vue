@@ -173,7 +173,8 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "codigo", label: "Codigo", sortable: true },
+        { key: "comprobanteable.ruc", label: "RUC", sortable: true },
+        { key: "comprobanteable.razon_social", label: "Usuario", class: "text-center", sortable: true },
         { key: "serie", label: "Serie", sortable: true },
         { key: "correlativo", label: "Correlativo", sortable: true },
         {

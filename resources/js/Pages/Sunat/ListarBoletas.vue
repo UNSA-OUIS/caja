@@ -90,7 +90,7 @@
           small
           responsive
           stacked="md"
-          :items="myProvider"
+          :items="items"
           :fields="fields"
           :current-page="currentPage"
           :per-page="perPage"
@@ -164,6 +164,9 @@
               </ul>
             </b-card>
           </template>
+          <template #table-caption
+            >Se encontraron {{cantidad_items}} boletas</template
+          >
         </b-table>
         <b-row>
           <b-col offset-md="8" md="4" class="my-1">
@@ -211,6 +214,8 @@ export default {
         fechaInicio: "",
         fechaFin: "",
       },
+      items: [],
+      cantidad_items: 0,
       fields: [
         {
           key: "codi_usuario",
@@ -226,6 +231,12 @@ export default {
           sortable: true,
         },
         {
+          key: "created_at",
+          label: "Fecha de Creacion",
+          class: "text-center",
+          sortable: true,
+        },
+        {
           key: "estado",
           label: "Estado",
           class: "text-center",
@@ -236,8 +247,8 @@ export default {
       index: 1,
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
+      perPage: 500,
+      pageOptions: [500, 1000, 1500],
       sortBy: null,
       sortDesc: false,
       sortDirection: "asc",
@@ -248,28 +259,8 @@ export default {
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(`${this.app_url}/sunat/listarBoletas${params}`);
-
-      return promise.then((response) => {
-        const boleta = response.data.data;
-        console.log(boleta);
-        this.totalRows = response.data.total;
-
-        return boleta || [];
-      });
-    },
     enviarResumenDiario() {
+      console.log(this.items);
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar el resumen diario?", {
           title: "Enviar resumen diario",
@@ -280,10 +271,7 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("boletas.resumen-diario"), [
-              this.filtro.fechaInicio,
-              this.filtro.fechaFin,
-            ]);
+            this.$inertia.post(route("boletas.resumen-diario"), this.items);
             this.refreshTable();
           }
         });
@@ -302,7 +290,27 @@ export default {
         this.filtrado = true;
         this.alerta = false;
         this.mensajeAlerta = "";
-        this.refreshTable();
+
+        const promise = axios.get(`${this.app_url}/sunat/listarBoletas`, {
+          params: {
+            fechaInicio: this.filtro.fechaInicio,
+            fechaFin: this.filtro.fechaFin,
+          },
+        });
+
+        return promise
+          .then((response) => {
+            this.items = response.data.data;
+            this.cantidad_items = this.items.length;
+            console.log(this.items.length);
+            this.totalRows = response.data.total;
+            this.refreshTable();
+
+            return this.items || [];
+          })
+          .catch((error) => {
+            console.log(error.response);
+          });
       }
     },
     limpiar() {
