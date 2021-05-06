@@ -30,69 +30,19 @@ class DependenciaController extends Controller
         return $query->paginate($request->size);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function buscarCodigoDependencia($codigo)
     {
-        //
+        $dependencia = Dependencia::where('codi_depe', $codigo)->first();
+
+        return json_encode($dependencia);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function buscarDependencia($dependencia)
     {
-        //
-    }
+        $dependencias = Dependencia::where('nomb_depe', 'like', $dependencia . '%')
+                            ->take(20)
+                            ->get();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Dependencia  $dependencia
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Dependencia $dependencia)
-    {
-        return Inertia::render('Dependencias/Mostrar',compact('dependencia'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Dependencia  $dependencia
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Dependencia $dependencia)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Dependencia  $dependencia
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Dependencia $dependencia)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Dependencia  $dependencia
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Dependencia $dependencia)
-    {
-        //
+        return $dependencias;
     }
 }

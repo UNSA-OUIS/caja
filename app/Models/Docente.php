@@ -12,6 +12,7 @@ class Docente extends Model
     protected $connection = "mysql";
     protected $table = 'siac_doc';
     protected $primaryKey = 'codper';
+    protected $keyType = 'string';
 
     /**
      * Obtener todos los comprobantes del docente.

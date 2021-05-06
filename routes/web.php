@@ -205,6 +205,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('dependencias.iniciar');
     Route::get('/dependencias/listar', [DependenciaController::class, 'index'])->name('dependencias.listar');
     Route::get('/dependencias/{dependencia}', [DependenciaController::class, 'show'])->name('dependencias.mostrar');
+    Route::get('/buscarCodigoDependencia/{codigo}', [DependenciaController::class, 'buscarCodigoDependencia'])->name('dependencias.buscarCodigoDependencia');
+    Route::get('/buscarDependencia/{dependencia}', [DependenciaController::class, 'buscarDependencia'])->name('dependencias.buscarDependencia');
     /*********************************************************************/
 
 
@@ -226,9 +228,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
-
-    Route::get('/buscarCodigoDependencia/{codigo}', [ComprobanteController::class, 'buscarCodigoDependencia'])->name('comprobantes.buscarCodigoDependencia');
-    Route::get('/buscarDependencia/{dependencia}', [ComprobanteController::class, 'buscarDependencia'])->name('comprobantes.buscarDependencia');
+    
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
     /*******************************************************************/
 

@@ -99,6 +99,15 @@
                         </span>
                         <span v-else-if="row.item.tipo_usuario === 'empresa'">
                             {{ row.item.comprobanteable.razon_social }}
+                        </span>                      
+                        <span v-else-if="row.item.tipo_usuario === 'particular'">
+                            {{ row.item.comprobanteable.apellidos }}, {{ row.item.comprobanteable.nombres }}
+                        </span>                      
+                        <span v-else-if="row.item.tipo_usuario === 'docente'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>      
+                        <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+                            {{ row.item.comprobanteable.nomb_depe }}
                         </span>                        
                     </template>
                     <template v-slot:cell(estado)="row">
@@ -181,12 +190,13 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            fields: [
-                { key: "tipo_comprobante.nombre", label: "Tipo comprobante", class: "text-center", sortable: true },
-                { key: "tipo_usuario", label: "Tipo usuario", class: "text-center", sortable: true },
-                { key: "usuario", label: "Usuario", class: "text-center", sortable: true },
-                { key: "serie", label: "Serie", class: "text-center", sortable: true },
-                { key: "correlativo", label: "Correlativo", class: "text-center", sortable: true },
+            fields: [                
+                { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+                { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+                { key: "usuario", label: "Usuario", sortable: true },
+                { key: "tipo_comprobante.nombre", label: "Comprobante", class: "text-center" },
+                { key: "serie", label: "Serie", class: "text-center" },
+                { key: "correlativo", label: "Correlativo", class: "text-center" },
                 { key: "estado", label: "Estado", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],

@@ -12,6 +12,7 @@ class Alumno extends Model
     protected $connection = "mysql";
     protected $table = 'acdiden';
     protected $primaryKey = 'cui';
+    protected $keyType = 'string';
 
     /**
      * Obtener todos los comprobantes del alumno.
