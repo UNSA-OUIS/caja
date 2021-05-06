@@ -21,7 +21,7 @@
                             <div class="table-responsive mt-4">
                                 <div class="mt-4">
                                     <p class="mb-1">Celular :</p>
-                                    <h5 class="font-size-16">{{usuario.celular}}</h5>
+                                    <h5 class="font-size-16">{{usuario.persona.celular}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Correo institucional:</p>
@@ -29,11 +29,11 @@
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Correo personal:</p>
-                                    <h5 class="font-size-16">{{usuario.email_personal}}</h5>
+                                    <h5 class="font-size-16">{{usuario.persona.email_personal}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Dirección :</p>
-                                    <h5 class="font-size-16">{{usuario.direccion}}</h5>
+                                    <h5 class="font-size-16">{{usuario.persona.direccion}}</h5>
                                 </div>
 
                             </div>
@@ -199,15 +199,15 @@ export default {
                 email_personal: "",
                 direccion: "",
                 password: "",
-                passwordRepetido: ""
+                passwordRepetido: "",
             },
             desiguales: false,    
         };
     },
     created() {        
-        this.editarUsuario.celular = this.usuario.celular
-        this.editarUsuario.email_personal = this.usuario.email_personal
-        this.editarUsuario.direccion = this.usuario.direccion
+        this.editarUsuario.celular = this.usuario.persona.celular
+        this.editarUsuario.email_personal = this.usuario.persona.email_personal
+        this.editarUsuario.direccion = this.usuario.persona.direccion
     },
     methods: {
         mostrar_permisos() {

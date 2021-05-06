@@ -33,9 +33,6 @@ class PermisoSeeder extends Seeder
         User::create([
             'name' => 'Gary Núñez Ccahuaya', 
             'email' => 'gnunezc@unsa.edu.pe',
-            'email_personal' => 'garyfnc185@gmail.com',
-            'direccion' => 'Urb. las orquideas',
-            'celular' => '987314950',
             'password' => bcrypt('password')
         ]);
 
@@ -64,17 +61,20 @@ class PermisoSeeder extends Seeder
         //Datos adicionales
         Persona::create([
             'codigo' => 'cajero1',
-            'nombre' => 'CAJERO' . $user1->name,
+            'nombre' => 'CAJERO ' . $user1->name,
             'user_id' => $user1->id
         ]);
         Persona::create([
             'codigo' => 'cajero2',
-            'nombre' => 'CAJERO' . $user2->name,
+            'nombre' => 'CAJERO ' . $user2->name,
+            'email_personal' => 'garyfnc185@gmail.com',
+            'direccion' => 'Urb. las orquideas',
+            'celular' => '987314950',
             'user_id' => $user2->id
         ]);
         Persona::create([
             'codigo' => 'cajero3',
-            'nombre' => 'CAJERO' . $user3->name,
+            'nombre' => 'CAJERO ' . $user3->name,
             'user_id' => $user3->id
         ]);
 

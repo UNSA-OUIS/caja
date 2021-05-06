@@ -29,7 +29,7 @@ class ReportesController extends Controller
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();
         return ['comprobantes' => $comprobantes];*/
 
-        $comprobantes = Persona::select('comprobantes.created_at', 'personas.codigo', 'personas.nombre', 
+        $comprobantes = Persona::select(DB::raw('DATE(comprobantes.created_at) as date'), 'personas.codigo', 'personas.nombre', 
                                     DB::raw('count(case when comprobantes.estado != \'anulado\' then 1 else null end) as cobros'), 
                                     DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), 
                                     DB::raw('SUM(comprobantes.total) As monto'), DB::raw('SUM(comprobantes.total_descuento) As descuento'), 
@@ -37,7 +37,10 @@ class ReportesController extends Controller
                                     ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'personas.user_id')
                                     ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
                                     ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
-                                    ->groupBy('comprobantes.created_at', 'personas.codigo','personas.nombre')
+                                    ->when($request->cajeroId != "",function ($q) {
+                                        return $q->where('cajero_id', request('cajeroId', 0));
+                                    })
+                                    ->groupBy('date', 'personas.codigo','personas.nombre')
                                     ->get();
         //dd($comprobantes);
         $totalRegistros = $comprobantes->count();
@@ -81,7 +84,8 @@ class ReportesController extends Controller
 
         $cajeros = Persona::where('codigo', 'ilike', '%' . $filtro . '%')
             ->orWhere('nombre', 'ilike', '%' . $filtro . '%')
-            ->select('id as cajero_id', 'codigo', 'nombre')
+            ->select('id as cajero_id', 'codigo', 'nombre',
+            DB::raw("(CONCAT(codigo, ' - ', nombre)) AS vista_cajero"))
             ->orderBy('codigo', 'asc')
             ->get();
 
