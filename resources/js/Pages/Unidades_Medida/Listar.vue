@@ -165,6 +165,7 @@ export default {
                     class: "text-center"
                 },
                 { key: "nombre", label: "Unidad de medida", sortable: true },
+                { key: "codigo", label: "Codigo", sortable: true },
                 { key: "condicion", label: "Condición", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
