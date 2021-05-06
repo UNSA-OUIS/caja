@@ -24,7 +24,8 @@ class UnidadMedidaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|max:20|unique:unidades_medida',
+            'nombre' => 'required|max:50|unique:unidades_medida',
+            'codigo' => 'required|max:5|unique:unidades_medida',
         ];
     }
 

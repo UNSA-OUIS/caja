@@ -29,9 +29,12 @@ class UnidadMedidaController extends Controller
     }
 
     public function create()
-    {
+    {   
+        // $nextid = UnidadMedida::all()->last()->id;
         $unidadMedida = new UnidadMedida();
+        // $unidadMedida->id = $nextid+1;k
         $unidadMedida->nombre = "";
+        $unidadMedida->codigo = "";
 
         return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
@@ -41,6 +44,7 @@ class UnidadMedidaController extends Controller
         try {
             $unidadMedida = new UnidadMedida();
             $unidadMedida->nombre = $request->nombre;
+            $unidadMedida->codigo = $request->codigo;
             $unidadMedida->save();
             $result = ['successMessage' => 'Unidad de medida registrada con éxito'];
         } catch (\Exception $e) {
@@ -65,6 +69,7 @@ class UnidadMedidaController extends Controller
     {
         try {
             $unidadMedida->nombre = $request->nombre;
+            $unidadMedida->codigo = $request->codigo;
             $unidadMedida->update();
             $result = ['successMessage' => 'Unidad de medida actualizada con éxito'];
         } catch (\Exception $e) {

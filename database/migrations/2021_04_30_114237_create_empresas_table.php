@@ -18,7 +18,8 @@ class CreateEmpresasTable extends Migration
             $table->string('ruc', 11)->unique();
             $table->string('razon_social', 250);
             $table->string('direccion', 250);
-            $table->string('email', 100)->unique()->nullable();
+            //$table->string('email', 100)->unique()->nullable();
+            $table->string('email', 100);
             $table->timestamps();
             $table->softDeletes();
         });
