@@ -18,21 +18,44 @@
             </div>
             <div class="card-body">
                 <b-form @submit.prevent="enviar">
-                    <b-form-group
-                        id="input-group-1"
-                        label="Nombre:"
-                        label-for="input-1"
-                    >
-                        <b-form-input
-                            id="input-1"
-                            v-model="formData.nombre"
-                            placeholder="Nombre de unidad de medida"
-                            :readonly="accion == 'Mostrar'"
-                        ></b-form-input>
-                        <div v-if="$page.props.errors.nombre" class="text-danger">
-                            {{ $page.props.errors.nombre[0] }}
-                        </div>
-                    </b-form-group>
+                    <b-row>
+                        <b-col cols="6">
+                            <b-form-group
+                                id="input-group-1"
+                                label="Nombre:"
+                                label-for="input-1"
+                            >
+                                <b-form-input
+                                    id="input-1"
+                                    v-model="formData.nombre"
+                                    placeholder="Nombre de unidad de medida"
+                                    :readonly="accion == 'Mostrar'"
+                                ></b-form-input>
+                                <div v-if="$page.props.errors.nombre" class="text-danger">
+                                    {{ $page.props.errors.nombre[0] }}
+                                </div>
+                            </b-form-group>
+                        </b-col>
+                        <b-col cols="6">
+                            <b-form-group
+                                id="input-group-2"
+                                label="Nombre:"
+                                label-for="input-2"
+                            >
+                                <b-form-input
+                                    id="input-2"
+                                    v-model="formData.codigo"
+                                    placeholder="Codigo de unidad de medida"
+                                    :readonly="accion == 'Mostrar'"
+                                ></b-form-input>
+                                <div v-if="$page.props.errors.codigo" class="text-danger">
+                                    {{ $page.props.errors.codigo[0] }}
+                                </div>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    
+                    
                     <b-button v-if="accion == 'Crear'" type="submit" variant="success">Registrar</b-button>               
                     <b-button v-else-if="accion == 'Mostrar'" type="submit" variant="warning">Editar</b-button>     
                     <b-button v-else-if="accion == 'Editar'" type="submit" variant="success">Actualizar</b-button>

@@ -53,7 +53,7 @@
         <template #default="{ hide }">
         <div class="p-3 bg-dark">-->
 
-    <div data-simplebar class="sidebar-menu-scroll">
+    <div data-simplebar>
       <div id="sidebar-menu">
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>

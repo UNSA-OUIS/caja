@@ -36,7 +36,7 @@ export default {
         };
     },        
     methods: {        
-        async buscarCodigoDocente(docente) {
+        async buscarCodigoDocente(docente) {            
             try {
                 const response = await axios.get(`${this.app_url}/buscarCodigoDocente/${docente.codper}`)
                 this.docente = response.data               

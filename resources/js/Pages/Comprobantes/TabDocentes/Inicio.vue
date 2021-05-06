@@ -121,7 +121,7 @@ export default {
                                             ap_materno: this.ap_materno,
                                             nombres: this.nombres,
                                         }
-                                })
+                                })                
                 
                 this.docentes = response.data
                 this.showDocentes = true                

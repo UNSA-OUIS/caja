@@ -106,7 +106,7 @@
                         <p class="small text-muted font-italic mb-4">Asignación de permisos por usuario.</p>
                         <b-table bordered striped hover :items="categoria_permisos" :fields="fields">
                             <template v-slot:cell(permisos)="row">
-                                <div class="custom-control custom-checkbox custom-control-inline" v-for="permiso in row.item.permisos" :key="permiso.id">
+                                <div style="width:150px" class="custom-control custom-checkbox custom-control-inline" v-for="permiso in row.item.permisos" :key="permiso.id">
                                     <input 
                                         class="custom-control-input" 
                                         :id="permiso.id" 
@@ -174,7 +174,7 @@ export default {
         return {
             accion: "",            
             fields: [                
-                { key: "categoria", label: "Menú", sortable: true },
+                { key: "categoria", label: "Menú", sortable: true, tdClass: "categoria" },
                 { key: "permisos", label: "Permisos" },
                 { key: "acciones", label: "Seleccionar" },                
             ],
@@ -210,10 +210,17 @@ export default {
                 let categoria_anterior = this.permissions[0].name.split(" ").pop()
                 let categoria, permiso_id, permiso_nombre
 
-                this.permissions.forEach(permission => {
-                    categoria = permission.name.split(" ").pop()
+                this.permissions.forEach(permission => {                    
                     permiso_id = permission.id
-                    permiso_nombre = permission.name.split(" ").shift()
+                    
+                    if (permission.name.split(" ").length == 2) {
+                        categoria = permission.name.split(" ").pop()                                            
+                        permiso_nombre = permission.name.split(" ").shift()
+                    }
+                    else if (permission.name.split(" ").length == 3) {  
+                        categoria = permission.name.split(" ")[1]
+                        permiso_nombre = permission.name.split(" ")[0] + " " + permission.name.split(" ")[2]
+                    }    
                     
                     if (categoria !== categoria_anterior) {                                                    
                         this.categoria_permisos.push({
@@ -295,3 +302,9 @@ export default {
     }
 };
 </script>
+<style>
+    .categoria {
+        width: 175px;
+        font-weight: bold;
+    }    
+</style>

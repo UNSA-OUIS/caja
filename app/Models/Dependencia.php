@@ -13,6 +13,7 @@ class Dependencia extends Model
     protected $connection = "mysql2";
     protected $table = 'depe';
     protected $primaryKey = 'codi_depe';
+    protected $keyType = 'string';
     //protected $guarded = [];
 
     /**

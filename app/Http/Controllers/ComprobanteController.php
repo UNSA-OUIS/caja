@@ -24,7 +24,8 @@ class ComprobanteController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
-                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%');                
+                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
+                    ->latest();
 
         $sortby = $request->sortby;
 
@@ -34,26 +35,12 @@ class ComprobanteController extends Controller
         }
 
         return $query->paginate($request->size);
-    }
-
-    public function buscarCodigoDependencia($codigo)
-    {
-        $dependencia = Dependencia::where('codi_depe', $codigo)->first();
-
-        return json_encode($dependencia);
-    }
-
-    public function buscarDependencia($dependencia)
-    {
-        $dependencias = Dependencia::where('nomb_depe', 'like', $dependencia . '%')
-            ->take(20)
-            ->get();
-
-        return $dependencias;
-    }
+    }    
 
     public function crear_alumno(Request $request)
     {
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "alumno";
@@ -61,7 +48,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = $request->matricula['nues'];
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        $comprobante->correlativo = "00000001";
+        
+        if (!$ultima_boleta) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultima_boleta->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -81,6 +75,8 @@ class ComprobanteController extends Controller
 
     public function crear_docente(Request $request)
     {
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "docente";
@@ -88,7 +84,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        $comprobante->correlativo = "00000001";
+        
+        if (!$ultima_boleta) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultima_boleta->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -108,6 +111,8 @@ class ComprobanteController extends Controller
 
     public function crear_dependencia(Request $request)
     {
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+        
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "dependencia";
@@ -115,7 +120,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        $comprobante->correlativo = "00000001";
+        
+        if (!$ultima_boleta) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultima_boleta->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -133,6 +145,8 @@ class ComprobanteController extends Controller
 
     public function crear_particular(Request $request)
     {
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+        
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "particular";
@@ -140,7 +154,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        $comprobante->correlativo = "00000001";
+        
+        if (!$ultima_boleta) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultima_boleta->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -158,6 +179,8 @@ class ComprobanteController extends Controller
 
     public function crear_empresa(Request $request)
     {
+        $ultima_factura = Comprobante::where('tipo_usuario', 'empresa')->latest()->first();
+        
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "empresa";
@@ -165,7 +188,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.FACTURA');
         $comprobante->serie = "F001";
-        $comprobante->correlativo = "00000001";
+
+        if (!$ultima_factura) {
+            $comprobante->correlativo = '00000001';
+        } else {
+            $ultima_factura->correlativo += 1;
+            $comprobante->correlativo = str_pad($ultima_factura->correlativo, 8, "0", STR_PAD_LEFT);
+        }
+        
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -180,38 +210,6 @@ class ComprobanteController extends Controller
         ];
 
         return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
-    }
-
-    public function create(Request $request)
-    {
-        $ultimo = Comprobante::latest('created_at')->first();
-        $comprobante = new Comprobante();
-        $comprobante->tipo_usuario = $request->tipo_usuario;
-        if (!$ultimo) {
-            $comprobante->codigo = 1;
-        } else {
-            $ultimo->codigo += 1;
-            $comprobante->codigo = $ultimo->codigo;
-        }
-        $comprobante->dni = "";
-        $comprobante->ruc = "";
-        $comprobante->razon_social = "";
-        $comprobante->direccion = "";
-        $comprobante->email = "";
-        $comprobante->escuela = "";
-        $comprobante->nues = "";
-        $comprobante->serie = "F001";
-        if (!$ultimo) {
-            $comprobante->correlativo = '00000001';
-        } else {
-            $ultimo->correlativo += 1;
-            $comprobante->correlativo = str_pad($ultimo->correlativo, 8, "0", STR_PAD_LEFT);
-        }
-        $comprobante->total = "";
-        $comprobante->observaciones = "";
-        $comprobante->url_xml = "";
-        $comprobante->url_cdr = "";
-        $comprobante->detalles = array();
     }
 
     public function store(Request $request)
@@ -256,11 +254,6 @@ class ComprobanteController extends Controller
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
 
         return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
-    }
-
-    public function edit($id)
-    {
-        //
     }
 
     public function anular(Comprobante $comprobante)
