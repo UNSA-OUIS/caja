@@ -75,6 +75,7 @@ class BoletaController extends Controller
         $see = require config_path('Sunat\config.php');
         $boletas = $request->all();
         $correlativo = '';
+        return $boletas;
 
         try {
 
