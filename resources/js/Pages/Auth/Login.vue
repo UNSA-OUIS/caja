@@ -27,7 +27,7 @@
                                     
                                     <jet-validation-errors class="mb-4" />
 
-                                    <form @submit.prevent="submit">
+                                    <form @submit.prevent="submit" class="d-none">
 
                                         <div class="form-group">
                                             <label for="email">Nombre de usuario</label>
@@ -55,25 +55,28 @@
                                             <p class="text-danger font-weight-bold">¡Acceso denegado!</p>
                                             <p class="text-danger">{{ $page.props.errorLoginMessage }}</p>
                                         </div>
-                                        <div class="mt-4 text-center">
-                                            <div class="signin-other-title">
-                                                <h5 class="font-size-14 mb-3 title login_redes_sociales p-1">Iniciar sesión con</h5>
-                                            </div>
-                                            
-
-                                            <ul class="list-inline">
-                                                <li class="list-inline-item">
-                                                    <a :href="`${app_url}/google`" class="social-list-item bg-danger text-white border-danger">
-                                                        <i class="mdi mdi-google"></i>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-
+                                        
                                         <div class="mt-4 text-center">
                                             <p class="mb-0">¿No tienes una cuenta? <a href="#" class="font-weight-medium text-primary"> Regístrate ahora </a> </p>
                                         </div>
                                     </form>
+                                    <form @submit.prevent="submit">
+                                        <div class="m-4 text-center">
+                                            <!-- <div class="signin-other-title">
+                                                <h5 class="font-size-14 mb-3 title login_redes_sociales p-1">Iniciar sesión con</h5>
+                                            </div> -->
+                                            <b-button size="lg" pill inline variant="danger" :href="`${app_url}/google`">
+                                                <b-icon icon="google"  ></b-icon>  Iniciar sesion con Google 
+                                            </b-button>
+
+                                        </div>
+                                                <h5 class="font-size-14 mb-3 title login_redes_sociales p-1"></h5>
+                                        
+                                    </form>
+                                    <div class="mt-4 text-center">
+                                        <p class="mb-0">Si no tiene correo institucional, no conoce su contraseña o tiene algún problema para ingresar, póngase en contacto con <a class="font-weight-medium text-primary"> soportecorreo@unsa.edu.pe </a> desde su correo particular.</p>
+
+                                    </div>
                                 </div>
 
                             </div>
