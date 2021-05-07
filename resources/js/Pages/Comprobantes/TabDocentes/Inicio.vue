@@ -114,27 +114,33 @@ export default {
             }      
         },
         async buscarApnDocente() {
+            let apn = this.ap_paterno.trim();
+
+            if (this.ap_materno !== '') {
+                apn = this.ap_paterno.trim() + '/' + this.ap_materno.trim()
+            }
+
+            if (this.nombres !== '') {
+                apn = this.ap_paterno.trim() + '/' + this.ap_materno.trim() + ', ' + this.nombres.trim()
+            }
+            
             try {
-                const response = await axios.get(`${this.app_url}/buscarApnDocente`, { 
-                                        params: { 
-                                            ap_paterno: this.ap_paterno,
-                                            ap_materno: this.ap_materno,
-                                            nombres: this.nombres,
-                                        }
-                                })                
-                
+                const response = await axios.get(`${this.app_url}/buscarApnDocente`, { params: { apn } })
                 this.docentes = response.data
-                this.showDocentes = true                
+
+                if (this.docentes.length == 1) {                    
+                    this.mostrarComprobante(this.docentes[0])
+                }
+                else {
+                    this.showDocentes = true
+                }                                            
             } catch (error) {
                 console.log(error)
             }      
         },
         mostrarComprobante(docente) {       
-            this.$inertia.get(route('comprobantes.crear_docente'), {                
-                'docente': docente
-            })
-        },        
-        
+            this.$inertia.get(route('comprobantes.crear_docente'), { 'docente': docente })
+        },                
     }
 };
 </script>

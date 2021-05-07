@@ -10,22 +10,17 @@ class AlumnoController extends Controller
 {
     public function buscarCuiAlumno($cui)
     {
-        $alumno = Alumno::where('cui', $cui)->select('cui', 'dic', 'apn')->first();
-        $matriculas = Matricula::with('escuela')->where('cui', $cui)->get();
+        $alumno = Alumno::with('matriculas.escuela')
+                    ->where('cui', $cui)->select('cui', 'dic', 'apn')->first();
 
-        return [
-            'alumno' => $alumno,
-            'matriculas' => $matriculas
-        ];
+        return $alumno;        
     }
 
     public function buscarApnAlumno(Request $request)
-    {
-        $alumnos = Alumno::where('apn', 'like', $request->ap_paterno . '%')
-            //->orWhere('apn', 'like', '%' . $request->ap_materno)
-            //->orWhere('apn', 'like', $request->nombres)
-            ->take(10)
-            ->get();
+    {        
+        $alumnos = Alumno::with('matriculas.escuela')
+                    ->where('apn', 'like', $request->apn . '%')->select('cui', 'dic', 'apn')
+                    ->take(10)->get();
 
         return $alumnos;
     }

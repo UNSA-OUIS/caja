@@ -4,7 +4,7 @@
             <b-col cols="12" md="auto">
                 <b-card :title="alumno.apn">
                     <b-card-text>
-                        El alumno está registrado en {{ matriculas.length }} escuelas.<br>
+                        El alumno está registrado en {{ alumno.matriculas.length }} escuelas.<br>
                         Elija la escuela a consultar
                     </b-card-text>
                 </b-card>
@@ -18,7 +18,7 @@
                     small
                     head-variant="light"
                     :fields="fields" 
-                    :items="matriculas"
+                    :items="alumno.matriculas"
                 >   
                     <template v-slot:cell(codigo)="row">
                         {{ row.item.escuela.nues }}
@@ -35,7 +35,7 @@
 <script>
 export default {
     name: "comprobantes.tab-alumnos.escuelas",  
-    props: ["alumno", "matriculas"],
+    props: ["alumno"],
     data() {
         return {
             app_url: this.$root.app_url,
@@ -44,7 +44,7 @@ export default {
                 { key: "escuela", label: "Escuela", sortable: true },                                
             ],            
         };
-    },    
+    },        
     methods: {        
         mostrarComprobante(matricula) {       
             this.$inertia.get(route('comprobantes.crear_alumno'), {                

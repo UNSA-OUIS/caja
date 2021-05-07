@@ -6,9 +6,9 @@
                     <li class="breadcrumb-item">
                         <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
-                    <li class="breadcrumb-item active">Lista de comprobantes</li>
+                    <li class="breadcrumb-item active">Lista de cobros</li>
                 </ol>      
-                <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo comprobante</inertia-link>
+                <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo</inertia-link>
             </div>
             <div class="card-body">
                 <b-alert

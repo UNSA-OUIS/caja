@@ -14,6 +14,11 @@ class Alumno extends Model
     protected $primaryKey = 'cui';
     protected $keyType = 'string';
 
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class, 'cui', 'cui');
+    }
+
     /**
      * Obtener todos los comprobantes del alumno.
      */

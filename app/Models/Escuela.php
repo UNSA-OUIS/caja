@@ -15,7 +15,7 @@ class Escuela extends Model
     protected $hidden = [
         'area', 'cegre', 'ctes', 'escu', 'muj', 'hom', 'total', 'facu',
         'ffin', 'fin', 'flc', 'fln', 'napr', 'ncua', 'ninv', 'nive',
-        'nnor', 'nseg', 'nter', 'nues', 'espe',
+        'nnor', 'nseg', 'nter'
     ];
 
     public function matricula()

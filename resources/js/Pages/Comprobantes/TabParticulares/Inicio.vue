@@ -128,27 +128,34 @@ export default {
                 console.log(error)
             }      
         },
-        async buscarApnParticular() {            
+        async buscarApnParticular() {    
+            let apn = this.ap_paterno.trim();
+
+            if (this.ap_materno !== '') {
+                apn = this.ap_paterno.trim() + ' ' + this.ap_materno.trim()
+            }
+
+            if (this.nombres !== '') {
+                apn = this.ap_paterno.trim() + ' ' + this.ap_materno.trim() + ' ' + this.nombres.trim()
+            }
+                    
             try {
-                const response = await axios.get(`${this.app_url}/buscarApnParticular`, { 
-                                        params: { 
-                                            ap_paterno: this.ap_paterno,
-                                            ap_materno: this.ap_materno,
-                                            nombres: this.nombres,
-                                        }
-                                })
-                
+                const response = await axios.get(`${this.app_url}/buscarApnParticular`, { params: { apn } })                
                 this.particulares= response.data
-                this.showParticulares = true
-                this.showRegistro = false
+
+                if (this.particulares.length == 1) {                    
+                    this.mostrarComprobante(this.particulares[0])
+                }
+                else {
+                    this.showParticulares = true
+                    this.showRegistro = false
+                }                        
             } catch (error) {
                 console.log(error)
             }      
         },
         mostrarComprobante(particular) {       
-            this.$inertia.get(route('comprobantes.crear_particular'), {                
-                'particular' : particular,                
-            })
+            this.$inertia.get(route('comprobantes.crear_particular'), { 'particular' : particular })
         },                
     }
 };
