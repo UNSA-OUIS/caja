@@ -64,6 +64,18 @@
                     <!-- Tab content -->
                     <div class="tab-content p-4">
                         <div class="tab-pane active" id="about" role="tabpanel">
+                            <b-alert
+                                show
+                                variant="success"
+                                v-if="$page.props.successMessage"
+                                >{{ $page.props.successMessage }}</b-alert
+                            >
+                            <b-alert
+                                show
+                                variant="danger"
+                                v-if="$page.props.errorMessage"
+                                >{{ $page.props.errorMessage }}</b-alert
+                            >
                             <div>
                                 <b-form>
                                     <b-row>
@@ -117,7 +129,7 @@
                                                     id="input-1"
                                                     v-model="editarUsuario.celular"
                                                     placeholder="Celular"
-                                                    type="number"
+                                                    type="text"
                                                 ></b-form-input>
                                                 <div
                                                     v-if="$page.props.errors.celular"
@@ -170,7 +182,7 @@
                                             </b-form-group>
                                         </b-col> 
                                     </b-row>
-                                    <label for="">Si desea cambiar su contraseña tendrá que iniciar sesión nuevamente cuando los cambios sean guardados.</label>
+                                    <!-- <label for="">Si desea cambiar su contraseña tendrá que iniciar sesión nuevamente cuando los cambios sean guardados.</label>
                                     <b-alert :show="desiguales" variant="danger" dismissible>¡Los campos de la contraseña deben ser iguales!</b-alert>
                                     <b-row>
                                         <b-col>
@@ -213,7 +225,7 @@
                                                 </div>
                                             </b-form-group>
                                         </b-col>                        
-                                    </b-row>
+                                    </b-row> -->
                                     <b-button @click="actualizar" variant="success">Actualizar</b-button>
                                 </b-form>
                             </div>
@@ -243,6 +255,7 @@ export default {
             ],
             categoria_permisos: [],   
             editarUsuario: {
+                id: "",
                 celular: "",
                 email_personal: "",
                 direccion: "",
@@ -255,6 +268,7 @@ export default {
         };
     },
     created() {        
+        this.editarUsuario.id = this.usuario.persona.id
         this.editarUsuario.celular = this.usuario.persona.celular
         this.editarUsuario.email_personal = this.usuario.persona.email_personal
         this.editarUsuario.direccion = this.usuario.persona.direccion
