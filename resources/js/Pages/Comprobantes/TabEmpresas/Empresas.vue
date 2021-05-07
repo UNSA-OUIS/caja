@@ -31,7 +31,7 @@ export default {
             particular: {},
             fields: [
                 { key: "ruc", label: "RUC", sortable: true, class: "text-center" },
-                { key: "razon_social", label: "Razon social", sortable: true },                                
+                { key: "razon_social", label: "Razón social", sortable: true },                                
             ],                
         };
     },        

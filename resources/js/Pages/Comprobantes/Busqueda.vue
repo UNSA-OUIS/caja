@@ -7,7 +7,7 @@
                         <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item">
-                        <inertia-link :href="route('comprobantes.iniciar')">Lista de comprobantes</inertia-link>
+                        <inertia-link :href="route('comprobantes.iniciar')">Lista de cobros</inertia-link>
                     </li>
                     <li class="breadcrumb-item active">Buscar usuario</li>
                 </ol>                
@@ -24,15 +24,15 @@
                             <b-tab title="Alumnos" active>                        
                                 <tab-alumnos></tab-alumnos>       
                             </b-tab>
+                            <b-tab title="Particulares">
+                                <tab-particulares></tab-particulares>                          
+                            </b-tab>
                             <b-tab title="Docentes">
                                 <tab-docentes></tab-docentes>  
                             </b-tab>
                             <b-tab title="Dependencias">
                                 <tab-dependencias></tab-dependencias>  
-                            </b-tab>
-                            <b-tab title="Particulares">
-                                <tab-particulares></tab-particulares>                          
-                            </b-tab>
+                            </b-tab>                            
                         </b-tabs>                        
                     </b-tab>
                     <b-tab title="Factura">                                                                   

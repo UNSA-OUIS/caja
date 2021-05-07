@@ -8,25 +8,25 @@
           </li>
           <li class="breadcrumb-item active">Lista de tipos de comprobante</li>
         </ol>
-        <inertia-link
+        <!--<inertia-link
           class="btn btn-success float-right"
           :href="route('tipo-comprobante.crear')"
           >Nuevo</inertia-link
-        >
+        >-->
       </div>
       <div class="card-body">
         <b-alert
-                    show
-                    variant="success"
-                    v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
-                >
-                <b-alert
-                    show
-                    variant="danger"
-                    v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
-                >
+            show
+            variant="success"
+            v-if="$page.props.successMessage"
+            >{{ $page.props.successMessage }}</b-alert
+        >
+        <b-alert
+            show
+            variant="danger"
+            v-if="$page.props.errorMessage"
+            >{{ $page.props.errorMessage }}</b-alert
+        >
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -97,7 +97,7 @@
             >
             <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
-          <template v-slot:cell(acciones)="row">
+          <!--<template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
@@ -123,7 +123,7 @@
             >
               <b-icon icon="check"></b-icon>
             </b-button>
-          </template>
+          </template>-->
         </b-table>
         <b-row>
           <b-col offset-md="8" md="4" class="my-1">
@@ -158,7 +158,7 @@ export default {
         { key: "id", label: "ID", sortable: true, class: "text-center" },
         { key: "nombre", label: "Tipo de Comprobante", sortable: true },
         { key: "condicion", label: "Condición", class: "text-center" },
-        { key: "acciones", label: "Acciones", class: "text-center" },
+        //{ key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
       totalRows: 1,

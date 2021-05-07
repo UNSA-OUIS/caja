@@ -31,7 +31,7 @@
                     </tr> 
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="ap_paterno">Ap. Paterno <span class="text-danger">*</span></label>
+                            <label class="mr-sm-2" for="ap_paterno">Apellido paterno <span class="text-danger">*</span></label>
                         </th>
                         <td>
                             <b-form-input
@@ -50,7 +50,7 @@
                     </tr>
                     <tr>
                         <th class="text-right">
-                            <label class="mr-sm-2" for="ap_materno">Ap. Materno</label>
+                            <label class="mr-sm-2" for="ap_materno">Apellido materno</label>
                         </th>
                         <td>
                             <b-form-input
@@ -69,7 +69,7 @@
                             <b-form-input
                                 id="nombres"
                                 v-model="nombres"                               
-                                class="mb-2 mr-sm-2 mb-sm-0"                                    
+                                class="mb-2 mr-sm-2 mb-sm-0"                                             
                             ></b-form-input>                                
                         </td>
                         <td></td>
@@ -78,7 +78,7 @@
             </div>             
         </template>
         <template v-else-if="showEscuelas">
-            <escuelas :alumno="alumno" :matriculas="matriculas"></escuelas>
+            <escuelas :alumno="alumno"></escuelas>
         </template>
         <template v-else-if="showAlumnos">
             <alumnos :alumnos="alumnos"></alumnos>
@@ -103,8 +103,7 @@ export default {
             ap_paterno: '',
             ap_materno: '',
             nombres: '',
-            alumno: {},
-            matriculas: [],
+            alumno: {},            
             alumnos: [],
             showEscuelas: false,
             showAlumnos: false
@@ -113,41 +112,50 @@ export default {
     methods: {                
         async buscarCuiAlumno() {
             try {
-                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${this.cui}`)
-                this.alumno = response.data.alumno
-                this.matriculas = response.data.matriculas
+                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${this.cui}`)                                
+                this.alumno = response.data                
 
-                if (this.matriculas.length == 1) {
-                    this.mostrarComprobante(this.matriculas[0])                    
+                if (this.alumno.matriculas.length == 1) {
+                    this.mostrarComprobante(this.alumno.matriculas[0])
                 }
                 else {
-                    this.showEscuelas = true
-                    this.showAlumnos = false
+                    this.showEscuelas = true   
+                    this.showAlumnos = false                    
                 }
             } catch (error) {
                 console.log(error)
             }      
         },
-        async buscarApnAlumno() {            
-            try {
-                const response = await axios.get(`${this.app_url}/buscarApnAlumno`, { 
-                                        params: { 
-                                            ap_paterno: this.ap_paterno,
-                                            ap_materno: this.ap_materno,
-                                            nombres: this.nombres,
-                                        }
-                                })
-                
-                this.alumnos = response.data
-                this.showAlumnos = true
-                this.showEscuelas = false
+        async buscarApnAlumno() {                        
+            let apn = this.ap_paterno.trim();
 
-                /*if (this.alumnos.length == 1) {
-                    //this.mostrarComprobante(this.matriculas[0])                    
+            if (this.ap_materno !== '') {
+                apn = this.ap_paterno.trim() + '/' + this.ap_materno.trim()
+            }
+
+            if (this.nombres !== '') {
+                apn = this.ap_paterno.trim() + '/' + this.ap_materno.trim() + ', ' + this.nombres.trim()
+            }
+
+            try {
+                const response = await axios.get(`${this.app_url}/buscarApnAlumno`, { params: { apn: apn } })                
+                
+                this.alumnos = response.data                
+
+                if (this.alumnos.length == 1) {                    
+                    this.alumno = this.alumnos[0]
+
+                    if (this.alumno.matriculas.length == 1) {
+                        this.mostrarComprobante(this.alumno.matriculas[0])
+                    }
+                    else {
+                        this.showEscuelas = true   
+                        this.showAlumnos = false                    
+                    }
                 }
                 else {
                     this.showAlumnos = true
-                }*/
+                }
             } catch (error) {
                 console.log(error)
             }      
@@ -157,8 +165,7 @@ export default {
                 'alumno' : this.alumno,
                 'matricula': matricula
             })
-        },        
-        
+        },                
     }
 };
 </script>

@@ -9,8 +9,7 @@
                     head-variant="light"
                     :fields="fields" 
                     :items="alumnos"
-                >   
-                    
+                >                     
                     <template v-slot:cell(nombre)="row">
                         <a href="#" @click="buscarCuiAlumno(row.item)">{{ row.item.apn }}</a>
                     </template>
@@ -19,7 +18,7 @@
         </b-row>
         <b-row class="justify-content-md-center" v-else-if="showEscuelas">
             <b-col>
-                <escuelas :alumno="alumno" :matriculas="matriculas"></escuelas>
+                <escuelas :alumno="alumno"></escuelas>
             </b-col>
         </b-row>
     </b-container>                                                 
@@ -38,8 +37,7 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            alumno: {},
-            matriculas: [],
+            alumno: {},            
             fields: [
                 { key: "cui", label: "Código", sortable: true, class: "text-center" },
                 { key: "nombre", label: "Nombre", sortable: true },                                
@@ -51,11 +49,10 @@ export default {
         async buscarCuiAlumno(alumno) {
             try {
                 const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${alumno.cui}`)
-                this.alumno = response.data.alumno
-                this.matriculas = response.data.matriculas
+                this.alumno = response.data                
 
-                if (this.matriculas.length == 1) {
-                    this.mostrarComprobante(this.matriculas[0])                    
+                if (this.alumno.matriculas.length == 1) {
+                    this.mostrarComprobante(this.alumno.matriculas[0])                    
                 }
                 else {
                     this.showEscuelas = true                    
