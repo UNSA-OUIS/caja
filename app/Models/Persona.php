@@ -15,6 +15,7 @@ class Persona extends Model
         'email_personal',
         'celular',
         'direccion',
+        'user_id'
     ];
 
     public function user()
