@@ -57,16 +57,16 @@
       <div id="sidebar-menu">
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>
-          <li>
-            <inertia-link :href="route('dashboard')">            
-              <i class="uil-home-alt"></i
-              ><span class="badge badge-pill badge-primary float-right"
-                >01</span
-              >
+          <li :class="{ 'mm-active': path == 'dashboard' }">
+            <inertia-link 
+              :class="{ active: path == 'dashboard' }"
+              :href="route('dashboard')"
+            >            
+              <i class="uil-home-alt"></i>
+              <span class="badge badge-pill badge-primary float-right">01</span>
               <span>Dashboard</span>
             </inertia-link>
           </li>
-
           <li
             v-if="
               $permissions.can([
@@ -107,7 +107,6 @@
               </li>
             </ul>
           </li>
-
           <li
             v-if="
               $permissions.can([
@@ -129,15 +128,14 @@
                   path == 'unidades-medida' ||
                   path == 'clasificadores' ||
                   path == 'tipos-concepto' ||
-                  path == 'conceptos' ||
-                  path == 'tipo-comprobante' ||
+                  path == 'conceptos' ||                  
                   path == 'particulares' ||
                   path == 'empresas' ||
                   path == 'cuentas-corrientes',
               }"
             >
               <i class="uil-window-section"></i>
-              <span>Mantenimiento</span>
+              <span>Administración</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[1]">
               <li
@@ -193,24 +191,7 @@
                 >
                   Conceptos
                 </inertia-link>
-              </li>
-              <li
-                :class="{
-                  'mm-active': path == 'tipo-comprobante',
-                }"
-              >
-                <inertia-link
-                  :href="route('tipo-comprobante.iniciar')"
-                  :class="{
-                    active: path == 'tipo-comprobante',
-                  }"
-                  v-if="
-                    $permissions.can([{ name: 'Listar Tipos-Comprobante' }])
-                  "
-                >
-                  Tipos de comprobante
-                </inertia-link>
-              </li>
+              </li>              
               <li :class="{ 'mm-active': path == 'particulares' }">
                 <inertia-link
                   :href="route('particulares.iniciar')"
@@ -248,7 +229,16 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li :class="{ 'mm-active': path == 'comprobantes' }">
+            <inertia-link 
+              :class="{ active: path == 'comprobantes' }"
+              :href="route('comprobantes.iniciar')"
+            >            
+              <i class="uil-window-section"></i>        
+              <span>Cobros</span>
+            </inertia-link>
+          </li>
+          <!--<li>
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
@@ -268,13 +258,12 @@
                 </inertia-link>
               </li>
             </ul>
-          </li>
-
+          </li>-->
           <li>
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(3)"
+              @click="mostrarMenu(2)"
               :class="{
                 'mm-active':
                   path == 'dashboard-sunat' ||
@@ -287,7 +276,7 @@
               <i class="fas fa-cloud-upload-alt"></i>
               <span>Sunat</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[2]">
               <li
                 :class="{
                   'mm-active': path == 'dashboard-sunat',
@@ -364,17 +353,35 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(4)"
+              @click="mostrarMenu(3)"
               :class="{
                 'mm-active':
+                  path == 'tipo-comprobante' ||
                   path == 'consultas-dependencias' ||
                   path == 'consultas-resumen-diario',
               }"
             >
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
-            </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+            </a>            
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
+              <li
+                :class="{
+                  'mm-active': path == 'tipo-comprobante',
+                }"
+              >
+                <inertia-link
+                  :href="route('tipo-comprobante.iniciar')"
+                  :class="{
+                    active: path == 'tipo-comprobante',
+                  }"
+                  v-if="
+                    $permissions.can([{ name: 'Listar Tipos-Comprobante' }])
+                  "
+                >
+                  Tipos de comprobante
+                </inertia-link>
+              </li>
               <li>
                 <inertia-link
                   :href="route('dependencias.iniciar')"
@@ -397,7 +404,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(5)"
+              @click="mostrarMenu(4)"
               :class="{
                 'mm-active':
                   path == 'reportes-diario' ||
@@ -409,7 +416,7 @@
               <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
               <li>
                 <inertia-link
                   href="#"
