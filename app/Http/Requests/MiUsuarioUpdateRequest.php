@@ -27,6 +27,7 @@ class MiUsuarioUpdateRequest extends FormRequest
             'celular' => 'digits:9',
             'direccion' => 'max:250',
             'email_personal' => 'email',
+            'codigo' => 'unique:personas',
         ];
     }
 

@@ -20,6 +20,14 @@
                         <div class="text-muted">
                             <div class="table-responsive mt-4">
                                 <div class="mt-4">
+                                    <p class="mb-1">Código cajero :</p>
+                                    <h5 class="font-size-16">{{usuario.persona.codigo}}</h5>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="mb-1">Nombre cajero :</p>
+                                    <h5 class="font-size-16">{{usuario.persona.nombre}}</h5>
+                                </div>
+                                <div class="mt-4">
                                     <p class="mb-1">Celular :</p>
                                     <h5 class="font-size-16">{{usuario.persona.celular}}</h5>
                                 </div>
@@ -58,6 +66,46 @@
                         <div class="tab-pane active" id="about" role="tabpanel">
                             <div>
                                 <b-form>
+                                    <b-row>
+                                        <b-col>
+                                            <b-form-group
+                                                id="input-group-6"
+                                                label="Código cajero:"
+                                                label-for="input-6"
+                                            >
+                                                <b-form-input
+                                                    id="input-6"
+                                                    v-model="editarUsuario.codigo"
+                                                    placeholder="Código de cajero"
+                                                ></b-form-input>
+                                                <div
+                                                    v-if="$page.props.errors.codigo"
+                                                    class="text-danger"
+                                                >
+                                                    {{ $page.props.errors.codigo[0] }}
+                                                </div>
+                                            </b-form-group>
+                                        </b-col>
+                                        <b-col>
+                                            <b-form-group
+                                                id="input-group-7"
+                                                label="Nombre cajero:"
+                                                label-for="input-7"
+                                            >
+                                                <b-form-input
+                                                    id="input-7"
+                                                    v-model="editarUsuario.nombre"
+                                                    placeholder="Nombre de cajero"
+                                                ></b-form-input>
+                                                <div
+                                                    v-if="$page.props.errors.nombre"
+                                                    class="text-danger"
+                                                >
+                                                    {{ $page.props.errors.nombre[0] }}
+                                                </div>
+                                            </b-form-group>
+                                        </b-col>
+                                    </b-row>
                                     <b-row>
                                         <b-col>
                                             <b-form-group
@@ -198,6 +246,8 @@ export default {
                 celular: "",
                 email_personal: "",
                 direccion: "",
+                codigo: "",
+                nombre: "",
                 password: "",
                 passwordRepetido: "",
             },
@@ -208,6 +258,8 @@ export default {
         this.editarUsuario.celular = this.usuario.persona.celular
         this.editarUsuario.email_personal = this.usuario.persona.email_personal
         this.editarUsuario.direccion = this.usuario.persona.direccion
+        this.editarUsuario.codigo = this.usuario.persona.codigo
+        this.editarUsuario.nombre = this.usuario.persona.nombre
     },
     methods: {
         mostrar_permisos() {
