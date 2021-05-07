@@ -113,24 +113,24 @@
                                         type="checkbox"
                                         v-model="formData.permisos_seleccionados"                        
                                         :value="permiso.id"
-                                        @change="loadSelectAll()"
+                                        @change="loadSelectAll(row.index)"
                                         :disabled="accion == 'Mostrar'"
                                     >
                                     <label class="cursor-pointer font-italic d-block custom-control-label" :for="permiso.id">{{ permiso.nombre }}</label>
                                 </div>                           
                             </template>
-                            <template v-slot:cell(acciones)="rowacciones">
+                            <template v-slot:cell(acciones)=" select_row">
                             <div class="custom-control custom-checkbox custom-control-inline" >
                                 <input 
                                     class="custom-control-input"
                                     type="checkbox"
-                                    :id="rowacciones.index+49"
+                                    :id=" select_row.index+total_permisos+1"
                                     v-model="bool_allSelecteds"
-                                    :value="rowacciones.index"
+                                    :value=" select_row.index"
                                     :disabled="accion == 'Mostrar'"
-                                    @click="selectAll(rowacciones.index,$event)"
+                                    @click="selectAll( select_row.index,$event)"
                                 >
-                                <label class="cursor-pointer font-italic d-block custom-control-label" :for="rowacciones.index+49">{{ rowacciones.item.acciones }}</label>
+                                <label class="cursor-pointer font-italic d-block custom-control-label" :for=" select_row.index+total_permisos+1">{{  select_row.item.acciones }}</label>
                             </div>
                         </template>
                         </b-table>
@@ -180,7 +180,9 @@ export default {
             ],
             formData:this.usuario,
             categoria_permisos: [],   
-            bool_allSelecteds: []         
+            bool_allSelecteds: [],       
+            total_permisos: this.permissions.length
+
         };
     },
     created() {
@@ -258,47 +260,55 @@ export default {
             );
         },
         selectAll(val,e){
-            //console.log("codigo de inicio ",val)
-            //console.log(e.target.checked)
-            let permisos_por_rol=6
-            for (let code = (val*permisos_por_rol)+1; code < ((val+1)*permisos_por_rol)+1; code++) {
-                //console.log(code)
+            this.categoria_permisos[val].permisos.forEach(permiso=>{
                 if(e.target.checked){//if is true add to permissions array
-                    if(!this.formData.permisos_seleccionados.includes(code)){
-                        this.formData.permisos_seleccionados.push(code)
+                    
+                    if(!this.formData.permisos_seleccionados.includes(permiso.id)){
+                        this.formData.permisos_seleccionados.push(permiso.id)
                     }
                 }else{
-                    const index = this.formData.permisos_seleccionados.indexOf(code);
+                    const index = this.formData.permisos_seleccionados.indexOf(permiso.id);
                     if (index > -1) {
                     this.formData.permisos_seleccionados.splice(index, 1);
                     }
                 }
-            }
-        },
-        loadSelectAll(){
-            let permisos_por_rol=6
-            let base_id=0
-            let dic={}
-            this.bool_allSelecteds=[]
-            this.formData.permisos_seleccionados.forEach(element => {
-                base_id=Math.trunc((element-1)/permisos_por_rol)
-                //console.log(base_id)
-                
-                if(dic[base_id] === undefined ){
-                    dic[base_id]=1    
+            })
+            
+        },loadSelectAll(category){
+            if(category==undefined && this.formData.permisos_seleccionados.length){
+                let cat_id=0;
+                this.categoria_permisos.forEach(categoria=>{
+                    let counter_index=0
+                    categoria.permisos.forEach(permiso=>{
+                        if(this.formData.permisos_seleccionados.includes(permiso.id)){
+                            counter_index+=1; 
+                        }
+                        
+                    });
+                    if(counter_index == categoria.permisos.length){
+                        if(!this.bool_allSelecteds.includes(cat_id))
+                            this.bool_allSelecteds.push(cat_id)
+                    }
+                    cat_id+=1;
+                })
+            }else if(category!=undefined){
+                let counter_index=0
+                this.categoria_permisos[category].permisos.forEach(permiso=>{
+                    if(this.formData.permisos_seleccionados.includes(permiso.id)){
+                    counter_index+=1; 
+                    }
+                    
+                });
+                if(counter_index== this.categoria_permisos[category].permisos.length){
+                    if(!this.bool_allSelecteds.includes(category))
+                        this.bool_allSelecteds.push(category)
                 }else{
-                    dic[base_id]=dic[base_id]+1
-                }  
-            });
-            //console.log(dic)
-            for (const [key, value] of Object.entries(dic)) {
-                if(value===6){
-                    if(!this.bool_allSelecteds.includes(Number(key)))
-                        this.bool_allSelecteds.push(Number(key))
+                    const index = this.bool_allSelecteds.indexOf(category);
+                    if (index > -1)this.bool_allSelecteds.splice(index, 1);
                 }
             }
-             
         }
+
     }
 };
 </script>
