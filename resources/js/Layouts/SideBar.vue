@@ -58,7 +58,7 @@
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>
           <li>
-            <inertia-link :href="route('dashboard')">            
+            <inertia-link :href="route('dashboard')">
               <i class="uil-home-alt"></i
               ><span class="badge badge-pill badge-primary float-right"
                 >01</span
@@ -368,7 +368,9 @@
               :class="{
                 'mm-active':
                   path == 'consultas-dependencias' ||
-                  path == 'consultas-resumen-diario',
+                  path == 'consultas-resumen-diario' ||
+                  path == 'comprobantes-consultas',
+
               }"
             >
               <i class="fas fa-clipboard-list"></i>
@@ -389,6 +391,14 @@
                   :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
                 >
                   Resumenes Diarios
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('comprobantes.consultas')"
+                  :class="{ 'mm-active': path == 'comprobantes-consultas' }"
+                >
+                  Documentos
                 </inertia-link>
               </li>
             </ul>
@@ -443,7 +453,7 @@
                 </inertia-link>
               </li>
             </ul>
-          </li>          
+          </li>
         </ul>
       </div>
     </div>

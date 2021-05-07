@@ -7,7 +7,7 @@
                         <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item active">Lista de comprobantes</li>
-                </ol>      
+                </ol>
                 <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo comprobante</inertia-link>
             </div>
             <div class="card-body">
@@ -99,16 +99,16 @@
                         </span>
                         <span v-else-if="row.item.tipo_usuario === 'empresa'">
                             {{ row.item.comprobanteable.razon_social }}
-                        </span>                      
+                        </span>
                         <span v-else-if="row.item.tipo_usuario === 'particular'">
                             {{ row.item.comprobanteable.apellidos }}, {{ row.item.comprobanteable.nombres }}
-                        </span>                      
+                        </span>
                         <span v-else-if="row.item.tipo_usuario === 'docente'">
                             {{ row.item.comprobanteable.apn }}
-                        </span>      
+                        </span>
                         <span v-else-if="row.item.tipo_usuario === 'dependencia'">
                             {{ row.item.comprobanteable.nomb_depe }}
-                        </span>                        
+                        </span>
                     </template>
                     <template v-slot:cell(estado)="row">
                         <b-badge
@@ -138,7 +138,7 @@
                         >
                     </template>
                     <template v-slot:cell(acciones)="row">
-                        <inertia-link 
+                        <inertia-link
                             class="btn btn-info btn-sm"
                             :href="route('comprobantes.mostrar', row.item)"
                         >
@@ -190,7 +190,7 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            fields: [                
+            fields: [
                 { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
                 { key: "codi_usuario", label: "Código usuario", class: "text-center" },
                 { key: "usuario", label: "Usuario", sortable: true },
@@ -228,8 +228,8 @@ export default {
 
             const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
 
-            return promise.then(response => {                
-                const comprobantes = response.data.data;                
+            return promise.then(response => {
+                const comprobantes = response.data.data;
                 this.totalRows = response.data.total;
 
                 return comprobantes || [];

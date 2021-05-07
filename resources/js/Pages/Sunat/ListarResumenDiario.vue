@@ -101,6 +101,18 @@
             </div>
           </template>
           <template v-slot:cell(acciones)="row">
+            <b-button
+              v-if="
+                row.item.estado == 'aceptado' || row.item.estado == 'observado'
+              "
+              target="_blank"
+              variant="primary"
+              size="sm"
+              title="Ver"
+              :href="`${app_url}/${row.item.url_pdf}`"
+            >
+              <b-icon icon="printer"></b-icon>
+            </b-button>
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
