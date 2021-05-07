@@ -123,9 +123,8 @@ class ParticularController extends Controller
 
     public function buscarApnParticular(Request $request)
     {
-        $particulares = Particular::where('apellidos', 'ilike', $request->ap_paterno . '%')
-                            ->take(10)
-                            ->get();
+        $particulares = Particular::whereRaw("CONCAT(apellidos, ' ', nombres) ilike ? ", [ $request->apn . '%'])
+                            ->take(10)->get();
 
         return $particulares;
     }
@@ -142,7 +141,7 @@ class ParticularController extends Controller
             $result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar al particular', 'error' => true];
-            Log::error('ParticularController@registrarParticular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            \Log::error('ParticularController@registrarParticular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return $result;

@@ -16,11 +16,7 @@ class DocenteController extends Controller
 
     public function buscarApnDocente(Request $request)
     {
-        $docentes = Docente::where('apn', 'like', $request->ap_paterno . '%')
-            //->orWhere('apn', 'like', '%' . $request->ap_materno)
-            //->orWhere('apn', 'like', $request->nombres)
-            ->take(10)
-            ->get();
+        $docentes = Docente::where('apn', 'like', $request->apn . '%')->take(10)->get();
 
         return $docentes;
     }

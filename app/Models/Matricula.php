@@ -17,6 +17,11 @@ class Matricula extends Model
         'nmat', 'fln', 
     ];
 
+    public function alumno()
+    {
+        return $this->belongsTo(Alumno::class, 'cui', 'cui');
+    }
+
     public function escuela()
     {        
         return $this->hasOne(Escuela::class, 'nues', 'nues');
