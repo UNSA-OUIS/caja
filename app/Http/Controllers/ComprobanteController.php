@@ -24,8 +24,8 @@ class ComprobanteController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
-                    ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
-                    ->latest();
+            ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
+            ->latest();
 
         $sortby = $request->sortby;
 
@@ -35,11 +35,11 @@ class ComprobanteController extends Controller
         }
 
         return $query->paginate($request->size);
-    }    
+    }
 
     public function crear_alumno(Request $request)
     {
-        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>', 'empresa')->latest()->first();
 
         $comprobante = new Comprobante();
 
@@ -48,14 +48,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = $request->matricula['nues'];
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        
+
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
         }
-        
+
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -75,7 +75,7 @@ class ComprobanteController extends Controller
 
     public function crear_docente(Request $request)
     {
-        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>', 'empresa')->latest()->first();
 
         $comprobante = new Comprobante();
 
@@ -84,14 +84,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        
+
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
         }
-        
+
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -111,8 +111,8 @@ class ComprobanteController extends Controller
 
     public function crear_dependencia(Request $request)
     {
-        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
-        
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>', 'empresa')->latest()->first();
+
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "dependencia";
@@ -120,14 +120,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        
+
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
         }
-        
+
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -145,8 +145,8 @@ class ComprobanteController extends Controller
 
     public function crear_particular(Request $request)
     {
-        $ultima_boleta = Comprobante::where('tipo_usuario', '<>','empresa')->latest()->first();
-        
+        $ultima_boleta = Comprobante::where('tipo_usuario', '<>', 'empresa')->latest()->first();
+
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "particular";
@@ -154,14 +154,14 @@ class ComprobanteController extends Controller
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
         $comprobante->serie = "B001";
-        
+
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
         }
-        
+
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -180,7 +180,7 @@ class ComprobanteController extends Controller
     public function crear_empresa(Request $request)
     {
         $ultima_factura = Comprobante::where('tipo_usuario', 'empresa')->latest()->first();
-        
+
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = "empresa";
@@ -195,7 +195,7 @@ class ComprobanteController extends Controller
             $ultima_factura->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_factura->correlativo, 8, "0", STR_PAD_LEFT);
         }
-        
+
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -277,5 +277,24 @@ class ComprobanteController extends Controller
         //Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
         //$result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
         //return $result;
+    }
+    public function consultas(Request $request)
+    {
+        //$this->authorize("viewAny", Comprobante::class);
+
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')
+            ->where('codi_usuario', 'like', '%' . $request->filter . '%')
+            ->where('serie', 'ILIKE', '%' . $request->serie . '%')
+            ->where('correlativo', 'ILIKE', '%' . $request->correlativo . '%')
+            ->latest();
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
     }
 }

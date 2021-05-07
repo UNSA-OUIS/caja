@@ -358,7 +358,9 @@
                 'mm-active':
                   path == 'tipo-comprobante' ||
                   path == 'consultas-dependencias' ||
-                  path == 'consultas-resumen-diario',
+                  path == 'consultas-resumen-diario' ||
+                  path == 'comprobantes-consultas',
+
               }"
             >
               <i class="fas fa-clipboard-list"></i>
@@ -396,6 +398,14 @@
                   :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
                 >
                   Resumenes Diarios
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('comprobantes.consultas')"
+                  :class="{ 'mm-active': path == 'comprobantes-consultas' }"
+                >
+                  Documentos
                 </inertia-link>
               </li>
             </ul>
@@ -450,7 +460,7 @@
                 </inertia-link>
               </li>
             </ul>
-          </li>          
+          </li>
         </ul>
       </div>
     </div>

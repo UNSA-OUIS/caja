@@ -43,7 +43,7 @@ class LoginWithGoogleController extends Controller
                     ['email' => $user->email],
                     [
 						'name' => $user->name,  // verificar si el nombre tomara de google o del admin
-                        'email' => $user->email,
+                        'email' => $user->email,                        
                         'google_id' => $user->id,
                         'profile_photo_path' => $user->avatar						
 					]

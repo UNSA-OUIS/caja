@@ -75,7 +75,6 @@ class BoletaController extends Controller
         $see = require config_path('Sunat\config.php');
         $boletas = $request->all();
         $correlativo = '';
-        return $boletas;
 
         try {
 
@@ -173,6 +172,48 @@ class BoletaController extends Controller
             } else if ($code === 99) {
                 $resumen_diario->estado = 'rechazado';
                 $resumen_diario->observaciones = $cdr->getDescription() . PHP_EOL;
+                $resumen_diario->update();
+            }
+            $html = new HtmlReport();
+            $html->setTemplate('summary.html.twig');
+
+            $report = new PdfReport($html);
+
+            $report->setOptions([
+                'no-outline',
+                'viewport-size' => '1280x1024',
+                'page-width' => '21cm',
+                'page-height' => '29.7cm',
+            ]);
+            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+            $params = [
+                'system' => [
+                    'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
+                    'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                ],
+                'user' => [
+                    'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                    'extras'     => [
+                        // Leyendas adicionales
+                        ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                        ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
+                    ],
+                    'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+                ]
+            ];
+
+            $pdf = $report->render($resumen, $params);
+
+            if ($pdf === null) {
+                $error = $report->getExporter()->getError();
+                echo 'Error: ' . $error;
+                return;
+            }
+
+            $pdfGuardado = file_put_contents($resumen->getName() . '.pdf', $pdf);
+            if ($pdfGuardado) {
+                $resumen_diario->url_pdf = $resumen->getName() . '.pdf';
                 $resumen_diario->update();
             }
         } catch (\Throwable $th) {

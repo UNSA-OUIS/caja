@@ -214,11 +214,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/comprobantes', function () {
         return Inertia::render('Comprobantes/Listar');
     })->name('comprobantes.iniciar');
+    Route::get('/consultas', function () {
+        return Inertia::render('Comprobantes/Consultas');
+    })->name('comprobantes.consultas');
     Route::get('/buscarUsuario', function () {
         return Inertia::render('Comprobantes/Busqueda');
     })->name('comprobantes.buscarUsuario');
 
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
+    Route::get('/comprobantes/consultas', [ComprobanteController::class, 'consultas'])->name('comprobantes-consultas.listar');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
     Route::get('/crear_alumno', [ComprobanteController::class, 'crear_alumno'])->name('comprobantes.crear_alumno');
     Route::get('/crear_docente', [ComprobanteController::class, 'crear_docente'])->name('comprobantes.crear_docente');
@@ -228,7 +232,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
-    
+
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
     /*******************************************************************/
 

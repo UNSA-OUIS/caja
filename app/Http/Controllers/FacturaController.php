@@ -79,7 +79,7 @@ class FacturaController extends Controller
             // Venta
             $invoice = new Invoice();
 
-            $total_agravadas = 0;
+            $total_gravadas = 0;
             $total_exonerados = 0;
             $total_inafectos = 0;
             $subtotal = 0;
@@ -90,13 +90,13 @@ class FacturaController extends Controller
                 $concepto = Concepto::with('tipo_concepto')
                     ->with('clasificador')
                     ->with('unidad_medida')
-                    ->where('id', 'like', $factura->detalles[$index]->concepto_id)->get();
+                    ->where('id', 'like', $factura->detalles[$index]->concepto_id)->first();
                 $items[$index] = (new SaleDetail())
-                    ->setCodProducto($value['concepto_id'])
+                    ->setCodProducto($concepto->id)
                     ->setUnidad('NIU') // Unidad - Catalog. 03
                     ->setCantidad($value['cantidad'])
                     ->setMtoValorUnitario($value['valor_unitario'])
-                    ->setDescripcion('PRODUCTO - ' . $index)
+                    ->setDescripcion($concepto->descripcion)
                     ->setMtoBaseIgv(100.00)
                     ->setPorcentajeIgv(18.00) // 18%
                     ->setIgv(18.00 / $value['cantidad'])
@@ -104,13 +104,13 @@ class FacturaController extends Controller
                     ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
                     ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
                     ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
-                //if ($concepto[$index]->tipo_afectacion == 10) {
-                    $total_agravadas += $value['valor_unitario'] * $value['cantidad'];
-                /*} elseif ($concepto[$index]->tipo_afectacion == 20) {
-                /   $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
-                } elseif ($concepto[$index]->tipo_afectacion == 30) {
+                if ($concepto->tipo_afectacion == 10) {
+                    $total_gravadas += $value['valor_unitario'] * $value['cantidad'];
+                } elseif ($concepto->tipo_afectacion == 20) {
+                    $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
+                } elseif ($concepto->tipo_afectacion == 30) {
                     $total_inafectos += $value['valor_unitario'] * $value['cantidad'];
-                }*/
+                }
                 $igv += 18.00 / $value['cantidad'];
             }
 
@@ -134,15 +134,30 @@ class FacturaController extends Controller
                 ->setTipoMoneda('PEN') // Sol - Catalog. 02
                 ->setCompany($this->empresa)
                 ->setClient($client)
-                ->setMtoOperGravadas($total_agravadas)
-                //->setMtoOperExoneradas($total_exonerados)
-                //->setMtoOperInafectas($total_inafectos)
                 ->setMtoIGV($igv)
-                ->setTotalImpuestos($igv)
-                ->setValorVenta($total_agravadas)
-                ->setSubTotal($total_agravadas + $igv)
-                ->setMtoImpVenta($total_agravadas + $igv);
-            /*->setDetraccion(
+                ->setTotalImpuestos($igv);
+            if ($total_gravadas) {
+                $invoice
+                    ->setValorVenta($total_gravadas)
+                    ->setSubTotal($total_gravadas + $igv)
+                    ->setMtoImpVenta($total_gravadas + $igv)
+                    ->setMtoOperGravadas($total_agravadas);
+            } else if ($total_exonerados) {
+                $invoice
+                    ->setValorVenta($total_exonerados)
+                    ->setSubTotal($total_exonerados + $igv)
+                    ->setMtoImpVenta($total_exonerados + $igv)
+                    ->setMtoOperGravadas($total_exonerados);
+            } else if ($total_inafectos) {
+                $invoice
+                    ->setValorVenta($total_inafectos)
+                    ->setSubTotal($total_inafectos + $igv)
+                    ->setMtoImpVenta($total_inafectos + $igv)
+                    ->setMtoOperGravadas($total_inafectos);
+            }
+
+            if ($concepto->detraccion) {
+                $invoice->setDetraccion(
                     // MONEDA SIEMPRE EN SOLES
                     (new Detraction())
                         // Carnes y despojos comestibles
@@ -152,7 +167,10 @@ class FacturaController extends Controller
                         ->setCtaBanco('0004-3342343243')
                         ->setPercent(4.00)
                         ->setMount(37.76)
-                )*/
+                );
+            }
+
+
 
             $result = $see->send($invoice);
 
