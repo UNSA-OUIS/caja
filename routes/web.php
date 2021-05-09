@@ -209,6 +209,14 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarDependencia/{dependencia}', [DependenciaController::class, 'buscarDependencia'])->name('dependencias.buscarDependencia');
     /*********************************************************************/
 
+    /******************************* COBROS *******************************/
+    Route::get('/cobros', function () {
+        return Inertia::render('Cobros/Listar');
+    })->name('cobros.iniciar');    
+    Route::get('/cobros/buscarUsuario', function () {
+        return Inertia::render('Cobros/Busqueda');
+    })->name('cobros.buscarUsuario');
+    /**********************************************************************/
 
     /**************************** COMPROBANTES ***************************/
     Route::get('/comprobantes', function () {

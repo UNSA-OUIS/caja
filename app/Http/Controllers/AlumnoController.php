@@ -18,10 +18,17 @@ class AlumnoController extends Controller
 
     public function buscarApnAlumno(Request $request)
     {        
-        $alumnos = Alumno::with('matriculas.escuela')
-                    ->where('apn', 'like', $request->apn . '%')->select('cui', 'dic', 'apn')
-                    ->take(10)->get();
+        /*$alumnos = Alumno::with('matriculas.escuela')
+                            ->where('apn', 'like', $request->apn . '%')->select('cui', 'dic', 'apn')
+                            ->take(10)->get();
 
-        return $alumnos;
+        return $alumnos;*/        
+
+        $query = Alumno::with('matriculas.escuela')
+                    ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filter . '%'])
+                    ->select('cui', 'dic', 'apn')
+                    ->orderBy('apn', 'asc');
+        
+        return $query->paginate($request->size);
     }
 }

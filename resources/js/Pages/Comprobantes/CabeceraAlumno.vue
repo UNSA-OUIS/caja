@@ -5,6 +5,7 @@
                 <b-form-group id="input-group-4" label="CUI:" label-for="input-4">
                     <b-input-group class="mb-2">                                    
                         <b-form-input
+                            size="sm"
                             id="input-4"
                             readonly
                             v-model="comprobante.codi_usuario"
@@ -16,6 +17,7 @@
             <b-col cols="3">
                 <b-form-group id="input-group-5" label="DNI:" label-for="input-5">
                     <b-form-input
+                        size="sm"
                         id="input-5"
                         v-model="data.dni"
                         readonly
@@ -27,6 +29,7 @@
                 <b-form-group id="input-group-6" label="Email:" label-for="input-6">
                     <b-input-group prepend="@" class="mb-2 mr-sm-2 mb-sm-0">
                         <b-form-input
+                            size="sm"
                             id="input-6"
                             readonly
                             v-model="data.email"
@@ -45,6 +48,7 @@
                             <b-icon icon="person-fill"></b-icon>
                         </b-input-group-prepend>
                         <b-form-input
+                            size="sm"
                             id="input-7"
                             readonly
                             v-model="data.alumno"
@@ -56,6 +60,7 @@
             <b-col>
                 <b-form-group id="input-group-8" label="Escuela:" label-for="input-8">
                     <b-form-input
+                        size="sm"
                         id="input-8"
                         v-model="data.escuela"
                         readonly

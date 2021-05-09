@@ -229,13 +229,22 @@
               </li>
             </ul>
           </li>
+          <li :class="{ 'mm-active': path == 'cobros' }">
+            <inertia-link 
+              :class="{ active: path == 'cobros' }"
+              :href="route('cobros.iniciar')"
+            >            
+              <i class="uil-window-section"></i>        
+              <span>Cobros</span>
+            </inertia-link>
+          </li>
           <li :class="{ 'mm-active': path == 'comprobantes' }">
             <inertia-link 
               :class="{ active: path == 'comprobantes' }"
               :href="route('comprobantes.iniciar')"
             >            
               <i class="uil-window-section"></i>        
-              <span>Cobros</span>
+              <span>Comprobantes</span>
             </inertia-link>
           </li>
           <!--<li>
