@@ -10,6 +10,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\UsuarioStoreRequest;
 use App\Http\Requests\UsuarioUpdateRequest;
+use App\Models\Persona;
 use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
@@ -54,6 +55,11 @@ class UsuarioController extends Controller
             $usuario->password = bcrypt($request->password);
             $usuario->syncRoles($request->roles_seleccionados);               
             $usuario->save();
+            Persona::create([
+                'codigo' => 'cajero' . $usuario->id,
+                'nombre' => 'CAJERO ' . $usuario->name,
+                'user_id' => $usuario->id,
+            ]);
             $result = ['successMessage' => 'Usuario registrado con éxito'];            
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar el usuario'];
@@ -147,6 +153,9 @@ class UsuarioController extends Controller
             $usuario->persona->celular = $request->celular;
             $usuario->persona->email_personal = $request->email_personal;
             $usuario->persona->direccion = $request->direccion;
+            $usuario->persona->nombre = $request->nombre;
+            $usuario->persona->codigo = $request->codigo;
+
             if ($request->password != "") {
                 $usuario->password = bcrypt($request->password);
                 $usuario->update();
