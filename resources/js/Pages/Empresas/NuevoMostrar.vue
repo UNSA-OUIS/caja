@@ -1,13 +1,24 @@
 <template>
-    <app-layout>                    
+    <app-layout>    
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item ml-auto">
+                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('empresas.iniciar')">
+                        Lista de empresas
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item active">
+                    {{ accion }} empresa
+                </li>
+            </ol>
+        </nav>                 
         <div class="card">
-            <div class="card-header">                
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><inertia-link :href="route('dashboard')">Inicio</inertia-link></li>                    
-                    <li class="breadcrumb-item"><inertia-link :href="route('empresas.iniciar')">Lista de empresas</inertia-link></li>
-                    <li class="breadcrumb-item active">{{ accion }} empresa</li>
-                </ol>              
-            </div>
+            <div class="card-header d-flex align-items-center">
+                <span class="font-weight-bold">{{ accion }} empresa</span>
+            </div>                  
             <div class="card-body">                  
                 <b-form @submit.prevent="enviar">
                     <b-row>
@@ -144,3 +155,12 @@
         },
     }
 </script>
+<style scoped>
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
+    }
+</style>

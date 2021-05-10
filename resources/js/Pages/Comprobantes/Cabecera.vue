@@ -1,17 +1,29 @@
 <template>
-    <app-layout>
+    <app-layout>       
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item ml-auto">
+                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('cobros.iniciar')">
+                        Lista de cobros
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('cobros.buscarUsuario')">
+                        Buscar usuario
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item active">
+                    Nuevo cobro
+                </li>
+            </ol>
+        </nav>                  
         <div class="card">
-            <div class="card-header">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="route('comprobantes.iniciar')">Lista de comprobantes</inertia-link>
-                    </li>
-                    <li class="breadcrumb-item active">Nuevo comprobante</li>
-                </ol>
-            </div>
+            <div class="card-header d-flex align-items-center">
+                <span class="font-weight-bold">Nuevo cobro</span>
+            </div>            
             <div class="card-doby">
                 <div class="container p-3">
                     <div class="form-row">
@@ -90,5 +102,12 @@ export default {
         width: 100%;
         font-size: 1rem;
         margin-bottom: 0;
+    }
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
     }
 </style>

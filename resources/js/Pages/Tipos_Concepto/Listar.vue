@@ -1,23 +1,20 @@
 <template>
     <app-layout>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item ml-auto">                    
+                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+                </li>
+                <li class="breadcrumb-item active">Lista de tipos de concepto</li>
+            </ol>
+        </nav>   
         <div class="card">
-            <div class="card-header">
-                <ol class="breadcrumb float-left">
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`"
-                            >Inicio</inertia-link
-                        >
-                    </li>
-                    <li class="breadcrumb-item active">
-                        Lista de tipos de concepto
-                    </li>
-                </ol>
-                <inertia-link
-                    class="btn btn-success float-right"
-                    :href="route('tipos-concepto.crear')"
-                    >Nuevo</inertia-link
-                >
-            </div>
+            <div class="card-header d-flex align-items-center">                
+                <span class="font-weight-bold">Lista de tipos de concepto</span>
+                <inertia-link class="btn btn-success ml-auto" :href="route('tipos-concepto.crear')">
+                    Nuevo
+                </inertia-link>
+            </div>                      
             <div class="card-body">
                 <b-alert
                     show
@@ -262,3 +259,12 @@ export default {
     }
 };
 </script>
+<style scoped>
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
+    }
+</style>
