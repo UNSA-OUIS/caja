@@ -130,6 +130,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/usuarios', function () {
         return Inertia::render('Usuarios/Listar');
     })->name('usuarios.iniciar');
+    Route::get('/usuarios/asignar', function () {
+        return Inertia::render('Usuarios/Asignar');
+    })->name('usuarios.asignar');
     Route::get('/usuarios/listar', [UsuarioController::class, 'index'])->name('usuarios.listar');
     Route::get('/usuarios/crear', [UsuarioController::class, 'create'])->name('usuarios.crear');
     Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.registrar');
