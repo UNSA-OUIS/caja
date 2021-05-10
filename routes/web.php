@@ -160,6 +160,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /******************************* ALUMNOS *****************************/
     Route::get('/buscarCuiAlumno/{cui}', [AlumnoController::class, 'buscarCuiAlumno'])->name('alumnos.buscarCuiAlumno');
     Route::get('/buscarApnAlumno', [AlumnoController::class, 'buscarApnAlumno'])->name('alumnos.buscarApnAlumno');
+    Route::get('/buscarAlumno', [AlumnoController::class, 'buscarAlumno'])->name('alumnos.buscarAlumno');
     /*********************************************************************/
 
     /******************************* DOCENTES ****************************/

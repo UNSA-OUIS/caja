@@ -2,15 +2,23 @@
     <app-layout>
         <div class="row justify-content-center mb-1">
             <fieldset class="col-12 col-md-6 px-3">
-                <legend>Tipo de comprobante y usuario:</legend>
+                <legend>Opciones de comprobante:</legend>
                 <div class="row justify-content-center mb-2">      
                     <div class="col col-lg-5">
-                        <b-form-select size="sm" v-model="selected" :options="options"></b-form-select>
+                        <b-form-select size="sm" v-model="tipo_comprobante" :options="tipos_comprobante">
+                            <template v-slot:first>
+                                <option :value="null" disabled>Tipo de comprobante...</option>
+                            </template>                            
+                        </b-form-select>
                     </div>                         
                 </div>                
-                <div class="row justify-content-center">      
+                <div class="row justify-content-center" v-show="show_select_tipos_usuario">      
                     <div class="col col-lg-5">
-                        <b-form-select size="sm" v-model="selected2" :options="options2"></b-form-select>
+                        <b-form-select size="sm" v-model="tipo_usuario" :options="tipos_usuario">
+                            <template v-slot:first>
+                                <option :value="null" disabled>Tipo de usuario...</option>
+                            </template>                            
+                        </b-form-select>
                     </div>                    
                 </div>
             </fieldset>
@@ -21,14 +29,15 @@
                 <div class="row justify-content-center">      
                     <b-form inline>                        
                         <b-form-select
+                            v-model="opcion_busqueda"
                             size="sm"
                             id="inline-form-custom-select-pref"
                             class="mb-2 mr-sm-2 mb-sm-0"
-                            :options="[{ text: 'Elija una opción...', value: null }, 'CUI', 'Apellidos y Nombres']"
+                            :options="opciones_busqueda"
                             :value="null"
                         ></b-form-select>
                         <b-form-input
-                            v-model="apn"
+                            v-model="filtro"
                             size="sm"
                             id="inline-form-input-name"
                             class="mb-2 mr-sm-2 mb-sm-0"
@@ -40,10 +49,10 @@
                 </div>
             </fieldset>
         </div>       
-        <div class="row justify-content-center mb-1" v-if="mostrar_usuarios">
+        <div class="row justify-content-center mb-1">
             <fieldset class="col-12 col-md-6 px-3">
                 <legend>Resultados de búsqueda:</legend>                   
-                <usuarios :apn="apn" :key="renderKey"></usuarios>                
+                <usuarios :opcion_busqueda="opcion_busqueda" :filtro="filtro" :key="renderKey"></usuarios>                
             </fieldset>
         </div>       
     </app-layout>    
@@ -61,27 +70,51 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url, 
-            apn: '',
-            mostrar_usuarios: false,
+            filtro: '',            
             renderKey: 1,
-            selected: null,
-            selected2: null,
-            options: [
-                { value: null, text: 'Tipo de comprobante' },
+            opcion_busqueda: 'CUI',
+            tipo_comprobante: null,
+            tipo_usuario: null,
+            tipos_comprobante: [                
                 { value: 'BOLETA', text: 'BOLETA' },
                 { value: 'FACTURA', text: 'FACTURA' },
                 { value: 'NOTA_DEBITO', text: 'NOTA DE DÉBITO' },
                 { value: 'NOTA_CREDITO', text: 'NOTA DE CRÉDITO' },
             ],
-            options2: [
-                { value: null, text: 'Tipo de usuario' },
+            tipos_usuario: [],            
+            tipos_usuario_boleta: [                
                 { value: 'ALUMNO', text: 'ALUMNO' },
                 { value: 'PARTICULAR', text: 'PARTICULAR' },
                 { value: 'DOCENTE', text: 'DOCENTE' },
                 { value: 'DEPENDENCIA', text: 'DEPENDENCIA' },
-            ]           
+            ],           
+            tipos_usuario_factura: [                
+                { value: 'EMPRESA', text: 'EMRESA' },                
+            ],
+            opciones_busqueda: [                
+                { value: 'CUI', text: 'CUI' },                
+                { value: 'APN', text: 'Apellidos y Nombres' },                
+            ],
+            show_select_tipos_usuario: false         
         };
     },    
+    watch: {
+        tipo_comprobante: function(val) {            
+            this.tipo_usuario = null
+
+            if (val === 'BOLETA') {
+                this.tipos_usuario = this.tipos_usuario_boleta
+                this.show_select_tipos_usuario = true
+            }
+            else if (val === 'FACTURA') {
+                this.tipos_usuario = this.tipos_usuario_factura
+                this.show_select_tipos_usuario = true
+            }     
+            else {
+                this.show_select_tipos_usuario = false
+            }
+        }      
+    },
     methods: {
         buscarUsuario() {
             this.mostrar_usuarios = true

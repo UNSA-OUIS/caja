@@ -31,4 +31,21 @@ class AlumnoController extends Controller
         
         return $query->paginate($request->size);
     }
+
+    public function buscarAlumno(Request $request) 
+    {             
+        if ($request->opcion_busqueda == 'CUI') {
+            $query = Alumno::with('matriculas.escuela')
+                    ->where('cui', $request->filtro)->select('cui', 'dic', 'apn')
+                    ->orderBy('apn', 'asc');
+        }
+        else if ($request->opcion_busqueda == 'APN') {
+            $query = Alumno::with('matriculas.escuela')
+                    ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
+                    ->select('cui', 'dic', 'apn')
+                    ->orderBy('apn', 'asc');
+        }
+
+        return $query->paginate($request->size);
+    }
 }

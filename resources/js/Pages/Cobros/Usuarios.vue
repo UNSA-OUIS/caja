@@ -15,17 +15,37 @@
             :per-page="perPage"                
             empty-text="No hay usuarios para mostrar"
             empty-filtered-text="No hay usuarios que coincidan con su búsqueda."
-            :busy="isBusy"
+            
         >                
-            <template v-slot:cell(apn)="row">
-                <a href="#" @click="buscarCuiAlumno(row.item)">{{ row.item.apn }}</a>                
-            </template>
-            <template v-slot:table-busy>
-            <div class="text-center text-danger my-2">
-                <b-spinner class="align-middle"></b-spinner>
-                <strong>Cargando...</strong>
-            </div>
-        </template>
+            <template v-slot:cell(data)="row">                
+                <a 
+                    v-if="row.item.matriculas.length == 1"
+                    href="#" 
+                    @click="mostrarComprobante(row.item, row.item.matriculas[0])"
+                >
+                    {{ row.item.apn }}
+                </a>
+                <a 
+                    v-else
+                    href="#" 
+                    @click="row.toggleDetails"
+                >
+                    {{ row.item.apn }}
+                </a>
+                <!--<a v-if="!showEscuelas" href="#" @click="mostrarComprobante(row.item)">{{ row.item.apn }}</a>                
+                <a v-else href="#" @click="mostrarComprobante(row.item)">{{ row.item.escuela.nesc }}</a>                -->
+            </template>         
+            <template #row-details="row">
+                <b-card>
+                    <ul>
+                        <li v-for="(matricula, key) in row.item.matriculas" :key="key">                            
+                            <a href="#" @click="mostrarComprobante(row.item, matricula)">
+                                {{ matricula.escuela.nesc }}
+                            </a>
+                        </li>
+                    </ul>
+                </b-card>
+            </template>   
         </b-table>
         <b-row>
             <b-col class="mr-auto">
@@ -49,20 +69,25 @@ const axios = require("axios");
 
 export default {
     name: "usuarios.listar",
-    props: ["apn"],    
+    props: ["opcion_busqueda", "filtro"],    
     data() {
         return {
             app_url: this.$root.app_url,
-            alumno: {},            
-            fields: [
+            alumno: {},                        
+            alumnos: [
                 { key: "cui", label: "CUI", class: "text-center" },
-                { key: "apn", label: "APELLIDOS Y NOMBRES" },
-            ],            
+                { key: "data", label: "APELLIDOS Y NOMBRES" },
+            ],          
+            escuelas: [
+                { key: "nues", label: "CÓDIGO", class: "text-center" },
+                { key: "data", label: "ESCUELA" },
+            ],          
+            fields: [],
+            showEscuelas: false,
             totalRows: 1,
             currentPage: 1,
             perPage: 5,
-            pageOptions: [5, 10, 15],            
-            isBusy: false,
+            pageOptions: [5, 10, 15],                        
         };
     },
     methods: {
@@ -70,16 +95,31 @@ export default {
             this.$refs.tbl_usuarios.refresh();
         },
         myProvider(ctx) {
-            this.toggleBusy()
-            let params = "?filter=" + this.apn
-            params += "&page=" + ctx.currentPage + "&size=" + ctx.perPage            
+            //this.toggleBusy()
+            let params = {
+                'opcion_busqueda': this.opcion_busqueda,
+                'filtro': this.filtro,
+                'page': ctx.currentPage,
+                'size': ctx.perPage            
+            }
+            /*let params = "?filtro=" + this.apn
+            params += "&page=" + ctx.currentPage + "&size=" + ctx.perPage*/
 
-            const promise = axios.get(`${this.app_url}/buscarApnAlumno${params}`)                            
+            const promise = axios.get(`${this.app_url}/buscarAlumno`, { params })
 
             return promise.then(response => {                
-                this.toggleBusy()
-                const usuarios = response.data.data;
-                this.totalRows = response.data.total;
+                //this.toggleBusy()
+                let usuarios
+                if (!this.showEscuelas) {                    
+                    usuarios = response.data.data
+                    this.totalRows = response.data.total
+                    this.fields = this.alumnos
+                }
+                else {                     
+                    usuarios = response.data.data[0].matriculas //matriculas de un unico alumno
+                    this.totalRows = response.data.data[0].matriculas.length                    
+                    this.fields = this.escuelas                   
+                }                
 
                 return usuarios || [];
             });
@@ -92,16 +132,20 @@ export default {
                 if (this.alumno.matriculas.length == 1) {
                     this.mostrarComprobante(this.alumno.matriculas[0])                    
                 }
-                /*else {
-                    this.showEscuelas = true                    
-                }*/
+                else {
+                    console.log('jeiken')
+            
+                    this.showEscuelas = true   
+                    this.opcion_busqueda = 'CUI'
+                    this.refreshTable()
+                }
             } catch (error) {
                 console.log(error)
             }      
         },
-        mostrarComprobante(matricula) {       
+        mostrarComprobante(alumno, matricula) {       
             this.$inertia.get(route('comprobantes.crear_alumno'), {                
-                'alumno' : this.alumno,
+                'alumno' : alumno,
                 'matricula': matricula
             })
         },      
