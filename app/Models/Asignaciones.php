@@ -8,4 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Asignaciones extends Model
 {
     use HasFactory;
+    protected $table = 'personas';
+    protected $fillable = [
+        'serie',
+        'correlativo',
+        'tipo_comprobante_id',
+        'user_id'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function tipo_comprobante()
+    {
+        return $this->belongsTo(TipoComprobante::class);
+    }
 }
