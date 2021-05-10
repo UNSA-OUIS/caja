@@ -293,14 +293,16 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /**************************** Reportes ***************************/
     Route::get('/reportes-periodo/cajero', [ReportesController::class, 'porCajero'])->name('reportes.cajero');
     Route::get('/reportes-periodo/cajero/pdf', [ReportesController::class, 'porCajeroPDF'])->name('reportes.cajeropdf');
-    Route::get('/reportes-periodo/filter-reporte', [ReportesController::class, 'filtrarCajero'])->name('reportes.filtrarCajero');
+    Route::get('/reportes-periodo/filter-reporte/cajeros', [ReportesController::class, 'filtrarCajero'])->name('reportes.filtrarCajero');
     Route::get('/buscarCajero', [ReportesController::class, 'buscarCajero'])->name('reportes.buscarCajero');
     Route::get('/reportes-periodo/descuentos', [ReportesController::class, 'descuentos'])->name('reportes.descuentos');
     Route::get('/reportes-periodo/centroDeCosto', [ReportesController::class, 'centroDeCosto'])->name('reportes.centroDeCosto');
+    Route::get('/reportes-periodo/filter-reporte/centros', [ReportesController::class, 'filtrarCentroDeCosto'])->name('reportes.filtrarCentroDeCosto');
     Route::get('/reportes-periodo/reciboIngreso', [ReportesController::class, 'reciboIngreso'])->name('reportes.reciboIngreso');
     Route::get('/reportes-periodo/facturas', [ReportesController::class, 'facturas'])->name('reportes.facturas');
     Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
     Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
+    Route::get('/reportes-periodo/filter-reporte/consolidado', [ReportesController::class, 'filtrarConsolidado'])->name('reportes.filtrarConsolidado');
     /*******************************************************************/
 
     /**************************** CUENTAS CORRIENTES ***************************/
