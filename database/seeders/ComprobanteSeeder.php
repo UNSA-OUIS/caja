@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Comprobante;
+use App\Models\DetallesComprobante;
 use App\Models\TipoComprobante;
 use Faker\Factory;
 use Illuminate\Database\Seeder;
@@ -96,5 +97,20 @@ class ComprobanteSeeder extends Seeder
                 'tipo_comprobante_id' => 1,
             ]);
         }
+
+        DetallesComprobante::create([
+            'cantidad' => 1,
+            'valor_unitario' => 10,
+            'descuento' => 1,
+            'concepto_id' => 1,
+            'comprobante_id' => 1,
+        ]);
+        DetallesComprobante::create([
+            'cantidad' => 1,
+            'valor_unitario' => 10,
+            'descuento' => 1,
+            'concepto_id' => 1,
+            'comprobante_id' => 1,
+        ]);
     }
 }
