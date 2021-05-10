@@ -22,15 +22,14 @@
         @routes
         <script src="{{ asset(mix('js/app.js')) }}" defer></script>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPBL69C8V5"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-QSQGQKLTV3"></script>
         <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'G-JPBL69C8V5');
+        gtag('config', 'G-QSQGQKLTV3');
         </script>
-    </head>
     <body class="font-sans antialiased" data-sidebar="dark">
     <!--<body class="font-sans antialiased">-->
         @inertia

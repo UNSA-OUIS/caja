@@ -39,7 +39,7 @@ class UsuarioController extends Controller
         $usuario = new User();
         $usuario->name = "";
         $usuario->email = "";
-        $usuario->password = "";
+        $usuario->password = "12345678";
         $usuario->roles_seleccionados = array();
         $roles = Rol::select('name as value','name as text')->orderBy('name', 'asc')->get();     
 
@@ -98,9 +98,11 @@ class UsuarioController extends Controller
         try {                       
             $usuario->name = $request->name;
             $usuario->email = $request->email;
-            $usuario->password = bcrypt($request->password);
             $usuario->syncRoles($request->roles_seleccionados);
             $usuario->syncPermissions($request->permisos_seleccionados);
+            if ($request->password != "") {
+                $usuario->password = bcrypt($request->password);
+            }
             $usuario->update();
             $result = ['successMessage' => 'Usuario actualizado con éxito'];            
         } catch (\Exception $e) {
@@ -150,19 +152,21 @@ class UsuarioController extends Controller
     {
         
         try {                       
+            $usuario->persona->id = $request->id;
             $usuario->persona->celular = $request->celular;
             $usuario->persona->email_personal = $request->email_personal;
             $usuario->persona->direccion = $request->direccion;
             $usuario->persona->nombre = $request->nombre;
             $usuario->persona->codigo = $request->codigo;
+            $usuario->persona->update();
 
             if ($request->password != "") {
                 $usuario->password = bcrypt($request->password);
                 $usuario->update();
+                Auth::login($usuario);  
             }
-            $usuario->persona->update();
-            $result = ['successMessage' => 'Usuario actualizado con éxito'];   
-            Auth::login($usuario);   
+            $result = ['successMessage' => 'Perfil actualizado con éxito'];   
+
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el usuario'];
             \Log::error('UsuarioController@editMyUser, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());

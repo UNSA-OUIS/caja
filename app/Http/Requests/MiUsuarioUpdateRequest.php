@@ -24,10 +24,10 @@ class MiUsuarioUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'codigo' => 'unique:personas,codigo,'.$this->request->get('id'),
             'celular' => 'digits:9',
             'direccion' => 'max:250',
             'email_personal' => 'email',
-            'codigo' => 'unique:personas',
         ];
     }
 

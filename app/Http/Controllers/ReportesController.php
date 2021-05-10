@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clasificador;
 use App\Models\Comprobante;
+use App\Models\Dependencia;
 use App\Models\Persona;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 class ReportesController extends Controller
@@ -100,8 +103,23 @@ class ReportesController extends Controller
 
     public function centroDeCosto()
     {
-        $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/PorPeriodo/CentroDeCosto', compact('comprobantes'));
+        //$comprobantes = Comprobante::all();
+        return Inertia::render('Reportes/PorPeriodo/CentroDeCosto');
+    }
+
+    public function filtrarCentroDeCosto(Request $request)
+    {
+        $database1 = Config::get('database.connections.pgsql.database');
+        $database2 = Config::get('database.connections.mysql2.database');
+        $centros = Dependencia::select($database2.'.depe.codi_depe', $database2.'.depe.nomb_depe', DB::raw('SUM('.$database1.'.detalles_comprobante.valor_unitario) as monto'))
+                                    ->leftJoin($database1.'.conceptos', $database1.'.conceptos.codi_depe', '=', $database2.'.depe.codi_depe')
+                                    ->leftJoin($database1.'.detalles_comprobante', $database1.'.detalles_comprobante.concepto_id', '=', $database1.'.conceptos.id')
+                                    ->whereDate($database1.'.detalles_comprobante.created_at','>=',$request->fechaInicio)
+                                    ->whereDate($database1.'.detalles_comprobante.created_at','<=',$request->fechaFin)
+                                    ->groupBy($database2.'.depe.codi_depe')
+                                    ->get();
+
+        return ['centros' => $centros,];
     }
 
     public function reciboIngreso()
@@ -126,5 +144,18 @@ class ReportesController extends Controller
     {
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Consolidado', compact('comprobantes'));
+    }
+
+    public function filtrarConsolidado(Request $request)
+    {
+        $clasificadores = Clasificador::select('clasificadores.id as codigo', 'clasificadores.nombre as nombre', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
+                                ->leftJoin('conceptos', 'conceptos.clasificador_id', '=', 'clasificadores.id')
+                                ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')
+                                ->whereDate('detalles_comprobante.created_at','>=',$request->fechaInicio)
+                                ->whereDate('detalles_comprobante.created_at','<=',$request->fechaFin)
+                                ->groupBy('clasificadores.id')
+                                ->get();
+                                
+        return ['clasificadores' => $clasificadores,];
     }
 }
