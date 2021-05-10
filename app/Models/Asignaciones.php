@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Asignaciones extends Model
 {
     use HasFactory;
-    protected $table = 'personas';
+    protected $table = 'asignaciones';
     protected $fillable = [
         'serie',
         'correlativo',

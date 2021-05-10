@@ -9,7 +9,7 @@
                         >
                     </li>
                     <li class="breadcrumb-item">
-                        <inertia-link :href="route('usuarios.iniciar')"
+                        <inertia-link :href="route('usuarios.asignar')"
                             >Lista de usuarios</inertia-link
                         >
                     </li>
@@ -165,7 +165,7 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     name: "usuarios.mostrar",
-    props: ["usuario", "roles", "permissions"],
+    props: ["asignacion","usuario", "roles", "permissions"],
     components: {
         AppLayout
     },

@@ -9,6 +9,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClasificadorController;
 use App\Http\Controllers\AlumnoController;
+use App\Http\Controllers\AsignacionesController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\EmpresaController;
@@ -130,9 +131,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/usuarios', function () {
         return Inertia::render('Usuarios/Listar');
     })->name('usuarios.iniciar');
-    Route::get('/usuarios/asignar', function () {
-        return Inertia::render('Usuarios/Asignar');
-    })->name('usuarios.asignar');
     Route::get('/usuarios/listar', [UsuarioController::class, 'index'])->name('usuarios.listar');
     Route::get('/usuarios/crear', [UsuarioController::class, 'create'])->name('usuarios.crear');
     Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.registrar');
@@ -143,6 +141,17 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/perfil-usuario', [UsuarioController::class, 'showMyUser'])->name('usuarios.perfil');
     Route::post('/perfil-usuario/{usuario}', [UsuarioController::class, 'editMyUser'])->name('usuarios.actualizarPerfil');
+    /******************************************************************************/
+
+    /*********************************** ASIGNACIONES ********************************/
+    Route::get('/asignar', function () {
+        return Inertia::render('Asignar/Listar');
+    })->name('usuarios.asignar');
+    Route::get('/asignar/listar', [AsignacionesController::class, 'index'])->name('asignar.listar');
+    Route::get('/asignar/crear/{usuario}', [AsignacionesController::class, 'create'])->name('asignar.crear');
+    Route::post('/asignar', [AsignacionesController::class, 'store'])->name('asignar.registrar');
+    Route::get('/asignar/{usuario}', [AsignacionesController::class, 'show'])->name('asignar.mostrar');
+    Route::post('/asignar/{usuario}', [AsignacionesController::class, 'update'])->name('asignar.actualizar');
     /******************************************************************************/
 
     /**************************** CONCEPTOS ***************************/
