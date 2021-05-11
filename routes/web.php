@@ -9,6 +9,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClasificadorController;
 use App\Http\Controllers\AlumnoController;
+use App\Http\Controllers\AsignacionesController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\EmpresaController;
@@ -140,6 +141,18 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/perfil-usuario', [UsuarioController::class, 'showMyUser'])->name('usuarios.perfil');
     Route::post('/perfil-usuario/{usuario}', [UsuarioController::class, 'editMyUser'])->name('usuarios.actualizarPerfil');
+    /******************************************************************************/
+
+    /*********************************** ASIGNACIONES ********************************/
+    Route::get('/asignar', function () {
+        return Inertia::render('Asignar/Listar');
+    })->name('usuarios.asignar');
+    Route::get('/asignar/listar', [AsignacionesController::class, 'index'])->name('asignar.listar');
+    Route::get('/asignar/crear/{usuario}', [AsignacionesController::class, 'create'])->name('asignar.crear');
+    Route::post('/asignar', [AsignacionesController::class, 'store'])->name('asignar.registrar');
+    Route::post('/asignar/buscar', [AsignacionesController::class, 'search'])->name('asignar.buscar');
+    Route::post('/asignar/mostrar', [AsignacionesController::class, 'show'])->name('asignar.mostrar');
+    Route::post('/asignar/{usuario}', [AsignacionesController::class, 'update'])->name('asignar.actualizar');
     /******************************************************************************/
 
     /**************************** CONCEPTOS ***************************/

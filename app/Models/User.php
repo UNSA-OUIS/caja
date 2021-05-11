@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     use HasApiTokens;
-    use HasFactory;    
+    use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -31,11 +31,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [        
+    protected $fillable = [
         'name',
         'email',
-        'password',        
-        'google_id',        
+        'password',
+        'google_id',
         'profile_photo_path',
     ];
 
@@ -78,5 +78,9 @@ class User extends Authenticatable
     public function persona()
     {
         return $this->hasOne(Persona::class);
+    }
+    public function asignaciones()
+    {
+        return $this->hasMany(Asignaciones::class);
     }
 }

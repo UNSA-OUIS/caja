@@ -18,4 +18,8 @@ class TipoComprobante extends Model
     {
         return $this->hasMany(Comprobante::class);
     }
+    public function asignaciones()
+    {
+        return $this->hasMany(Asignaciones::class);
+    }
 }
