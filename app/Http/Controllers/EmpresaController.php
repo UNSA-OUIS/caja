@@ -142,7 +142,7 @@ class EmpresaController extends Controller
             $result = ['successMessage' => 'Empresa registrada con éxito', 'error' => false];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar lar empresa', 'error' => true];
-            Log::error('EmpresaController@registrarEmpresa, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            \Log::error('EmpresaController@registrarEmpresa, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return $result;

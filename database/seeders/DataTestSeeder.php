@@ -114,6 +114,8 @@ class DataTestSeeder extends Seeder
         
         // //TipoComprobante::create([]);
         // //Comprobante::create([]);
+        \DB::table('particulares')->truncate();
+
         Particular::create(['dni'=>'48611654','nombres'=>'TITA CRISTINA','apellidos'=>'CAMPAÑA NAVARRO','email'=>'tita@gmail.com']);
         Particular::create(['dni'=>'75665521','nombres'=>'ELVIS','apellidos'=>'SORIA CARRERA','email'=>'elvis@gmail.com']);
         Particular::create(['dni'=>'73568541','nombres'=>'DEYVIS JOEL','apellidos'=>'REMENTERIA VICUÑA','email'=>'deyvis@gmail.com']);
@@ -123,9 +125,11 @@ class DataTestSeeder extends Seeder
         Particular::create([ 'dni'=>'47645598','nombres'=>'WENDY FLORMILA','apellidos'=>'MORALES VALVERDE','email'=>'wendy@gmail.com']);
         Particular::create([ 'dni'=>'45645598','nombres'=>'SIMION','apellidos'=>'SANGAMA SANGAMA','email'=>'simion@gmail.com']);
         Particular::create([ 'dni'=>'43987456','nombres'=>'LUISA','apellidos'=>'CCOYURI LIRA','email'=>'luisa@gmail.com']);
-        Particular::create([ 'dni'=>'73654189','nombres'=>'ARIANA ALESSANDRA','apellidos'=>'CELIS ZEVALLOS','email'=>'ariana@gmail.com']);
+        Particular::create([ 'dni'=>'73654189','nombres'=>'ARIANA ALESSANDRA','apellidos'=>'CELIS ZEVALLOS','email'=>'ariana@gmail.com']);        
+
         
         // CuentaCorriente::create([]);
+        \DB::table('empresas')->truncate();
         Empresa::create(['ruc'=>'20549263675','razon_social'=>'RH ADUANAS S.A.C.','direccion'=>'---- CJN HUANAUCARE NRO. 295 INT. 403 LIMA LIMA SAN MIGUEL','email'=>'huam@gmail.com']);
         Empresa::create(['ruc'=>'20532620580','razon_social'=>'LOGISTIC TRAVEL ILO S.A.C.','direccion'=>'MZA. B LOTE. 04 ASOC. F. BARRETO TACNA TACNA TACNA','email'=>'tacna@gmail.com']);
         Empresa::create(['ruc'=>'20100950180','razon_social'=>'AEROADUANA S.A.C. AGENTES AFIANZADOS DE ADUANA','direccion'=>'AV. ABEL B DU PETIT THOUARS NRO. 4655 INT. 503 URB. BARBONCITO LIMA LIMA MIRAFLORES','email'=>'agentes@gmail.com']);

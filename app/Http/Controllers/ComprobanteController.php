@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Alumno;
+use App\Models\Particular;
+use App\Models\Empresa;
+use App\Models\Docente;
 use App\Models\Comprobante;
 use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
@@ -294,6 +297,64 @@ class ComprobanteController extends Controller
             $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
             $query = $query->orderBy($sortby, $sortdirection);
         }
+
+        return $query->paginate($request->size);
+    }
+
+    public function buscarUsuario(Request $request) 
+    {                     
+        if ($request->tipo_usuario == 'ALUMNO') {
+            if ($request->opcion_busqueda == 'CUI') {
+                $query = Alumno::with('matriculas.escuela')
+                        ->where('cui', $request->filtro)->select('cui', 'dic', 'apn');
+            }
+            else if ($request->opcion_busqueda == 'APN') {
+                $query = Alumno::with('matriculas.escuela')
+                        ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
+                        ->select('cui', 'dic', 'apn')
+                        ->orderBy('apn', 'asc');
+            }
+        }  
+        else if ($request->tipo_usuario == 'PARTICULAR') {
+            if ($request->opcion_busqueda == 'DNI') {
+                $query = Particular::where('dni', $request->filtro);
+            }
+            else if ($request->opcion_busqueda == 'APN') {
+                $query = Particular::whereRaw("CONCAT(apellidos, ' ', nombres) ilike ? ", [ $request->filtro . '%'])
+                            ->orderBy('apellidos', 'asc');
+            }
+        }  
+        else if ($request->tipo_usuario == 'EMPRESA') {
+            if ($request->opcion_busqueda == 'RUC') {
+                $query = Empresa::where('ruc', $request->filtro);
+            }
+            else if ($request->opcion_busqueda == 'RAZON_SOCIAL') {
+                $query = Empresa::where('razon_social', 'ilike', '%' . $request->filtro . '%')
+                            ->orderBy('razon_social', 'asc');
+            }
+        }    
+        else if ($request->tipo_usuario == 'DOCENTE') {
+            if ($request->opcion_busqueda == 'CODIGO') {
+                $query = Docente::where('codper', $request->filtro)
+                            ->select('codper', 'dic', 'apn', 'correo');
+            }
+            else if ($request->opcion_busqueda == 'APN') {
+                $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
+                        ->select('codper', 'dic', 'apn', 'correo')
+                        ->orderBy('apn', 'asc');
+            }
+        }   
+        else if ($request->tipo_usuario == 'DEPENDENCIA') {
+            if ($request->opcion_busqueda == 'CODIGO') {
+                $query = Dependencia::where('codi_depe', $request->filtro)
+                            ->select('codi_depe', 'nomb_depe', 'mail_depe');
+            }
+            else if ($request->opcion_busqueda == 'NOMBRE') {
+                $query = Dependencia::where('nomb_depe', 'like', '%' . $request->filtro . '%')
+                        ->select('codi_depe', 'nomb_depe', 'mail_depe')
+                        ->orderBy('nomb_depe', 'asc');
+            }
+        }                 
 
         return $query->paginate($request->size);
     }

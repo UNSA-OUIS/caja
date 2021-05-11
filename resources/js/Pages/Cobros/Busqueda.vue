@@ -53,7 +53,11 @@
                                     class="mb-2 mr-sm-2 mb-sm-0"
                                     :options="opciones_busqueda"
                                     :value="null"
-                                ></b-form-select>
+                                >
+                                    <template v-slot:first>
+                                        <option :value="null" disabled>Elija una opción...</option>
+                                    </template>         
+                                </b-form-select>
                                 <b-form-input
                                     v-model="filtro"
                                     size="sm"
@@ -61,39 +65,82 @@
                                     class="mb-2 mr-sm-2 mb-sm-0"                                    
                                     trim
                                 ></b-form-input>
-                                <b-button size="sm" variant="primary" @click="buscarUsuario">Buscar</b-button>
+                                <b-button size="sm" variant="primary" @click="buscarUsuario">Buscar</b-button>                                
                             </b-form>
                         </div>
                     </fieldset>
                 </div>       
-                <div class="row justify-content-center mb-1">
+                <div class="row justify-content-center mb-1" v-if="mostrar_usuarios">
                     <fieldset class="col-12 col-md-6 px-3">
-                        <legend>Resultados de búsqueda:</legend>                   
-                        <usuarios :opcion_busqueda="opcion_busqueda" :filtro="filtro" :key="renderKey"></usuarios>                
+                        <legend>Resultados de búsqueda:</legend>                                           
+                        <alumnos 
+                            v-if="tipo_usuario === 'ALUMNO'"
+                            :opcion_busqueda="opcion_busqueda" 
+                            :filtro="filtro" 
+                            :key="renderKey"
+                        >                        
+                        </alumnos>
+                        <particulares
+                            v-else-if="tipo_usuario === 'PARTICULAR'"
+                            :opcion_busqueda="opcion_busqueda" 
+                            :filtro="filtro" 
+                            :key="renderKey"
+                        >
+                        </particulares>
+                        <empresas
+                            v-else-if="tipo_usuario === 'EMPRESA'"
+                            :opcion_busqueda="opcion_busqueda" 
+                            :filtro="filtro" 
+                            :key="renderKey"
+                        >
+                        </empresas>
+                        <docentes
+                            v-else-if="tipo_usuario === 'DOCENTE'"
+                            :opcion_busqueda="opcion_busqueda" 
+                            :filtro="filtro" 
+                            :key="renderKey"
+                        >
+                        </docentes>
+                        <dependencias
+                            v-else-if="tipo_usuario === 'DEPENDENCIA'"
+                            :opcion_busqueda="opcion_busqueda" 
+                            :filtro="filtro" 
+                            :key="renderKey"
+                        >
+                        </dependencias>
                     </fieldset>
                 </div>   
             </div>
-        </div>    
+        </div>          
     </app-layout>    
 </template>
 <script>
+const axios = require("axios");
+
 import AppLayout from "@/Layouts/AppLayout";
-import Usuarios from "./Usuarios";
+import Alumnos from "./Alumnos";
+import Particulares from "./Particulares";
+import Empresas from "./Empresas";
+import Docentes from "./Docentes";
+import Dependencias from "./Dependencias";
 
 export default {
     name: "cobros.busqueda",
     components: {
         AppLayout,        
-        Usuarios        
+        Alumnos,
+        Docentes,
+        Dependencias,
+        Particulares,
+        Empresas
     },
     data() {
         return {
-            app_url: this.$root.app_url, 
-            filtro: '',            
-            renderKey: 1,
-            opcion_busqueda: 'CUI',
+            app_url: this.$root.app_url,                                 
             tipo_comprobante: null,
             tipo_usuario: null,
+            opcion_busqueda: null,
+            filtro: '',         
             tipos_comprobante: [                
                 { value: 'BOLETA', text: 'BOLETA' },
                 { value: 'FACTURA', text: 'FACTURA' },
@@ -109,12 +156,31 @@ export default {
             ],           
             tipos_usuario_factura: [                
                 { value: 'EMPRESA', text: 'EMRESA' },                
-            ],
-            opciones_busqueda: [                
+            ],            
+            opciones_busqueda_alumno: [                
                 { value: 'CUI', text: 'CUI' },                
-                { value: 'APN', text: 'Apellidos y Nombres' },                
+                { value: 'APN', text: 'Apellidos y nombres' },                
             ],
-            show_select_tipos_usuario: false         
+            opciones_busqueda_particular: [                
+                { value: 'DNI', text: 'DNI' },                
+                { value: 'APN', text: 'Apellidos y nombres' },                
+            ],
+            opciones_busqueda_docente: [                
+                { value: 'CODIGO', text: 'CÓDIGO' },                
+                { value: 'APN', text: 'Apellidos y nombres' },                
+            ],
+            opciones_busqueda_dependencia: [                
+                { value: 'CODIGO', text: 'CÓDIGO' },                
+                { value: 'NOMBRE', text: 'Nombre dependencia' },                
+            ],
+            opciones_busqueda_empresa: [                
+                { value: 'RUC', text: 'RUC' },                
+                { value: 'RAZON_SOCIAL', text: 'Razón social' },                
+            ],            
+            opciones_busqueda: [],
+            show_select_tipos_usuario: false,
+            mostrar_usuarios: false,
+            renderKey: 1,                   
         };
     },    
     watch: {
@@ -132,13 +198,34 @@ export default {
             else {
                 this.show_select_tipos_usuario = false
             }
-        }      
+        },
+        tipo_usuario: function(val) {      
+            this.opcion_busqueda = null   
+            this.filtro = ''
+            this.mostrar_usuarios = false
+
+            if (val === 'ALUMNO') {
+                this.opciones_busqueda = this.opciones_busqueda_alumno                
+            }
+            else if (val === 'PARTICULAR') {
+                this.opciones_busqueda = this.opciones_busqueda_particular                
+            }
+            else if (val === 'EMPRESA') {
+                this.opciones_busqueda = this.opciones_busqueda_empresa                
+            }
+            else if (val === 'DOCENTE') {
+                this.opciones_busqueda = this.opciones_busqueda_docente                
+            }
+            else if (val === 'DEPENDENCIA') {
+                this.opciones_busqueda = this.opciones_busqueda_dependencia                
+            }
+        }            
     },
     methods: {
         buscarUsuario() {
             this.mostrar_usuarios = true
             this.renderKey++
-        }
+        },                        
     },
 };
 </script>

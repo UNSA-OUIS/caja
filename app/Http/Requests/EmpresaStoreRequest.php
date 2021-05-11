@@ -26,7 +26,7 @@ class EmpresaStoreRequest extends FormRequest
         return [
             'ruc' => 'required|numeric|digits:11|unique:empresas',
             'razon_social' => 'required|max:250',            
-            'email' => 'nullable|max:100|unique:empresas',            
+            'email' => 'required|max:100|unique:empresas',            
             'direccion' => 'required|max:250',
         ];
     }

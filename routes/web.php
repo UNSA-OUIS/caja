@@ -256,6 +256,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
 
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
+    Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
     /*******************************************************************/
 
     /**************************** Sunat ***************************/

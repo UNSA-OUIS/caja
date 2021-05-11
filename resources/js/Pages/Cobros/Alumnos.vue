@@ -89,12 +89,13 @@ export default {
         myProvider(ctx) {
             //this.toggleBusy()
             let params = {
+                'tipo_usuario': 'ALUMNO',
                 'opcion_busqueda': this.opcion_busqueda,
                 'filtro': this.filtro,
                 'page': ctx.currentPage,
                 'size': ctx.perPage            
             }            
-            const promise = axios.get(`${this.app_url}/buscarAlumno`, { params })
+            const promise = axios.get(`${this.app_url}/buscarUsuario`, { params })
 
             return promise.then(response => {                
                 //this.toggleBusy()                               
