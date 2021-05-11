@@ -26,7 +26,7 @@ class Dependencia extends Model
 
     public function conceptos()
     {
-        return $this->setConnection('pgsql')->hasMany(Concepto::class, 'id', 'codi_depe');
+        return $this->setConnection('pgsql')->hasMany(Concepto::class, 'codi_depe', 'codi_depe');
     }
 
 }
