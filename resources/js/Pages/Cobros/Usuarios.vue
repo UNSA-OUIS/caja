@@ -31,9 +31,7 @@
                     @click="row.toggleDetails"
                 >
                     {{ row.item.apn }}
-                </a>
-                <!--<a v-if="!showEscuelas" href="#" @click="mostrarComprobante(row.item)">{{ row.item.apn }}</a>                
-                <a v-else href="#" @click="mostrarComprobante(row.item)">{{ row.item.escuela.nesc }}</a>                -->
+                </a>                
             </template>         
             <template #row-details="row">
                 <b-card>
@@ -74,16 +72,10 @@ export default {
         return {
             app_url: this.$root.app_url,
             alumno: {},                        
-            alumnos: [
+            fields: [
                 { key: "cui", label: "CUI", class: "text-center" },
                 { key: "data", label: "APELLIDOS Y NOMBRES" },
-            ],          
-            escuelas: [
-                { key: "nues", label: "CÓDIGO", class: "text-center" },
-                { key: "data", label: "ESCUELA" },
-            ],          
-            fields: [],
-            showEscuelas: false,
+            ],                      
             totalRows: 1,
             currentPage: 1,
             perPage: 5,
@@ -101,48 +93,17 @@ export default {
                 'filtro': this.filtro,
                 'page': ctx.currentPage,
                 'size': ctx.perPage            
-            }
-            /*let params = "?filtro=" + this.apn
-            params += "&page=" + ctx.currentPage + "&size=" + ctx.perPage*/
-
+            }            
             const promise = axios.get(`${this.app_url}/buscarAlumno`, { params })
 
             return promise.then(response => {                
-                //this.toggleBusy()
-                let usuarios
-                if (!this.showEscuelas) {                    
-                    usuarios = response.data.data
-                    this.totalRows = response.data.total
-                    this.fields = this.alumnos
-                }
-                else {                     
-                    usuarios = response.data.data[0].matriculas //matriculas de un unico alumno
-                    this.totalRows = response.data.data[0].matriculas.length                    
-                    this.fields = this.escuelas                   
-                }                
-
+                //this.toggleBusy()                               
+                const usuarios = response.data.data
+                this.totalRows = response.data.total                    
+                
                 return usuarios || [];
             });
-        },     
-        async buscarCuiAlumno(alumno) {
-            try {
-                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${alumno.cui}`)
-                this.alumno = response.data                
-
-                if (this.alumno.matriculas.length == 1) {
-                    this.mostrarComprobante(this.alumno.matriculas[0])                    
-                }
-                else {
-                    console.log('jeiken')
-            
-                    this.showEscuelas = true   
-                    this.opcion_busqueda = 'CUI'
-                    this.refreshTable()
-                }
-            } catch (error) {
-                console.log(error)
-            }      
-        },
+        },             
         mostrarComprobante(alumno, matricula) {       
             this.$inertia.get(route('comprobantes.crear_alumno'), {                
                 'alumno' : alumno,

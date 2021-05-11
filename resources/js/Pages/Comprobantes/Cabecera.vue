@@ -102,6 +102,7 @@ export default {
         width: 100%;
         font-size: 1rem;
         margin-bottom: 0;
+        font-weight: 400;
     }
     .breadcrumb li a {
         color: blue;
