@@ -150,7 +150,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/asignar/listar', [AsignacionesController::class, 'index'])->name('asignar.listar');
     Route::get('/asignar/crear/{usuario}', [AsignacionesController::class, 'create'])->name('asignar.crear');
     Route::post('/asignar', [AsignacionesController::class, 'store'])->name('asignar.registrar');
-    Route::get('/asignar/{usuario}', [AsignacionesController::class, 'show'])->name('asignar.mostrar');
+    Route::post('/asignar/buscar', [AsignacionesController::class, 'search'])->name('asignar.buscar');
+    Route::post('/asignar/mostrar', [AsignacionesController::class, 'show'])->name('asignar.mostrar');
     Route::post('/asignar/{usuario}', [AsignacionesController::class, 'update'])->name('asignar.actualizar');
     /******************************************************************************/
 

@@ -17,7 +17,7 @@ class CreateAsignacionesTable extends Migration
             $table->id();
             $table->string('serie', 4)->unique();
             $table->string('correlativo', 8);
-            $table->bigInteger('user_id')->unique();
+            $table->bigInteger('user_id');
             $table->tinyInteger('tipo_comprobante_id');
             $table->timestamps();
             $table->softDeletes();

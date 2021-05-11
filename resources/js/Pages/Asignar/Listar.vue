@@ -87,13 +87,6 @@
             <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
-            <inertia-link
-              v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm"
-              :href="route('asignar.mostrar', row.item.id)"
-            >
-              Editar
-            </inertia-link>
             <b-button
               variant="secondary"
               size="sm"
@@ -170,7 +163,6 @@ export default {
 
       return promise.then((response) => {
         const usuarios = response.data.data;
-        console.log(usuarios);
         this.totalRows = response.data.total;
 
         return usuarios || [];
@@ -178,7 +170,6 @@ export default {
     },
     asignar(usuario) {
       this.$inertia.get(route("asignar.crear", [usuario.id]));
-      this.refreshTable();
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

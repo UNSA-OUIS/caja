@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignaciones;
+use App\Models\Comprobante;
 use App\Models\Rol;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 
@@ -41,27 +43,54 @@ class AsignacionesController extends Controller
      */
     public function create(User $usuario)
     {
+        //return $usuario->id;
+        $asignaciones = Asignaciones::with('user')->with('tipo_comprobante')->where('user_id', 'like', $usuario->id)->get();
+        //return $asignaciones;
+
         $asignacion = new Asignaciones();
         $asignacion->serie = "";
         $asignacion->correlativo = "";
         $asignacion->tipo_comprobante_id = "";
-        $asignacion->user_id = "";
+        $asignacion->user_id = $usuario->id;
 
-        $roles = Rol::select('name as value', 'name as text')->orderBy('name', 'asc')->get();
-        $usuario->roles_seleccionados = $usuario->getRoleNames();
+        return Inertia::render('Asignar/NuevoMostrar', compact('asignacion', 'usuario', 'asignaciones'));
+    }
+    public function search(Request $request)
+    {
+        //return $request;
+        $asignaciones = Asignaciones::with('user')->with('tipo_comprobante')->where('user_id', 'like', $request->user_id)->get();
+        $usuario = User::with('persona')->with('asignaciones')->where('id', 'like', '%' . $request->user_id . '%')->first();
+        $ultimo_comprobante =  Asignaciones::where('user_id', '<>', $request->user_id)->latest()->first();
 
-        $permissions = Permission::all();
-        $all_permissions = $usuario->getAllPermissions();
+        //return $usuario;
 
-        $permisos_seleccionados = array();
-
-        foreach ($all_permissions as $key => $permission) {
-            $permisos_seleccionados[$key] = $permission->id;
+        $asignacion = new Asignaciones();
+        if ($request->tipo_comprobante_id == 1) {
+            $numero_serie = substr($ultimo_comprobante->serie, 1);
+            $numero_serie += 1;
+            settype($numero_serie, 'string');
+            $asignacion->serie = "B" . '00' . $numero_serie;
+        } elseif ($request->tipo_comprobante_id == 2) {
+            $numero_serie = substr($ultimo_comprobante->serie, 1);
+            $numero_serie += 1;
+            settype($numero_serie, 'string');
+            $asignacion->serie = "F" . '00' . $numero_serie;
+        } elseif ($request->tipo_comprobante_id == 3) {
+            $numero_serie = substr($ultimo_comprobante->serie, 1);
+            $numero_serie += 1;
+            settype($numero_serie, 'string');
+            $asignacion->serie = "B" . '00' . $numero_serie;
+        } elseif ($request->tipo_comprobante_id == 4) {
+            $numero_serie = substr($ultimo_comprobante->serie, 1);
+            $numero_serie += 1;
+            settype($numero_serie, 'string');
+            $asignacion->serie = "F" . '00' . $numero_serie;
         }
+        $asignacion->correlativo = '00000001';
+        $asignacion->tipo_comprobante_id = $request->tipo_comprobante_id;
+        $asignacion->user_id = $usuario->id;
 
-        $usuario->permisos_seleccionados = $permisos_seleccionados;
-
-        return Inertia::render('Asignar/NuevoMostrar', compact('asignacion', 'usuario', 'roles', 'permissions'));
+        return Inertia::render('Asignar/NuevoMostrar', compact('asignacion', 'usuario', 'asignaciones'));
     }
 
     /**
@@ -72,7 +101,21 @@ class AsignacionesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $asignacion = new Asignaciones();
+
+            $asignacion->serie = $request->serie;
+            $asignacion->correlativo = $request->correlativo;
+            $asignacion->tipo_comprobante_id = $request->tipo_comprobante_id;
+            $asignacion->user_id = $request->user_id;
+            $asignacion->save();
+
+            $result = ['successMessage' => 'Asignado con éxito'];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo asignar' . $e];
+        }
+
+        return redirect()->route('usuarios.asignar')->with($result);
     }
 
     /**
@@ -118,9 +161,17 @@ class AsignacionesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Asignaciones $asignacion)
     {
-        //
+        try {
+            $tipoComprobante = $request->nombre;
+            $tipoComprobante->update();
+            $result = ['successMessage' => 'Comprobante actualizado con éxito'];
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar el comprobante'];
+        }
+
+        return redirect()->route('usuarios.asignar')->with($result);
     }
 
     /**
