@@ -58,10 +58,10 @@
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>
           <li :class="{ 'mm-active': path == 'dashboard' }">
-            <inertia-link 
+            <inertia-link
               :class="{ active: path == 'dashboard' }"
               :href="route('dashboard')"
-            >            
+            >
               <i class="uil-home-alt"></i>
               <span class="badge badge-pill badge-primary float-right">01</span>
               <span>Dashboard</span>
@@ -116,6 +116,8 @@
                 { name: 'Listar Conceptos' },
                 { name: 'Listar Tipos-Comprobante' },
                 { name: 'Listar Cuentas-Corrientes' },
+                { name: 'Listar Particulares' },
+                { name: 'Listar Empresas' },
               ])
             "
           >
@@ -128,10 +130,11 @@
                   path == 'unidades-medida' ||
                   path == 'clasificadores' ||
                   path == 'tipos-concepto' ||
-                  path == 'conceptos' ||                  
+                  path == 'conceptos' ||
                   path == 'particulares' ||
                   path == 'empresas' ||
-                  path == 'cuentas-corrientes',
+                  path == 'cuentas-corrientes' ||
+                  path == 'asignar' ,
               }"
             >
               <i class="uil-window-section"></i>
@@ -191,7 +194,7 @@
                 >
                   Conceptos
                 </inertia-link>
-              </li>              
+              </li>
               <li :class="{ 'mm-active': path == 'particulares' }">
                 <inertia-link
                   :href="route('particulares.iniciar')"
@@ -227,6 +230,20 @@
                   Cuentas Corrientes
                 </inertia-link>
               </li>
+               <li
+                :class="{
+                  'mm-active': path == 'asignar',
+                }"
+              >
+                <inertia-link
+                  :href="route('usuarios.asignar')"
+                  :class="{
+                    active: path == 'asignar',
+                  }"
+                >
+                  Asignar Serie y Correlativo
+                </inertia-link>
+              </li>
             </ul>
           </li>
           <li :class="{ 'mm-active': path == 'cobros' }">
@@ -239,7 +256,7 @@
             </inertia-link>
           </li>
           <li :class="{ 'mm-active': path == 'comprobantes' }">
-            <inertia-link 
+            <inertia-link
               :class="{ active: path == 'comprobantes' }"
               :href="route('comprobantes.iniciar')"
             >            
@@ -374,7 +391,7 @@
             >
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
-            </a>            
+            </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
               <li
                 :class="{

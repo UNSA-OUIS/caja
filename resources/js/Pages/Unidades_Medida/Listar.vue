@@ -11,7 +11,8 @@
         <div class="card">            
             <div class="card-header d-flex align-items-center">                
                 <span class="font-weight-bold">Lista de unidades de medida</span>
-                <inertia-link
+                <inertia-link 
+                    v-if="$permissions.can([{name: 'Crear Unidades-Medida'}])"                    
                     class="btn btn-success ml-auto"
                     :href="route('unidades-medida.crear')"
                 >

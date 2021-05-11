@@ -30,7 +30,16 @@ class UnidadMedidaPolicy
      */
     public function view(User $user, UnidadMedida $unidadMedida)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Mostrar Unidades-Medida')) {
+            $permiso = true;
+        }
+        else if ($user->can('Mostrar Unidades-Medida Propios')) {
+            $permiso = $user->id === $unidadMedida->user_id;
+        }
+
+        return $permiso;
     }
 
     /**
@@ -41,7 +50,7 @@ class UnidadMedidaPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can('Crear Unidades-Medida');   
     }
 
     /**
@@ -53,7 +62,16 @@ class UnidadMedidaPolicy
      */
     public function update(User $user, UnidadMedida $unidadMedida)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Editar Unidades-Medida')) {
+            $permiso = true;
+        }
+        else if ($user->can('Editar Unidades-Medida Propios')) {
+            $permiso = $user->id === $unidadMedida->user_id;
+        }
+
+        return $permiso;
     }
 
     /**
@@ -65,7 +83,16 @@ class UnidadMedidaPolicy
      */
     public function delete(User $user, UnidadMedida $unidadMedida)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Eliminar Unidades-Medida')) {
+            $permiso = true;
+        }
+        else if ($user->can('Eliminar Unidades-Medida Propios')) {
+            $permiso = $user->id === $unidadMedida->user_id;
+        }
+
+        return $permiso;              
     }
 
     /**
@@ -77,7 +104,16 @@ class UnidadMedidaPolicy
      */
     public function restore(User $user, UnidadMedida $unidadMedida)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Restaurar Unidades-Medida')) {
+            $permiso = true;
+        }
+        else if ($user->can('Restaurar Unidades-Medida Propios')) {
+            $permiso = $user->id === $unidadMedida->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
