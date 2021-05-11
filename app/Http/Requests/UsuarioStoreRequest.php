@@ -26,7 +26,7 @@ class UsuarioStoreRequest extends FormRequest
         return [            
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required',
+            //'password' => 'required',
         ];
     }
 
@@ -34,7 +34,7 @@ class UsuarioStoreRequest extends FormRequest
     {
         return [
             'name.required' => 'El campo usuario es obligatorio.',                        
-            'password.required' => 'El campo contraseña es obligatorio.',                        
+            //'password.required' => 'El campo contraseña es obligatorio.',                        
         ];
     }
 }

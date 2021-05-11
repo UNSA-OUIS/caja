@@ -48,11 +48,13 @@ class UsuarioController extends Controller
 
     public function store(UsuarioStoreRequest $request)
     {
+        dd($request->all());
+
         try {
             $usuario = new User();
             $usuario->name = $request->name;
             $usuario->email = $request->email;
-            $usuario->password = bcrypt($request->password);
+            //$usuario->password = bcrypt($request->password);
             $usuario->syncRoles($request->roles_seleccionados);
             $usuario->save();
             Persona::create([
