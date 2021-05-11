@@ -18,13 +18,13 @@
                         >
                         <b-input-group size="sm">
                             <b-form-input
-                            v-model="dniCliente"
+                            v-model="filter.dniCliente"
                             type="search"
                             id="filterInput"
                             placeholder="Escriba el texto a buscar..."
                             ></b-form-input>
                             <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
+                            <b-button :disabled="!filter.dniCliente" @click="filter.dniCliente = ''"
                                 >Limpiar</b-button
                             >
                             </b-input-group-append>
@@ -68,7 +68,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="fechaInicio"
+                            v-model="filter.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -88,7 +88,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="fechaFin"
+                            v-model="filter.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -202,14 +202,14 @@
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
 import JsonExcel from "vue-json-excel";
 
 export default {
-    name: "comprobantes.centroDeCosto",
-    props: ["comprobantes"],
+    name: "reportes.centroDeCosto",
     components: {
         AppLayout,
         VueHtml2pdf,
@@ -219,6 +219,25 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            json_fields: {
+                Fecha: "date",
+                "Código": "codigo",
+                Nombre: "nombre",
+                "# Cobros": "cobros",
+                "# Anulados": "anulados",
+                "Dscto.": "descuento",
+                IGV: "impuesto",
+                "Monto": "monto",
+                },
+            json_data: [],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
+            ],
             fields: [
                 { key: "codi_depe", label: "Código" },
                 { key: "nomb_depe", label: "Centro de costos" },
@@ -228,8 +247,6 @@ export default {
             currentPage: 1,
             perPage: 5,
             centroCosto: "",
-            fechaInicio: "",
-            fechaFin: "",
             month: "",
             centros: [],
             filter: {
@@ -259,8 +276,8 @@ export default {
         async filterTable() {
             try {
                 let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
-                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
-                console.log(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
+                console.log(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 this.centros = response.data.centros
                 
             } catch (error) {
@@ -281,21 +298,9 @@ export default {
         },
     },
     computed:{
-        grupoFilter(){
-            var group = this.comprobantes;
-            
-            group = this.fechaInicio && this.fechaFin
-            ? group.filter(item => 
-            new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
-            new Date(item.created_at.slice(0, 10).split('-')) <= new Date(this.fechaFin.split('-')))
-            : group
-            group = this.dniCliente
-            ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group
-            return group
-        },
+        
         grupoDividido(){
-            var group = this.grupoFilter;
+            var group = this.centros;
             const groups = [];
             var i,j,temparray,chunk = 25;
             for (i=0,j=group.length; i<j; i+=chunk) {

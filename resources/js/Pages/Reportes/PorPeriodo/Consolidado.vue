@@ -8,28 +8,28 @@
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <b-form-group
-                        label="Buscar cajero: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>
+                        <v-select
+                        v-model="cajero"
+                        @search="buscarCajero"
+                        :filterable="false"
+                        :options="cajeros"
+                        :reduce="cajero => cajero"
+                        label="vista_cajero"
+                        placeholder="Ingrese código o nombre del cajero"
+                    >
+                        <template #search="{attributes, events}">
+                            <input
+                                class="vs__search"
+                                :required="!cajero"
+                                v-bind="attributes"
+                                v-on="events"
+                                v-model="filtro"
+                            />
+                        </template>
+                        <template slot="no-options">
+                            Lo sentimos, no hay resultados de coincidencia.
+                        </template>
+                    </v-select>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -86,6 +86,11 @@
                     :fields="fields"
                     empty-text="No hay clasificadores para mostrar"
                     empty-filtered-text="No hay clasificadores que coincidan con su búsqueda.">
+                    <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
+                        <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                        <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                    </template>
                 </b-table>
                 <b-button v-if="clasificadores.length" @click="html2pdf">Descargar PDF</b-button>
                 <json-excel
@@ -112,8 +117,6 @@
                     pdf-format="a4"
                     pdf-orientation="portrait"
                     pdf-content-width="800px"
-            
-                    @progress="onProgress($event)"
                     @hasStartedGeneration="hasStartedGeneration()"
                     @beforeDownload="beforeDownload($event)"
                     @hasGenerated="hasGenerated($event)"
@@ -163,6 +166,11 @@
                                             empty-text="No hay clasificadores para mostrar"
                                             empty-filtered-text="No hay clasificadores que coincidan con su búsqueda."
                                         >
+                                        <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
+                                            <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                                            <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                                        </template>
                                         </b-table>
                                         <div class="html2pdf__page-break"/>
                                     </div>
@@ -193,23 +201,35 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            cajero: null,
+            cajeros: [],
+            filtro: "",
+            json_fields: {
+                "Código": "codigo",
+                Nombre: "nombre",
+                "Monto": "monto",
+                },
+            json_data: [],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
+            ],
             fields: [
                 { key: "codigo", label: "Código" },
                 { key: "nombre", label: "Nombre" },
                 { key: "monto", label: "Monto" ,class: "text-right" },
             ],
             clasificadores: [],
+            totalRegistros: 0,
+            totalMontos: 0,
             filenamepdf: "Reporte_cobros",
-            currentPage: 1,
-            perPage: 5,
-            dniCliente: "",
-            fechaInicio: "",
-            fechaFin: "",
-            month: "",
             filename: "",
             filenamepdf: "Reporte_cobros",
             filter: {
-                cajeroId: "",
                 fechaInicio: "",
                 fechaFin: "",
             },
@@ -233,6 +253,17 @@ export default {
         this.filter.fechaFin = dateString;
     },
     methods: {
+        buscarCajero(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCajero?filtro=${search}`)
+                .then(response => {
+                    this.cajeros = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         refreshTable() {
             this.$refs.tbl_clasificadores.refresh();
         },
@@ -245,6 +276,14 @@ export default {
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/consolidado/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/consolidado/${params}`)
                 this.clasificadores = response.data.clasificadores
+                this.totalRegistros = response.data.totalRegistros
+                this.totalMontos = response.data.totalMontos
+                this.json_data = this.clasificadores.slice()
+                this.json_data.push({
+                    codigo: "" + this.totalRegistros + " registros",
+                    nombre: "TOTALES:",
+                    monto: this.totalMontos
+                })
                 
             } catch (error) {
                 console.log(error)

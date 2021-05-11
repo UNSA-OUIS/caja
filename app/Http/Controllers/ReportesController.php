@@ -111,14 +111,21 @@ class ReportesController extends Controller
     {
         $database1 = Config::get('database.connections.pgsql.database');
         $database2 = Config::get('database.connections.mysql2.database');
-        $centros = Dependencia::select($database2.'.depe.codi_depe', $database2.'.depe.nomb_depe', DB::raw('SUM('.$database1.'.detalles_comprobante.valor_unitario) as monto'))
+        /*$centros = Dependencia::select($database2.'.depe.codi_depe', $database2.'.depe.nomb_depe', DB::raw('SUM('.$database1.'.detalles_comprobante.valor_unitario) as monto'))
                                     ->leftJoin($database1.'.conceptos', $database1.'.conceptos.codi_depe', '=', $database2.'.depe.codi_depe')
                                     ->leftJoin($database1.'.detalles_comprobante', $database1.'.detalles_comprobante.concepto_id', '=', $database1.'.conceptos.id')
                                     ->whereDate($database1.'.detalles_comprobante.created_at','>=',$request->fechaInicio)
                                     ->whereDate($database1.'.detalles_comprobante.created_at','<=',$request->fechaFin)
                                     ->groupBy($database2.'.depe.codi_depe')
-                                    ->get();
+                                    ->get();*/
 
+        $centros = Dependencia::with('conceptos')->select('codi_depe', 'nomb_depe')
+        ->get();
+
+        /*$centros = DB::Connection('mysql2')->table('depe')
+                        ->leftjoin(DB::Connection('pgsql'))
+                        ->table('conceptos', 'conceptos.codi_depe', '=', 'depe.codi_depe')
+                        ->get();*/
         return ['centros' => $centros,];
     }
 
@@ -155,7 +162,13 @@ class ReportesController extends Controller
                                 ->whereDate('detalles_comprobante.created_at','<=',$request->fechaFin)
                                 ->groupBy('clasificadores.id')
                                 ->get();
+        $totalMontos = $clasificadores->sum('monto');
+        $totalRegistros = $clasificadores->count();
+
+
                                 
-        return ['clasificadores' => $clasificadores,];
+        return ['clasificadores' => $clasificadores,
+                'totalRegistros' => $totalRegistros,
+                'totalMontos' => $totalMontos,];
     }
 }
