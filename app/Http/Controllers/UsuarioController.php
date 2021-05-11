@@ -47,9 +47,7 @@ class UsuarioController extends Controller
     }
 
     public function store(UsuarioStoreRequest $request)
-    {
-        dd($request->all());
-
+    {      
         try {
             $usuario = new User();
             $usuario->name = $request->name;

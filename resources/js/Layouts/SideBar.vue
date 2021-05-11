@@ -116,6 +116,8 @@
                 { name: 'Listar Conceptos' },
                 { name: 'Listar Tipos-Comprobante' },
                 { name: 'Listar Cuentas-Corrientes' },
+                { name: 'Listar Particulares' },
+                { name: 'Listar Empresas' },
               ])
             "
           >
