@@ -72,7 +72,7 @@ class BoletaController extends Controller
     public function resumenDiario(Request $request)
     {
         //return $request[0]['correlativo'];
-        $see = require config_path('Sunat\config.php');
+        $see = require config_path('Sunat/config.php');
         $boletas = $request->all();
         $correlativo = '';
 
