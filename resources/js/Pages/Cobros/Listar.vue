@@ -5,30 +5,33 @@
                 <li class="breadcrumb-item ml-auto">                    
                     <inertia-link :href="route('dashboard')">Inicio</inertia-link>
                 </li>
-                <li class="breadcrumb-item active">Lista de tipos de concepto</li>
+                <li class="breadcrumb-item active">Lista de cobros</li>
             </ol>
-        </nav>   
+        </nav>  
         <div class="card">
             <div class="card-header d-flex align-items-center">                
-                <span class="font-weight-bold">Lista de tipos de concepto</span>
-                <inertia-link class="btn btn-success ml-auto" :href="route('tipos-concepto.crear')">
+                <span class="font-weight-bold">Lista de cobros</span>
+                <inertia-link class="btn btn-success ml-auto" :href="route('cobros.buscarUsuario')">
                     Nuevo
                 </inertia-link>
-            </div>                      
+            </div>                   
             <div class="card-body">
                 <b-alert
                     show
+                    dismissible
                     variant="success"
                     v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
                 >
+                    {{ $page.props.successMessage }}
+                </b-alert>
                 <b-alert
                     show
+                    dismissible
                     variant="danger"
                     v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
                 >
-
+                    {{ $page.props.errorMessage }}
+                </b-alert>
                 <b-row>
                     <b-col sm="12" md="4" lg="4" class="my-1">
                         <b-form-group
@@ -75,7 +78,7 @@
                     </b-col>
                 </b-row>
                 <b-table
-                    ref="tbl_tipos_concepto"
+                    ref="tbl_comprobantes"
                     show-empty
                     striped
                     hover
@@ -92,40 +95,74 @@
                     :sort-desc.sync="sortDesc"
                     :sort-direction="sortDirection"
                     @filtered="onFiltered"
-                    empty-text="No hay tipos de concepto para mostrar"
-                    empty-filtered-text="No hay tipos de concepto que coincidan con su búsqueda."
+                    empty-text="No hay comprobantes para mostrar"
+                    empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                 >
-                    <template v-slot:cell(condicion)="row">
-                        <b-badge v-if="!row.item.deleted_at" variant="success"
-                            >Activo</b-badge
+                    <template v-slot:cell(usuario)="row">
+                        <span v-if="row.item.tipo_usuario === 'alumno'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'empresa'">
+                            {{ row.item.comprobanteable.razon_social }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'particular'">
+                            {{ row.item.comprobanteable.apellidos }}, {{ row.item.comprobanteable.nombres }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'docente'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+                            {{ row.item.comprobanteable.nomb_depe }}
+                        </span>
+                    </template>
+                    <template v-slot:cell(estado)="row">
+                        <b-badge
+                            v-if="row.item.estado == 'noEnviado'"
+                            variant="primary"
+                            >No Enviado</b-badge
                         >
-                        <b-badge v-else variant="secondary">Inactivo</b-badge>
+                        <b-badge
+                            v-if="row.item.estado == 'observado'"
+                            variant="warning"
+                            >Observado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'rechazado'"
+                            variant="danger"
+                            >Rechazado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'anulado'"
+                            variant="secondary"
+                            >Anulado</b-badge
+                        >
+                        <b-badge
+                            v-if="row.item.estado == 'aceptado'"
+                            variant="success"
+                            >Facturada</b-badge
+                        >
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <inertia-link
-                            v-if="!row.item.deleted_at"
+                            class="btn btn-info btn-sm"
+                            :href="route('comprobantes.mostrar', row.item)"
+                        >
+                            <b-icon icon="printer"></b-icon>
+                        </inertia-link>
+                        <inertia-link
                             class="btn btn-primary btn-sm"
-                            :href="route('tipos-concepto.mostrar', row.item.id)"
+                            :href="route('comprobantes.mostrar', row.item)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>
                         <b-button
-                            v-if="!row.item.deleted_at"
+                            v-if="row.item.estado == 'noEnviado'"
                             variant="danger"
                             size="sm"
-                            title="Eliminar"
-                            @click="eliminar(row.item)"
+                            title="Anular"
+                            @click="anular(row.item)"
                         >
-                            <b-icon icon="trash"></b-icon>
-                        </b-button>
-                        <b-button
-                            v-else
-                            variant="success"
-                            size="sm"
-                            title="Restaurar"
-                            @click="restaurar(row.item)"
-                        >
-                            <b-icon icon="check"></b-icon>
+                            <b-icon icon="x-circle"></b-icon>
                         </b-button>
                     </template>
                 </b-table>
@@ -151,7 +188,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "tipos-concepto.listar",
+    name: "comprobantes.listar",
     components: {
         AppLayout
     },
@@ -159,14 +196,13 @@ export default {
         return {
             app_url: this.$root.app_url,
             fields: [
-                {
-                    key: "id",
-                    label: "ID",
-                    sortable: true,
-                    class: "text-center"
-                },
-                { key: "nombre", label: "Tipo de Concepto", sortable: true },
-                { key: "condicion", label: "Condición", class: "text-center" },
+                { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+                { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+                { key: "usuario", label: "Usuario", sortable: true },
+                { key: "tipo_comprobante.nombre", label: "Comprobante", class: "text-center" },
+                { key: "serie", label: "Serie", class: "text-center" },
+                { key: "correlativo", label: "Correlativo", class: "text-center" },
+                { key: "estado", label: "Estado", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
             index: 1,
@@ -182,7 +218,7 @@ export default {
     },
     methods: {
         refreshTable() {
-            this.$refs.tbl_tipos_concepto.refresh();
+            this.$refs.tbl_comprobantes.refresh();
         },
         myProvider(ctx) {
             let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -195,57 +231,53 @@ export default {
                 params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
             }
 
-            const promise = axios.get(
-                `${this.app_url}/tipos-concepto/listar${params}`
-            );
+            const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
 
             return promise.then(response => {
-                const tiposConcepto = response.data.data;
+                const comprobantes = response.data.data;
                 this.totalRows = response.data.total;
 
-                return tiposConcepto || [];
+                return comprobantes || [];
             });
         },
-        eliminar(tipos_concepto) {
+        anular(comprobante) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer eliminar este tipo de concepto?",
+                    "¿Esta seguro de querer anular este comprobante?",
                     {
-                        title: "Eliminar tipo de concepto",
+                        title: "Anular comprobante",
                         okVariant: "danger",
                         okTitle: "SI",
                         cancelTitle: "NO",
                         centered: true
                     }
                 )
-                .then(value => {
+                .then(async value => {
                     if (value) {
-                        this.$inertia.delete(
-                            route("tipos-concepto.eliminar", [
-                                tipos_concepto.id
-                            ])
+                        this.$inertia.post(
+                            route("comprobantes.anular", [comprobante])
                         );
                         this.refreshTable();
                     }
                 });
         },
-        restaurar(tipos_concepto) {
+        async restaurar(tipo_comprobante) {
             this.$bvModal
                 .msgBoxConfirm(
-                    "¿Esta seguro de querer restaurar este tipo de concepto?",
+                    "¿Esta seguro de querer restaurar este tipo de comprobante?",
                     {
-                        title: "Restaurar tipo de concepto",
-                        okVariant: "danger",
+                        title: "Restaurar tipo de comprobante",
+                        okVariant: "primary",
                         okTitle: "SI",
                         cancelTitle: "NO",
                         centered: true
                     }
                 )
-                .then(value => {
+                .then(async value => {
                     if (value) {
                         this.$inertia.post(
-                            route("tipos-concepto.restaurar", [
-                                tipos_concepto.id
+                            route("tipo-comprobante.restaurar", [
+                                tipo_comprobante.id
                             ])
                         );
                         this.refreshTable();
@@ -255,7 +287,7 @@ export default {
         onFiltered(filteredItems) {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
-        },
+        }
     }
 };
 </script>

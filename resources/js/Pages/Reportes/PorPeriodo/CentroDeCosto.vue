@@ -4,13 +4,6 @@
         <div class="card" ref="content">
             <div class="card-header">
                 <h1>Por centro de costo</h1>
-                <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
-                <!--<b-button @click="dompdf">Descargar (dompdf)</b-button>
-                <a
-                    class="btn btn-success float-right" method="post"
-                    href="#" @click="dompdf"
-                    >Descargar (dompdf)</a
-                >-->
             </div>
             <div class="card-body">
                 <b-row>
@@ -25,13 +18,13 @@
                         >
                         <b-input-group size="sm">
                             <b-form-input
-                            v-model="dniCliente"
+                            v-model="filter.dniCliente"
                             type="search"
                             id="filterInput"
                             placeholder="Escriba el texto a buscar..."
                             ></b-form-input>
                             <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
+                            <b-button :disabled="!filter.dniCliente" @click="filter.dniCliente = ''"
                                 >Limpiar</b-button
                             >
                             </b-input-group-append>
@@ -75,7 +68,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="fechaInicio"
+                            v-model="filter.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -95,7 +88,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="fechaFin"
+                            v-model="filter.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -105,22 +98,32 @@
                          </b-form-group>
                     </b-col>
                 </b-row>
+                <b-button class="btn btn-success float-right mt-2 mb-2" @click="filterTable()">Generar reporte</b-button>
                 <b-table
-                            ref="tbl_comprobantes"
-                            show-empty
-                            striped
-                            hover
-                            sticky-header
-                            bordered
-                            small
-                            responsive
-                            :items="grupoFilter"
-                            :fields="fields"
-                            empty-text="No hay comprobantes para mostrar"
-                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-                        >
-                        </b-table>
-                
+                    ref="tbl_comprobantes"
+                    show-empty
+                    striped
+                    hover
+                    sticky-header
+                    bordered
+                    small
+                    responsive
+                    :items="centros"
+                    :fields="fields"
+                    empty-text="No hay comprobantes para mostrar"
+                    empty-filtered-text="No hay comprobantes que coincidan con su búsqueda.">
+                </b-table>
+                <b-button v-if="centros.length" @click="html2pdf">Descargar PDF</b-button>
+                <json-excel
+                    v-if="centros.length"
+                    :data="json_data"
+                    type="xlsx"
+                    :fields="json_fields"
+                    worksheet="Reporte_periodo_x_centro"
+                    :name="filename"
+                    class="btn btn-success">
+                        Descargar Excel
+                </json-excel>
             </div>
 
             <vue-html2pdf
@@ -170,7 +173,7 @@
                                     
                                 </div>
                                 
-                                    <div v-for="(group) in grupoDividido">
+                                    <div v-for="(group, key) in grupoDividido" :key="key">
                                        <div class="card-body">
                                         <b-table
                                             ref="tbl_comprobantes"
@@ -199,38 +202,69 @@
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
+import JsonExcel from "vue-json-excel";
 
 export default {
-    name: "comprobantes.centroDeCosto",
-    props: ["comprobantes"],
+    name: "reportes.centroDeCosto",
     components: {
         AppLayout,
         VueHtml2pdf,
-        PeriodoMenu
+        PeriodoMenu,
+        JsonExcel
     },
     data() {
         return {
             app_url: this.$root.app_url,
+            json_fields: {
+                Fecha: "date",
+                "Código": "codigo",
+                Nombre: "nombre",
+                "# Cobros": "cobros",
+                "# Anulados": "anulados",
+                "Dscto.": "descuento",
+                IGV: "impuesto",
+                "Monto": "monto",
+                },
+            json_data: [],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
+            ],
             fields: [
-                { key: "codigo", label: "Código" },
-                { key: "serie", label: "Serie" },
-                { key: "correlativo", label: "Correlativo" },
-                { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },
-
+                { key: "codi_depe", label: "Código" },
+                { key: "nomb_depe", label: "Centro de costos" },
+                { key: "monto", label: "Monto" },
             ],
             filenamepdf: "Reporte_cobros",
             currentPage: 1,
             perPage: 5,
             centroCosto: "",
-            fechaInicio: "",
-            fechaFin: "",
             month: "",
+            centros: [],
+            filter: {
+                cajeroId: "",
+                fechaInicio: "",
+                fechaFin: "",
+            },
+            filename: "",
 
         };
+    },
+    created(){
+        var today = new Date()
+        today.setHours(today.getHours() - 5)
+        var dateString = today.toISOString().split("T")[0]
+        this.filename = "Reporte_periodo_x_centro_" + dateString + ".xls"
+        this.filter.fechaInicio = dateString;
+        this.filter.fechaFin = dateString;
     },
     methods: {
         refreshTable() {
@@ -239,12 +273,18 @@ export default {
         html2pdf(){
             this.$refs.html2Pdf.generatePdf()
         },
-        dompdf(){
-            this.$inertia.post(
-                route("reportes.cajeropdf"),
-                this.grupoFilter
-            );
+        async filterTable() {
+            try {
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
+                console.log(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
+                this.centros = response.data.centros
+                
+            } catch (error) {
+                console.log(error)
+            }
         },
+
         async beforeDownload ({ html2pdf, options, pdfContent }) {
             await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
                 const totalPages = pdf.internal.getNumberOfPages()
@@ -258,21 +298,9 @@ export default {
         },
     },
     computed:{
-        grupoFilter(){
-            var group = this.comprobantes;
-            
-            group = this.fechaInicio && this.fechaFin
-            ? group.filter(item => 
-            new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
-            new Date(item.created_at.slice(0, 10).split('-')) <= new Date(this.fechaFin.split('-')))
-            : group
-            group = this.dniCliente
-            ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group
-            return group
-        },
+        
         grupoDividido(){
-            var group = this.grupoFilter;
+            var group = this.centros;
             const groups = [];
             var i,j,temparray,chunk = 25;
             for (i=0,j=group.length; i<j; i+=chunk) {

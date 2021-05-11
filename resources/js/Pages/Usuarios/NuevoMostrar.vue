@@ -63,7 +63,7 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col>
+                        <!-- <b-col>
                             <b-form-group
                                 id="input-group-3"
                                 label="Contraseña:"
@@ -82,8 +82,8 @@
                                     {{ $page.props.errors.password[0] }}
                                 </div>
                             </b-form-group>
-                        </b-col>
-                        <b-col>
+                        </b-col> -->
+                        <b-col cols="6">
                             <b-form-group id="input-group-4" label="Rol (es):" label-for="input-4">
                                 <b-form-select
                                     id="input-4"
@@ -179,10 +179,9 @@ export default {
                 { key: "acciones", label: "Seleccionar" },
             ],
             formData:this.usuario,
-            categoria_permisos: [],
-            bool_allSelecteds: [],
-            total_permisos: this.permissions.length
-
+            categoria_permisos: [],   
+            bool_allSelecteds: [],       
+            total_permisos: 0
         };
     },
     created() {
@@ -190,6 +189,7 @@ export default {
             this.accion = "Crear"
         } else {
             this.accion = "Mostrar"
+            this.total_permisos= this.permissions.length
             this.mostrar_permisos()
             this.loadSelectAll()
         }

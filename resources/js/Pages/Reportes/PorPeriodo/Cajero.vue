@@ -302,8 +302,8 @@ export default {
                 if (this.cajero != null){
                     params = params + "&cajeroId=" + this.cajero.cajero_id
                 }
-                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
-                console.log(`${this.app_url}/reportes-periodo/filter-reporte/${params}`)
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/cajeros/${params}`)
+                console.log(`${this.app_url}/reportes-periodo/filter-reporte/cajeros/${params}`)
                 this.comprobantes = response.data.comprobantes
                 this.totalRegistros = response.data.totalRegistros
                 this.totalCobros = response.data.totalCobros

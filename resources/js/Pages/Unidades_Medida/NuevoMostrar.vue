@@ -42,7 +42,7 @@
                         <b-col cols="6">
                             <b-form-group
                                 id="input-group-2"
-                                label="Nombre:"
+                                label="Codigo:"
                                 label-for="input-2"
                             >
                                 <b-form-input

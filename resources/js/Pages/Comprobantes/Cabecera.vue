@@ -1,62 +1,49 @@
 <template>
-    <app-layout>
+    <app-layout>       
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item ml-auto">
+                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('cobros.iniciar')">
+                        Lista de cobros
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('cobros.buscarUsuario')">
+                        Buscar usuario
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item active">
+                    Nuevo cobro
+                </li>
+            </ol>
+        </nav>                  
         <div class="card">
-            <div class="card-header">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="route('comprobantes.iniciar')">Lista de comprobantes</inertia-link>
-                    </li>
-                    <li class="breadcrumb-item active">Nuevo comprobante</li>
-                </ol>
-            </div>
+            <div class="card-header d-flex align-items-center">
+                <span class="font-weight-bold">Nuevo cobro</span>
+            </div>            
             <div class="card-doby">
                 <div class="container p-3">
-                    <b-row>
-                        <b-col>
-                            <b-form-group id="input-group-0" label="Tipo comprobante:" label-for="input-0">
-                                <b-form-input                                    
-                                    id="input-0"
-                                    v-model="data.tipo_comprobante"                                    
-                                    readonly
-                                    class="text-center"
-                                ></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <b-form-group id="input-group-1" label="Serie:" label-for="input-1">
-                                <b-form-input
-                                    id="input-1"
-                                    v-model="comprobante.serie"                                    
-                                    readonly
-                                    class="text-center"
-                                ></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <b-form-group id="input-group-2" label="Correlativo:" label-for="input-2">
-                                <b-form-input
-                                    id="input-2"
-                                    v-model="comprobante.correlativo"                                    
-                                    readonly
-                                    class="text-center"
-                                ></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <b-form-group id="input-group-3" label="Fecha:" label-for="input-3">
-                                <b-form-input
-                                    id="input-3"
-                                    type="date"
-                                    v-model="data.fecha_actual"                                    
-                                    readonly
-                                    class="text-center"
-                                ></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                    <div class="form-row">
+                      <div class="form-group col-md-3 border border-light">
+                        <label class="text-info">Tipo de comprobante:</label>
+                        <label class="lbl-data" v-text="data.tipo_comprobante"></label>
+                      </div>                      
+                      <div class="form-group col-md-3 border border-light">
+                        <label class="text-info">Serie:</label>
+                        <label class="lbl-data" v-text="comprobante.serie"></label>
+                      </div>                      
+                      <div class="form-group col-md-3 border border-light">
+                        <label class="text-info">Correlativo:</label>
+                        <label class="lbl-data" v-text="comprobante.correlativo"></label>
+                      </div>       
+                      <div class="form-group col-md-3 border border-light">
+                        <label class="text-info">Fecha:</label>
+                        <label class="lbl-data" v-text="data.fecha_actual"></label>
+                      </div>                      
+                    </div>                                        
                     <template v-if="comprobante.tipo_usuario === 'alumno'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
                     </template>   
@@ -106,3 +93,22 @@ export default {
     }, 
 };
 </script>
+<style scoped>
+    .lbl-data {
+        text-align: center;
+        border: 0;
+        padding: 0;        
+        display: block;
+        width: 100%;
+        font-size: 1rem;
+        margin-bottom: 0;
+        font-weight: 400;
+    }
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
+    }
+</style>

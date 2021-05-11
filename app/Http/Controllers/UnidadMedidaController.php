@@ -12,7 +12,7 @@ class UnidadMedidaController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize("viewAny", UnidadMedida::class);
+        $this->authorize("viewAny", UnidadMedida::class);        
 
         $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%');
 
@@ -30,6 +30,7 @@ class UnidadMedidaController extends Controller
 
     public function create()
     {   
+        $this->authorize('create', UnidadMedida::class);
         // $nextid = UnidadMedida::all()->last()->id;
         $unidadMedida = new UnidadMedida();
         // $unidadMedida->id = $nextid+1;k
@@ -41,6 +42,8 @@ class UnidadMedidaController extends Controller
 
     public function store(UnidadMedidaStoreRequest $request)
     {
+        $this->authorize('create', UnidadMedida::class);
+        
         try {
             $unidadMedida = new UnidadMedida();
             $unidadMedida->nombre = $request->nombre;
@@ -57,6 +60,8 @@ class UnidadMedidaController extends Controller
 
     public function show(UnidadMedida $unidadMedida)
     {
+        $this->authorize('view', $unidadMedida);
+
         return Inertia::render('Unidades_Medida/NuevoMostrar', compact('unidadMedida'));
     }
 
@@ -67,6 +72,8 @@ class UnidadMedidaController extends Controller
 
     public function update(UnidadMedidaUpdateRequest $request, UnidadMedida $unidadMedida)
     {
+        $this->authorize('update', $unidadMedida);
+
         try {
             $unidadMedida->nombre = $request->nombre;
             $unidadMedida->codigo = $request->codigo;
@@ -82,6 +89,8 @@ class UnidadMedidaController extends Controller
 
     public function destroy(UnidadMedida $unidadMedida)
     {
+        $this->authorize('delete', $unidadMedida);
+
         try {
             $unidadMedida->delete();
             $result = ['successMessage' => 'Unidad de medida eliminada con éxito'];
@@ -95,8 +104,11 @@ class UnidadMedidaController extends Controller
 
     public function restore($unidad_medida_id)
     {
+        $unidadMedida = UnidadMedida::withTrashed()->findOrFail($unidad_medida_id);
+        $this->authorize('restore', $unidadMedida);
+
         try {
-            $unidadMedida = UnidadMedida::withTrashed()->findOrFail($unidad_medida_id);
+            
             $unidadMedida->restore();
             $result = ['successMessage' => 'Unidad de medida restaurada con éxito'];
         } catch (\Exception $e) {

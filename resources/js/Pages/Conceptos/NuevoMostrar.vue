@@ -1,19 +1,24 @@
 <template>
   <app-layout>
-    <div class="card">
-      <div class="card-header">
+    <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <inertia-link :href="route('dashboard')">Inicio</inertia-link>
-          </li>
-          <li class="breadcrumb-item">
-            <inertia-link :href="route('conceptos.iniciar')"
-              >Lista de conceptos</inertia-link
-            >
-          </li>
-          <li class="breadcrumb-item active">{{ accion }} concepto</li>
+            <li class="breadcrumb-item ml-auto">
+                <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+            </li>
+            <li class="breadcrumb-item">
+                <inertia-link :href="route('conceptos.iniciar')">
+                    Lista de conceptos
+                </inertia-link>
+            </li>
+            <li class="breadcrumb-item active">
+                {{ accion }} concepto
+            </li>
         </ol>
-      </div>
+    </nav> 
+    <div class="card">
+      <div class="card-header d-flex align-items-center">
+          <span class="font-weight-bold">{{ accion }} concepto</span>
+      </div>      
       <div class="card-body">
         <b-form @submit.prevent="enviar">
           <b-row>
@@ -386,3 +391,12 @@ export default {
   },
 };
 </script>
+<style scoped>
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
+    }
+</style>

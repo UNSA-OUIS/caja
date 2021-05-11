@@ -30,7 +30,16 @@ class ClasificadorPolicy
      */
     public function view(User $user, Clasificador $clasificador)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Mostrar Clasificadores')) {
+            $permiso = true;
+        }
+        else if ($user->can('Mostrar Clasificadores Propios')) {
+            $permiso = $user->id === $clasificador->user_id;
+        }
+
+        return $permiso;
     }
 
     /**
@@ -41,7 +50,7 @@ class ClasificadorPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can('Crear Clasificadores');   
     }
 
     /**
@@ -53,7 +62,16 @@ class ClasificadorPolicy
      */
     public function update(User $user, Clasificador $clasificador)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Editar Clasificadores')) {
+            $permiso = true;
+        }
+        else if ($user->can('Editar Clasificadores Propios')) {
+            $permiso = $user->id === $clasificador->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
@@ -65,7 +83,16 @@ class ClasificadorPolicy
      */
     public function delete(User $user, Clasificador $clasificador)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Eliminar Clasificadores')) {
+            $permiso = true;
+        }
+        else if ($user->can('Eliminar Clasificadores Propios')) {
+            $permiso = $user->id === $clasificador->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
@@ -77,7 +104,16 @@ class ClasificadorPolicy
      */
     public function restore(User $user, Clasificador $clasificador)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Restaurar Clasificadores Propios')) {
+            $permiso = true;
+        }
+        else if ($user->can('Restaurar Clasificadores Propios')) {
+            $permiso = $user->id === $clasificador->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**

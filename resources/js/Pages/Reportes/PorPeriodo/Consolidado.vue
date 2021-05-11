@@ -4,39 +4,32 @@
         <div class="card" ref="content">
             <div class="card-header">
                 <h1>Consolidado por clasificador</h1>
-                <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
-                <!--<b-button @click="dompdf">Descargar (dompdf)</b-button>
-                <a
-                    class="btn btn-success float-right" method="post"
-                    href="#" @click="dompdf"
-                    >Descargar (dompdf)</a
-                >-->
             </div>
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <b-form-group
-                        label="Buscar cajero: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>
+                        <v-select
+                        v-model="cajero"
+                        @search="buscarCajero"
+                        :filterable="false"
+                        :options="cajeros"
+                        :reduce="cajero => cajero"
+                        label="vista_cajero"
+                        placeholder="Ingrese código o nombre del cajero"
+                    >
+                        <template #search="{attributes, events}">
+                            <input
+                                class="vs__search"
+                                :required="!cajero"
+                                v-bind="attributes"
+                                v-on="events"
+                                v-model="filtro"
+                            />
+                        </template>
+                        <template slot="no-options">
+                            Lo sentimos, no hay resultados de coincidencia.
+                        </template>
+                    </v-select>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -49,7 +42,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="fechaInicio"
+                            v-model="filter.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -69,7 +62,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="fechaFin"
+                            v-model="filter.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -79,22 +72,37 @@
                          </b-form-group>
                     </b-col>
                 </b-row>
+                <b-button class="btn btn-success float-right mt-2 mb-2" @click="filterTable()">Generar reporte</b-button>
                 <b-table
-                            ref="tbl_comprobantes"
-                            show-empty
-                            striped
-                            hover
-                            sticky-header
-                            bordered
-                            small
-                            responsive
-                            :items="grupoFilter"
-                            :fields="fields"
-                            empty-text="No hay comprobantes para mostrar"
-                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-                        >
-                        </b-table>
-                
+                    ref="tbl_clasificadores"
+                    show-empty
+                    striped
+                    hover
+                    sticky-header
+                    bordered
+                    small
+                    responsive
+                    :items="clasificadores"
+                    :fields="fields"
+                    empty-text="No hay clasificadores para mostrar"
+                    empty-filtered-text="No hay clasificadores que coincidan con su búsqueda.">
+                    <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
+                        <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                        <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                    </template>
+                </b-table>
+                <b-button v-if="clasificadores.length" @click="html2pdf">Descargar PDF</b-button>
+                <json-excel
+                    v-if="clasificadores.length"
+                    :data="json_data"
+                    type="xlsx"
+                    :fields="json_fields"
+                    worksheet="Reporte_periodo_x_cajero"
+                    :name="filename"
+                    class="btn btn-success">
+                        Descargar Excel
+                </json-excel>
             </div>
 
             <vue-html2pdf
@@ -109,8 +117,6 @@
                     pdf-format="a4"
                     pdf-orientation="portrait"
                     pdf-content-width="800px"
-            
-                    @progress="onProgress($event)"
                     @hasStartedGeneration="hasStartedGeneration()"
                     @beforeDownload="beforeDownload($event)"
                     @hasGenerated="hasGenerated($event)"
@@ -144,10 +150,10 @@
                                     
                                 </div>
                                 
-                                    <div v-for="(group) in grupoDividido">
+                                    <div v-for="(group, key) in grupoDividido" :key="key">
                                        <div class="card-body">
                                         <b-table
-                                            ref="tbl_comprobantes"
+                                            ref="tbl_clasificadores"
                                             show-empty
                                             striped
                                             hover
@@ -157,9 +163,14 @@
                                             stacked="md"
                                             :items="group"
                                             :fields="fields"
-                                            empty-text="No hay comprobantes para mostrar"
-                                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                                            empty-text="No hay clasificadores para mostrar"
+                                            empty-filtered-text="No hay clasificadores que coincidan con su búsqueda."
                                         >
+                                        <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
+                                            <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                                            <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                                        </template>
                                         </b-table>
                                         <div class="html2pdf__page-break"/>
                                     </div>
@@ -173,42 +184,110 @@
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
+import JsonExcel from "vue-json-excel";
 
 export default {
-    name: "comprobantes.consolidado",
-    props: ["comprobantes"],
+    name: "reportes.consolidado",
     components: {
         AppLayout,
         VueHtml2pdf,
-        PeriodoMenu
+        PeriodoMenu,
+        JsonExcel
     },
     data() {
         return {
             app_url: this.$root.app_url,
+            cajero: null,
+            cajeros: [],
+            filtro: "",
+            json_fields: {
+                "Código": "codigo",
+                Nombre: "nombre",
+                "Monto": "monto",
+                },
+            json_data: [],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
+            ],
             fields: [
                 { key: "codigo", label: "Código" },
-                { key: "serie", label: "Serie" },
-                { key: "correlativo", label: "Correlativo" },
-                { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },
-
+                { key: "nombre", label: "Nombre" },
+                { key: "monto", label: "Monto" ,class: "text-right" },
             ],
+            clasificadores: [],
+            totalRegistros: 0,
+            totalMontos: 0,
             filenamepdf: "Reporte_cobros",
-            currentPage: 1,
-            perPage: 5,
-            dniCliente: "",
-            fechaInicio: "",
-            fechaFin: "",
-            month: "",
+            filename: "",
+            filenamepdf: "Reporte_cobros",
+            filter: {
+                fechaInicio: "",
+                fechaFin: "",
+            },
 
         };
     },
+    watch : {
+        filtro:function(val) {
+            this.filtro = val.trim()
+        },
+        cajero:function(val) {
+            this.filtro = ""
+        },
+    },
+    created(){
+        var today = new Date()
+        today.setHours(today.getHours() - 5)
+        var dateString = today.toISOString().split("T")[0]
+        this.filename = "Reporte_periodo_x_consolidado_" + dateString + ".xls"
+        this.filter.fechaInicio = dateString;
+        this.filter.fechaFin = dateString;
+    },
     methods: {
+        buscarCajero(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCajero?filtro=${search}`)
+                .then(response => {
+                    this.cajeros = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         refreshTable() {
-            this.$refs.tbl_comprobantes.refresh();
+            this.$refs.tbl_clasificadores.refresh();
+        },
+        async filterTable() {
+            try {
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                if (this.cajero != null){
+                    params = params + "&cajeroId=" + this.cajero.cajero_id
+                }
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/consolidado/${params}`)
+                console.log(`${this.app_url}/reportes-periodo/filter-reporte/consolidado/${params}`)
+                this.clasificadores = response.data.clasificadores
+                this.totalRegistros = response.data.totalRegistros
+                this.totalMontos = response.data.totalMontos
+                this.json_data = this.clasificadores.slice()
+                this.json_data.push({
+                    codigo: "" + this.totalRegistros + " registros",
+                    nombre: "TOTALES:",
+                    monto: this.totalMontos
+                })
+                
+            } catch (error) {
+                console.log(error)
+            }
         },
         html2pdf(){
             this.$refs.html2Pdf.generatePdf()
@@ -233,7 +312,7 @@ export default {
     },
     computed:{
         grupoFilter(){
-            var group = this.comprobantes;
+            var group = this.clasificadores;
             
             group = this.fechaInicio && this.fechaFin
             ? group.filter(item => 

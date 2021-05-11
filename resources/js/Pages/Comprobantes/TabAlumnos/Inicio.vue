@@ -112,7 +112,7 @@ export default {
     methods: {                
         async buscarCuiAlumno() {
             try {
-                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${this.cui}`)                                
+                const response = await axios.get(`${this.app_url}/buscarCuiAlumno/${this.cui}`)                                                
                 this.alumno = response.data                
 
                 if (this.alumno.matriculas.length == 1) {
@@ -139,6 +139,7 @@ export default {
 
             try {
                 const response = await axios.get(`${this.app_url}/buscarApnAlumno`, { params: { apn: apn } })                
+                console.log(response.data)
                 
                 this.alumnos = response.data                
 

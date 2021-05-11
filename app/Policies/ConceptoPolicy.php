@@ -30,7 +30,16 @@ class ConceptoPolicy
      */
     public function view(User $user, Concepto $concepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Mostrar Conceptos')) {
+            $permiso = true;
+        }
+        else if ($user->can('Mostrar Conceptos propios')) {
+            $permiso = $user->id === $concepto->user_id;
+        }
+
+        return $permiso;
     }
 
     /**
@@ -41,7 +50,7 @@ class ConceptoPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can('Crear Conceptos');   
     }
 
     /**
@@ -53,7 +62,16 @@ class ConceptoPolicy
      */
     public function update(User $user, Concepto $concepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Editar Conceptos')) {
+            $permiso = true;
+        }
+        else if ($user->can('Editar Conceptos Propios')) {
+            $permiso = $user->id === $concepto->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
@@ -65,7 +83,16 @@ class ConceptoPolicy
      */
     public function delete(User $user, Concepto $concepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Eliminar Conceptos')) {
+            $permiso = true;
+        }
+        else if ($user->can('Eliminar Conceptos Propios')) {
+            $permiso = $user->id === $concepto->user_id;
+        }
+
+        return $permiso;              
     }
 
     /**
@@ -77,7 +104,16 @@ class ConceptoPolicy
      */
     public function restore(User $user, Concepto $concepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Restaurar Conceptos')) {
+            $permiso = true;
+        }
+        else if ($user->can('Restaurar Conceptos Propios')) {
+            $permiso = $user->id === $concepto->user_id;
+        }
+
+        return $permiso;              
     }
 
     /**

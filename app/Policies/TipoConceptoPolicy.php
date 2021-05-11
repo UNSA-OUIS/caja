@@ -30,7 +30,16 @@ class TipoConceptoPolicy
      */
     public function view(User $user, TiposConcepto $tiposConcepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Mostrar Tipos-Concepto')) {
+            $permiso = true;
+        }
+        else if ($user->can('Mostrar Tipos-Concepto propios')) {
+            $permiso = $user->id === $tiposConcepto->user_id;
+        }
+
+        return $permiso;
     }
 
     /**
@@ -41,7 +50,7 @@ class TipoConceptoPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->can('Crear Tipos-Concepto');   
     }
 
     /**
@@ -53,7 +62,16 @@ class TipoConceptoPolicy
      */
     public function update(User $user, TiposConcepto $tiposConcepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Editar Tipos-Concepto')) {
+            $permiso = true;
+        }
+        else if ($user->can('Editar Tipos-Concepto propios')) {
+            $permiso = $user->id === $tiposConcepto->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
@@ -65,7 +83,16 @@ class TipoConceptoPolicy
      */
     public function delete(User $user, TiposConcepto $tiposConcepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Eliminar Tipos-Concepto')) {
+            $permiso = true;
+        }
+        else if ($user->can('Eliminar Tipos-Concepto propios')) {
+            $permiso = $user->id === $tiposConcepto->user_id;
+        }
+
+        return $permiso;              
     }
 
     /**
@@ -77,7 +104,16 @@ class TipoConceptoPolicy
      */
     public function restore(User $user, TiposConcepto $tiposConcepto)
     {
-        //
+        $permiso = false;
+
+        if ($user->can('Restaurar Tipos-Concepto')) {
+            $permiso = true;
+        }
+        else if ($user->can('Restaurar Tipos-Concepto Propios')) {
+            $permiso = $user->id === $tiposConcepto->user_id;
+        }
+
+        return $permiso;        
     }
 
     /**
