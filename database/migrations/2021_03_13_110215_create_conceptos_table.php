@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateConceptosTable extends Migration
@@ -43,6 +45,7 @@ class CreateConceptosTable extends Migration
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            //$table->foreign('codi_depe')->references('codi_depe')->on(new Expression(DB::connection('mysql2')->getDatabaseName()). '.depe');
         });
     }
 

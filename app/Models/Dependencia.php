@@ -24,4 +24,9 @@ class Dependencia extends Model
         return $this->morphMany(Comprobante::class, 'comprobanteable');
     }
 
+    public function conceptos()
+    {
+        return $this->setConnection('pgsql')->hasMany(Concepto::class, 'id', 'codi_depe');
+    }
+
 }
