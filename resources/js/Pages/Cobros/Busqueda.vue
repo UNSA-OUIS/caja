@@ -155,7 +155,7 @@ export default {
                 { value: 'DEPENDENCIA', text: 'DEPENDENCIA' },
             ],           
             tipos_usuario_factura: [                
-                { value: 'EMPRESA', text: 'EMRESA' },                
+                { value: 'EMPRESA', text: 'EMPRESA' },                
             ],            
             opciones_busqueda_alumno: [                
                 { value: 'CUI', text: 'CUI' },                

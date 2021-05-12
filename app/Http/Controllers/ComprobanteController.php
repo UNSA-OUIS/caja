@@ -249,7 +249,8 @@ class ComprobanteController extends Controller
             DB::rollback();
             return $e;
         }
-        return redirect()->route('comprobantes.iniciar');
+        //return redirect()->route('comprobantes.iniciar');
+        return redirect()->route('cobros.iniciar');
     }
 
     public function show(Comprobante $comprobante)

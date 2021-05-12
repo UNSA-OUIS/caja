@@ -10,7 +10,7 @@ class Docente extends Model
     use HasFactory;
     
     protected $connection = "mysql";
-    protected $table = 'siac_doc';
+    protected $table = 'SIAC_DOC';
     protected $primaryKey = 'codper';
     protected $keyType = 'string';
 
