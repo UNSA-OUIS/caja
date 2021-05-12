@@ -132,26 +132,31 @@
               <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
             </div>
           </template>
+          <template v-slot:cell(usuario)="row">
+                        <span v-if="row.item.tipo_usuario === 'alumno'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'empresa'">
+                            {{ row.item.comprobanteable.razon_social }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'particular'">
+                            {{ row.item.comprobanteable.apellidos }}, {{ row.item.comprobanteable.nombres }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'docente'">
+                            {{ row.item.comprobanteable.apn }}
+                        </span>
+                        <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+                            {{ row.item.comprobanteable.nomb_depe }}
+                        </span>
+                    </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
               :href="route('consulta.mostrar', row.item.id)"
             >
-              Ver
+              Detalles
             </inertia-link>
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="primary"
-              size="sm"
-              title="Ver"
-              :href="`${app_url}/${row.item.url_pdf}`"
-            >
-              <b-icon icon="printer"></b-icon>
-            </b-button>
           </template>
           <template #table-caption
             >Se encontraron {{ cantidad_items }} documentos</template
@@ -208,6 +213,7 @@ export default {
           class: "text-center",
           sortable: true,
         },
+        { key: "usuario", label: "Usuario", sortable: true },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
@@ -280,6 +286,7 @@ export default {
         return promise
           .then((response) => {
             this.items = response.data.data;
+            console.log(this.items);
             this.cantidad_items = this.items.length;
             this.totalRows = response.data.total;
             this.refreshTable();

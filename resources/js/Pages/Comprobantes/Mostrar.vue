@@ -1,379 +1,208 @@
-<!--<template>
-  <app-layout>
-    <template>
-      <div>
-        <b-table
-          ref="tbl_comprobantes"
-          show-empty
-          striped
-          hover
-          bordered
-          small
-          responsive
-          stacked="md"
-          :items="myProvider"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :filter="filter"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          @filtered="onFiltered"
-          empty-text="No hay comprobantes para mostrar"
-          empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-        >
-        </b-table>
-      </div>
-      <div>
-        <b-table
-          show-empty
-          striped
-          hover
-          bordered
-          small
-          responsive
-          stacked="md"
-          :items="conceptos"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :filter="filter"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          empty-text="No hay conceptos para mostrar"
-          empty-filtered-text="No hay conceptos que coincidan con su búsqueda."
-        >
-        </b-table>
-      </div>
-    </template>
-  </app-layout>
-</template>
-
-<script>
-const axios = require("axios");
-import AppLayout from "@/Layouts/AppLayout";
-
-export default {
-  name: "consultas.mostrar",
-  components: {
-    AppLayout,
-  },
-  props: ["comprobante", "conceptos"],
-  methods: {
-    refreshTable() {
-      this.$refs.tbl_comprobantes.refresh();
-    },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
-
-      return promise.then((response) => {
-        const comprobantes = response.data.data;
-        this.totalRows = response.data.total;
-
-        return comprobantes || [];
-      });
-    },
-    onFiltered(filteredItems) {
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
-    },
-  },
-};
-</script>
-
-<style>
-</style>-->
 <template>
   <app-layout>
     <div class="card">
-      <div class="card-body">
-        <b-row>
-          <b-col sm="12" md="4" lg="4" class="my-1">
-            <b-form-group
-              label="Registros por página: "
-              label-cols-sm="6"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="perPageSelect"
-              class="mb-0"
-            >
-              <b-form-select
-                v-model="perPage"
-                id="perPageSelect"
-                size="sm"
-                :options="pageOptions"
-              ></b-form-select>
-            </b-form-group>
-          </b-col>
-          <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
-            <b-form-group
-              label="Buscar: "
-              label-cols-sm="3"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="filterInput"
-              class="mb-0"
-            >
-              <b-input-group size="sm">
-                <b-form-input
-                  v-model="filter"
-                  type="search"
-                  id="filterInput"
-                  placeholder="Escriba el texto a buscar..."
-                ></b-form-input>
-                <b-input-group-append>
-                  <b-button :disabled="!filter" @click="filter = ''"
-                    >Limpiar</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-table
-          ref="tbl_comprobantes"
-          show-empty
-          striped
-          hover
-          bordered
-          small
-          responsive
-          stacked="md"
-          :items="myProvider"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :filter="filter"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          @filtered="onFiltered"
-          empty-text="No hay comprobantes para mostrar"
-          empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-        >
-          <template v-slot:cell(usuario)="row">
-            <span v-if="row.item.tipo_usuario === 'alumno'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'empresa'">
-              {{ row.item.comprobanteable.razon_social }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'particular'">
-              {{ row.item.comprobanteable.apellidos }},
-              {{ row.item.comprobanteable.nombres }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'docente'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
-              {{ row.item.comprobanteable.nomb_depe }}
-            </span>
-          </template>
-          <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-              >No Enviado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-              >Observado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-              >Rechazado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-              >Anulado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
-              >Facturada</b-badge
-            >
-          </template>
-          <template v-slot:cell(acciones)="row">
-            <inertia-link
-              class="btn btn-info btn-sm"
-              :href="route('comprobantes.mostrar', row.item)"
-            >
-              <b-icon icon="printer"></b-icon>
-            </inertia-link>
-            <inertia-link
-              class="btn btn-primary btn-sm"
-              :href="route('comprobantes.mostrar', row.item)"
-            >
-              <b-icon icon="eye"></b-icon>
-            </inertia-link>
-            <b-button
-              v-if="row.item.estado == 'noEnviado'"
-              variant="danger"
-              size="sm"
-              title="Anular"
-              @click="anular(row.item)"
-            >
-              <b-icon icon="x-circle"></b-icon>
-            </b-button>
-          </template>
-        </b-table>
-        <b-row>
-          <b-col offset-md="8" md="4" class="my-1">
-            <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="fill"
-              size="sm"
-              class="my-0"
-            ></b-pagination>
-          </b-col>
-        </b-row>
+      <div class="card-header">
+        <!--{{ comprobante }}
+        <br />
+        <br />
+        <br />
+        {{ conceptos }}-->
+        <h1 class="text-center">
+          {{ comprobante.tipo_comprobante.nombre }}
+          <br />
+          {{ comprobante.serie }}-{{ comprobante.correlativo }}
+        </h1>
       </div>
       <div class="card-body">
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
-              label="Registros por página: "
+              v-if="comprobante.comprobanteable.apn"
+              label="Nombre Usuario: "
+              label-cols-sm="4"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-model="comprobante.comprobanteable.apn"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group
+              v-if="comprobante.comprobanteable.razon_social"
+              label="Razon Social: "
+              label-cols-sm="4"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-model="comprobante.comprobanteable.razon_social"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col sm="12" md="4" lg="4" class="my-1">
+            <b-form-group
+              label="Tipo Usuario: "
               label-cols-sm="6"
               label-align-sm="right"
               label-size="sm"
-              label-for="perPageSelect"
-              class="mb-0"
             >
-              <b-form-select
-                v-model="perPage"
-                id="perPageSelect"
+              <b-form-input
+                v-model="comprobante.tipo_usuario"
                 size="sm"
-                :options="pageOptions"
-              ></b-form-select>
+                disabled
+              ></b-form-input>
             </b-form-group>
           </b-col>
-          <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
+          <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
-              label="Buscar: "
-              label-cols-sm="3"
+              v-if="comprobante.comprobanteable.ruc"
+              label="RUC: "
+              label-cols-sm="6"
               label-align-sm="right"
               label-size="sm"
-              label-for="filterInput"
-              class="mb-0"
             >
-              <b-input-group size="sm">
-                <b-form-input
-                  v-model="filter"
-                  type="search"
-                  id="filterInput"
-                  placeholder="Escriba el texto a buscar..."
-                ></b-form-input>
-                <b-input-group-append>
-                  <b-button :disabled="!filter" @click="filter = ''"
-                    >Limpiar</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
+              <b-form-input
+                v-model="comprobante.codi_usuario"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group
+              v-else
+              label="RUC: "
+              label-cols-sm="6"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-model="comprobante.codi_usuario"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col sm="12" md="4" lg="4" class="my-1">
+            <b-form-group
+              v-if="comprobante.comprobanteable.direccion"
+              label="Direccion: "
+              label-cols-sm="4"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-textarea
+                v-model="comprobante.comprobanteable.direccion"
+                size="sm"
+                disabled
+              ></b-form-textarea>
+            </b-form-group>
+            <b-form-group
+              v-else
+              label="Numero de Escuela: "
+              label-cols-sm="6"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-model="comprobante.nues_espe"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col sm="12" md="4" lg="4" class="my-1">
+            <b-form-group
+              label="Estado: "
+              label-cols-sm="6"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-if="comprobante.estado == 'noEnviado'"
+                value="No enviado"
+                size="sm"
+                disabled
+              ></b-form-input>
+              <b-form-input
+                v-if="comprobante.estado == 'anulado'"
+                value="Anulado"
+                size="sm"
+                disabled
+              ></b-form-input>
+              <b-form-input
+                v-if="comprobante.estado == 'observado'"
+                value="Observado"
+                size="sm"
+                disabled
+              ></b-form-input>
+              <b-form-input
+                v-if="comprobante.estado == 'rechazado'"
+                value="Rechazado"
+                size="sm"
+                disabled
+              ></b-form-input>
+              <b-form-input
+                v-if="comprobante.estado == 'aceptado'"
+                value="Aceptado"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col sm="12" md="4" lg="4" class="my-1">
+            <b-form-group
+              label="Cancelado: "
+              label-cols-sm="6"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <b-form-input
+                v-if="comprobante.cancelado == true"
+                value="Si"
+                size="sm"
+                disabled
+              ></b-form-input>
+              <b-form-input
+                v-if="comprobante.cancelado == false"
+                value="No"
+                size="sm"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+          <b-col sm="12" md="4" lg="4" class="my-1">
+            <b-form-group
+              label="Descargar: "
+              label-cols-sm="6"
+              label-align-sm="right"
+              label-size="sm"
+            >
+              <a :href="`${comprobante.url_xml}`" download> XML</a>
+              <a :href="`${comprobante.url_cdr}`" download> CDR</a>
+              <a :href="`${comprobante.url_pdf}`" download> PDF</a>
             </b-form-group>
           </b-col>
         </b-row>
-        <b-table
-          ref="tbl_comprobantes"
-          show-empty
-          striped
-          hover
-          bordered
-          small
-          responsive
-          stacked="md"
-          :items="conceptos"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :filter="filter"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          @filtered="onFiltered"
-          empty-text="No hay comprobantes para mostrar"
-          empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-        >
-          <template v-slot:cell(usuario)="row">
-            <span v-if="row.item.tipo_usuario === 'alumno'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'empresa'">
-              {{ row.item.comprobanteable.razon_social }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'particular'">
-              {{ row.item.comprobanteable.apellidos }},
-              {{ row.item.comprobanteable.nombres }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'docente'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
-              {{ row.item.comprobanteable.nomb_depe }}
-            </span>
-          </template>
-          <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-              >No Enviado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-              >Observado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-              >Rechazado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-              >Anulado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
-              >Facturada</b-badge
-            >
-          </template>
-          <template v-slot:cell(acciones)="row">
-            <inertia-link
-              class="btn btn-info btn-sm"
-              :href="route('comprobantes.mostrar', row.item)"
-            >
-              <b-icon icon="printer"></b-icon>
-            </inertia-link>
-            <inertia-link
-              class="btn btn-primary btn-sm"
-              :href="route('comprobantes.mostrar', row.item)"
-            >
-              <b-icon icon="eye"></b-icon>
-            </inertia-link>
-            <b-button
-              v-if="row.item.estado == 'noEnviado'"
-              variant="danger"
-              size="sm"
-              title="Anular"
-              @click="anular(row.item)"
-            >
-              <b-icon icon="x-circle"></b-icon>
-            </b-button>
-          </template>
-        </b-table>
-        <b-row>
-          <b-col offset-md="8" md="4" class="my-1">
-            <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="fill"
-              size="sm"
-              class="my-0"
-            ></b-pagination>
-          </b-col>
-        </b-row>
+        <template>
+          <h4 class="text-center">Detalles</h4>
+          <div>
+            <b-table
+              striped
+              hover
+              :items="conceptos"
+              :fields="fields"
+            ></b-table>
+          </div>
+        </template>
       </div>
     </div>
   </app-layout>
 </template>
 
 <script>
-const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
@@ -384,97 +213,31 @@ export default {
   },
   data() {
     return {
-      app_url: this.$root.app_url,
       fields: [
-        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
-        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
-        { key: "usuario", label: "Usuario", sortable: true },
+        { key: "codigo", label: "Codigo", sortable: true },
         {
-          key: "tipo_comprobante.nombre",
-          label: "Comprobante",
+          key: "descripcion",
+          label: "Descripcion",
           class: "text-center",
+          sortable: true,
         },
-        { key: "serie", label: "Serie", class: "text-center" },
-        { key: "correlativo", label: "Correlativo", class: "text-center" },
-        { key: "estado", label: "Estado", class: "text-center" },
-        { key: "acciones", label: "Acciones", class: "text-center" },
+        { key: "precio", label: "Precio", sortable: true },
+        { key: "tipo_precio", label: "Tipo Precio", sortable: true },
+        { key: "detraccion", label: "Detraccion", sortable: true },
+        { key: "tipo_concepto.nombre", label: "Tipo Concepto", sortable: true },
+        { key: "clasificador.nombre", label: "Clasificador", sortable: true },
+        {
+          key: "unidad_medida.codigo",
+          label: "Codigo de unidad de medida",
+          sortable: true,
+        },
+        {
+          key: "unidad_medida.nombre",
+          label: "Nombre de unidad de medida",
+          sortable: true,
+        },
       ],
-      index: 1,
-      totalRows: 1,
-      currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
-      sortBy: null,
-      sortDesc: false,
-      sortDirection: "asc",
-      filter: null,
     };
-  },
-  methods: {
-    refreshTable() {
-      this.$refs.tbl_comprobantes.refresh();
-    },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
-
-      return promise.then((response) => {
-        const comprobantes = response.data.data;
-        this.totalRows = response.data.total;
-
-        return comprobantes || [];
-      });
-    },
-    anular(comprobante) {
-      this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
-          title: "Anular comprobante",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(route("comprobantes.anular", [comprobante]));
-            this.refreshTable();
-          }
-        });
-    },
-    async restaurar(tipo_comprobante) {
-      this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer restaurar este tipo de comprobante?",
-          {
-            title: "Restaurar tipo de comprobante",
-            okVariant: "primary",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(
-              route("tipo-comprobante.restaurar", [tipo_comprobante.id])
-            );
-            this.refreshTable();
-          }
-        });
-    },
-    onFiltered(filteredItems) {
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
-    },
   },
 };
 </script>
