@@ -1,206 +1,151 @@
 <template>
-    <app-layout>
-        <div class="row">
-            <div class="col-md-6 col-xl-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div>
-                            <h4 class="mb-1 mt-1 text-primary">
-                                <span data-plugin="counterup">No Enviado</span>
-                            </h4>
-                            <p class="text-muted mb-0">{{ noEnviado }}
-                            <p class="text-muted mb-0" v-if="noEnviado == 1">comprobante</p>
-                            <p class="text-muted mb-0" v-else>comprobantes</p>
-                        </div>
-                    </div>
-                </div>
+  <app-layout>
+    <div class="row estado">
+      <div class="col-md-6 col-xl-2">
+        <div class="card">
+          <div class="card-body">
+            <div class="float-right mt-2">
+              <div id="total-revenue-chart"></div>
             </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div>
-                            <h4 class="mb-1 mt-1 text-warning">
-                                <span data-plugin="counterup">Observado</span>
-                            </h4>
-                            <p class="text-muted mb-0">{{ observado }}
-                            <p class="text-muted mb-0" v-if="observado == 1">comprobante</p>
-                            <p class="text-muted mb-0" v-else>comprobantes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div>
-                            <h4 class="mb-1 mt-1 text-danger">
-                                <span data-plugin="counterup">Rechazado</span>
-                            </h4>
-                            <p class="text-muted mb-0">{{ rechazado }}
-                            <p class="text-muted mb-0" v-if="rechazado == 1">comprobante</p>
-                            <p class="text-muted mb-0" v-else>comprobantes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div>
-                            <h4 class="mb-1 mt-1 text-secondary">
-                                <span data-plugin="counterup">Anulado</span>
-                            </h4>
-                            <p class="text-muted mb-0">{{ anulado }}
-                            <p class="text-muted mb-0" v-if="anulado == 1">comprobante</p>
-                            <p class="text-muted mb-0" v-else>comprobantes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div>
-                            <h4 class="mb-1 mt-1 text-success">
-                                <span data-plugin="counterup">Aceptado</span>
-                            </h4>
-                            <p class="text-muted mb-0">{{ aceptado }}
-                            <p class="text-muted mb-0" v-if="aceptado == 1">comprobante</p>
-                            <p class="text-muted mb-0" v-else>comprobantes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-        </div>
-        <!-- end row-->
-
-        <div>
             <div>
-                <b-card-group deck>
-                    <b-card
-                        border-variant="primary"
-                        header="No Enviado"
-                        header-bg-variant="primary"
-                        header-text-variant="white"
-                        align="center"
-                    >
-                        <b-card-text
-                            >{{ noEnviado }}
-                            <p v-if="noEnviado == 1">comprobante</p>
-                            <p v-else>comprobantes</p></b-card-text
-                        >
-                    </b-card>
-                    <b-card
-                        border-variant="warning"
-                        header="Observado"
-                        header-bg-variant="warning"
-                        header-text-variant="white"
-                        align="center"
-                    >
-                        <b-card-text
-                            >{{ observado }}
-                            <p v-if="observado == 1">comprobante</p>
-                            <p v-else>comprobantes</p></b-card-text
-                        >
-                    </b-card>
-                    <b-card
-                        border-variant="danger"
-                        header="Rechazado"
-                        header-bg-variant="danger"
-                        header-text-variant="white"
-                        align="center"
-                    >
-                        <b-card-text
-                            >{{ rechazado }}
-                            <p v-if="rechazado == 1">comprobante</p>
-                            <p v-else>comprobantes</p></b-card-text
-                        >
-                    </b-card>
-                    <b-card
-                        border-variant="secondary"
-                        header="Anulado"
-                        header-bg-variant="secondary"
-                        header-text-variant="white"
-                        align="center"
-                    >
-                        <b-card-text
-                            >{{ anulado }}
-                            <p v-if="anulado == 1">comprobante</p>
-                            <p v-else>comprobantes</p></b-card-text
-                        >
-                    </b-card>
-                    <b-card
-                        border-variant="success"
-                        header="Aceptado"
-                        header-bg-variant="success"
-                        header-text-variant="white"
-                        align="center"
-                    >
-                        <b-card-text
-                            >{{ aceptado }}
-                            <p v-if="aceptado == 1">comprobante</p>
-                            <p v-else>comprobantes</p></b-card-text
-                        >
-                    </b-card>
-                </b-card-group>
+              <h4 class="mb-1 mt-1 text-primary text-center">
+                <span data-plugin="counterup">No Enviado</span>
+              </h4>
+              <p class="text-muted mb-0 text-center">{{ noEnviado }}</p>
+              <p class="text-muted mb-0 text-center" v-if="noEnviado == 1">
+                comprobante
+              </p>
+              <p class="text-muted mb-0 text-center" v-else>comprobantes</p>
             </div>
+          </div>
         </div>
-    </app-layout>
+      </div>
+      <!-- end col-->
+
+      <div class="col-md-6 col-xl-2">
+        <div class="card">
+          <div class="card-body">
+            <div class="float-right mt-2">
+              <div id="total-revenue-chart"></div>
+            </div>
+            <div>
+              <h4 class="mb-1 mt-1 text-warning text-center">
+                <span data-plugin="counterup">Observado</span>
+              </h4>
+              <p class="text-muted mb-0 text-center">{{ observado }}</p>
+              <p class="text-muted mb-0 text-center" v-if="observado == 1">
+                comprobante
+              </p>
+              <p class="text-muted mb-0 text-center" v-else>comprobantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end col-->
+
+      <div class="col-md-6 col-xl-2">
+        <div class="card">
+          <div class="card-body">
+            <div class="float-right mt-2">
+              <div id="total-revenue-chart"></div>
+            </div>
+            <div>
+              <h4 class="mb-1 mt-1 text-danger text-center">
+                <span data-plugin="counterup">Rechazado</span>
+              </h4>
+              <p class="text-muted mb-0 text-center">{{ rechazado }}</p>
+              <p class="text-muted mb-0 text-center" v-if="rechazado == 1">
+                comprobante
+              </p>
+              <p class="text-muted mb-0 text-center" v-else>comprobantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end col-->
+
+      <div class="col-md-6 col-xl-2">
+        <div class="card">
+          <div class="card-body">
+            <div class="float-right mt-2">
+              <div id="total-revenue-chart"></div>
+            </div>
+            <div>
+              <h4 class="mb-1 mt-1 text-secondary text-center">
+                <span data-plugin="counterup">Anulado</span>
+              </h4>
+              <p class="text-muted mb-0 text-center">{{ anulado }}</p>
+              <p class="text-muted mb-0 text-center" v-if="anulado == 1">
+                comprobante
+              </p>
+              <p class="text-muted mb-0 text-center" v-else>comprobantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end col-->
+
+      <div class="col-md-6 col-xl-2">
+        <div class="card">
+          <div class="card-body">
+            <div class="float-right mt-2">
+              <div id="total-revenue-chart"></div>
+            </div>
+            <div>
+              <h4 class="mb-1 mt-1 text-success text-center">
+                <span data-plugin="counterup">Aceptado</span>
+              </h4>
+              <p class="text-muted mb-0 text-center">{{ aceptado }}</p>
+              <p class="text-muted mb-0 text-center" v-if="aceptado == 1">
+                comprobante
+              </p>
+              <p class="text-muted mb-0 text-center" v-else>comprobantes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end col-->
+    </div>
+    <!-- end row-->
+  </app-layout>
 </template>
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
 export default {
-    name: "sunat.tablero",
-    //props: ["noEnviado", "observado", "anulado", "aceptado"],
-    components: {
-        AppLayout
-    },    
-    computed: {
-        noEnviado () {
-            return this.$store.state.envio.noEnviado
-        },        
-        observado () {
-            return this.$store.state.envio.observado
-        },
-        rechazado () {
-            return this.$store.state.envio.rechazado
-        },
-        anulado () {
-            return this.$store.state.envio.anulado
-        },
-        aceptado () {
-            return this.$store.state.envio.aceptado
-        }
+  name: "sunat.tablero",
+  components: {
+    AppLayout,
+  },
+  computed: {
+    noEnviado() {
+      return this.$store.state.envio.noEnviado;
     },
-    created(){
-        this.$store.dispatch("getEstados");
-    }
+    observado() {
+      return this.$store.state.envio.observado;
+    },
+    rechazado() {
+      return this.$store.state.envio.rechazado;
+    },
+    anulado() {
+      return this.$store.state.envio.anulado;
+    },
+    aceptado() {
+      return this.$store.state.envio.aceptado;
+    },
+  },
+  created() {
+    this.$store.dispatch("getEstados");
+  },
 };
 </script>
 
-<style></style>
+<style>
+.estado {
+  background-color: #F5F6F8;
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 2px solid #2D313E;
+  /* IMPORTANTE */
+  text-align: center;
+}</style>

@@ -226,7 +226,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /******************************* COBROS *******************************/
     Route::get('/cobros', function () {
         return Inertia::render('Cobros/Listar');
-    })->name('cobros.iniciar');    
+    })->name('cobros.iniciar');
     Route::get('/cobros/buscarUsuario', function () {
         return Inertia::render('Cobros/Busqueda');
     })->name('cobros.buscarUsuario');
@@ -253,6 +253,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/crear_empresa', [ComprobanteController::class, 'crear_empresa'])->name('comprobantes.crear_empresa');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
+    Route::get('/comprobantes/mostrar/{comprobante}', [ComprobanteController::class, 'showConsulta'])->name('consulta.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
 
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');

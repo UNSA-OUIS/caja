@@ -4,39 +4,49 @@
       <div class="card-header">
         <h1>Buscar documento</h1>
         <div>
-          <label for="example-input">Ingrese serie</label>
-          <b-form-input
-            v-model="documento.serie"
-            placeholder="Serie"
-            class="mb-2"
-          ></b-form-input>
-          <label for="example-input">Ingrese correlativo</label>
-          <b-form-input
-            v-model="documento.correlativo"
-            placeholder="Correlativo"
-            class="mb-2"
-          ></b-form-input>
-          <b-button
-            variant="success"
-            size="sm"
-            title="Buscar Boletas"
-            @click="buscarDocumento()"
+          <b-form inline>
+            <label class="sr-only" for="inline-form-input-serie">Serie</label>
+            <b-form-input
+              v-model="documento.serie"
+              id="inline-form-input-serie"
+              class="mb-2 mr-sm-2 mb-sm-0"
+              placeholder="Serie"
+            ></b-form-input>
+
+            <label class="sr-only" for="inline-form-input-correlativo"
+              >Correlativo</label
+            >
+            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
+              <b-form-input
+                v-model="documento.correlativo"
+                id="inline-form-input-correlativo"
+                placeholder="Correlativo"
+              ></b-form-input>
+            </b-input-group>
+
+            <template>
+              <div>
+                <b-button-group>
+                  <b-button variant="outline-success" @click="buscar()">
+                    Buscar <b-icon icon="search"></b-icon>
+                  </b-button>
+                  <b-button variant="outline-primary" @click="limpiar()">
+                    Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                  </b-button>
+                </b-button-group>
+              </div>
+            </template>
+          </b-form>
+          <b-alert
+            class="mb-2 mr-sm-2 mb-sm-0"
+            variant="danger"
+            show
+            v-show="alerta"
           >
-            Buscar Documentos <b-icon icon="search"></b-icon>
-          </b-button>
-          <b-button
-            variant="primary"
-            size="sm"
-            title="Limpiar"
-            @click="limpiar()"
-          >
-            Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-          </b-button>
+            {{ this.mensajeAlerta }}
+          </b-alert>
         </div>
       </div>
-      <b-alert variant="danger" show v-show="alerta">
-        {{ this.mensajeAlerta }}
-      </b-alert>
       <div class="card-body" v-show="filtrado">
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
@@ -99,8 +109,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay boletas para mostrar"
-          empty-filtered-text="No hay boletas que coincidan con su búsqueda."
+          empty-text="No hay documentos para mostrar"
+          empty-filtered-text="No hay documentos que coincidan con su búsqueda."
         >
           <template v-slot:cell(estado)="row">
             <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
@@ -123,6 +133,13 @@
             </div>
           </template>
           <template v-slot:cell(acciones)="row">
+            <inertia-link
+              v-if="!row.item.deleted_at"
+              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+              :href="route('consulta.mostrar', row.item.id)"
+            >
+              Ver
+            </inertia-link>
             <b-button
               v-if="
                 row.item.estado == 'aceptado' || row.item.estado == 'observado'
@@ -135,34 +152,6 @@
             >
               <b-icon icon="printer"></b-icon>
             </b-button>
-            <b-button
-              v-if="row.item.estado == 'noEnviado'"
-              variant="danger"
-              size="sm"
-              title="Anular"
-              @click="anular(row.item)"
-            >
-              <b-icon icon="x-circle"></b-icon>
-            </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'aceptado'
-              "
-              size="sm"
-              @click="row.toggleDetails"
-            >
-              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-              <b-icon v-else icon="plus-circle"></b-icon>
-            </b-button>
-          </template>
-          <template #row-details="row">
-            <b-card>
-              <ul>
-                <li>
-                  {{ row.item.observaciones }}
-                </li>
-              </ul>
-            </b-card>
           </template>
           <template #table-caption
             >Se encontraron {{ cantidad_items }} documentos</template
@@ -179,16 +168,6 @@
               class="my-0"
             ></b-pagination>
           </b-col>
-        </b-row>
-        <b-row>
-          <b-button
-            variant="success"
-            size="sm"
-            title="Enviar"
-            @click="enviarResumenDiario()"
-          >
-            Enviar Resumen Diario <b-icon icon="cloud-arrow-up"></b-icon>
-          </b-button>
         </b-row>
       </div>
     </div>
@@ -223,16 +202,16 @@ export default {
           class: "text-center",
           sortable: true,
         },
+        {
+          key: "tipo_usuario",
+          label: "Tipo usuario",
+          class: "text-center",
+          sortable: true,
+        },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
           label: "Correlativo",
-          class: "text-center",
-          sortable: true,
-        },
-        {
-          key: "created_at",
-          label: "Fecha de Creacion",
           class: "text-center",
           sortable: true,
         },
@@ -247,8 +226,8 @@ export default {
       index: 1,
       totalRows: 1,
       currentPage: 1,
-      perPage: 500,
-      pageOptions: [500, 1000, 1500],
+      perPage: 5,
+      pageOptions: [5, 10, 15],
       sortBy: null,
       sortDesc: false,
       sortDirection: "asc",
@@ -276,7 +255,7 @@ export default {
           }
         });
     },
-    buscarDocumento() {
+    buscar() {
       if (!this.documento.serie && !this.documento.correlativo) {
         this.alerta = true;
         this.mensajeAlerta = "Debe seleccionar una serie y correlativo";
@@ -302,7 +281,6 @@ export default {
           .then((response) => {
             this.items = response.data.data;
             this.cantidad_items = this.items.length;
-            console.log(this.items);
             this.totalRows = response.data.total;
             this.refreshTable();
 
@@ -320,22 +298,6 @@ export default {
       this.documento.correlativo = "";
       this.mensajeAlerta = "";
       this.refreshTable();
-    },
-    anular(boleta) {
-      this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular esta boleta?", {
-          title: "Anular boleta",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(route("boletas.anular", [boleta]));
-            this.refreshTable();
-          }
-        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
