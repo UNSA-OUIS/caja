@@ -26,4 +26,8 @@ class Alumno extends Model
     {
         return $this->morphMany(Comprobante::class, 'comprobanteable');
     }
+
+    public function email(){
+        return $this->hasOne(EmailAlumno::class,'cui','cui');
+    }
 }

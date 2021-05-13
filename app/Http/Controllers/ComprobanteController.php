@@ -88,13 +88,18 @@ class ComprobanteController extends Controller
             $tipo_de_documento='DNI';
             $numero_de_documento=$request->alumno['dic'];
         }
+        // **************************** Relationship ****************
+        $alumno=Alumno::where('cui','=',$request->alumno['cui'])->first();
+        $email=$alumno->email;
+        // **************************** Relationship ****************
+        
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'tipo_doc' => $tipo_de_documento,
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',
+            'email' => $email->mail.'@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
