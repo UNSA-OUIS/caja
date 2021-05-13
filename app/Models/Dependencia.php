@@ -28,5 +28,8 @@ class Dependencia extends Model
     {
         return $this->setConnection('pgsql')->hasMany(Concepto::class, 'codi_depe', 'codi_depe');
     }
-
+    public function docenctes()
+    {
+        return $this->setConnection('mysql2')->hasMany(Docente::class, 'sigl_depe', 'depend');
+    }
 }

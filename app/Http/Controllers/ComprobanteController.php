@@ -124,13 +124,16 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-
+        
+        // $docente=Docente::where('codper','=',$request->docente['codper'])->first();
+        // $depe=$docente->dependencia;
+        $depe=Dependencia::where('sigl_depe','=',$request->docente['depend'])->first();
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
-            'docente' => $request->docente['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',
-            'departamento' => 'Informática y Sistemas',
+            'docente' => str_replace("/"," ",$request->docente['apn']),
+            'email' => $request->docente['correo'].'@unsa.edu.pe',
+            'departamento' => $depe->noms_depe,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -361,11 +364,11 @@ class ComprobanteController extends Controller
         else if ($request->tipo_usuario == 'DOCENTE') {
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Docente::where('codper', $request->filtro)
-                            ->select('codper', 'dic', 'apn', 'correo');
+                            ->select('depend','codper', 'dic', 'apn', 'correo');
             }
             else if ($request->opcion_busqueda == 'APN') {
                 $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
-                        ->select('codper', 'dic', 'apn', 'correo')
+                        ->select('depend','codper', 'dic', 'apn', 'correo')
                         ->orderBy('apn', 'asc');
             }
         }   
