@@ -3,7 +3,7 @@
         <div class="row mb-2">
             <div class="col-lg-12">
                 <div class="text-right">
-                    <b-button v-if="totalRows == 0" size="sm" variant="success" v-b-modal.add-particular>
+                    <b-button v-if="totalRows == 0" size="sm" variant="success" v-b-modal.add-particular @click="buscar_sunat">
                         Nuevo
                     </b-button>                    
                 </div>
@@ -30,13 +30,20 @@
                 <a href="#" @click="mostrarComprobante(row.item)">{{ row.item.apellidos }}, {{ row.item.nombres }}</a>                
             </template>   
             <template v-slot:cell(editar)="row">                
-                <inertia-link 
+                <b-button
+                    v-if="row.item.dni == row.item.dni"
+                    class="btn btn-warning btn-sm"
+                    v-b-modal.add-particular
+                    @click="open_edit_modal(row.item)"
+                >
+                    <b-icon icon="pencil-square"></b-icon>
+                </b-button>
+                <!-- <inertia-link 
                     v-if="row.item.dni == row.item.dni"
                     class="btn btn-warning btn-sm"
                     href="#"
-                >
-                    <b-icon icon="pencil-square"></b-icon>
-                </inertia-link>           
+                > 
+                </inertia-link>-->
             </template>                               
         </b-table>
         <b-row>
@@ -54,7 +61,7 @@
                 ></b-pagination>
             </b-col>
         </b-row>     
-        <b-modal id="add-particular" ref="modal" title="Nuevo Particular" @cancel="resetearParticular" @ok="registrarParticular">            
+        <b-modal id="add-particular" ref="modal" title="Nuevo Particular" @cancel="resetearParticular" @ok="registrarParticular" >            
             <b-form>
                 <b-row>
                     <b-col cols="6">
@@ -64,7 +71,7 @@
                                 id="input-1"
                                 v-model="particular.dni"
                                 type="text"   
-                                readonly                                                                                             
+                                :readonly="this.modal_accion=='Crear'"                                                                                             
                             ></b-form-input>
                             <span v-if="errors.dni" class="text-danger">{{ errors.dni[0] }}</span>
                         </b-form-group>
@@ -88,7 +95,8 @@
                                 id="input-3"
                                 v-model="particular.nombres"
                                 type="text"
-                                placeholder="Ingrese Nombres"                                                                 
+                                placeholder="Ingrese Nombres"
+                                :readonly="this.modal_accion=='Crear'"                                                                 
                             ></b-form-input>
                             <span v-if="errors.nombres" class="text-danger">{{ errors.nombres[0] }}</span>
                         </b-form-group>
@@ -100,6 +108,7 @@
                                 v-model="particular.apellidos"
                                 type="text"
                                 placeholder="Ingrese apellidos"                                                                 
+                                :readonly="this.modal_accion=='Crear'"                                                                 
                             ></b-form-input>
                             <span v-if="errors.apellidos" class="text-danger">{{ errors.apellidos[0] }}</span>
                         </b-form-group>
@@ -108,7 +117,8 @@
             </b-form>        
             <template v-slot:modal-footer="{ ok, cancel }">
                 <b-button size="sm" variant="danger" @click="cancel()">Cancelar</b-button>
-                <b-button size="sm" variant="primary" @click.prevent="ok()">Registrar</b-button>
+                <b-button size="sm" variant="primary" v-if="modal_accion=='Crear'" @click.prevent="ok()">Registrar</b-button>
+                <b-button size="sm" variant="warning" v-if="modal_accion=='Editar'" @click="editarParticular()">Editar</b-button>
             </template>
         </b-modal>    
     </div>    
@@ -139,26 +149,12 @@ export default {
             currentPage: 1,
             perPage: 5,
             pageOptions: [5, 10, 15],
-            errors: []                        
+            errors: [],
+            modal_readonly: false,
+            modal_accion: ''                        
         };
     },
-    watch: {
-        'particular.dni': async function (val) {                
-            if (val.length == 8) {                 
-                try {
-                    const response = await axios.get(`${this.app_url}/api_dni/${val}`)
-                    if (response.data) {                                                                                                         
-                            this.particular.nombres = response.data.nombres
-                            let apPaterno = response.data.apellidoPaterno
-                            let apMaterno = response.data.apellidoMaterno
-                            this.particular.apellidos = `${apPaterno} ${apMaterno}` 
-                    }
-                } catch (error) {
-                    console.log(error)
-                }                                    
-            }                
-        }
-    },  
+     
     created() {
         if (this.opcion_busqueda === 'DNI') {
             this.particular.dni = this.filtro
@@ -186,11 +182,69 @@ export default {
                 
                 return usuarios || [];
             });
+        },
+        async buscar_sunat(){
+            this.modal_accion='Crear'
+            if (this.particular.dni.length == 8) {      
+                await axios.get(`${this.app_url}/api_dni/${this.particular.dni}`)
+                .then(response =>{
+                    if(response.data.success!==null){
+                        this.particular.nombres = response.data.nombres
+                        let apPaterno = response.data.apellidoPaterno
+                        let apMaterno = response.data.apellidoMaterno
+                        this.particular.apellidos = `${apPaterno} ${apMaterno}` 
+                    }
+                })
+                .catch(function(error){
+                    console.log("error!! "+error)
+                })
+
+                                                
+            }
+        }, 
+        open_edit_modal(part_para_edit){
+            this.modal_accion='Editar';
+            this.particular={...part_para_edit}
         },                     
         mostrarComprobante(particular) {       
             this.$inertia.get(route('comprobantes.crear_particular'), {                
                 'particular' : particular,                
             })
+        },
+        editarParticular(){
+            console.log(this.particular);
+            this.errors = [];           
+            
+             axios.post(`${this.app_url}/actualizarParticular`, this.particular)
+                .then(response => {
+                    console.log(response)                                                  
+                        
+                    this.$nextTick(() => {
+                        this.$bvModal.hide("add-particular");
+                        this.$refs.tbl_usuarios.refresh();
+                        
+                    });
+                    if (!response.data.error) {
+                        
+                        this.$bvToast.toast(response.data.successMessage, {
+                            title: `Editar particular`,
+                            variant: 'success',
+                            solid: true
+                        })                          
+                    }
+                    else {
+                        this.$bvToast.toast(response.data.errorMessage, {
+                            title: `Editar particular`,
+                            variant: 'danger',
+                            solid: true
+                        })
+                    }                        
+                }).catch(error => {           
+                             
+                    if (error.response.status==422) {
+                        this.errors = error.response.data.errors;                      
+                    }                    
+                });
         },  
         registrarParticular(bvModalEvt) {                 
             bvModalEvt.preventDefault()               
@@ -201,6 +255,7 @@ export default {
                     this.resetearParticular()    
                     this.$nextTick(() => {
                         this.$bvModal.hide("add-particular");
+                        this.$refs.tbl_usuarios.refresh();
                     });
                     if (!response.data.error) {
                         this.$bvToast.toast(response.data.successMessage, {

@@ -45,7 +45,7 @@
                     <fieldset class="col-12 col-md-6 px-3">
                         <legend>Opciones de búsqueda:</legend>
                         <div class="row justify-content-center">      
-                            <b-form inline>                        
+                            <b-form inline v-on:submit.prevent="buscarUsuario">                        
                                 <b-form-select
                                     v-model="opcion_busqueda"
                                     size="sm"
@@ -155,7 +155,7 @@ export default {
                 { value: 'DEPENDENCIA', text: 'DEPENDENCIA' },
             ],           
             tipos_usuario_factura: [                
-                { value: 'EMPRESA', text: 'EMRESA' },                
+                { value: 'EMPRESA', text: 'EMPRESA' },                
             ],            
             opciones_busqueda_alumno: [                
                 { value: 'CUI', text: 'CUI' },                
