@@ -63,10 +63,35 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-
+        $tipo_de_documento='';
+        $numero_de_documento='';
+        if(strlen($request->alumno['dic'])>8){
+            switch ($request->alumno['dic'][0]) {
+                case 'D':
+                    $tipo_de_documento='DNI';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                case 'P':
+                    $tipo_de_documento='Pasaporte';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                case 'E':
+                    $tipo_de_documento='Carnet Extra.';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                    
+                default:
+                    # code...
+                    break;
+            }
+        }else if(strlen($request->alumno['dic'])==8){
+            $tipo_de_documento='DNI';
+            $numero_de_documento=$request->alumno['dic'];
+        }
         $data = [
             'tipo_comprobante' => 'BOLETA',
-            'dni' => $request->alumno['dic'],
+            'tipo_doc' => $tipo_de_documento,
+            'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
             'email' => 'sizaisi@unsa.edu.pe',

@@ -87,7 +87,6 @@ export default {
             this.$refs.tbl_usuarios.refresh();
         },
         myProvider(ctx) {
-            //this.toggleBusy()
             let params = {
                 'tipo_usuario': 'ALUMNO',
                 'opcion_busqueda': this.opcion_busqueda,
@@ -98,7 +97,6 @@ export default {
             const promise = axios.get(`${this.app_url}/buscarUsuario`, { params })
 
             return promise.then(response => {                
-                //this.toggleBusy()                               
                 const usuarios = response.data.data
                 this.totalRows = response.data.total                    
                 
