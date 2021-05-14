@@ -195,6 +195,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarDniParticular/{dni}', [ParticularController::class, 'buscarDniParticular'])->name('particulares.buscarDniParticular');
     Route::post('/registrarParticular', [ParticularController::class, 'registrarParticular'])->name('particulares.registrarParticular');
     Route::get('/buscarApnParticular', [ParticularController::class, 'buscarApnParticular'])->name('particulares.buscarApnParticular');
+    Route::post('/actualizarParticular', [ParticularController::class, 'actualizarParticular'])->name('particulares.actualizarParticular');
     /*********************************************************************/
 
     /******************************* EMPRESAS ***************************/

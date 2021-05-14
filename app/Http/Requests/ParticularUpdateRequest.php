@@ -27,7 +27,8 @@ class ParticularUpdateRequest extends FormRequest
             'dni' => 'required|numeric|digits:8|unique:particulares,dni,' . $this->request->get('id'),
             'nombres' => 'required|max:75',
             'apellidos' => 'required|max:75',
-            'email' => 'required|unique:particulares,email,' . $this->request->get('id'),            
+            'email' => 'nullable',            
+            // 'email' => 'nullable|unique:particulares,email,' . $this->request->get('id'),            
         ];
     }
 }
