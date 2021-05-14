@@ -5,7 +5,7 @@ use Greenter\See;
 
 $see = new See();
 /************************** PRUEBA SUNAT ***************************/
-$see->setCertificate(file_get_contents(storage_path('app/public/Sunat/Certificados/certificate.pem')));
+$see->setCertificate(file_get_contents(__DIR__ . '/Certificados/certificate.pem'));
 $see->setService(SunatEndpoints::FE_BETA);
 $see->setClaveSOL('20000000001', 'MODDATOS', 'moddatos');
 
