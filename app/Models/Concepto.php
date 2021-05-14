@@ -42,6 +42,11 @@ class Concepto extends Model
 
     public function dependencia()
     {
-        return $this->setConnection('mysql2')->belongsTo(Dependencia::class, 'codi_depe', 'id');
+        return $this->setConnection('mysql2')->belongsTo(Dependencia::class, 'codi_depe', 'codi_depe');
+    }
+
+    public function detalles_comprobante()
+    {
+        return $this->setConnection('pgsql')->hasMany(DetallesComprobante::class);
     }
 }

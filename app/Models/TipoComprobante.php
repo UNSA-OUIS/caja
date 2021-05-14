@@ -22,4 +22,8 @@ class TipoComprobante extends Model
     {
         return $this->hasMany(Asignaciones::class);
     }
+    public function numerosOperacion()
+    {
+        return $this->hasMany(NumeroOperacion::class, 'tipo_comprobante_id', 'id');
+    }
 }

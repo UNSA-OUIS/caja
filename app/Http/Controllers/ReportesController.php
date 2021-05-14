@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Clasificador;
 use App\Models\Comprobante;
+use App\Models\Concepto;
 use App\Models\Dependencia;
 use App\Models\Persona;
 use App\Models\User;
@@ -109,8 +110,6 @@ class ReportesController extends Controller
 
     public function filtrarCentroDeCosto(Request $request)
     {
-        $database1 = Config::get('database.connections.pgsql.database');
-        $database2 = Config::get('database.connections.mysql2.database');
         /*$centros = Dependencia::select($database2.'.depe.codi_depe', $database2.'.depe.nomb_depe', DB::raw('SUM('.$database1.'.detalles_comprobante.valor_unitario) as monto'))
                                     ->leftJoin($database1.'.conceptos', $database1.'.conceptos.codi_depe', '=', $database2.'.depe.codi_depe')
                                     ->leftJoin($database1.'.detalles_comprobante', $database1.'.detalles_comprobante.concepto_id', '=', $database1.'.conceptos.id')
@@ -119,14 +118,25 @@ class ReportesController extends Controller
                                     ->groupBy($database2.'.depe.codi_depe')
                                     ->get();*/
 
-        $centros = Dependencia::with('conceptos')->select('codi_depe', 'nomb_depe')
-        ->get();
-
-        /*$centros = DB::Connection('mysql2')->table('depe')
-                        ->leftjoin(DB::Connection('pgsql'))
-                        ->table('conceptos', 'conceptos.codi_depe', '=', 'depe.codi_depe')
-                        ->get();*/
-        return ['centros' => $centros,];
+        /*$centros = Dependencia::select('codi_depe', 'nomb_depe')->groupBy('depe.codi_depe')
+        ->get();*/
+        $centros = Dependencia::with(['conceptos'=> function ($query) {
+            $query->select('conceptos.id', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
+            ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')->whereDate('detalles_comprobante.created_at','>=',request('fechaInicio'))
+            ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))->groupBy('conceptos.id')->get();
+        }])->select('codi_depe')->where('codi_depe', '306151900')->get();
+        //$centros = Dependencia::with('conceptos')->whereHas('conceptos.detalles_comprobante')
+        //->select('codi_depe')->get();
+        $centros = Concepto::with('dependencia:codi_depe,nomb_depe')->select('conceptos.codi_depe', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
+        ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')->whereDate('detalles_comprobante.created_at','>=',request('fechaInicio'))
+        ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))->groupBy('conceptos.codi_depe')->get();
+        $totalMontos = $centros->sum('monto');
+        $totalRegistros = $centros->count();
+        return [
+            'centros' => $centros,
+            'totalMontos' => $totalMontos,
+            'totalRegistros' => $totalRegistros,
+        ];
     }
 
     public function reciboIngreso()

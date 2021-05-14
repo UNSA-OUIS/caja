@@ -17,4 +17,9 @@ class DetallesComprobante extends Model
     {
         return $this->belongsTo(Comprobante::class);
     }
+
+    public function concepto()
+    {
+        return $this->belongsTo(Concepto::class);
+    }
 }

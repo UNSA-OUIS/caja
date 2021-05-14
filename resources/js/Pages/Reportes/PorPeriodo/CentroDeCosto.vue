@@ -112,6 +112,11 @@
                     :fields="fields"
                     empty-text="No hay comprobantes para mostrar"
                     empty-filtered-text="No hay comprobantes que coincidan con su búsqueda.">
+                    <template v-if="centros.length" slot="bottom-row" slot-scope="">
+                        <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                        <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                    </template>
                 </b-table>
                 <b-button v-if="centros.length" @click="html2pdf">Descargar PDF</b-button>
                 <json-excel
@@ -220,13 +225,8 @@ export default {
         return {
             app_url: this.$root.app_url,
             json_fields: {
-                Fecha: "date",
                 "Código": "codigo",
-                Nombre: "nombre",
-                "# Cobros": "cobros",
-                "# Anulados": "anulados",
-                "Dscto.": "descuento",
-                IGV: "impuesto",
+                "Centro de costos": "dependencia.nomb_depe",
                 "Monto": "monto",
                 },
             json_data: [],
@@ -240,17 +240,15 @@ export default {
             ],
             fields: [
                 { key: "codi_depe", label: "Código" },
-                { key: "nomb_depe", label: "Centro de costos" },
+                { key: "dependencia.nomb_depe", label: "Centro de costos" },
                 { key: "monto", label: "Monto" },
             ],
             filenamepdf: "Reporte_cobros",
-            currentPage: 1,
-            perPage: 5,
             centroCosto: "",
-            month: "",
             centros: [],
+            totalRegistros: 0,
+            totalMontos: 0,
             filter: {
-                cajeroId: "",
                 fechaInicio: "",
                 fechaFin: "",
             },
@@ -279,7 +277,14 @@ export default {
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 this.centros = response.data.centros
-                
+                this.totalRegistros = response.data.totalRegistros
+                this.totalMontos = response.data.totalMontos
+                this.json_data = this.centros.slice()
+                this.json_data.push({ 
+                    codigo: "" + this.totalRegistros + " registros",
+                    dependencia:{nomb_depe: "TOTALES:"},
+                    monto: this.totalMontos
+                })
             } catch (error) {
                 console.log(error)
             }
