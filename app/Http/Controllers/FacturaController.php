@@ -302,14 +302,17 @@ class FacturaController extends Controller
         if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
             $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
             $content = file_get_contents($path);
-            $headers = array(
-                'Content-Type: application/pdf',
-              );
-            //return $path;
-            //return response()->download($content);
             return response($content)->withHeaders([
                 'Content-Type' => mime_content_type($path)
             ]);
+            //return $content;
+            //return response()->file($path);
+            /*$headers = array(
+                'Content-Type: application/pdf',
+              );*/
+            //return $path;
+            //return response()->download($content);
+
             //return Response::download($path, 'filename.pdf', $headers);
             /*return Storage::download($content) > withHeaders([
                 'Content-Type' => mime_content_type($path)

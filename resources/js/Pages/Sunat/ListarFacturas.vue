@@ -101,6 +101,9 @@
               PDF
             </b-button>
             <b-button
+              v-if="
+                row.item.estado == 'aceptado' || row.item.estado == 'observado'
+              "
               target="_blank"
               variant="outline-primary"
               size="sm"
@@ -109,6 +112,9 @@
               XML
             </b-button>
             <b-button
+              v-if="
+                row.item.estado == 'aceptado' || row.item.estado == 'observado'
+              "
               target="_blank"
               variant="outline-primary"
               size="sm"
@@ -145,7 +151,7 @@
               "
               variant="success"
               size="sm"
-              title="Enviar"
+              title="Enviar a SUNAT"
               @click="enviar(row.item)"
             >
               <b-icon icon="cloud-arrow-up"></b-icon>
@@ -282,13 +288,22 @@ export default {
         });
     },
     descargar_xml(url_xml) {
-      this.$inertia.get(route("facturas.descargar-xml", { url_xml }));
+      window.open(
+        `${this.app_url}/sunat/facturaXML?url_xml=${url_xml}`,
+        "_blanck"
+      );
     },
     descargar_cdr(url_cdr) {
-      this.$inertia.get(route("facturas.descargar-cdr", { url_cdr }));
+      window.open(
+        `${this.app_url}/sunat/facturaCDR?url_cdr=${url_cdr}`,
+        "_blanck"
+      );
     },
     descargar_pdf(url_pdf) {
-      this.$inertia.get(route("facturas.descargar-pdf", { url_pdf }));
+      window.open(
+        `${this.app_url}/sunat/facturaPDF?url_pdf=${url_pdf}`,
+        "_blanck"
+      );
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
