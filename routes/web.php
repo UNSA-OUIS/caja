@@ -24,6 +24,7 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\NotaDebitoController;
 use App\Http\Controllers\DependenciaController;
+use App\Http\Controllers\Pdf;
 use App\Http\Controllers\NumeroOperacionController;
 use App\Http\Controllers\PuntosVentaController;
 use App\Http\Controllers\SunatController;
@@ -272,6 +273,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/ListarFacturas');
     })->name('facturas.iniciar');
     Route::get('/sunat/listarFacturas', [FacturaController::class, 'index'])->name('facturas.listar');
+    Route::get('/sunat/facturaPDF', [FacturaController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
+    Route::get('/sunat/facturaCDR', [FacturaController::class, 'descargar_cdr'])->name('facturas.descargar-cdr');
+    Route::get('/sunat/facturaXML', [FacturaController::class, 'descargar_xml'])->name('facturas.descargar-xml');
     Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
 
