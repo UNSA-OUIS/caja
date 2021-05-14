@@ -21,8 +21,8 @@ class Docente extends Model
     {
         return $this->morphMany(Comprobante::class, 'comprobanteable');
     }
-    public function dependencia()
+    public function departamento()
     {
-        return $this->setConnection('mysql2')->belongsTo(Dependencia::class,'depend' ,'sigl_depe');
+        return $this->setConnection('mysql2')->belongsTo(Departamento::class,'depend' ,'depa');
     }
 }

@@ -14,6 +14,7 @@ use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
 use App\Mail\CobroRealizadoMailable;
 use App\Models\Concepto;
+use App\Models\Departamento;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -132,14 +133,15 @@ class ComprobanteController extends Controller
         $comprobante->detalles = array();
         
         // $docente=Docente::where('codper','=',$request->docente['codper'])->first();
-        // $depe=$docente->dependencia;
-        $depe=Dependencia::where('sigl_depe','=',$request->docente['depend'])->first();
+        // $depa=$docente->departamento;
+        $depa=Departamento::where('depa','=',$request->docente['depend'])->first();
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => str_replace("/"," ",$request->docente['apn']),
             'email' => $request->docente['correo'].'@unsa.edu.pe',
-            'departamento' => $depe->noms_depe,
+            'departamento' => $depa->ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
