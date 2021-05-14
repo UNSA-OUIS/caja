@@ -13,6 +13,7 @@ use App\Models\Comprobante;
 use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
 use App\Mail\CobroRealizadoMailable;
+use App\Models\Concepto;
 use App\Models\DetallesComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -63,13 +64,43 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-
+        $tipo_de_documento='';
+        $numero_de_documento='';
+        if(strlen($request->alumno['dic'])>8){
+            switch ($request->alumno['dic'][0]) {
+                case 'D':
+                    $tipo_de_documento='DNI';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                case 'P':
+                    $tipo_de_documento='Pasaporte';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                case 'E':
+                    $tipo_de_documento='Carnet Extra.';
+                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    break;
+                    
+                default:
+                    # code...
+                    break;
+            }
+        }else if(strlen($request->alumno['dic'])==8){
+            $tipo_de_documento='DNI';
+            $numero_de_documento=$request->alumno['dic'];
+        }
+        // **************************** Relationship ****************
+        $alumno=Alumno::where('cui','=',$request->alumno['cui'])->first();
+        $email=$alumno->email;
+        // **************************** Relationship ****************
+        
         $data = [
             'tipo_comprobante' => 'BOLETA',
-            'dni' => $request->alumno['dic'],
+            'tipo_doc' => $tipo_de_documento,
+            'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',
+            'email' => $email->mail.'@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -99,13 +130,16 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-
+        
+        // $docente=Docente::where('codper','=',$request->docente['codper'])->first();
+        // $depe=$docente->dependencia;
+        $depe=Dependencia::where('sigl_depe','=',$request->docente['depend'])->first();
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
-            'docente' => $request->docente['apn'],
-            'email' => 'sizaisi@unsa.edu.pe',
-            'departamento' => 'Informática y Sistemas',
+            'docente' => str_replace("/"," ",$request->docente['apn']),
+            'email' => $request->docente['correo'].'@unsa.edu.pe',
+            'departamento' => $depe->noms_depe,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -249,14 +283,29 @@ class ComprobanteController extends Controller
             DB::rollback();
             return $e;
         }
-        return redirect()->route('comprobantes.iniciar');
+        //return redirect()->route('comprobantes.iniciar');
+        return redirect()->route('cobros.iniciar');
     }
 
     public function show(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('detalles')->where('id', 'like', $comprobante->id)->first();
 
-        return Inertia::render('Comprobantes/Detalles', compact('comprobante'));
+        return Inertia::render('Comprobantes/Detalle', compact('comprobante'));
+    }
+    public function showConsulta(Comprobante $comprobante)
+    {
+        $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
+        $conceptos = array();
+        $detalle = $comprobante->detalles;
+        foreach ($detalle as $index => $value) {
+            $conceptos[$index] = Concepto::with('tipo_concepto')
+                ->with('clasificador')
+                ->with('unidad_medida')
+                ->where('id', 'like', $comprobante->detalles[$index]->concepto_id)->first();
+        }
+        //return $conceptos;
+        return Inertia::render('Comprobantes/Mostrar', compact('comprobante','conceptos'));
     }
 
     public function anular(Comprobante $comprobante)
@@ -301,60 +350,52 @@ class ComprobanteController extends Controller
         return $query->paginate($request->size);
     }
 
-    public function buscarUsuario(Request $request) 
-    {                     
+    public function buscarUsuario(Request $request)
+    {
         if ($request->tipo_usuario == 'ALUMNO') {
             if ($request->opcion_busqueda == 'CUI') {
                 $query = Alumno::with('matriculas.escuela')
-                        ->where('cui', $request->filtro)->select('cui', 'dic', 'apn');
-            }
-            else if ($request->opcion_busqueda == 'APN') {
+                    ->where('cui', $request->filtro)->select('cui', 'dic', 'apn');
+            } else if ($request->opcion_busqueda == 'APN') {
                 $query = Alumno::with('matriculas.escuela')
-                        ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
-                        ->select('cui', 'dic', 'apn')
-                        ->orderBy('apn', 'asc');
+                    ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
+                    ->select('cui', 'dic', 'apn')
+                    ->orderBy('apn', 'asc');
             }
-        }  
-        else if ($request->tipo_usuario == 'PARTICULAR') {
+        } else if ($request->tipo_usuario == 'PARTICULAR') {
             if ($request->opcion_busqueda == 'DNI') {
                 $query = Particular::where('dni', $request->filtro);
+            } else if ($request->opcion_busqueda == 'APN') {
+                $query = Particular::whereRaw("CONCAT(apellidos, ' ', nombres) ilike ? ", [$request->filtro . '%'])
+                    ->orderBy('apellidos', 'asc');
             }
-            else if ($request->opcion_busqueda == 'APN') {
-                $query = Particular::whereRaw("CONCAT(apellidos, ' ', nombres) ilike ? ", [ $request->filtro . '%'])
-                            ->orderBy('apellidos', 'asc');
-            }
-        }  
-        else if ($request->tipo_usuario == 'EMPRESA') {
+        } else if ($request->tipo_usuario == 'EMPRESA') {
             if ($request->opcion_busqueda == 'RUC') {
                 $query = Empresa::where('ruc', $request->filtro);
-            }
-            else if ($request->opcion_busqueda == 'RAZON_SOCIAL') {
+            } else if ($request->opcion_busqueda == 'RAZON_SOCIAL') {
                 $query = Empresa::where('razon_social', 'ilike', '%' . $request->filtro . '%')
-                            ->orderBy('razon_social', 'asc');
+                    ->orderBy('razon_social', 'asc');
             }
-        }    
-        else if ($request->tipo_usuario == 'DOCENTE') {
+        } else if ($request->tipo_usuario == 'DOCENTE') {
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Docente::where('codper', $request->filtro)
-                            ->select('codper', 'dic', 'apn', 'correo');
+                            ->select('depend','codper', 'dic', 'apn', 'correo');
             }
             else if ($request->opcion_busqueda == 'APN') {
                 $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
-                        ->select('codper', 'dic', 'apn', 'correo')
+                        ->select('depend','codper', 'dic', 'apn', 'correo')
                         ->orderBy('apn', 'asc');
             }
-        }   
-        else if ($request->tipo_usuario == 'DEPENDENCIA') {
+        } else if ($request->tipo_usuario == 'DEPENDENCIA') {
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Dependencia::where('codi_depe', $request->filtro)
-                            ->select('codi_depe', 'nomb_depe', 'mail_depe');
-            }
-            else if ($request->opcion_busqueda == 'NOMBRE') {
+                    ->select('codi_depe', 'nomb_depe', 'mail_depe');
+            } else if ($request->opcion_busqueda == 'NOMBRE') {
                 $query = Dependencia::where('nomb_depe', 'like', '%' . $request->filtro . '%')
-                        ->select('codi_depe', 'nomb_depe', 'mail_depe')
-                        ->orderBy('nomb_depe', 'asc');
+                    ->select('codi_depe', 'nomb_depe', 'mail_depe')
+                    ->orderBy('nomb_depe', 'asc');
             }
-        }                 
+        }
 
         return $query->paginate($request->size);
     }

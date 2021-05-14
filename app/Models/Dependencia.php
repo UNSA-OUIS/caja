@@ -44,4 +44,8 @@ class Dependencia extends Model
                                 ->sum('detalles_comprobante.valor_unitario');
     }
 
+    public function docenctes()
+    {
+        return $this->setConnection('mysql2')->hasMany(Docente::class, 'sigl_depe', 'depend');
+    }
 }

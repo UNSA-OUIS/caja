@@ -66,7 +66,7 @@
                             <b-form-input
                                 class="text-center"
                                 v-model="row.item.cantidad"
-                                @change="calcularSubTotal(row.item.id)"
+                                @change="calcularSubTotal(row.item.concepto_id)"
                                 type="number"
                                 min="1"
                             ></b-form-input>
@@ -81,14 +81,14 @@
                     </template>
                     <template v-slot:cell(descuento)="row">
                         <div>
-                            <b-form-select v-model="row.item.tipo_descuento" @change="calcularSubTotal(row.item.id)">
+                            <b-form-select v-model="row.item.tipo_descuento" @change="calcularSubTotal(row.item.concepto_id)">
                                 <b-form-select-option value="S/.">S/.</b-form-select-option>
                                 <b-form-select-option value="%">%</b-form-select-option>
                             </b-form-select>
                             <b-form-input
                                 class="text-center"
                                 v-model="row.item.descuento"
-                                @keyup="calcularSubTotal(row.item.id)"
+                                @keyup="calcularSubTotal(row.item.concepto_id)"
                             ></b-form-input>
                         </div>
                     </template>
@@ -202,8 +202,8 @@ export default {
         eliminarDetalle(index) {
             this.comprobante.detalles.splice(index, 1);
         },
-        calcularSubTotal(id) {
-            let objDetalle = this.comprobante.detalles.find(detalle => detalle.id === id)
+        calcularSubTotal(concepto_id) {
+            let objDetalle = this.comprobante.detalles.find(detalle => detalle.concepto_id === concepto_id)
             let subtotal_parcial = objDetalle.cantidad * objDetalle.precio
             if (objDetalle.tipo_descuento === 'S/.') {
                 objDetalle.subtotal = subtotal_parcial - objDetalle.descuento

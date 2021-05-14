@@ -10,7 +10,7 @@ class Docente extends Model
     use HasFactory;
     
     protected $connection = "mysql";
-    protected $table = 'siac_doc';
+    protected $table = 'SIAC_DOC';
     protected $primaryKey = 'codper';
     protected $keyType = 'string';
 
@@ -20,5 +20,9 @@ class Docente extends Model
     public function comprobantes()
     {
         return $this->morphMany(Comprobante::class, 'comprobanteable');
+    }
+    public function dependencia()
+    {
+        return $this->setConnection('mysql2')->belongsTo(Dependencia::class,'depend' ,'sigl_depe');
     }
 }

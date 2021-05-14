@@ -6,8 +6,8 @@
                 <label class="lbl-data" v-text="comprobante.codi_usuario"></label>
             </div>                      
             <div class="form-group col-md-3 border border-light">
-                <label class="text-info">DNI:</label>
-                <label class="lbl-data" v-text="data.dni"></label>
+                <label class="text-info" v-text="data.tipo_doc+':'"></label>
+                <label class="lbl-data" v-text="data.ndoc"></label>
             </div>                      
             <div class="form-group col-md-6 border border-light">
                 <label class="text-info">Email:</label>
