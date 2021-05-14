@@ -146,4 +146,19 @@ class ParticularController extends Controller
 
         return $result;
     }
+    
+    public function actualizarParticular(ParticularUpdateRequest $request,Particular $particular){
+        try {
+            $particular=Particular::where('id', $request->id)->first();
+            $particular->nombres = $request->nombres;
+            $particular->apellidos = $request->apellidos;
+            $particular->email = $request->email;                    
+            $particular->update();
+            $result = ['successMessage' => 'Particular actualizado con éxito'];            
+        } catch (\Exception $e) {
+            $result = ['errorMessage' => 'No se pudo actualizar al particular'];
+            \Log::error('ParticularController@editarParticular, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+        }
+        return $result;         
+    }
 }

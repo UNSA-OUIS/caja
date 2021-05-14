@@ -79,8 +79,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Persona::class);
     }
+
     public function asignaciones()
     {
         return $this->hasMany(Asignaciones::class);
+    }
+
+    public function puntoVenta()
+    {
+        return $this->hasOne(PuntosVenta::class);
     }
 }

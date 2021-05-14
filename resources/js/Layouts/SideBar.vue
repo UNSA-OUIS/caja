@@ -107,6 +107,37 @@
               </li>
             </ul>
           </li>
+          <li>
+            <a
+              href="javascript: void(0);"
+              class="has-arrow waves-effect"
+              @click="mostrarMenu(1)"
+              :class="{
+                'mm-active': path == 'puntos-venta' || path == 'numeros-operacion',
+              }"
+            >
+              <i class="uil-window-section"></i>
+              <span>Configuración</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[1]">
+              <li :class="{ 'mm-active': path == 'puntos-venta' }">
+                <inertia-link
+                  :href="route('puntosVenta.iniciar')"
+                  :class="{ active: path == 'puntos-venta' }"
+                >
+                  Puntos de venta
+                </inertia-link>
+              </li>
+              <li :class="{ 'mm-active': path == 'numeros-operacion' }">
+                <inertia-link
+                  :href="route('numerosOperacion.iniciar')"
+                  :class="{ active: path == 'numeros-operacion' }"
+                >
+                  Números de operación
+                </inertia-link>
+              </li>
+            </ul>
+          </li>
           <li
             v-if="
               $permissions.can([
@@ -124,7 +155,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(1)"
+              @click="mostrarMenu(2)"
               :class="{
                 'mm-active':
                   path == 'unidades-medida' ||
@@ -140,7 +171,7 @@
               <i class="uil-window-section"></i>
               <span>Administración</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[1]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[2]">
               <li
                 :class="{
                   'mm-active': path == 'unidades-medida',
@@ -289,7 +320,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(2)"
+              @click="mostrarMenu(3)"
               :class="{
                 'mm-active':
                   path == 'dashboard-sunat' ||
@@ -302,7 +333,7 @@
               <i class="fas fa-cloud-upload-alt"></i>
               <span>Sunat</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[2]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
               <li
                 :class="{
                   'mm-active': path == 'dashboard-sunat',
@@ -379,7 +410,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(3)"
+              @click="mostrarMenu(4)"
               :class="{
                 'mm-active':
                   path == 'tipo-comprobante' ||
@@ -392,7 +423,7 @@
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
               <li
                 :class="{
                   'mm-active': path == 'tipo-comprobante',
@@ -440,7 +471,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(4)"
+              @click="mostrarMenu(5)"
               :class="{
                 'mm-active':
                   path == 'reportes-diario' ||
@@ -452,7 +483,7 @@
               <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
               <li>
                 <inertia-link
                   href="#"
