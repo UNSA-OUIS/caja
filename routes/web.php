@@ -24,6 +24,8 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\NotaDebitoController;
 use App\Http\Controllers\DependenciaController;
+use App\Http\Controllers\NumeroOperacionController;
+use App\Http\Controllers\PuntosVentaController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ResumenDiarioController;
@@ -334,6 +336,34 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/cuentas-corrientes/{cuenta_corriente}', [CuentasCorrientesController::class, 'destroy'])->name('cuentas-corrientes.eliminar');
     Route::post('/cuentas-corrientes/{cuenta_corriente}/restaurar', [CuentasCorrientesController::class, 'restore'])->name('cuentas-corrientes.restaurar');
     /*******************************************************************/
+
+    /**************************** UNIDADES DE MEDIDA ***************************/
+    Route::get('/puntos-venta', function () {
+        return Inertia::render('Puntos_Venta/Listar');
+    })->name('puntosVenta.iniciar');
+    Route::get('/puntos-venta/listar', [PuntosVentaController::class, 'index'])->name('puntosVenta.listar');
+    Route::get('/puntos-venta/crear', [PuntosVentaController::class, 'create'])->name('puntosVenta.crear');
+    Route::post('/puntos-venta', [PuntosVentaController::class, 'store'])->name('puntosVenta.registrar');
+    Route::get('/puntos-venta/{puntoVenta}', [PuntosVentaController::class, 'show'])->name('puntosVenta.mostrar');
+    Route::post('/puntos-venta/{puntoVenta}', [PuntosVentaController::class, 'update'])->name('puntosVenta.actualizar');
+    Route::delete('/puntos-venta/{puntoVenta}', [PuntosVentaController::class, 'destroy'])->name('puntosVenta.eliminar');
+    Route::post('/puntos-venta/{puntoVenta}/restaurar', [PuntosVentaController::class, 'restore'])->name('puntosVenta.restaurar');
+    /***************************************************************************/
+
+    /**************************** UNIDADES DE MEDIDA ***************************/
+    Route::get('/numeros-operacion', function () {
+        return Inertia::render('Numeros_Operacion/Listar');
+    })->name('numerosOperacion.iniciar');
+    Route::get('/numeros-operacion/listar', [NumeroOperacionController::class, 'index'])->name('numerosOperacion.listar');
+    Route::get('/numeros-operacion/crear', [NumeroOperacionController::class, 'create'])->name('numerosOperacion.crear');
+    Route::post('/numeros-operacion', [NumeroOperacionController::class, 'store'])->name('numerosOperacion.registrar');
+    Route::get('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'show'])->name('numerosOperacion.mostrar');
+    Route::post('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'update'])->name('numerosOperacion.actualizar');
+    Route::delete('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'destroy'])->name('numerosOperacion.eliminar');
+    Route::post('/numeros-operacion/{numeroOperacion}/restaurar', [NumeroOperacionController::class, 'restore'])->name('numerosOperacion.restaurar');
+    /***************************************************************************/
+
+
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;

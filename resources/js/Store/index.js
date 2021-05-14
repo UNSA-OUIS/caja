@@ -8,7 +8,7 @@ const axios = require("axios");
 export default new Vuex.Store({
   state: {
     show_sidebar: true,
-    array_estado_menu: [false, false, false, false, false],
+    array_estado_menu: [false, false, false, false, false, false],
     envio: {},
     entrada_antigua: "",
   },
