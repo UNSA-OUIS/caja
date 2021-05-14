@@ -255,7 +255,7 @@
               <span>Cobros</span>
             </inertia-link>
           </li>
-          <li :class="{ 'mm-active': path == 'comprobantes' }">
+          <!--<li :class="{ 'mm-active': path == 'comprobantes' }">
             <inertia-link
               :class="{ active: path == 'comprobantes' }"
               :href="route('comprobantes.iniciar')"
@@ -263,7 +263,7 @@
               <i class="uil-window-section"></i>        
               <span>Comprobantes</span>
             </inertia-link>
-          </li>
+          </li>-->
           <!--<li>
             <a
               href="javascript: void(0);"

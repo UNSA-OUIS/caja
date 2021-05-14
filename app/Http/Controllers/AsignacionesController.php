@@ -43,9 +43,7 @@ class AsignacionesController extends Controller
      */
     public function create(User $usuario)
     {
-        //return $usuario->id;
         $asignaciones = Asignaciones::with('user')->with('tipo_comprobante')->where('user_id', 'like', $usuario->id)->get();
-        //return $asignaciones;
 
         $asignacion = new Asignaciones();
         $asignacion->serie = "";
@@ -57,12 +55,9 @@ class AsignacionesController extends Controller
     }
     public function search(Request $request)
     {
-        //return $request;
         $asignaciones = Asignaciones::with('user')->with('tipo_comprobante')->where('user_id', 'like', $request->user_id)->get();
         $usuario = User::with('persona')->with('asignaciones')->where('id', 'like', '%' . $request->user_id . '%')->first();
         $ultimo_comprobante =  Asignaciones::where('user_id', '<>', $request->user_id)->latest()->first();
-
-        //return $usuario;
 
         $asignacion = new Asignaciones();
         if ($request->tipo_comprobante_id == 1) {
