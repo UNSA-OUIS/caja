@@ -85,23 +85,51 @@
             <div v-if="row.item.estado == 'aceptado'">
               <b-badge variant="success">Aceptado</b-badge>
               <br />
-              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-              <a :href="`${app_url}/${row.item.url_cdr}`">CDR</a>
             </div>
           </template>
-          <template v-slot:cell(acciones)="row">
+          <template v-slot:cell(archivos)="row">
             <b-button
               v-if="
                 row.item.estado == 'aceptado' || row.item.estado == 'observado'
               "
               target="_blank"
-              variant="primary"
+              variant="outline-primary"
               size="sm"
               title="Ver"
-              :href="`${app_url}/${row.item.url_pdf}`"
+              @click="descargar_pdf(row.item.url_pdf)"
             >
-              <b-icon icon="printer"></b-icon>
+              PDF
             </b-button>
+            <b-button
+              target="_blank"
+              variant="outline-primary"
+              size="sm"
+              @click="descargar_xml(row.item.url_xml)"
+            >
+              XML
+            </b-button>
+            <b-button
+              target="_blank"
+              variant="outline-primary"
+              size="sm"
+              @click="descargar_cdr(row.item.url_cdr)"
+            >
+              CDR
+            </b-button>
+          </template>
+          <template v-slot:cell(observacion)="row">
+            <b-button
+              v-if="
+                row.item.estado == 'observado' || row.item.estado == 'aceptado'
+              "
+              size="sm"
+              @click="row.toggleDetails"
+            >
+              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
+              <b-icon v-else icon="plus-circle"></b-icon>
+            </b-button>
+          </template>
+          <template v-slot:cell(acciones)="row">
             <b-button
               v-if="row.item.estado == 'noEnviado'"
               variant="danger"
@@ -121,16 +149,6 @@
               @click="enviar(row.item)"
             >
               <b-icon icon="cloud-arrow-up"></b-icon>
-            </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'aceptado'
-              "
-              size="sm"
-              @click="row.toggleDetails"
-            >
-              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-              <b-icon v-else icon="plus-circle"></b-icon>
             </b-button>
           </template>
           <template #row-details="row">
@@ -174,7 +192,12 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "comprobanteable.ruc", label: "RUC", sortable: true },
-        { key: "comprobanteable.razon_social", label: "Usuario", class: "text-center", sortable: true },
+        {
+          key: "comprobanteable.razon_social",
+          label: "Usuario",
+          class: "text-center",
+          sortable: true,
+        },
         { key: "serie", label: "Serie", sortable: true },
         { key: "correlativo", label: "Correlativo", sortable: true },
         {
@@ -183,6 +206,8 @@ export default {
           class: "text-center",
           sortable: true,
         },
+        { key: "archivos", label: "Archivos", class: "text-center" },
+        { key: "observacion", label: "Observaciones", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -255,6 +280,15 @@ export default {
             this.refreshTable();
           }
         });
+    },
+    descargar_xml(url_xml) {
+      this.$inertia.get(route("facturas.descargar-xml", { url_xml }));
+    },
+    descargar_cdr(url_cdr) {
+      this.$inertia.get(route("facturas.descargar-cdr", { url_cdr }));
+    },
+    descargar_pdf(url_pdf) {
+      this.$inertia.get(route("facturas.descargar-pdf", { url_pdf }));
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

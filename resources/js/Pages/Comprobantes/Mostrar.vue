@@ -2,11 +2,6 @@
   <app-layout>
     <div class="card">
       <div class="card-header">
-        <!--{{ comprobante }}
-        <br />
-        <br />
-        <br />
-        {{ conceptos }}-->
         <h1 class="text-center">
           {{ comprobante.tipo_comprobante.nombre }}
           <br />
