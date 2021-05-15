@@ -7,17 +7,17 @@
             </li>
             <li class="breadcrumb-item">
                 <inertia-link :href="route('puntosVenta.iniciar')">
-                    Lista de números de operación
+                    Lista de números de comprobante
                 </inertia-link>
             </li>
             <li class="breadcrumb-item active">
-                {{ accion }} número de operación
+                {{ accion }} número de comprobante
             </li>
         </ol>
     </nav> 
     <div class="card">
       <div class="card-header d-flex align-items-center">
-          <span class="font-weight-bold">{{ accion }} número de operación</span>
+          <span class="font-weight-bold">{{ accion }} número de comprobante</span>
       </div>      
       <div class="card-body">
         <b-form @submit.prevent="enviar">
@@ -55,6 +55,7 @@
                   v-model="formData.tipo_comprobante_id"
                   :options="tiposComprobante"
                   :disabled="accion == 'Mostrar'"
+                  @change="llenarSerie()"
                 >
                   <template v-slot:first>
                     <option :value="null" disabled>Seleccione...</option>
@@ -174,6 +175,22 @@ export default {
         route("numerosOperacion.actualizar", [this.formData.id]),
         this.formData
       );
+    },
+    llenarSerie(){
+      switch (this.formData.tipo_comprobante_id) {
+        case 1:
+          //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
+          this.formData.serie = "B"
+          break;
+        case 2:
+          //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
+          this.formData.serie = "F"
+          break;
+        default:
+          this.formData.serie = ""
+          //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+          break;
+      }
     },
   },
 };
