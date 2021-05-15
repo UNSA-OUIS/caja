@@ -66,6 +66,7 @@
                             <b-form-input
                                 class="text-center"
                                 v-model="row.item.cantidad"
+                                @keyup="calcularSubTotal(row.item.concepto_id)"
                                 @change="calcularSubTotal(row.item.concepto_id)"
                                 type="number"
                                 min="1"
@@ -75,8 +76,11 @@
                     <template v-slot:cell(precio)="row">
                         <b-form-input
                             class="text-center"
-                            :value="row.item.precio"
-                            readonly
+                            type="number"
+                            v-model="row.item.precio"
+                            @keyup="calcularSubTotal(row.item.concepto_id)"
+                            @change="calcularSubTotal(row.item.concepto_id)"
+                            :readonly="row.item.tipo_prescio=='fijo'"
                         ></b-form-input>
                     </template>
                     <template v-slot:cell(descuento)="row">
@@ -185,6 +189,7 @@ export default {
                 this.$set( this.concepto, 'cantidad', 1)
                 this.$set( this.concepto, 'tipo_descuento', 'S/.')
                 this.$set( this.concepto, 'descuento', 0)
+                this.concepto.precio=this.concepto.tipo_precio=='variable'?0:this.concepto.precio
                 this.$set( this.concepto, 'subtotal', parseFloat(this.concepto.precio))
                 this.comprobante.detalles.push(this.concepto)
             }
