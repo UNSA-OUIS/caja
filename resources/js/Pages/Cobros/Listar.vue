@@ -98,6 +98,9 @@
                     empty-text="No hay comprobantes para mostrar"
                     empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                 >
+                    <template v-slot:cell(codi_usuario)="row">
+                        {{row.item.tipo_usuario=== 'docente'?'privado':row.item.codi_usuario}}
+                    </template>
                     <template v-slot:cell(usuario)="row">
                         <span v-if="row.item.tipo_usuario === 'alumno'">
                             {{ row.item.comprobanteable.apn }}
