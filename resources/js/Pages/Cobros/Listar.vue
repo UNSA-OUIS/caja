@@ -154,7 +154,7 @@
                         </inertia-link>
                         <inertia-link
                             class="btn btn-primary btn-sm"
-                            :href="route('comprobantes.mostrar', row.item)"
+                            :href="route('consulta.mostrar', row.item)"
                         >
                             <b-icon icon="eye"></b-icon>
                         </inertia-link>
