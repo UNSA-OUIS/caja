@@ -16,14 +16,28 @@ use App\Mail\CobroRealizadoMailable;
 use App\Models\Concepto;
 use App\Models\Departamento;
 use App\Models\DetallesComprobante;
+use DateTime;
+use Greenter\Model\Client\Client;
+use Greenter\Model\Company\Address;
+use Greenter\Model\Company\Company;
+use Greenter\Model\Sale\Detraction;
+use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
+use Greenter\Model\Sale\Invoice;
+use Greenter\Model\Sale\Legend;
+use Greenter\Model\Sale\SaleDetail;
+use Greenter\Report\HtmlReport;
+use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Luecano\NumeroALetras\NumeroALetras;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ComprobanteController extends Controller
 {
+
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
@@ -65,43 +79,43 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-        $tipo_de_documento='';
-        $numero_de_documento='';
-        if(strlen($request->alumno['dic'])>8){
+        $tipo_de_documento = '';
+        $numero_de_documento = '';
+        if (strlen($request->alumno['dic']) > 8) {
             switch ($request->alumno['dic'][0]) {
                 case 'D':
-                    $tipo_de_documento='DNI';
-                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    $tipo_de_documento = 'DNI';
+                    $numero_de_documento = substr($request->alumno['dic'], 1, -1);
                     break;
                 case 'P':
-                    $tipo_de_documento='Pasaporte';
-                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    $tipo_de_documento = 'Pasaporte';
+                    $numero_de_documento = substr($request->alumno['dic'], 1, -1);
                     break;
                 case 'E':
-                    $tipo_de_documento='Carnet Extra.';
-                    $numero_de_documento=substr($request->alumno['dic'],1,-1);
+                    $tipo_de_documento = 'Carnet Extra.';
+                    $numero_de_documento = substr($request->alumno['dic'], 1, -1);
                     break;
-                    
+
                 default:
                     # code...
                     break;
             }
-        }else if(strlen($request->alumno['dic'])==8){
-            $tipo_de_documento='DNI';
-            $numero_de_documento=$request->alumno['dic'];
+        } else if (strlen($request->alumno['dic']) == 8) {
+            $tipo_de_documento = 'DNI';
+            $numero_de_documento = $request->alumno['dic'];
         }
         // **************************** Relationship ****************
-        $alumno=Alumno::where('cui','=',$request->alumno['cui'])->first();
-        $email=$alumno->email;
+        $alumno = Alumno::where('cui', '=', $request->alumno['cui'])->first();
+        $email = $alumno->email;
         // **************************** Relationship ****************
-        
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'tipo_doc' => $tipo_de_documento,
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => $email->mail.'@unsa.edu.pe',
+            'email' => $email->mail . '@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -131,16 +145,16 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->detalles = array();
-        
+
         // $docente=Docente::where('codper','=',$request->docente['codper'])->first();
         // $depa=$docente->departamento;
-        $depa=Departamento::where('depa','=',$request->docente['depend'])->first();
+        $depa = Departamento::where('depa', '=', $request->docente['depend'])->first();
 
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
-            'docente' => str_replace("/"," ",$request->docente['apn']),
-            'email' => $request->docente['correo'].'@unsa.edu.pe',
+            'docente' => str_replace("/", " ", $request->docente['apn']),
+            'email' => $request->docente['correo'] . '@unsa.edu.pe',
             'departamento' => $depa->ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -280,13 +294,16 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->comprobante_id =  $comprobante->id;
                 $detalle_comprobante->save();
             }
+
             DB::commit();
+
+            $url_pdf = $this->visualizar($comprobante);
+
         } catch (\Exception $e) {
             DB::rollback();
             return $e;
         }
-        //return redirect()->route('comprobantes.iniciar');
-        return redirect()->route('cobros.iniciar');
+        return Inertia::render('Cobros/Listar', compact('url_pdf'));
     }
 
     public function show(Comprobante $comprobante)
@@ -295,6 +312,7 @@ class ComprobanteController extends Controller
 
         return Inertia::render('Comprobantes/Detalle', compact('comprobante'));
     }
+
     public function showConsulta(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
@@ -307,7 +325,7 @@ class ComprobanteController extends Controller
                 ->where('id', 'like', $comprobante->detalles[$index]->concepto_id)->first();
         }
         //return $conceptos;
-        return Inertia::render('Comprobantes/Mostrar', compact('comprobante','conceptos'));
+        return Inertia::render('Comprobantes/Mostrar', compact('comprobante', 'conceptos'));
     }
 
     public function anular(Comprobante $comprobante)
@@ -381,12 +399,11 @@ class ComprobanteController extends Controller
         } else if ($request->tipo_usuario == 'DOCENTE') {
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Docente::where('codper', $request->filtro)
-                            ->select('depend','codper', 'dic', 'apn', 'correo');
-            }
-            else if ($request->opcion_busqueda == 'APN') {
+                    ->select('depend', 'codper', 'dic', 'apn', 'correo');
+            } else if ($request->opcion_busqueda == 'APN') {
                 $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
-                        ->select('depend','codper', 'dic', 'apn', 'correo')
-                        ->orderBy('apn', 'asc');
+                    ->select('depend', 'codper', 'dic', 'apn', 'correo')
+                    ->orderBy('apn', 'asc');
             }
         } else if ($request->tipo_usuario == 'DEPENDENCIA') {
             if ($request->opcion_busqueda == 'CODIGO') {
@@ -400,5 +417,176 @@ class ComprobanteController extends Controller
         }
 
         return $query->paginate($request->size);
+    }
+
+    public function visualizar(Comprobante $comprobante)
+    {
+        $direccion_empresa = (new Address())
+            ->setUbigueo(config('caja.direccion.ubigeo'))
+            ->setDepartamento(config('caja.direccion.departamento'))
+            ->setProvincia(config('caja.direccion.provincia'))
+            ->setDistrito(config('caja.direccion.distrito'))
+            ->setUrbanizacion(config('caja.direccion.urbanizacion'))
+            ->setDireccion(config('caja.direccion.direccion'))
+            ->setCodLocal(config('caja.direccion.codigo_local')); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
+
+        $empresa = (new Company())
+            ->setRuc(config('caja.empresa.ruc'))
+            ->setRazonSocial(config('caja.empresa.razon_social'))
+            ->setNombreComercial(config('caja.empresa.nombre_comercial'))
+            ->setAddress($direccion_empresa);
+
+        $cobro = Comprobante::with('comprobanteable')->with('tipo_comprobante')
+            ->with('detalles')->where('id', 'like', $comprobante->id)->first();
+
+        try {
+
+            // Cliente
+            $client = (new Client())
+                ->setTipoDoc('6')
+                ->setNumDoc($cobro->comprobanteable->ruc)
+                ->setRznSocial($cobro->comprobanteable->razon_social);
+
+            // Venta
+            $invoice = new Invoice();
+
+            $total_gravadas = 0;
+            $total_exonerados = 0;
+            $total_inafectos = 0;
+            $subtotal = 0;
+            $igv = 0;
+
+            $detalle = $cobro->detalles;
+            foreach ($detalle as $index => $value) {
+                $concepto = Concepto::with('tipo_concepto')
+                    ->with('clasificador')
+                    ->with('unidad_medida')
+                    ->where('id', 'like', $cobro->detalles[$index]->concepto_id)->first();
+                $items[$index] = (new SaleDetail())
+                    ->setCodProducto($concepto->id)
+                    ->setUnidad('NIU') // Unidad - Catalog. 03
+                    ->setCantidad($value['cantidad'])
+                    ->setMtoValorUnitario($value['valor_unitario'])
+                    ->setDescripcion($concepto->descripcion)
+                    ->setMtoBaseIgv(100.00)
+                    ->setPorcentajeIgv(18.00) // 18%
+                    ->setIgv(18.00 / $value['cantidad'])
+                    ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
+                    ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
+                    ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
+                    ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
+                if ($concepto->tipo_afectacion == 10) {
+                    $total_gravadas += $value['valor_unitario'] * $value['cantidad'];
+                } elseif ($concepto->tipo_afectacion == 20) {
+                    $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
+                } elseif ($concepto->tipo_afectacion == 30) {
+                    $total_inafectos += $value['valor_unitario'] * $value['cantidad'];
+                }
+                $igv += 18.00 / $value['cantidad'];
+            }
+
+            $formatter = new NumeroALetras();
+            $montoLetras = $formatter->toInvoice($cobro->total, 2, 'soles');
+
+            $legend = (new Legend())
+                ->setCode('1000') // Monto en letras - Catalog. 52
+                ->setValue($montoLetras);
+
+            $invoice->setDetails($items)->setLegends([$legend]);
+
+            $invoice
+                ->setUblVersion('2.1')
+                ->setTipoOperacion('0101') // Venta - Catalog. 51
+                ->setTipoDoc('01') // Factura - Catalog. 01
+                ->setSerie($cobro->serie)
+                ->setCorrelativo($cobro->correlativo)
+                ->setFechaEmision(new DateTime(now())) // Zona horaria: Lima
+                ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                ->setCompany($empresa)
+                ->setClient($client)
+                ->setMtoIGV($igv)
+                ->setTotalImpuestos($igv);
+            if ($total_gravadas) {
+                $invoice
+                    ->setValorVenta($total_gravadas)
+                    ->setSubTotal($total_gravadas + $igv)
+                    ->setMtoImpVenta($total_gravadas + $igv)
+                    ->setMtoOperGravadas($total_gravadas);
+            } else if ($total_exonerados) {
+                $invoice
+                    ->setValorVenta($total_exonerados)
+                    ->setSubTotal($total_exonerados + $igv)
+                    ->setMtoImpVenta($total_exonerados + $igv)
+                    ->setMtoOperGravadas($total_exonerados);
+            } else if ($total_inafectos) {
+                $invoice
+                    ->setValorVenta($total_inafectos)
+                    ->setSubTotal($total_inafectos + $igv)
+                    ->setMtoImpVenta($total_inafectos + $igv)
+                    ->setMtoOperGravadas($total_inafectos);
+            }
+
+            if ($concepto->detraccion) {
+                $invoice->setDetraccion(
+                    // MONEDA SIEMPRE EN SOLES
+                    (new Detraction())
+                        // Carnes y despojos comestibles
+                        ->setCodBienDetraccion('014') // catalog. 54
+                        // Deposito en cuenta
+                        ->setCodMedioPago('001') // catalog. 59
+                        ->setCtaBanco('0004-3342343243')
+                        ->setPercent(4.00)
+                        ->setMount(37.76)
+                );
+            }
+
+            $html = new HtmlReport();
+            $html->setTemplate('invoice.html.twig');
+
+            $report = new PdfReport($html);
+
+            $report->setOptions([
+                'no-outline',
+                'viewport-size' => '1280x1024',
+                'page-width' => '21cm',
+                'page-height' => '29.7cm',
+            ]);
+            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+            $params = [
+                'system' => [
+                    'logo' => file_get_contents(public_path() . '\img\siscaja_blanco.png'), // Logo de Empresa
+                    'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                ],
+                'user' => [
+                    'header'     => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+                    'extras'     => [
+                        // Leyendas adicionales
+                        ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
+                        ['name' => 'VENDEDOR', 'value' => 'CAJA UNSA'],
+                    ],
+                    'footer' => '<p>Nro Resolucion: <b>3232323</b></p>'
+                ]
+            ];
+
+            $pdf = $report->render($invoice, $params);
+
+            if ($pdf === null) {
+                $error = $report->getExporter()->getError();
+                echo 'Error: ' . $error;
+                return;
+            }
+
+            $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $invoice->getName() . '.pdf'), $pdf);
+            if ($pdfGuardado) {
+                $cobro->url_pdf = $invoice->getName() . '.pdf';
+                $cobro->update();
+            }
+            $url_pdf = $cobro->url_pdf;
+            return $url_pdf;
+        } catch (\Exception $e) {
+            return $e;
+        }
     }
 }
