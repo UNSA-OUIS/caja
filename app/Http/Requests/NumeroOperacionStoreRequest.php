@@ -24,7 +24,7 @@ class NumeroOperacionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'serie' => 'required|unique:numeros_operacion',
+            'serie' => 'required|size:4|unique:numeros_operacion',
             'correlativo' => 'required',
             'tipo_comprobante_id' => 'required',
             'punto_venta_id' => 'required'
@@ -39,6 +39,7 @@ class NumeroOperacionStoreRequest extends FormRequest
             'tipo_comprobante_id.required' => 'El campo tipo de comprobante es obligatorio.',
             'punto_venta_id.required' => 'El campo punto de venta es obligatorio.',
             'serie.unique' => 'Ya existe un punto de venta con esta serie.',
+            'serie.size' => 'El campo serie debe tener exactamente :size caracteres.',
         ];
     }
 }

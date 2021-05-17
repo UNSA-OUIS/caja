@@ -140,7 +140,7 @@
             </b-button>
             <inertia-link
               class="btn btn-primary btn-sm"
-              :href="route('comprobantes.mostrar', row.item)"
+              :href="route('consultas.mostrar', row.item)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>
@@ -208,7 +208,7 @@ export default {
   },
   created () {
       if(this.url_pdf){
-          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.url_pdf}`, "_blanck");
+          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.url_pdf}`, "_blank");
       }
   },
   methods: {

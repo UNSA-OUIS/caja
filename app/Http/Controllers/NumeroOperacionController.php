@@ -72,7 +72,7 @@ class NumeroOperacionController extends Controller
             $result = ['successMessage' => 'Número de operación registrado con éxito'];
 
         } catch (\Throwable $e) {
-            $result = ['errorMessage' => 'No se pudo registrar el número de operación', 'error' => true];
+            $result = ['errorMessage' => 'No se pudo registrar el número de operación, recuerda que sólo se puede registrar un tipo de comprobante por punto de venta', 'error' => true];
             \Log::error('NumeroOperacionController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 

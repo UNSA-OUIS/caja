@@ -107,7 +107,11 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li v-if="
+              $permissions.can([
+                { name: 'Listar Puntos-Venta' },
+                { name: 'Listar Números-Comprobante' },
+              ])">
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
@@ -124,6 +128,7 @@
                 <inertia-link
                   :href="route('puntosVenta.iniciar')"
                   :class="{ active: path == 'puntos-venta' }"
+                  v-if="$permissions.can([{ name: 'Listar Puntos-Venta' }])"
                 >
                   Puntos de venta
                 </inertia-link>
@@ -132,8 +137,9 @@
                 <inertia-link
                   :href="route('numerosOperacion.iniciar')"
                   :class="{ active: path == 'numeros-operacion' }"
+                  v-if="$permissions.can([{ name: 'Listar Números-Comprobante' }])"
                 >
-                  Números de operación
+                  Números de comprobante
                 </inertia-link>
               </li>
             </ul>
@@ -467,7 +473,16 @@
               </li>
             </ul>
           </li>
-          <li>
+          <li v-if="
+              $permissions.can([
+                { name: 'Cajero Reportes-Periodo' },
+                { name: 'Descuento Reportes-Periodo' },
+                { name: 'Centro-Costo Reportes-Periodo' },
+                { name: 'Recibo-Ingreso Reportes-Periodo' },
+                { name: 'Consolidado Reportes-Periodo' },
+                { name: 'Facturas Reportes-Periodo' },
+                { name: 'Notas Reportes-Periodo' },
+              ])">
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
@@ -496,6 +511,16 @@
                 <inertia-link
                   :href="route('reportes.cajero')"
                   :class="{ 'mm-active': path == 'reportes-periodo' }"
+                  v-if="
+                  $permissions.can([
+                    { name: 'Cajero Reportes-Periodo' },
+                    { name: 'Descuento Reportes-Periodo' },
+                    { name: 'Centro-Costo Reportes-Periodo' },
+                    { name: 'Recibo-Ingreso Reportes-Periodo' },
+                    { name: 'Consolidado Reportes-Periodo' },
+                    { name: 'Facturas Reportes-Periodo' },
+                    { name: 'Notas Reportes-Periodo' },
+                  ])"
                 >
                   Por periodo
                 </inertia-link>
