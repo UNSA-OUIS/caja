@@ -31,6 +31,8 @@ class CreateNumerosOperacionTable extends Migration
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+
+            $table->unique(['punto_venta_id', 'tipo_comprobante_id']);
         });
     }
 

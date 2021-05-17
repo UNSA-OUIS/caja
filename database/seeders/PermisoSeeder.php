@@ -171,6 +171,30 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
         Permission::create(['name' => 'Anular Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
+    
+        Permission::create(['name' => 'Listar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Crear Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Mostrar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Editar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Eliminar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Restaurar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+ 
+        Permission::create(['name' => 'Listar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Crear Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Mostrar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Editar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Eliminar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Restaurar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+
+        Permission::create(['name' => 'Cajero Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Descuento Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Centro-Costo Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Recibo-Ingreso Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Consolidado Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+
+
     }
 }
 
