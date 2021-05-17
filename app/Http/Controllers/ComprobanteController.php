@@ -297,12 +297,13 @@ class ComprobanteController extends Controller
 
             DB::commit();
 
+            $url_pdf = $this->visualizar($comprobante);
+
         } catch (\Exception $e) {
             DB::rollback();
             return $e;
         }
-        //return redirect()->route('comprobantes.iniciar');
-        return redirect()->route('cobros.iniciar');
+        return Inertia::render('Cobros/Listar', compact('url_pdf'));
     }
 
     public function show(Comprobante $comprobante)
@@ -417,6 +418,7 @@ class ComprobanteController extends Controller
 
         return $query->paginate($request->size);
     }
+
     public function visualizar(Comprobante $comprobante)
     {
         $direccion_empresa = (new Address())
@@ -582,21 +584,9 @@ class ComprobanteController extends Controller
                 $cobro->update();
             }
             $url_pdf = $cobro->url_pdf;
-            return Inertia::render('Cobros/Listar', compact('url_pdf'));
-
+            return $url_pdf;
         } catch (\Exception $e) {
             return $e;
         }
-
-
-        /*if (Storage::disk('public')->exists("Sunat/PDF/$cobro->url_pdf")) {
-            $path = Storage::disk('public')->path("Sunat/PDF/$cobro->url_pdf");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }*/
     }
 }
