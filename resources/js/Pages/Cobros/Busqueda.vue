@@ -60,11 +60,15 @@
                                 </b-form-select>
                                 <b-form-input
                                     v-model="filtro"
+                                    :state="validation"
                                     size="sm"
                                     id="inline-form-input-name"
                                     class="mb-2 mr-sm-2 mb-sm-0"                                    
                                     trim
                                 ></b-form-input>
+                                <b-form-invalid-feedback :state="validation">
+                                    {{this.form_validation_variables.info_message}}
+                                </b-form-invalid-feedback>
                                 <b-button size="sm" variant="primary" @click="buscarUsuario">Buscar</b-button>                                
                             </b-form>
                         </div>
@@ -176,17 +180,41 @@ export default {
             opciones_busqueda_empresa: [                
                 { value: 'RUC', text: 'RUC' },                
                 { value: 'RAZON_SOCIAL', text: 'Razón social' },                
-            ],            
+            ],
+            form_validation_variables: {
+                minsize: 0,
+                maxsize: 99,
+                only_numbers: false,
+                info_message:'',                
+            },            
             opciones_busqueda: [],
             show_select_tipos_usuario: false,
             mostrar_usuarios: false,
             renderKey: 1,                   
         };
+    },
+    computed: {
+      validation() {
+        if(this.filtro.length=='')return null;
+        else if(this.form_validation_variables.only_numbers&&isNaN(Number(this.filtro))){
+            this.form_validation_variables.info_message="debe tener solo numeros"
+        }
+        else if(!(this.filtro.length >= this.form_validation_variables.minsize && this.filtro.length <= this.form_validation_variables.maxsize)){
+            if(this.form_validation_variables.minsize==this.form_validation_variables.maxsize){
+            this.form_validation_variables.info_message="debe tener exactamente "+this.form_validation_variables.minsize
+            }else
+            this.form_validation_variables.info_message="debe tener almenos "+this.form_validation_variables.minsize
+        }else{
+            this.form_validation_variables.info_message=''
+            return true
+        }
+        return false
+      }
     },    
     watch: {
         tipo_comprobante: function(val) {            
             this.tipo_usuario = null
-
+            this.opciones_busqueda = null
             if (val === 'BOLETA') {
                 this.tipos_usuario = this.tipos_usuario_boleta
                 this.show_select_tipos_usuario = true
@@ -219,6 +247,43 @@ export default {
             else if (val === 'DEPENDENCIA') {
                 this.opciones_busqueda = this.opciones_busqueda_dependencia                
             }
+        },
+        opcion_busqueda: function (val){
+            
+            switch (val) {
+                case 'DNI':
+                    this.form_validation_variables.minsize=8;        
+                    this.form_validation_variables.maxsize=8;        
+                    this.form_validation_variables.only_numbers=true;        
+                    break;
+                case 'CUI':
+                    this.form_validation_variables.minsize=8;        
+                    this.form_validation_variables.maxsize=8;        
+                    this.form_validation_variables.only_numbers=true;
+                    break;
+                case 'RUC':
+                    this.form_validation_variables.minsize=11;        
+                    this.form_validation_variables.maxsize=11;        
+                    this.form_validation_variables.only_numbers=true;
+                    break;
+                case 'RAZON_SOCIAL':
+                    this.form_validation_variables.minsize=1;        
+                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.only_numbers=false;
+                    break;            
+                case 'NOMBRE':
+                    this.form_validation_variables.minsize=8;        
+                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.only_numbers=false;
+                    break;
+                case 'CODIGO':
+                    this.form_validation_variables.minsize=4;        
+                    this.form_validation_variables.maxsize=8;        
+                    this.form_validation_variables.only_numbers=false;
+                    break;            
+                default:
+                    break;
+            }          
         }            
     },
     methods: {
