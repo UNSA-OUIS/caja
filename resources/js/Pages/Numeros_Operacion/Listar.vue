@@ -5,12 +5,12 @@
         <li class="breadcrumb-item ml-auto">                    
             <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Lista de números de operación</li>
+        <li class="breadcrumb-item active">Lista de números de comprobante</li>
       </ol>
     </nav>  
     <div class="card">
       <div class="card-header d-flex align-items-center">                
-        <span class="font-weight-bold">Lista de números de operación</span>
+        <span class="font-weight-bold">Lista de números de comprobante</span>
         <inertia-link class="btn btn-success ml-auto" :href="route('numerosOperacion.crear')">
           Nuevo
         </inertia-link>
@@ -91,8 +91,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay números de operación para mostrar"
-          empty-filtered-text="No hay números de operación que coincidan con su búsqueda."
+          empty-text="No hay números de comprobante para mostrar"
+          empty-filtered-text="No hay números de comprobante que coincidan con su búsqueda."
         >
           <template v-slot:cell(punto_venta)="row">
             {{ row.item.punto_venta.nombre }}
@@ -220,8 +220,8 @@ export default {
     },
     eliminar(numeroOperacion) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer desactivar este número de operación?", {
-          title: "Desactivar número de operación",
+        .msgBoxConfirm("¿Esta seguro de querer desactivar este número de comprobante?", {
+          title: "Desactivar número de comprobante",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -236,8 +236,8 @@ export default {
     },
     async restaurar(numeroOperacion) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer restaurar este número de operación?", {
-          title: "Restaurar número de operación",
+        .msgBoxConfirm("¿Esta seguro de querer restaurar este número de comprobante?", {
+          title: "Restaurar número de comprobante",
           okVariant: "success",
           okTitle: "SI",
           cancelTitle: "NO",

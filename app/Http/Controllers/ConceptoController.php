@@ -201,7 +201,7 @@ class ConceptoController extends Controller
 
         $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
             ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-            ->select('id as concepto_id', 'codigo', 'descripcion', 'precio', 
+            ->select('id as concepto_id', 'codigo', 'descripcion', 'precio','tipo_precio', 
                       DB::raw("(CONCAT(codigo, ' - ', descripcion)) AS vista_concepto"))
             ->orderBy('descripcion', 'asc')
             ->get();
