@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class NumeroOperacionUpdateRequest extends FormRequest
 {
@@ -27,7 +28,15 @@ class NumeroOperacionUpdateRequest extends FormRequest
             'serie' => 'required|size:4|unique:numeros_operacion,serie,' . $this->request->get('id'),
             'correlativo' => 'required',
             'tipo_comprobante_id' => 'required',
-            'punto_venta_id' => 'required'
+            'punto_venta_id' => ['required',
+            Rule::unique('numeros_operacion')->where(function ($query) {
+
+                return $query
+                    ->where('punto_venta_id', $this->request->get('punto_venta_id'))
+                    ->where('tipo_comprobante_id', $this->request->get('tipo_comprobante_id'))
+                    ->whereNotIn('id', [$this->request->get('id')]);
+            }),
+            ]
         ];
     }
 
@@ -39,6 +48,7 @@ class NumeroOperacionUpdateRequest extends FormRequest
             'tipo_comprobante_id.required' => 'El campo tipo de comprobante es obligatorio.',
             'punto_venta_id.required' => 'El campo punto de venta es obligatorio.',
             'serie.unique' => 'Ya existe un punto de venta con esta serie.',
+            'punto_venta_id.unique' => 'Recuerda que sólo se puede registrar un tipo de comprobante por punto de venta.',
             'serie.size' => 'El campo serie debe tener exactamente :size caracteres.',
         ];
     }
