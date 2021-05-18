@@ -59,7 +59,7 @@
                     <template v-else-if="comprobante.tipo_usuario === 'empresa'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
                     </template>
-                    <detalle :comprobante="comprobante"></detalle>
+                    <detalle :comprobante="comprobante" :editable="this.editable"></detalle>
                 </div>
             </div>
         </div>
@@ -88,11 +88,13 @@ export default {
     },
     data() {
         return {
+            editable: true,
             app_url: this.$root.app_url,
         };
     },
     updated () {
       if(this.comprobante.id){
+          this.editable = false;
           console.log('Entro');
           window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.comprobante.url_pdf}`, "_blank");
       }else{

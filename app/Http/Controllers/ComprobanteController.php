@@ -28,6 +28,7 @@ use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -282,7 +283,7 @@ class ComprobanteController extends Controller
             $comprobante->total_impuesto = 100.00;
             $comprobante->total = $request->total;
             $comprobante->estado = 'noEnviado';
-            $comprobante->cajero_id = \Auth::user()->id;
+            $comprobante->cajero_id = Auth::user()->id;
             $comprobante->save();
 
             foreach ($request->detalles as $index => $detalle) {
@@ -300,6 +301,7 @@ class ComprobanteController extends Controller
             if ($this->visualizar($comprobante)) {
                 $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
 
+                //return $comprobante->tipo_comprobante_id;
                 $data = [
                     'tipo_comprobante' => 'FACTURA',
                     'razon_social' => $comprobante->comprobanteable['razon_social'],

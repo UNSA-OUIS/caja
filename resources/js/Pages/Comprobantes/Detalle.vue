@@ -27,7 +27,7 @@
                         </template>
                     </v-select>
                 </b-col>
-                <b-col>
+                <b-col v-show="editable == false">
                         <b-button style="height:34px" type="submit" variant="info" class="mb-2" title="Añadir detalle">
                         <b-icon icon="plus-circle"></b-icon>
                     </b-button>
@@ -81,7 +81,7 @@
                             v-model="row.item.precio"
                             @keyup="calcularSubTotal(row.item.concepto_id)"
                             @change="calcularSubTotal(row.item.concepto_id)"
-                            :readonly="row.item.tipo_precio=='fijo'"
+                            :readonly="row.item.tipo_precio=='fijo' || editable==false"
                         ></b-form-input>
                     </template>
                     <template v-slot:cell(descuento)="row">
@@ -93,6 +93,7 @@
                             <b-form-input
                                 class="text-center"
                                 v-model="row.item.descuento"
+                                :readonly="editable==false"
                                 @keyup="calcularSubTotal(row.item.concepto_id)"
                             ></b-form-input>
                         </div>
@@ -104,6 +105,7 @@
                     </template>
                     <template v-slot:cell(acciones)="row">
                         <b-button
+                        :disabled="editable ==false"
                             v-if="!row.item.deleted_at"
                             variant="danger"
                             size="sm"
@@ -132,7 +134,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 export default {
     name: "comprobantes.detalle",
-    props: ["comprobante"],
+    props: ["comprobante","editable"],
     components: {
         AppLayout
     },
