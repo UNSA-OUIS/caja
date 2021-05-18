@@ -6,7 +6,7 @@
                 <inertia-link :href="route('dashboard')">Inicio</inertia-link>
             </li>
             <li class="breadcrumb-item">
-                <inertia-link :href="route('puntosVenta.iniciar')">
+                <inertia-link :href="route('numerosOperacion.iniciar')">
                     Lista de números de comprobante
                 </inertia-link>
             </li>
