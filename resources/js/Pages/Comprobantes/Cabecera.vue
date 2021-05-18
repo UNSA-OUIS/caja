@@ -7,7 +7,7 @@
                 </li>
                 <li class="breadcrumb-item">
                     <inertia-link :href="route('cobros.iniciar')">
-                        Lista de cobros {{comprobante}}
+                        Lista de cobros
                     </inertia-link>
                 </li>
                 <li class="breadcrumb-item">
@@ -91,7 +91,7 @@ export default {
             app_url: this.$root.app_url,
         };
     },
-    created () {
+    updated () {
       if(this.comprobante.id){
           console.log('Entro');
           window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.comprobante.url_pdf}`, "_blank");
