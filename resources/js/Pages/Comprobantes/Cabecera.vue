@@ -1,5 +1,5 @@
 <template>
-    <app-layout>       
+    <app-layout>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item ml-auto">
@@ -19,47 +19,47 @@
                     Nuevo cobro
                 </li>
             </ol>
-        </nav>                  
+        </nav>
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <span class="font-weight-bold">Nuevo cobro</span>
-            </div>            
+            </div>
             <div class="card-doby">
                 <div class="container p-3">
                     <div class="form-row">
                       <div class="form-group col-md-3 border border-light">
                         <label class="text-info">Tipo de comprobante:</label>
                         <label class="lbl-data" v-text="data.tipo_comprobante"></label>
-                      </div>                      
+                      </div>
                       <div class="form-group col-md-3 border border-light">
                         <label class="text-info">Serie:</label>
                         <label class="lbl-data" v-text="comprobante.serie"></label>
-                      </div>                      
+                      </div>
                       <div class="form-group col-md-3 border border-light">
                         <label class="text-info">Correlativo:</label>
                         <label class="lbl-data" v-text="comprobante.correlativo"></label>
-                      </div>       
+                      </div>
                       <div class="form-group col-md-3 border border-light">
                         <label class="text-info">Fecha:</label>
                         <label class="lbl-data" v-text="data.fecha_actual"></label>
-                      </div>                      
-                    </div>                                        
+                      </div>
+                    </div>
                     <template v-if="comprobante.tipo_usuario === 'alumno'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
-                    </template>   
+                    </template>
                     <template v-else-if="comprobante.tipo_usuario === 'docente'">
                         <cabecera-docente :comprobante="comprobante" :data="data"></cabecera-docente>
-                    </template> 
+                    </template>
                     <template v-else-if="comprobante.tipo_usuario === 'dependencia'">
                         <cabecera-dependencia :comprobante="comprobante" :data="data"></cabecera-dependencia>
-                    </template>   
+                    </template>
                     <template v-else-if="comprobante.tipo_usuario === 'particular'">
                         <cabecera-particular :comprobante="comprobante" :data="data"></cabecera-particular>
-                    </template>  
+                    </template>
                     <template v-else-if="comprobante.tipo_usuario === 'empresa'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
-                    </template>   
-                    <detalle :comprobante="comprobante"></detalle>
+                    </template>
+                    <detalle :comprobante="comprobante" :editable="this.editable"></detalle>
                 </div>
             </div>
         </div>
@@ -84,20 +84,30 @@ export default {
         CabeceraDependencia,
         CabeceraParticular,
         CabeceraEmpresa,
-        Detalle        
-    },    
+        Detalle
+    },
     data() {
         return {
-            app_url: this.$root.app_url,            
+            editable: true,
+            app_url: this.$root.app_url,
         };
-    }, 
+    },
+    updated () {
+      if(this.comprobante.id){
+          this.editable = false;
+          console.log('Entro');
+          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.comprobante.url_pdf}`, "_blank");
+      }else{
+          console.log('No Entro');
+      }
+  },
 };
 </script>
 <style scoped>
     .lbl-data {
         text-align: center;
         border: 0;
-        padding: 0;        
+        padding: 0;
         display: block;
         width: 100%;
         font-size: 1rem;
