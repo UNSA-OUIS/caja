@@ -297,13 +297,25 @@ class ComprobanteController extends Controller
 
             DB::commit();
 
-            $url_pdf = $this->visualizar($comprobante);
+            if ($this->visualizar($comprobante)) {
+                $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
 
+                $data = [
+                    'tipo_comprobante' => 'FACTURA',
+                    'razon_social' => $comprobante->comprobanteable['razon_social'],
+                    'email' => $comprobante->comprobanteable['email'],
+                    'direccion' => $comprobante->comprobanteable['direccion'],
+                    'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                ];
+            }else{
+                return 'Error';
+            }
         } catch (\Exception $e) {
             DB::rollback();
             return $e;
         }
-        return Inertia::render('Cobros/Listar', compact('url_pdf'));
+
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
     }
 
     public function show(Comprobante $comprobante)
@@ -578,15 +590,15 @@ class ComprobanteController extends Controller
                 return;
             }
 
-            $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $invoice->getName() . '.pdf'), $pdf);
+            $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $cobro->serie . '-' . $cobro->correlativo . '.pdf'), $pdf);
             if ($pdfGuardado) {
-                $cobro->url_pdf = $invoice->getName() . '.pdf';
+                $cobro->url_pdf = $cobro->serie . '-' . $cobro->correlativo . '.pdf';
                 $cobro->update();
             }
-            $url_pdf = $cobro->url_pdf;
-            return $url_pdf;
+
+            return true;
         } catch (\Exception $e) {
-            return $e;
+            return false;
         }
     }
 }

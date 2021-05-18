@@ -5,7 +5,7 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Lista de cobros</li>
+        <li class="breadcrumb-item active">Lista de cobros {{url_pdf}}</li>
       </ol>
     </nav>
     <div class="card">
@@ -140,7 +140,7 @@
             </b-button>
             <inertia-link
               class="btn btn-primary btn-sm"
-              :href="route('consultas.mostrar', row.item)"
+              :href="route('consulta.mostrar', row.item)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>

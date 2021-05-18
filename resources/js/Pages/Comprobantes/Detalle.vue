@@ -76,11 +76,12 @@
                     <template v-slot:cell(precio)="row">
                         <b-form-input
                             class="text-center"
+                            id="precio"
                             type="number"
                             v-model="row.item.precio"
                             @keyup="calcularSubTotal(row.item.concepto_id)"
                             @change="calcularSubTotal(row.item.concepto_id)"
-                            :readonly="row.item.tipo_prescio=='fijo'"
+                            :readonly="row.item.tipo_precio=='fijo'"
                         ></b-form-input>
                     </template>
                     <template v-slot:cell(descuento)="row">
@@ -141,7 +142,6 @@ export default {
             concepto: null,
             filtro: "",
             conceptos: [],
-            accion: "",
             fields: [
                 { key: "codigo", label: "CÓDIGO", class: "text-center", tdClass: "codigo" },
                 { key: "concepto", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
@@ -243,5 +243,10 @@ export default {
     }
     .concepto {
         width: 400px;
+    }
+    input[type=number][id="precio"]::-webkit-inner-spin-button,
+    input[type=number][id="precio"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
 </style>
