@@ -59,7 +59,7 @@
                     <template v-else-if="comprobante.tipo_usuario === 'empresa'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
                     </template>
-                    <detalle :comprobante="comprobante" :editable="this.editable"></detalle>
+                    <detalle :comprobante="comprobante"></detalle>
                 </div>
             </div>
         </div>
@@ -88,11 +88,11 @@ export default {
     },
     data() {
         return {
-            editable: true,
+            //editable: true,
             app_url: this.$root.app_url,
         };
     },
-    updated () {
+    /*updated () {
       if(this.comprobante.id){
           this.editable = false;
           console.log('Entro');
@@ -100,7 +100,7 @@ export default {
       }else{
           console.log('No Entro');
       }
-  },
+    },*/
 };
 </script>
 <style scoped>

@@ -12,29 +12,14 @@ use App\Models\Docente;
 use App\Models\Comprobante;
 use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
-use App\Mail\CobroRealizadoMailable;
 use App\Models\Concepto;
 use App\Models\Departamento;
 use App\Models\DetallesComprobante;
-use DateTime;
-use Greenter\Model\Client\Client;
-use Greenter\Model\Company\Address;
-use Greenter\Model\Company\Company;
-use Greenter\Model\Sale\Detraction;
-use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
-use Greenter\Model\Sale\Invoice;
-use Greenter\Model\Sale\Legend;
-use Greenter\Model\Sale\SaleDetail;
-use Greenter\Report\HtmlReport;
-use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use Luecano\NumeroALetras\NumeroALetras;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Auth;
 
 class ComprobanteController extends Controller
 {
@@ -296,29 +281,22 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->save();
             }
 
+            $result = [
+                'successMessage' => 'Comprobante Registrado con exito',
+                'comprobante_id' => $comprobante->id,
+                'error' => false
+            ];
             DB::commit();
-
-            if ($this->visualizar($comprobante)) {
-                $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
-
-                //return $comprobante->tipo_comprobante_id;
-                $data = [
-                    'tipo_comprobante' => 'FACTURA',
-                    'razon_social' => $comprobante->comprobanteable['razon_social'],
-                    'email' => $comprobante->comprobanteable['email'],
-                    'direccion' => $comprobante->comprobanteable['direccion'],
-                    'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
-                ];
-            }else{
-                return 'Error';
-            }
         } catch (\Exception $e) {
             DB::rollback();
-            return $e;
+            $result = ['errorMessage' => 'No se pudo registrar el comprobante', 'error' => true];
+            Log::error('ComprobanteController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
-
-        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        //return redirect()->route('comprobantes.iniciar');
+        //return $result;
+        return $result;
     }
+
 
     public function show(Comprobante $comprobante)
     {
@@ -433,7 +411,42 @@ class ComprobanteController extends Controller
         return $query->paginate($request->size);
     }
 
-    public function visualizar(Comprobante $comprobante)
+    public function generar_pdf(Request $request)
+    {
+        //return $request;
+        $comprobante = new Comprobante();
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')->where('id', 'like', $request->comprobanteId)->first();
+
+        $pdf = PDF::loadView('pdf.comprobante', compact('comprobante'));
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'), $pdf);
+        if ($pdfGuardado) {
+            $comprobante->url_pdf = $comprobante->serie . '-' . $comprobante->correlativo . '.pdf';
+            $comprobante->update();
+        }
+
+        return $pdf->stream($comprobante->serie . '-' . $comprobante->correlativo . '.pdf');
+        //$comprobantes = (array)json_decode($request->getContent());
+
+        /*$user = User::where('email', 'like', '%' . $request->dniCliente . '%')->first();
+        $comprobantes = Comprobante::where('usuario_id', $user->id)
+                                    ->whereDate('created_at','>=',$request->fechaInicio)
+                                    ->whereDate('created_at','<=',$request->fechaFin)->get();
+        $pdf = PDF::loadView('reportes.cajero', compact('comprobantes'));
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->setPaper('A4', 'portrait');*/
+        //$pdf->save(storage_path().'fdjfdh.pdf');
+
+        // Finally, you can download the file using download function
+        //return file(storage_path().'fdjfdh.pdf');
+        //return $pdf->stream('customers.pdf');
+        //return $pdf->download('file.pdf');
+    }
+
+    /*public function visualizar(Comprobante $comprobante)
     {
         $direccion_empresa = (new Address())
             ->setUbigueo(config('caja.direccion.ubigeo'))
@@ -566,7 +579,9 @@ class ComprobanteController extends Controller
                 'page-width' => '21cm',
                 'page-height' => '29.7cm',
             ]);
-            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf
+
+            $report->setBinPath('C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'); // Ruta relativa o absoluta de wkhtmltopdf para Windows
+            //$report->setBinPath('config\Sunat\wkhtmltopdf-amd64'); // Ruta relativa o absoluta de wkhtmltopdf para Linux
 
             $params = [
                 'system' => [
@@ -597,10 +612,10 @@ class ComprobanteController extends Controller
                 $cobro->url_pdf = $cobro->serie . '-' . $cobro->correlativo . '.pdf';
                 $cobro->update();
             }
-
-            return true;
+            return 1;
         } catch (\Exception $e) {
-            return false;
+            echo $e;
+            return 0;
         }
-    }
+    }*/
 }
