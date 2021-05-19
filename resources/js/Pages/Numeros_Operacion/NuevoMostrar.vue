@@ -74,7 +74,7 @@
             <b-col cols="6">
               <b-form-group
                 id="input-group-6"
-                label="Nombre:"
+                label="Serie:"
                 label-for="input-6"
               >
                 <b-form-input

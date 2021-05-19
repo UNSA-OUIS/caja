@@ -8,28 +8,28 @@
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <b-form-group
-                        label="Buscar cliente: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="filter.dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!filter.dniCliente" @click="filter.dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>
+                        <v-select
+                        v-model="cajero"
+                        @search="buscarCajero"
+                        :filterable="false"
+                        :options="cajeros"
+                        :reduce="cajero => cajero"
+                        label="vista_cajero"
+                        placeholder="Ingrese código o nombre del cajero"
+                    >
+                        <template #search="{attributes, events}">
+                            <input
+                                class="vs__search"
+                                :required="!cajero"
+                                v-bind="attributes"
+                                v-on="events"
+                                v-model="filtro"
+                            />
+                        </template>
+                        <template slot="no-options">
+                            Lo sentimos, no hay resultados de coincidencia.
+                        </template>
+                    </v-select>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -246,6 +246,9 @@ export default {
             filenamepdf: "Reporte_cobros",
             centroCosto: "",
             centros: [],
+            cajero: null,
+            cajeros: [],
+            filtro: "",
             totalRegistros: 0,
             totalMontos: 0,
             filter: {
@@ -256,6 +259,14 @@ export default {
 
         };
     },
+    watch : {
+        filtro:function(val) {
+            this.filtro = val.trim()
+        },
+        cajero:function(val) {
+            this.filtro = ""
+        },
+    },
     created(){
         var today = new Date()
         today.setHours(today.getHours() - 5)
@@ -265,6 +276,17 @@ export default {
         this.filter.fechaFin = dateString;
     },
     methods: {
+        buscarCajero(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCajero?filtro=${search}`)
+                .then(response => {
+                    this.cajeros = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         refreshTable() {
             this.$refs.tbl_comprobantes.refresh();
         },
@@ -274,6 +296,9 @@ export default {
         async filterTable() {
             try {
                 let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                if (this.cajero != null){
+                    params = params + "&cajeroId=" + this.cajero.cajero_id
+                }
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 this.centros = response.data.centros

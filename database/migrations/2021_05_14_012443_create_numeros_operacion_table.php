@@ -32,7 +32,7 @@ class CreateNumerosOperacionTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->unique(['punto_venta_id', 'tipo_comprobante_id']);
+            $table->unique(['punto_venta_id', 'tipo_comprobante_id', 'serie']);
         });
     }
 

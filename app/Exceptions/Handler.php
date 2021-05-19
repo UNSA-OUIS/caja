@@ -43,12 +43,32 @@ class Handler extends ExceptionHandler
     {
         $response = parent::render($request, $exception);
 
-        if (!app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
-        //if (in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+        //if (!app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+        if (in_array($response->getStatusCode(), [500, 503, 404, 403])) {
             
-            return Inertia::render('Error', ['status' => $response->getStatusCode()])
-                ->toResponse($request)
-                ->setStatusCode($response->getStatusCode());
+            switch ($response->getStatusCode()) {
+                case 500:
+                    return Inertia::render('Errores/500', ['status' => $response->getStatusCode()])
+                        ->toResponse($request)
+                        ->setStatusCode($response->getStatusCode());
+                    break;
+                case 503:
+                    return Inertia::render('Errores/503', ['status' => $response->getStatusCode()])
+                        ->toResponse($request)
+                        ->setStatusCode($response->getStatusCode());
+                    break;
+                case 404:
+                    return Inertia::render('Errores/404', ['status' => $response->getStatusCode()])
+                        ->toResponse($request)
+                        ->setStatusCode($response->getStatusCode());
+                    break;
+                case 403:
+                    return Inertia::render('Errores/403', ['status' => $response->getStatusCode()])
+                        ->toResponse($request)
+                        ->setStatusCode($response->getStatusCode());
+                    break;
+            }
+            
         }
 
         return $response;
