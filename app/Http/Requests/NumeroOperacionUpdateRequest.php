@@ -34,6 +34,7 @@ class NumeroOperacionUpdateRequest extends FormRequest
                 return $query
                     ->where('punto_venta_id', $this->request->get('punto_venta_id'))
                     ->where('tipo_comprobante_id', $this->request->get('tipo_comprobante_id'))
+                    ->where('serie', $this->request->get('serie'))
                     ->whereNotIn('id', [$this->request->get('id')]);
             }),
             ]

@@ -33,7 +33,8 @@ class NumeroOperacionStoreRequest extends FormRequest
 
                 return $query
                     ->where('punto_venta_id', $this->request->get('punto_venta_id'))
-                    ->where('tipo_comprobante_id', $this->request->get('tipo_comprobante_id'));
+                    ->where('tipo_comprobante_id', $this->request->get('tipo_comprobante_id'))
+                    ->where('serie', $this->request->get('serie'));
             }),
             ]
             //|unique:numeros_operacion,punto_venta_id,'.$this->request->get('id').',NULL,id,tipo_comprobante_id,'.$this->request->get('tipo_comprobante_id')

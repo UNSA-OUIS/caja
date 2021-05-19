@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class ReportesController extends Controller
     public function porCajero()
     {
         //$comprobantes = Comprobante::all();
-
+        //$this->authorize('cajero');
         //return Inertia::render('Reportes/PorPeriodo/Cajero', compact('comprobantes'));
         return Inertia::render('Reportes/PorPeriodo/Cajero');
     }
@@ -42,7 +43,7 @@ class ReportesController extends Controller
                                     ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
                                     ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
                                     ->when($request->cajeroId != "",function ($q) {
-                                        return $q->where('cajero_id', request('cajeroId', 0));
+                                        return $q->where('comprobantes.cajero_id', request('cajeroId', 0));
                                     })
                                     ->groupBy('date', 'personas.codigo','personas.nombre')
                                     ->get();
@@ -110,26 +111,15 @@ class ReportesController extends Controller
 
     public function filtrarCentroDeCosto(Request $request)
     {
-        /*$centros = Dependencia::select($database2.'.depe.codi_depe', $database2.'.depe.nomb_depe', DB::raw('SUM('.$database1.'.detalles_comprobante.valor_unitario) as monto'))
-                                    ->leftJoin($database1.'.conceptos', $database1.'.conceptos.codi_depe', '=', $database2.'.depe.codi_depe')
-                                    ->leftJoin($database1.'.detalles_comprobante', $database1.'.detalles_comprobante.concepto_id', '=', $database1.'.conceptos.id')
-                                    ->whereDate($database1.'.detalles_comprobante.created_at','>=',$request->fechaInicio)
-                                    ->whereDate($database1.'.detalles_comprobante.created_at','<=',$request->fechaFin)
-                                    ->groupBy($database2.'.depe.codi_depe')
-                                    ->get();*/
-
-        /*$centros = Dependencia::select('codi_depe', 'nomb_depe')->groupBy('depe.codi_depe')
-        ->get();*/
-        $centros = Dependencia::with(['conceptos'=> function ($query) {
-            $query->select('conceptos.id', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
-            ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')->whereDate('detalles_comprobante.created_at','>=',request('fechaInicio'))
-            ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))->groupBy('conceptos.id')->get();
-        }])->select('codi_depe')->where('codi_depe', '306151900')->get();
-        //$centros = Dependencia::with('conceptos')->whereHas('conceptos.detalles_comprobante')
-        //->select('codi_depe')->get();
         $centros = Concepto::with('dependencia:codi_depe,nomb_depe')->select('conceptos.codi_depe', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
-        ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')->whereDate('detalles_comprobante.created_at','>=',request('fechaInicio'))
-        ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))->groupBy('conceptos.codi_depe')->get();
+                    ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')
+                    ->leftJoin('comprobantes', 'comprobantes.id', 'detalles_comprobante.comprobante_id')
+                    ->whereDate('detalles_comprobante.created_at','>=',request('fechaInicio'))
+                    ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))
+                    ->when($request->cajeroId != "",function ($q) {
+                        return $q->where('comprobantes.cajero_id', request('cajeroId', 0));
+                    })
+                    ->groupBy('conceptos.codi_depe')->get();
         $totalMontos = $centros->sum('monto');
         $totalRegistros = $centros->count();
         return [
@@ -168,8 +158,12 @@ class ReportesController extends Controller
         $clasificadores = Clasificador::select('clasificadores.id as codigo', 'clasificadores.nombre as nombre', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
                                 ->leftJoin('conceptos', 'conceptos.clasificador_id', '=', 'clasificadores.id')
                                 ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')
+                                ->leftJoin('comprobantes', 'comprobantes.id', 'detalles_comprobante.comprobante_id')
                                 ->whereDate('detalles_comprobante.created_at','>=',$request->fechaInicio)
                                 ->whereDate('detalles_comprobante.created_at','<=',$request->fechaFin)
+                                ->when($request->cajeroId != "",function ($q) {
+                                    return $q->where('comprobantes.cajero_id', request('cajeroId', 0));
+                                })
                                 ->groupBy('clasificadores.id')
                                 ->get();
         $totalMontos = $clasificadores->sum('monto');
