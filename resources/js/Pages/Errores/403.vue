@@ -4,7 +4,7 @@
                 <div class="err">4</div>
                 <i class="far fa-question-circle fa-spin"></i>
                 <div class="err2">3</div>
-                <div class="msg">Lo lamentamos, al parecer las altas esferas te impiden ingresar a esta página.<p>Volvamos a la <inertia-link :href="route('dashboard')">página principal</inertia-link>.</p></div>
+                <div class="msg">Lo lamentamos, no tienes permiso para ingresar aquí.<p>Volvamos a la <inertia-link :href="route('dashboard')">página principal</inertia-link>.</p></div>
             </div>
     </app-layout>
 </template>
