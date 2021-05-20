@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Comprobante;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,5 +16,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([PermisoSeeder::class]);
         $this->call([DataTestSeeder::class]);
+        $this->call([ComprobanteSeeder::class]);
     }
 }

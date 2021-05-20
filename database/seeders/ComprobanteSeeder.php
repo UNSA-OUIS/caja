@@ -19,23 +19,14 @@ class ComprobanteSeeder extends Seeder
      */
     public function run()
     {
-        /*DB::table('comprobantes')->insert(
-            [
-                'nro_recibo' => Str::random(20),
-                'codi_usuario' => '20143377',
-                'nues_espe' => '044',
-                'serie' => 'F001',
-                'correlativo' => '00000001',
-                'total' => 0,
-                'estado' => true,
-            ],
 
-        );*/
+        //$faker = Factory::create();
+        //$faker->factory(TipoComprobante::class, 48)->create();
+        Comprobante::factory(10)->create();
 
-        $faker = Factory::create();
-        
 
-        for($i = 0; $i < 25; $i++) {
+
+        /*for($i = 0; $i < 25; $i++) {
             Comprobante::create([
                 'nro_recibo' => $faker->randomNumber(9, false),
                 'tipo_usuario' => 'alumno',
@@ -111,6 +102,6 @@ class ComprobanteSeeder extends Seeder
             'descuento' => 1,
             'concepto_id' => 1,
             'comprobante_id' => 1,
-        ]);
+        ]);*/
     }
 }
