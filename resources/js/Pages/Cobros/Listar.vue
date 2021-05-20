@@ -230,6 +230,7 @@ export default {
 
       return promise.then((response) => {
         const comprobantes = response.data.data;
+        console.log(comprobantes);
         this.totalRows = response.data.total;
 
         return comprobantes || [];

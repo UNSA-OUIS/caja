@@ -93,7 +93,7 @@ class ComprobanteController extends Controller
         }
         // **************************** Relationship ****************
         $alumno = Alumno::where('cui', '=', $request->alumno['cui'])->first();
-        $email = $alumno->email;
+        $email = $alumno->email != null ? $alumno->email : '';
         // **************************** Relationship ****************
 
         $data = [
@@ -417,7 +417,7 @@ class ComprobanteController extends Controller
 
         $comprobante = new Comprobante();
 
-        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')->where('id', 'like', $request->comprobanteId)->first();
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobanteId)->first();
 
         $pdf = PDF::loadView('pdf.comprobante', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
