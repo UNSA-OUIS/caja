@@ -41,7 +41,7 @@
                         </div>
                     </fieldset>
                 </div>
-                <div class="row justify-content-center mb-1">
+                <div class="row justify-content-center mb-1" v-show="show_opciones_de_busqueda">
                     <fieldset class="col-12 col-md-6 px-3">
                         <legend>Opciones de búsqueda:</legend>
                         <div class="row justify-content-center">      
@@ -65,12 +65,13 @@
                                     id="inline-form-input-name"
                                     class="mb-2 mr-sm-2 mb-sm-0"                                    
                                     trim
-                                ></b-form-input>
-                                <b-form-invalid-feedback :state="validation">
+                                ></b-form-input> 
+                                <b-button size="sm" variant="primary" @click="buscarUsuario">Buscar</b-button> 
+                                <!--<b-form-invalid-feedback :state="validation">
                                     {{this.form_validation_variables.info_message}}
-                                </b-form-invalid-feedback>
-                                <b-button size="sm" variant="primary" @click="buscarUsuario">Buscar</b-button>                                
+                                </b-form-invalid-feedback>  -->
                             </b-form>
+                                <b-alert :show="validation==false" variant="danger">{{this.form_validation_variables.info_message}}</b-alert>
                         </div>
                     </fieldset>
                 </div>       
@@ -189,6 +190,7 @@ export default {
             },            
             opciones_busqueda: [],
             show_select_tipos_usuario: false,
+            show_opciones_de_busqueda: false,
             mostrar_usuarios: false,
             renderKey: 1,                   
         };
@@ -196,16 +198,16 @@ export default {
     computed: {
       validation() {
         if(this.filtro.length=='')return null;
-        else if(this.form_validation_variables.only_numbers&&isNaN(Number(this.filtro))){
-            this.form_validation_variables.info_message="debe tener solo numeros"
+        else if(this.form_validation_variables.only_numbers && isNaN(Number(this.filtro))){
+            this.form_validation_variables.info_message="Debe ingresar sólo números"
         }
         else if(!(this.filtro.length >= this.form_validation_variables.minsize && this.filtro.length <= this.form_validation_variables.maxsize)){
-            if(this.form_validation_variables.minsize==this.form_validation_variables.maxsize){
-            this.form_validation_variables.info_message="debe tener exactamente "+this.form_validation_variables.minsize
+            if(this.form_validation_variables.minsize == this.form_validation_variables.maxsize){
+            this.form_validation_variables.info_message = "Debe tener exactamente " + this.form_validation_variables.minsize
             }else
-            this.form_validation_variables.info_message="debe tener almenos "+this.form_validation_variables.minsize
+            this.form_validation_variables.info_message = "Debe tener al  menos " + this.form_validation_variables.minsize
         }else{
-            this.form_validation_variables.info_message=''
+            this.form_validation_variables.info_message = ''
             return true
         }
         return false
@@ -233,54 +235,75 @@ export default {
             this.mostrar_usuarios = false
 
             if (val === 'ALUMNO') {
+                this.show_opciones_de_busqueda = true
                 this.opciones_busqueda = this.opciones_busqueda_alumno                
             }
             else if (val === 'PARTICULAR') {
+                this.show_opciones_de_busqueda = true
                 this.opciones_busqueda = this.opciones_busqueda_particular                
             }
             else if (val === 'EMPRESA') {
+                this.show_opciones_de_busqueda = true
                 this.opciones_busqueda = this.opciones_busqueda_empresa                
             }
             else if (val === 'DOCENTE') {
+                this.show_opciones_de_busqueda = true
                 this.opciones_busqueda = this.opciones_busqueda_docente                
             }
             else if (val === 'DEPENDENCIA') {
+                this.show_opciones_de_busqueda = true
                 this.opciones_busqueda = this.opciones_busqueda_dependencia                
             }
+            else {
+                this.show_opciones_de_busqueda = false
+            }
+
         },
         opcion_busqueda: function (val){
             
             switch (val) {
                 case 'DNI':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=8;        
                     this.form_validation_variables.maxsize=8;        
                     this.form_validation_variables.only_numbers=true;        
                     break;
                 case 'CUI':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=8;        
                     this.form_validation_variables.maxsize=8;        
                     this.form_validation_variables.only_numbers=true;
                     break;
                 case 'RUC':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=11;        
                     this.form_validation_variables.maxsize=11;        
                     this.form_validation_variables.only_numbers=true;
                     break;
                 case 'RAZON_SOCIAL':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=1;        
                     this.form_validation_variables.maxsize=99;        
                     this.form_validation_variables.only_numbers=false;
                     break;            
                 case 'NOMBRE':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=8;        
                     this.form_validation_variables.maxsize=99;        
                     this.form_validation_variables.only_numbers=false;
                     break;
                 case 'CODIGO':
+                    this.filtro = ''
                     this.form_validation_variables.minsize=4;        
                     this.form_validation_variables.maxsize=8;        
                     this.form_validation_variables.only_numbers=false;
-                    break;            
+                    break;  
+                case 'APN':
+                    this.filtro = ''
+                    this.form_validation_variables.minsize=3;        
+                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.only_numbers=false;
+                    break; 
                 default:
                     break;
             }          
@@ -288,8 +311,10 @@ export default {
     },
     methods: {
         buscarUsuario() {
-            this.mostrar_usuarios = true
-            this.renderKey++
+            if(this.validation){
+                this.mostrar_usuarios = true
+                this.renderKey++
+            }
         },                        
     },
 };

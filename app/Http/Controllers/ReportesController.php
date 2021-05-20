@@ -20,14 +20,14 @@ class ReportesController extends Controller
     public function porCajero()
     {
         //$comprobantes = Comprobante::all();
-        //$this->authorize('cajero');
+        $this->authorize('cajero');
         //return Inertia::render('Reportes/PorPeriodo/Cajero', compact('comprobantes'));
         return Inertia::render('Reportes/PorPeriodo/Cajero');
     }
 
     public function filtrarCajero(Request $request)
     {
-
+        $this->authorize('cajero');
         /*$user = User::where('email', 'like', '%' . $request->dniCliente . '%')->first();
         $comprobantes = Comprobante::where('usuario_id', $user->id)
                                     ->whereDate('created_at','>=',$request->fechaInicio)
@@ -99,18 +99,21 @@ class ReportesController extends Controller
 
     public function descuentos()
     {
+        $this->authorize('descuento');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Descuentos', compact('comprobantes'));
     }
 
     public function centroDeCosto()
     {
+        $this->authorize('centroCosto');
         //$comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/CentroDeCosto');
     }
 
     public function filtrarCentroDeCosto(Request $request)
     {
+        $this->authorize('centroCosto');
         $centros = Concepto::with('dependencia:codi_depe,nomb_depe')->select('conceptos.codi_depe', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
                     ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')
                     ->leftJoin('comprobantes', 'comprobantes.id', 'detalles_comprobante.comprobante_id')
@@ -131,30 +134,35 @@ class ReportesController extends Controller
 
     public function reciboIngreso()
     {
+        $this->authorize('reciboIngreso');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/ReciboIngreso', compact('comprobantes'));
     }
 
     public function facturas()
     {
+        $this->authorize('facturas');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Facturas', compact('comprobantes'));
     }
 
     public function notas()
     {
+        $this->authorize('notas');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Notas', compact('comprobantes'));
     }
 
     public function consolidado()
     {
+        $this->authorize('consolidado');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Consolidado', compact('comprobantes'));
     }
 
     public function filtrarConsolidado(Request $request)
     {
+        $this->authorize('consolidado');
         $clasificadores = Clasificador::select('clasificadores.id as codigo', 'clasificadores.nombre as nombre', DB::raw('SUM(detalles_comprobante.valor_unitario) as monto'))
                                 ->leftJoin('conceptos', 'conceptos.clasificador_id', '=', 'clasificadores.id')
                                 ->leftJoin('detalles_comprobante', 'detalles_comprobante.concepto_id', '=', 'conceptos.id')

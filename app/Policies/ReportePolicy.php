@@ -10,16 +10,6 @@ class ReportePolicy
     use HandlesAuthorization;
 
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Determine whether the user can see the report.
      *
      * @param  \App\Models\User  $user
