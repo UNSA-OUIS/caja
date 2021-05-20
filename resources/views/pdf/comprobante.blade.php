@@ -8,7 +8,7 @@
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUIyJ" crossorigin="anonymous">
-<title>{{$comprobante->tipo_comprobante['nombre']}} {{$comprobante->serie}}-{{$comprobante->correlativo}}</title>
+<title>{{$comprobante}} {{$comprobante->tipo_comprobante['nombre']}} {{$comprobante->serie}}-{{$comprobante->correlativo}}</title>
 
 <body>
     <header>
@@ -34,6 +34,7 @@
         </div>
     </header>
     <br>
+    @if ($comprobante->tipo_comprobante['nombre'] == 'FACTURA')
     <section>
         <div id="cliente">
             <table style="width:100%">
@@ -63,6 +64,42 @@
             </table>
         </div>
     </section>
+    @endif
+    @if ($comprobante->tipo_comprobante['nombre'] == 'BOLETA')
+    <section>
+        <div id="cliente">
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <b>Nombre:</b> {{$comprobante->comprobanteable['apn']}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <b>CUI:</b> {{$comprobante->comprobanteable['cui']}}
+                        </td>
+                        @php
+                        $dni = substr($comprobante->comprobanteable['dic'], 1);
+                        @endphp
+                        <td>
+                            <b>DNI:</b> {{$dni}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <b>Fecha y hora de emision:</b> {{$comprobante->created_at}}
+                        </td>
+                        <td>
+                            <b>Tipo moneda:</b> SOLES
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    @endif
+
     <br>
     <section>
         <div>

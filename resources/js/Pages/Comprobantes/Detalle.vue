@@ -12,6 +12,7 @@
       <b-row>
         <b-col cols="5">
           <v-select
+            v-show="this.alerta != false"
             v-model="concepto"
             @search="buscarConcepto"
             :filterable="false"
@@ -36,6 +37,7 @@
         </b-col>
         <b-col>
           <b-button
+            v-show="this.alerta != false"
             style="height: 34px"
             type="submit"
             variant="info"
@@ -138,7 +140,12 @@
       </b-col>
     </b-row>
     <div>
-      <b-button variant="success" @click="registrar()">Registrar</b-button>
+      <b-button
+        v-show="this.alerta != false"
+        variant="success"
+        @click="registrar()"
+        >Registrar</b-button
+      >
     </div>
   </div>
 </template>
@@ -277,7 +284,10 @@ export default {
                   //this.$inertia.post(route("comprobantes.generar_pdf"));
                   let params = "?comprobanteId=" + response.data.comprobante_id;
                   console.log(params);
-                  window.open(`${this.app_url}/generar_pdf/{comprobante_id}/${params}`, '_blanck');
+                  window.open(
+                    `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
+                    "_blanck"
+                  );
                   //window.open(`${this.app_url}/comprobantes/pdf`, response.data.comprobante_id , "_blank");
                 } else {
                   console.log("Error");

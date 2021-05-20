@@ -44,6 +44,7 @@ class ComprobanteController extends Controller
 
     public function crear_alumno(Request $request)
     {
+        //return $request;
         $ultima_boleta = Comprobante::where('tipo_usuario', '<>', 'empresa')->latest()->first();
 
         $comprobante = new Comprobante();
@@ -101,7 +102,7 @@ class ComprobanteController extends Controller
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => $email->mail . '@unsa.edu.pe',
+            //'email' => $email->mail . '@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -413,15 +414,14 @@ class ComprobanteController extends Controller
 
     public function generar_pdf(Request $request)
     {
-        //return $request;
+
         $comprobante = new Comprobante();
+
         $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')->where('id', 'like', $request->comprobanteId)->first();
-        //return $comprobante;
+
         $pdf = PDF::loadView('pdf.comprobante', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->setPaper('A4', 'portrait');
-        //$pdf->render();
-
         $pdfGuardado = $pdf->output();
 
         $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'), $pdfGuardado);
@@ -431,21 +431,6 @@ class ComprobanteController extends Controller
         }
 
         return $pdf->stream($comprobante->serie . '-' . $comprobante->correlativo . '.pdf');
-        //$comprobantes = (array)json_decode($request->getContent());
-
-        /*$user = User::where('email', 'like', '%' . $request->dniCliente . '%')->first();
-        $comprobantes = Comprobante::where('usuario_id', $user->id)
-                                    ->whereDate('created_at','>=',$request->fechaInicio)
-                                    ->whereDate('created_at','<=',$request->fechaFin)->get();
-        $pdf = PDF::loadView('reportes.cajero', compact('comprobantes'));
-        $pdf->getDomPDF()->set_option("enable_php", true);
-        $pdf->setPaper('A4', 'portrait');*/
-        //$pdf->save(storage_path().'fdjfdh.pdf');
-
-        // Finally, you can download the file using download function
-        //return file(storage_path().'fdjfdh.pdf');
-        //return $pdf->stream('customers.pdf');
-        //return $pdf->download('file.pdf');
     }
 
     /*public function visualizar(Comprobante $comprobante)
