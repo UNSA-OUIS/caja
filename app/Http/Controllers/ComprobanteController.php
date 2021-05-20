@@ -416,14 +416,16 @@ class ComprobanteController extends Controller
         //return $request;
         $comprobante = new Comprobante();
         $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')->where('id', 'like', $request->comprobanteId)->first();
-
+        //return $comprobante;
         $pdf = PDF::loadView('pdf.comprobante', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
         $pdf->setPaper('A4', 'portrait');
-        $pdf->render();
+        //$pdf->render();
 
-        $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'), $pdf);
-        if ($pdfGuardado) {
+        $pdfGuardado = $pdf->output();
+
+        $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'), $pdfGuardado);
+        if ($guardado) {
             $comprobante->url_pdf = $comprobante->serie . '-' . $comprobante->correlativo . '.pdf';
             $comprobante->update();
         }
