@@ -1,18 +1,18 @@
 
 <template>
   <div>
-    <b-alert show dismissible variant="success" v-if="this.alerta == false">
+    <!--<b-alert show dismissible variant="success" v-if="this.alerta == false">
       {{ this.alerta_mensaje }}
     </b-alert>
     <b-alert show dismissible variant="danger" v-if="this.alerta == true">
       {{ this.alerta_mensaje }}
-    </b-alert>
+    </b-alert>-->
     <hr />
     <form @submit.prevent="agregarDetalle">
       <b-row>
         <b-col cols="5">
           <v-select
-            v-show="this.alerta != false"
+            v-if="accion === 'Crear'"
             v-model="concepto"
             @search="buscarConcepto"
             :filterable="false"
@@ -37,7 +37,7 @@
         </b-col>
         <b-col>
           <b-button
-            v-show="this.alerta != false"
+            v-if="accion === 'Crear'"
             style="height: 34px"
             type="submit"
             variant="info"
@@ -119,7 +119,7 @@
           </template>
           <template v-slot:cell(acciones)="row">
             <b-button
-              v-if="!row.item.deleted_at"
+              v-if="accion === 'Crear'"
               variant="danger"
               size="sm"
               title="Eliminar"
@@ -141,7 +141,7 @@
     </b-row>
     <div>
       <b-button
-        v-show="this.alerta != false"
+        v-if="accion === 'Crear'"
         variant="success"
         @click="registrar()"
         >Registrar</b-button
@@ -160,7 +160,8 @@ export default {
   },
   data() {
     return {
-      alerta: null,
+      accion: "Crear",
+      alerta: false,
       alerta_mensaje: "",
       app_url: this.$root.app_url,
       concepto: null,
@@ -186,6 +187,9 @@ export default {
         { key: "acciones", label: "", class: "text-center" },
       ],
     };
+  },
+  created() {
+      this.accion = 'Crear';
   },
   computed: {
     precioTotal() {
@@ -278,7 +282,7 @@ export default {
               .post(`${this.app_url}/comprobantes`, this.comprobante)
               .then((response) => {
                 if (!response.data.error) {
-                  this.alerta = response.data.error;
+                  //this.alerta = response.data.error;
                   this.alerta_mensaje = response.data.successMessage;
                   console.log(response.data.comprobante_id);
                   //this.$inertia.post(route("comprobantes.generar_pdf"));
@@ -288,6 +292,7 @@ export default {
                     `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
                     "_blanck"
                   );
+                  this.accion = 'Mostrar';
                   //window.open(`${this.app_url}/comprobantes/pdf`, response.data.comprobante_id , "_blank");
                 } else {
                   console.log("Error");

@@ -118,7 +118,7 @@
                     <tr>
                         <td> {{$detalle->cantidad}} </td>
                         <td> {{$detalle->concepto_id}} </td>
-                        <td> {{$detalle->descripcion}} </td>
+                        <td> {{$detalle->concepto->descripcion}} </td>
                         <td> {{$detalle->valor_unitario}} </td>
                         <td> {{$detalle->valor_unitario * $detalle->cantidad}} </td>
                     </tr>

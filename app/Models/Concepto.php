@@ -40,6 +40,11 @@ class Concepto extends Model
         return $this->belongsTo(UnidadMedida::class);
     }
 
+    public function detalles()
+    {
+        return $this->hasMany(DetallesComprobante::class);
+    }
+
     public function dependencia()
     {
         return $this->setConnection('mysql2')->belongsTo(Dependencia::class, 'codi_depe', 'codi_depe');
