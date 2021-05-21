@@ -28,6 +28,8 @@ class Alumno extends Model
     }
 
     public function email(){
-        return $this->hasOne(EmailAlumno::class,'cui','cui');
+        return $this->hasOne(EmailAlumno::class,'cui','cui')->withDefault([
+            'mail' => '',
+        ]);
     }
 }

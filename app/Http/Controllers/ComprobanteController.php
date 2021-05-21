@@ -15,6 +15,7 @@ use App\Jobs\EnviarCorreosJob;
 use App\Models\Concepto;
 use App\Models\Departamento;
 use App\Models\DetallesComprobante;
+use App\Models\NumeroOperacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -53,14 +54,20 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->alumno['cui'];
         $comprobante->nues_espe = $request->matricula['nues'];
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
-        $comprobante->serie = "B001";
+
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+
+        /*$comprobante->serie = "B001";
 
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
-        }
+        }*/
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -95,14 +102,13 @@ class ComprobanteController extends Controller
         $alumno = Alumno::where('cui', '=', $request->alumno['cui'])->first();
         $email = $alumno->email != null ? $alumno->email : '';
         // **************************** Relationship ****************
-
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'tipo_doc' => $tipo_de_documento,
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            //'email' => $email->mail . '@unsa.edu.pe',
+            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe': '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -133,16 +139,15 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->detalles = array();
 
-        // $docente=Docente::where('codper','=',$request->docente['codper'])->first();
-        // $depa=$docente->departamento;
         $depa = Departamento::where('depa', '=', $request->docente['depend'])->first();
+        $ndep = $depa != null ? $depa->ndep : '';
 
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => str_replace("/", " ", $request->docente['apn']),
             'email' => $request->docente['correo'] . '@unsa.edu.pe',
-            'departamento' => $depa->ndep,
+            'departamento' => $ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -287,6 +292,10 @@ class ComprobanteController extends Controller
                 'comprobante_id' => $comprobante->id,
                 'error' => false
             ];
+
+            $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
+            $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+            $numeroComp->update();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
