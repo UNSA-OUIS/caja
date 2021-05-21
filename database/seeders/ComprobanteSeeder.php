@@ -3,12 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Comprobante;
-use App\Models\DetallesComprobante;
-use App\Models\TipoComprobante;
-use Faker\Factory;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ComprobanteSeeder extends Seeder
 {
@@ -19,10 +14,7 @@ class ComprobanteSeeder extends Seeder
      */
     public function run()
     {
-
-        //$faker = Factory::create();
-        //$faker->factory(TipoComprobante::class, 48)->create();
-        Comprobante::factory(10)->create();
+        Comprobante::factory()->count(50)->create();
 
 
 

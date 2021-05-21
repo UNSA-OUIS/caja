@@ -4,6 +4,8 @@ namespace Database\Factories;
 
 
 use App\Models\Comprobante;
+use App\Models\TipoComprobante;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Faker\Generator as Faker;
 
@@ -23,12 +25,21 @@ class ComprobanteFactory extends Factory
      */
     public function definition()
     {
-        $factory = Factory::create();
-        $factory->define(Comprobante::class, function(Faker $faker){
-            return [
-                //
-            ];
-        });
-
+        return [
+            'tipo_usuario' => $this->faker->randomElement(['alumno', 'docente', 'dependencia', 'particular', 'empresa']),
+            'tipo_comprobante_id' => function (array $post) {
+                return TipoComprobante::inRandomOrder()->first()->id;
+            },
+            'serie' => $this->faker->randomElement(['B001', 'F001', 'B002', 'F002']),
+            'correlativo' => $this->faker->randomNumber(8),
+            'total_descuento' => $this->faker->randomNumber(2),
+            'total_impuesto' => $this->faker->randomNumber(2),
+            'total' => $this->faker->randomNumber(2),
+            'estado' => 'noEnviado',
+            'cajero_id' => function (array $post) {
+                return User::inRandomOrder()->first()->id;
+            },
+            'cancelado' => false,
+        ];
     }
 }
