@@ -19,8 +19,13 @@ class PermisoSeeder extends Seeder
      */
     public function run()
     {
-        $superadmin=Rol::create([            
+        $superadmin = Rol::create([            
             'name' => 'Administrador',
+            'guard_name' => 'sanctum'                                                          
+        ]);
+        
+        $cajero = Rol::create([            
+            'name' => 'Cajero',
             'guard_name' => 'sanctum'                                                          
         ]);
         
@@ -48,6 +53,18 @@ class PermisoSeeder extends Seeder
             'password' => bcrypt('password')
         ]);
 
+        User::create([
+            'name' => 'Elsa del Carpio', 
+            'email' => 'edelcarpioa@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
+
+        User::create([
+            'name' => 'Eulalia Velasquez', 
+            'email' => 'evelasquezflo@unsa.edu.pe',
+            'password' => bcrypt('password')
+        ]);
+
         //usuario administrador
         $user1 = User::find(1);
         $user1->assignRole('Administrador');
@@ -57,6 +74,10 @@ class PermisoSeeder extends Seeder
         $user3->assignRole('Administrador');
         $user4 = User::find(4);
         $user4->assignRole('Administrador');
+        $user5 = User::find(5);
+        $user5->assignRole('Cajero');
+        $user6 = User::find(6);
+        $user6->assignRole('Cajero');
 
         //Datos adicionales
         Persona::create([
@@ -83,6 +104,18 @@ class PermisoSeeder extends Seeder
             'codigo' => 'cajero4',
             'nombre' => 'CAJERO ' . $user4->name,
             'user_id' => $user4->id
+        ]);
+
+        Persona::create([
+            'codigo' => 'cajero5',
+            'nombre' => 'CAJERO ' . $user5->name,
+            'user_id' => $user5->id
+        ]);
+
+        Persona::create([
+            'codigo' => 'cajero6',
+            'nombre' => 'CAJERO ' . $user6->name,
+            'user_id' => $user6->id
         ]);
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -141,36 +174,36 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Eliminar Tipos-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Tipos-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
 
-        Permission::create(['name' => 'Listar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Crear Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Mostrar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Editar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Eliminar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Restaurar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Listar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Crear Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Mostrar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Editar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Eliminar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Restaurar Particulares', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
 
-        Permission::create(['name' => 'Listar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Crear Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Mostrar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Editar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Eliminar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Restaurar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Listar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Crear Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Mostrar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Editar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Eliminar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Restaurar Empresas', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
 
-        Permission::create(['name' => 'Listar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        // Permission::create(['name' => 'Crear Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Mostrar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        // Permission::create(['name' => 'Editar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        // Permission::create(['name' => 'Eliminar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        // Permission::create(['name' => 'Restaurar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Listar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        // Permission::create(['name' => 'Crear Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Mostrar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        // Permission::create(['name' => 'Editar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        // Permission::create(['name' => 'Eliminar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        // Permission::create(['name' => 'Restaurar Dependencias', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
 
 
-        Permission::create(['name' => 'Listar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Crear Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Mostrar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
-        Permission::create(['name' => 'Anular Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Restaurar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
-        Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
-        Permission::create(['name' => 'Anular Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin);        
+        Permission::create(['name' => 'Listar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Crear Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Mostrar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
+        Permission::create(['name' => 'Anular Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Restaurar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
+        Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
+        Permission::create(['name' => 'Anular Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
     
         Permission::create(['name' => 'Listar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
@@ -186,13 +219,13 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Eliminar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
 
-        Permission::create(['name' => 'Cajero Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Descuento Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Centro-Costo Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Recibo-Ingreso Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Consolidado Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
-        Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Cajero Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Descuento Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Centro-Costo Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Recibo-Ingreso Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Consolidado Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
 
 
     }
