@@ -28,10 +28,10 @@ class DetallesComprobanteFactory extends Factory
             'valor_unitario' => $this->faker->randomNumber(2),
             'descuento' => $this->faker->randomNumber(2),
             'estado' => true,
-            'concepto_id' => function (array $post) {
+            'concepto_id' => function () {
                 return Concepto::inRandomOrder()->first()->id;
             },
-            'comprobante_id' => function (array $post) {
+            'comprobante_id' => function () {
                 return Comprobante::inRandomOrder()->first()->id;
             },
         ];
