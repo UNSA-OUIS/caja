@@ -78,6 +78,7 @@
               <b-form-input
                 class="text-center"
                 v-model="row.item.cantidad"
+                :readonly="accion === 'Mostrar'"
                 @keyup="calcularSubTotal(row.item.concepto_id)"
                 @change="calcularSubTotal(row.item.concepto_id)"
                 type="number"
@@ -101,6 +102,7 @@
               <b-form-select
                 v-model="row.item.tipo_descuento"
                 @change="calcularSubTotal(row.item.concepto_id)"
+                :disabled="accion === 'Mostrar'"
               >
                 <b-form-select-option value="S/.">S/.</b-form-select-option>
                 <b-form-select-option value="%">%</b-form-select-option>
@@ -108,6 +110,7 @@
               <b-form-input
                 class="text-center"
                 v-model="row.item.descuento"
+                :readonly="accion === 'Mostrar'"
                 @keyup="calcularSubTotal(row.item.concepto_id)"
               ></b-form-input>
             </div>

@@ -170,7 +170,8 @@ export default {
                     class: "text-center"
                 },
                 { key: "name", label: "Nombre", sortable: true },
-                { key: "email", label: "Email", sortable: true },                
+                { key: "email", label: "Email", sortable: true },
+                { key: "roles[0].name", label: "Rol", sortable: true , class: "text-center"},        
                 { key: "condicion", label: "Condición", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],

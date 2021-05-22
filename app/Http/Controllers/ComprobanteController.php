@@ -125,14 +125,20 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->docente['codper'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
-        $comprobante->serie = "B001";
+
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+
+        /*$comprobante->serie = "B001";
 
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
-        }
+        }*/
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -146,7 +152,7 @@ class ComprobanteController extends Controller
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => str_replace("/", " ", $request->docente['apn']),
-            'email' => $request->docente['correo'] . '@unsa.edu.pe',
+            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe': '',
             'departamento' => $ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -164,14 +170,20 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->dependencia['codi_depe'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
-        $comprobante->serie = "B001";
+
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+
+        /*$comprobante->serie = "B001";
 
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
-        }
+        }*/
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -198,14 +210,20 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->particular['dni'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
-        $comprobante->serie = "B001";
+        
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+        
+        /*$comprobante->serie = "B001";
 
         if (!$ultima_boleta) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_boleta->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_boleta->correlativo, 8, "0", STR_PAD_LEFT);
-        }
+        }*/
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -232,14 +250,20 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->empresa['ruc'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.FACTURA');
-        $comprobante->serie = "F001";
+        
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+        
+        /*$comprobante->serie = "F001";
 
         if (!$ultima_factura) {
             $comprobante->correlativo = '00000001';
         } else {
             $ultima_factura->correlativo += 1;
             $comprobante->correlativo = str_pad($ultima_factura->correlativo, 8, "0", STR_PAD_LEFT);
-        }
+        }*/
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -401,9 +425,11 @@ class ComprobanteController extends Controller
         } else if ($request->tipo_usuario == 'DOCENTE') {
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Docente::where('codper', $request->filtro)
+                    ->where('esta_doc', 'A')
                     ->select('depend', 'codper', 'dic', 'apn', 'correo');
             } else if ($request->opcion_busqueda == 'APN') {
                 $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
+                    ->where('esta_doc', 'A')
                     ->select('depend', 'codper', 'dic', 'apn', 'correo')
                     ->orderBy('apn', 'asc');
             }

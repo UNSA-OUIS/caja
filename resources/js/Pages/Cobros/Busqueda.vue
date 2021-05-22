@@ -71,7 +71,9 @@
                                     {{this.form_validation_variables.info_message}}
                                 </b-form-invalid-feedback>  -->
                             </b-form>
-                                <b-alert :show="validation==false" variant="danger">{{this.form_validation_variables.info_message}}</b-alert>
+                            <div class="container">
+                            <b-alert :show="validation==false" variant="danger">{{this.form_validation_variables.info_message}}</b-alert>
+                            </div>
                         </div>
                     </fieldset>
                 </div>       
@@ -186,6 +188,7 @@ export default {
                 minsize: 0,
                 maxsize: 99,
                 only_numbers: false,
+                only_letters: false,
                 info_message:'',                
             },            
             opciones_busqueda: [],
@@ -197,15 +200,19 @@ export default {
     },
     computed: {
       validation() {
+        var regLetters = /^[a-zA-Z\s]*$/;  
         if(this.filtro.length=='')return null;
         else if(this.form_validation_variables.only_numbers && isNaN(Number(this.filtro))){
-            this.form_validation_variables.info_message="Debe ingresar sólo números"
+            this.form_validation_variables.info_message="Debe ingresar sólo números."
+        }
+        else if(this.form_validation_variables.only_letters && !regLetters.test(this.filtro)){
+            this.form_validation_variables.info_message="Debe ingresar sólo letras."
         }
         else if(!(this.filtro.length >= this.form_validation_variables.minsize && this.filtro.length <= this.form_validation_variables.maxsize)){
             if(this.form_validation_variables.minsize == this.form_validation_variables.maxsize){
-            this.form_validation_variables.info_message = "Debe tener exactamente " + this.form_validation_variables.minsize
+                this.form_validation_variables.info_message = "Debe tener exactamente " + this.form_validation_variables.minsize + " dígitos."
             }else
-            this.form_validation_variables.info_message = "Debe tener al  menos " + this.form_validation_variables.minsize
+                this.form_validation_variables.info_message = "Debe ingresar al  menos " + this.form_validation_variables.minsize + " caracteres."
         }else{
             this.form_validation_variables.info_message = ''
             return true
@@ -267,41 +274,48 @@ export default {
                     this.form_validation_variables.minsize=8;        
                     this.form_validation_variables.maxsize=8;        
                     this.form_validation_variables.only_numbers=true;        
+                    this.form_validation_variables.only_letters=false;        
                     break;
                 case 'CUI':
                     this.filtro = ''
                     this.form_validation_variables.minsize=8;        
-                    this.form_validation_variables.maxsize=8;        
+                    this.form_validation_variables.maxsize=8;  
+                    this.form_validation_variables.only_letters=false;      
                     this.form_validation_variables.only_numbers=true;
                     break;
                 case 'RUC':
                     this.filtro = ''
                     this.form_validation_variables.minsize=11;        
-                    this.form_validation_variables.maxsize=11;        
+                    this.form_validation_variables.maxsize=11; 
+                    this.form_validation_variables.only_letters=false;       
                     this.form_validation_variables.only_numbers=true;
                     break;
                 case 'RAZON_SOCIAL':
                     this.filtro = ''
                     this.form_validation_variables.minsize=1;        
-                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.maxsize=99; 
+                    this.form_validation_variables.only_letters=false;       
                     this.form_validation_variables.only_numbers=false;
                     break;            
                 case 'NOMBRE':
                     this.filtro = ''
                     this.form_validation_variables.minsize=8;        
-                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.maxsize=99; 
+                    this.form_validation_variables.only_letters=true;       
                     this.form_validation_variables.only_numbers=false;
                     break;
                 case 'CODIGO':
                     this.filtro = ''
                     this.form_validation_variables.minsize=4;        
-                    this.form_validation_variables.maxsize=8;        
+                    this.form_validation_variables.maxsize=10;  
+                    this.form_validation_variables.only_letters=false;      
                     this.form_validation_variables.only_numbers=false;
                     break;  
                 case 'APN':
                     this.filtro = ''
-                    this.form_validation_variables.minsize=3;        
-                    this.form_validation_variables.maxsize=99;        
+                    this.form_validation_variables.minsize=2;        
+                    this.form_validation_variables.maxsize=99; 
+                    this.form_validation_variables.only_letters=true;       
                     this.form_validation_variables.only_numbers=false;
                     break; 
                 default:
