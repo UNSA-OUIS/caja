@@ -432,6 +432,26 @@ class ComprobanteController extends Controller
 
         return $pdf->stream($comprobante->serie . '-' . $comprobante->correlativo . '.pdf');
     }
+    public function generar_ticket(Request $request)
+    {
+
+        $comprobante = new Comprobante();
+
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobanteId)->first();
+
+        $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->setPaper('a4', 'portrait');
+        $pdfGuardado = $pdf->output();
+
+        $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf'), $pdfGuardado);
+        if ($guardado) {
+            $comprobante->url_ticket = $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf';
+            $comprobante->update();
+        }
+
+        return $pdf->stream($comprobante->serie . '-' . $comprobante->correlativo . '.pdf');
+    }
 
     /*public function visualizar(Comprobante $comprobante)
     {

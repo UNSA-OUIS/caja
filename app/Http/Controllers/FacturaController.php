@@ -62,12 +62,13 @@ class FacturaController extends Controller
 
         return $query->paginate($request->size);
     }
+    public function enviarFacturas(Request $request){
+        return $request->all();
+    }
     public function enviar(Comprobante $factura)
     {
         $factura = Comprobante::with('comprobanteable')->with('tipo_comprobante')
             ->with('detalles')->where('id', 'like', $factura->id)->first();
-        //return $factura->detalles[0]->concepto_id;
-
 
         try {
             $see = require config_path('Sunat\config.php');
@@ -297,7 +298,7 @@ class FacturaController extends Controller
         return redirect()->route('sunat.iniciarFacturas');
     }
 
-    public function descargar_pdf(Request $request)
+    /*public function descargar_pdf(Request $request)
     {
         if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
             $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
@@ -305,18 +306,6 @@ class FacturaController extends Controller
             return response($content)->withHeaders([
                 'Content-Type' => mime_content_type($path)
             ]);
-            //return $content;
-            //return response()->file($path);
-            /*$headers = array(
-                'Content-Type: application/pdf',
-              );*/
-            //return $path;
-            //return response()->download($content);
-
-            //return Response::download($path, 'filename.pdf', $headers);
-            /*return Storage::download($content) > withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);*/
         } else {
             return redirect('/404');
         }
@@ -344,5 +333,5 @@ class FacturaController extends Controller
         } else {
             return redirect('/404');
         }
-    }
+    }*/
 }

@@ -136,7 +136,10 @@
           </template>
           <template v-slot:cell(acciones)="row">
             <b-button variant="info" size="sm" @click="visualizar(row.item.url_pdf)">
-              <b-icon icon="printer"></b-icon>
+              PDF
+            </b-button>
+            <b-button variant="info" size="sm" @click="visualizar(row.item.url_ticket)">
+              TICKET
             </b-button>
             <inertia-link
               class="btn btn-primary btn-sm"

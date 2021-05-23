@@ -30,6 +30,7 @@ class CreateComprobantesTable extends Migration
             $table->string('url_xml')->nullable();
             $table->string('url_cdr')->nullable();
             $table->string('url_pdf')->nullable();
+            $table->string('url_ticket')->nullable();
             $table->boolean('cancelado')->nullable()->default(false);
             $table->bigInteger('cajero_id');
             $table->timestamps();

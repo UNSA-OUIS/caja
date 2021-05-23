@@ -88,19 +88,9 @@ export default {
     },
     data() {
         return {
-            //editable: true,
             app_url: this.$root.app_url,
         };
     },
-    /*updated () {
-      if(this.comprobante.id){
-          this.editable = false;
-          console.log('Entro');
-          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.comprobante.url_pdf}`, "_blank");
-      }else{
-          console.log('No Entro');
-      }
-    },*/
 };
 </script>
 <style scoped>
