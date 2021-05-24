@@ -25,7 +25,6 @@ use Luecano\NumeroALetras\NumeroALetras;
 class BoletaController extends Controller
 {
     private $empresa;
-    private $fechaInicio;
 
     function __construct()
     {
@@ -52,7 +51,7 @@ class BoletaController extends Controller
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
-        $this->fechaInicio = $request->fechaInicio;
+        //$this->fechaInicio = $request->fechaInicio;
 
         $query = Comprobante::with('tipo_comprobante')
             ->with('detalles')->where('tipo_comprobante_id', 'like', 1)->whereDate('created_at', '>=', $request->fechaInicio)

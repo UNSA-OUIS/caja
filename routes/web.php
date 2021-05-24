@@ -279,6 +279,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/facturaPDF', [FacturaController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
     Route::get('/sunat/facturaCDR', [FacturaController::class, 'descargar_cdr'])->name('facturas.descargar-cdr');
     Route::get('/sunat/facturaXML', [FacturaController::class, 'descargar_xml'])->name('facturas.descargar-xml');
+    Route::post('/sunat/enviarFacturas', [FacturaController::class, 'enviar_facturas'])->name('facturas.enviar-bloque');
     Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
 

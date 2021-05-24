@@ -57,7 +57,7 @@
           small
           responsive
           stacked="md"
-          :items="myProvider"
+          :items="items"
           :fields="fields"
           :current-page="currentPage"
           :per-page="perPage"
@@ -85,57 +85,23 @@
             <div v-if="row.item.estado == 'aceptado'">
               <b-badge variant="success">Aceptado</b-badge>
               <br />
+              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
+              <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
             </div>
           </template>
-          <template v-slot:cell(archivos)="row">
+          <template v-slot:cell(acciones)="row">
             <b-button
               v-if="
                 row.item.estado == 'aceptado' || row.item.estado == 'observado'
               "
               target="_blank"
-              variant="outline-primary"
+              variant="primary"
               size="sm"
               title="Ver"
-              @click="descargar_pdf(row.item.url_pdf)"
+              :href="`${app_url}/${row.item.url_pdf}`"
             >
-              PDF
+              <b-icon icon="printer"></b-icon>
             </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="outline-primary"
-              size="sm"
-              @click="descargar_xml(row.item.url_xml)"
-            >
-              XML
-            </b-button>
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="outline-primary"
-              size="sm"
-              @click="descargar_cdr(row.item.url_cdr)"
-            >
-              CDR
-            </b-button>
-          </template>
-          <template v-slot:cell(observacion)="row">
-            <b-button
-              v-if="
-                row.item.estado == 'observado' || row.item.estado == 'aceptado'
-              "
-              size="sm"
-              @click="row.toggleDetails"
-            >
-              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-              <b-icon v-else icon="plus-circle"></b-icon>
-            </b-button>
-          </template>
-          <template v-slot:cell(acciones)="row">
             <b-button
               v-if="row.item.estado == 'noEnviado'"
               variant="danger"
@@ -147,14 +113,13 @@
             </b-button>
             <b-button
               v-if="
-                row.item.estado == 'observado' || row.item.estado == 'noEnviado'
+                row.item.estado == 'observado' || row.item.estado == 'aceptado'
               "
-              variant="success"
               size="sm"
-              title="Enviar a SUNAT"
-              @click="enviar(row.item)"
+              @click="row.toggleDetails"
             >
-              <b-icon icon="cloud-arrow-up"></b-icon>
+              <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
+              <b-icon v-else icon="plus-circle"></b-icon>
             </b-button>
           </template>
           <template #row-details="row">
@@ -166,6 +131,9 @@
               </ul>
             </b-card>
           </template>
+          <template #table-caption
+            >Existen {{ cantidad_items }} facturas</template
+          >
         </b-table>
         <b-row>
           <b-col offset-md="8" md="4" class="my-1">
@@ -179,6 +147,16 @@
             ></b-pagination>
           </b-col>
         </b-row>
+        <b-row>
+          <b-button
+            variant="success"
+            size="sm"
+            title="Enviar"
+            @click="enviarFacturas()"
+          >
+            Enviar Facturas <b-icon icon="cloud-arrow-up"></b-icon>
+          </b-button>
+        </b-row>
       </div>
     </div>
   </app-layout>
@@ -189,87 +167,110 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "sunat.listarFacturas",
+  name: "sunat.listarBoletas",
   components: {
     AppLayout,
   },
   data() {
     return {
       app_url: this.$root.app_url,
+      items: [],
+      cantidad_items: 0,
       fields: [
-        { key: "comprobanteable.ruc", label: "RUC", sortable: true },
         {
-          key: "comprobanteable.razon_social",
-          label: "Usuario",
+          key: "comprobanteable.ruc",
+          label: "RUC",
           class: "text-center",
           sortable: true,
         },
-        { key: "serie", label: "Serie", sortable: true },
-        { key: "correlativo", label: "Correlativo", sortable: true },
+        {
+          key: "comprobanteable.razon_social",
+          label: "Razon Social",
+          class: "text-center",
+          sortable: true,
+        },
+        { key: "serie", label: "Serie", class: "text-center", sortable: true },
+        {
+          key: "correlativo",
+          label: "Correlativo",
+          class: "text-center",
+          sortable: true,
+        },
         {
           key: "estado",
           label: "Estado",
           class: "text-center",
           sortable: true,
         },
-        { key: "archivos", label: "Archivos", class: "text-center" },
-        { key: "observacion", label: "Observaciones", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
+      perPage: 500,
+      pageOptions: [500, 1000, 1500],
       sortBy: null,
       sortDesc: false,
       sortDirection: "asc",
       filter: null,
     };
   },
-  methods: {
-    refreshTable() {
-      this.$refs.tbl_facturas.refresh();
-    },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
+  created() {
+    const promise = axios.get(`${this.app_url}/sunat/listarFacturas`);
 
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(
-        `${this.app_url}/sunat/listarFacturas${params}`
-      );
-
-      return promise.then((response) => {
-        const factura = response.data.data;
-        console.log(factura);
+    return promise
+      .then((response) => {
+        this.items = response.data.data;
+        this.cantidad_items = this.items.length;
         this.totalRows = response.data.total;
 
-        return factura || [];
+        return this.items || [];
+      })
+      .catch((error) => {
+        console.log(error.response);
       });
-    },
-
-    enviar(factura) {
+  },
+  methods: {
+    enviarFacturas() {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar esta factura?", {
-          title: "Enviar factura",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer enviar las facturas en bloque?",
+          {
+            title: "Enviar facturas",
+            okVariant: "success",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("facturas.enviar", [factura]));
-            this.refreshTable();
-          }
+            axios
+              .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
+              .then((response) => {
+                if (!response.data.error) {
+                  this.$bvToast.toast(response.data.successMessage, {
+                    title: "Facturas",
+                    variant: "success",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                } else {
+                   this.$bvToast.toast(response.data.errorMessage, {
+                    title: "Facturas",
+                    variant: "danger",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+             }
         });
+
+      //
     },
     anular(factura) {
       this.$bvModal
@@ -283,27 +284,8 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.post(route("facturas.anular", [factura]));
-            this.refreshTable();
           }
         });
-    },
-    descargar_xml(url_xml) {
-      window.open(
-        `${this.app_url}/sunat/facturaXML?url_xml=${url_xml}`,
-        "_blanck"
-      );
-    },
-    descargar_cdr(url_cdr) {
-      window.open(
-        `${this.app_url}/sunat/facturaCDR?url_cdr=${url_cdr}`,
-        "_blanck"
-      );
-    },
-    descargar_pdf(url_pdf) {
-      window.open(
-        `${this.app_url}/sunat/facturaPDF?url_pdf=${url_pdf}`,
-        "_blanck"
-      );
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

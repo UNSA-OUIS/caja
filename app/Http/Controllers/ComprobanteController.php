@@ -293,8 +293,6 @@ class ComprobanteController extends Controller
             $result = ['errorMessage' => 'No se pudo registrar el comprobante', 'error' => true];
             Log::error('ComprobanteController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
-        //return redirect()->route('comprobantes.iniciar');
-        //return $result;
         return $result;
     }
 
