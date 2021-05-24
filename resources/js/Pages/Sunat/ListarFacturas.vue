@@ -1,10 +1,51 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item active">Enviar facturas a sunat</li>
+      </ol>
+    </nav>
     <div class="card">
       <div class="card-header">
-        <h1>Facturas</h1>
+        <h1>Enviar facturas a sunat</h1>
+        <div>
+          <label for="example-datepicker">Fecha Inicio</label>
+          <b-form-datepicker
+            name="fechaInicio"
+            v-model="filtro.fechaInicio"
+            class="mb-2"
+          ></b-form-datepicker>
+          <label for="example-datepicker">Fecha Fin</label>
+          <b-form-datepicker
+            name="fechaFin"
+            v-model="filtro.fechaFin"
+            class="mb-2"
+          ></b-form-datepicker>
+          <b-button
+            variant="success"
+            size="sm"
+            title="Buscar Boletas"
+            @click="buscarBoletas()"
+          >
+            Buscar Facturas <b-icon icon="search"></b-icon>
+          </b-button>
+          <b-button
+            variant="primary"
+            size="sm"
+            title="Limpiar"
+            @click="limpiar()"
+          >
+            Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+          </b-button>
+        </div>
       </div>
-      <div class="card-body">
+      <b-alert variant="danger" show v-show="alerta">
+        {{ this.mensajeAlerta }}
+      </b-alert>
+      <div class="card-body" v-show="filtrado">
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -90,7 +131,7 @@
             </div>
           </template>
           <template v-slot:cell(acciones)="row">
-            <b-button
+            <!--<b-button
               v-if="
                 row.item.estado == 'aceptado' || row.item.estado == 'observado'
               "
@@ -101,7 +142,7 @@
               :href="`${app_url}/${row.item.url_pdf}`"
             >
               <b-icon icon="printer"></b-icon>
-            </b-button>
+            </b-button>-->
             <b-button
               v-if="row.item.estado == 'noEnviado'"
               variant="danger"
@@ -132,7 +173,7 @@
             </b-card>
           </template>
           <template #table-caption
-            >Existen {{ cantidad_items }} facturas</template
+            >Se encontraron {{ cantidad_items }} facturas</template
           >
         </b-table>
         <b-row>
@@ -174,11 +215,20 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      resultado: null,
+      resultadoMensaje: "",
+      filtrado: false,
+      alerta: false,
+      mensajeAlerta: "",
+      filtro: {
+        fechaInicio: "",
+        fechaFin: "",
+      },
       items: [],
       cantidad_items: 0,
       fields: [
         {
-          key: "comprobanteable.ruc",
+          key: "codi_usuario",
           label: "RUC",
           class: "text-center",
           sortable: true,
@@ -186,13 +236,19 @@ export default {
         {
           key: "comprobanteable.razon_social",
           label: "Razon Social",
-          class: "text-center",
+          class: "text-left",
           sortable: true,
         },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
           label: "Correlativo",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "created_at",
+          label: "Fecha de Creacion",
           class: "text-center",
           sortable: true,
         },
@@ -215,62 +271,110 @@ export default {
       filter: null,
     };
   },
-  created() {
-    const promise = axios.get(`${this.app_url}/sunat/listarFacturas`);
-
-    return promise
-      .then((response) => {
-        this.items = response.data.data;
-        this.cantidad_items = this.items.length;
-        this.totalRows = response.data.total;
-
-        return this.items || [];
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-  },
   methods: {
+    refreshTable() {
+      this.$refs.tbl_facturas.refresh();
+    },
     enviarFacturas() {
+      console.log(this.items);
       this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer enviar las facturas en bloque?",
-          {
-            title: "Enviar facturas",
-            okVariant: "success",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
+        .msgBoxConfirm("¿Esta seguro de querer enviar estas facturas?", {
+          title: "Enviar facturas",
+          okVariant: "success",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
         .then(async (value) => {
           if (value) {
             axios
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
                 if (!response.data.error) {
-                  this.$bvToast.toast(response.data.successMessage, {
-                    title: "Facturas",
+                  this.result = response.data.error;
+                  this.resultadoMensaje = response.data.successMessage;
+                  console.log(this.result);
+                  console.log(this.resultadoMensaje);
+                  this.$bvToast.toast("Facturas enviadas con exito", {
+                    title: "Envio de facturas a sunat",
                     variant: "success",
                     toaster: "b-toaster-bottom-right",
                     solid: true,
                   });
-                } else {
-                   this.$bvToast.toast(response.data.errorMessage, {
-                    title: "Facturas",
-                    variant: "danger",
-                    toaster: "b-toaster-bottom-right",
-                    solid: true,
+
+                  //this.alerta_mensaje = response.data.successMessage;
+                  /*let params =
+                    "?comprobante_id=" + response.data.comprobante_id;
+                  axios.get(`${this.app_url}/generar_pdf`, {
+                    params: {
+                      comprobante_id: response.data.comprobante_id,
+                    },
                   });
+                  window.open(
+                    `${this.app_url}/generar_ticket/${params}`,
+                    "_blank"
+                  );
+                  this.accion = "Mostrar";*/
+                } else {
+                  console.log("Error");
                 }
               })
               .catch(function (error) {
                 console.log(error);
               });
-             }
+            /*this.result = this.$inertia.post(
+              route("facturas.enviar-bloque"),
+              this.items
+            );*/
+            this.refreshTable();
+          }
+        });
+    },
+    buscarBoletas() {
+      if (!this.filtro.fechaInicio && !this.filtro.fechaFin) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de inicio y fin";
+      } else if (!this.filtro.fechaInicio) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de inicio";
+      } else if (!this.filtro.fechaFin) {
+        this.alerta = true;
+        this.mensajeAlerta = "Debe seleccionar una fecha de fin";
+      } else {
+        this.filtrado = true;
+        this.alerta = false;
+        this.mensajeAlerta = "";
+
+        const promise = axios.get(`${this.app_url}/sunat/listarFacturas`, {
+          params: {
+            fechaInicio: this.filtro.fechaInicio,
+            fechaFin: this.filtro.fechaFin,
+          },
         });
 
-      //
+        return promise
+          .then((response) => {
+            this.items = response.data.data;
+            this.cantidad_items = this.items.length;
+            console.log(this.items.length);
+            console.log(this.items);
+            this.totalRows = response.data.total;
+            this.refreshTable();
+
+            return this.items || [];
+          })
+          .catch((error) => {
+            console.log(error.response);
+          });
+      }
+    },
+    limpiar() {
+      this.filtrado = false;
+      this.alerta = false;
+      this.filtro.fechaInicio = "";
+      this.filtro.fechaFin = "";
+      this.mensajeAlerta = "";
+      this.refreshTable();
     },
     anular(factura) {
       this.$bvModal
@@ -284,6 +388,7 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.post(route("facturas.anular", [factura]));
+            this.refreshTable();
           }
         });
     },
@@ -294,3 +399,12 @@ export default {
   },
 };
 </script>
+<style scoped>
+.breadcrumb li a {
+  color: blue;
+}
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>
