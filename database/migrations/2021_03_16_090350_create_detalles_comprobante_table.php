@@ -19,6 +19,8 @@ class CreateDetallesComprobanteTable extends Migration
             $table->double('valor_unitario', 8, 4);
             $table->double('descuento', 8, 4);
             $table->boolean('estado')->default(true);
+            $table->enum('tipo_descuento', ['soles', 'porcentaje']);
+            $table->decimal('subtotal', 7, 2);
             $table->tinyInteger('concepto_id');
             $table->bigInteger('comprobante_id');
             $table->timestamps();

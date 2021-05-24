@@ -210,12 +210,12 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->particular['dni'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
-        
+
         $usuario = Auth::user();
         $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
         $comprobante->serie = $numeroOpe->serie;
         $comprobante->correlativo = $numeroOpe->correlativo;
-        
+
         /*$comprobante->serie = "B001";
 
         if (!$ultima_boleta) {
@@ -250,12 +250,12 @@ class ComprobanteController extends Controller
         $comprobante->codi_usuario = $request->empresa['ruc'];
         $comprobante->nues_espe = "";
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.FACTURA');
-        
+
         $usuario = Auth::user();
         $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))->first();
         $comprobante->serie = $numeroOpe->serie;
         $comprobante->correlativo = $numeroOpe->correlativo;
-        
+
         /*$comprobante->serie = "F001";
 
         if (!$ultima_factura) {
@@ -306,6 +306,8 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->cantidad = $detalle['cantidad'];
                 $detalle_comprobante->valor_unitario =  $detalle['precio'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
+                $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
+                $detalle_comprobante->subtotal =  $detalle['subtotal'];
                 $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
                 $detalle_comprobante->comprobante_id =  $comprobante->id;
                 $detalle_comprobante->save();
