@@ -515,10 +515,9 @@ class ComprobanteController extends Controller
 
     public function generar_pdf(Request $request)
     {
-
         $comprobante = new Comprobante();
 
-        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobanteId)->first();
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobante_id)->first();
 
         $pdf = PDF::loadView('pdf.comprobante', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
@@ -538,11 +537,11 @@ class ComprobanteController extends Controller
 
         $comprobante = new Comprobante();
 
-        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobanteId)->first();
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobante_id)->first();
 
         $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
-        $pdf->setPaper('b5', 'portrait');
+        $pdf->setPaper('b6', 'portrait');
         $pdfGuardado = $pdf->output();
 
         $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf'), $pdfGuardado);

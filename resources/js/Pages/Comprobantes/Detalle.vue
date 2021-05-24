@@ -105,7 +105,9 @@
                 :disabled="accion === 'Mostrar'"
               >
                 <b-form-select-option value="soles">S/.</b-form-select-option>
-                <b-form-select-option value="porcentaje">%</b-form-select-option>
+                <b-form-select-option value="porcentaje"
+                  >%</b-form-select-option
+                >
               </b-form-select>
               <b-form-input
                 class="text-center"
@@ -283,13 +285,15 @@ export default {
                 if (!response.data.error) {
                   this.alerta = response.data.error;
                   this.alerta_mensaje = response.data.successMessage;
-                  let params = "?comprobanteId=" + response.data.comprobante_id;
-                  //console.log(params);
-                  axios.get(
-                    `${this.app_url}/generar_ticket/{comprobante_id}/${params}`
-                  );
+                  let params =
+                    "?comprobante_id=" + response.data.comprobante_id;
+                  axios.get(`${this.app_url}/generar_pdf`, {
+                    params: {
+                      comprobante_id: response.data.comprobante_id,
+                    },
+                  });
                   window.open(
-                    `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
+                    `${this.app_url}/generar_ticket/${params}`,
                     "_blank"
                   );
                   this.accion = "Mostrar";
