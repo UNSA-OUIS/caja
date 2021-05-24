@@ -8,6 +8,7 @@ use App\Models\PuntosVenta;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
 class PuntosVentaController extends Controller
 {
@@ -45,8 +46,15 @@ class PuntosVentaController extends Controller
         $puntoVenta->user_id = null;
 
         $usuarios = User::select('id as value', 'name as text')
+            ->whereHas('roles', function ($q) {
+                $q->where('roles.name', '=', 'Cajero'); // or whatever constraint you need here
+            })
             ->orderBy('name', 'asc')->get();
 
+        /*$cajeroRole = Role::where('name', 'Cajero')->first();
+        dd($cajeroRole);
+        $usuarios = $cajeroRole->users;*/
+        
         return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios'));
     }
 
