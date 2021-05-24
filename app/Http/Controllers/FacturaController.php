@@ -298,7 +298,7 @@ class FacturaController extends Controller
         return redirect()->route('sunat.iniciarFacturas');
     }
 
-    /*public function descargar_pdf(Request $request)
+    public function descargar_pdf(Request $request)
     {
         if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
             $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
@@ -333,5 +333,5 @@ class FacturaController extends Controller
         } else {
             return redirect('/404');
         }
-    }*/
+    }
 }

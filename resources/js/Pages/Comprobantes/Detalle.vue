@@ -172,7 +172,7 @@ export default {
           tdClass: "codigo",
         },
         {
-          key: "concepto",
+          key: "descripcion",
           label: "CONCEPTO",
           class: "text-center",
           tdClass: "concepto",
@@ -207,7 +207,7 @@ export default {
   },
   filters: {
     currency(value) {
-      return value.toFixed(2);
+      return value ? value.toFixed(2) : null;
     },
   },
   methods: {
@@ -281,9 +281,14 @@ export default {
                   this.alerta = response.data.error;
                   this.alerta_mensaje = response.data.successMessage;
                   let params = "?comprobanteId=" + response.data.comprobante_id;
-                  console.log(params);
-                  axios.get(`${this.app_url}/generar_ticket/{comprobante_id}/${params}`);
-                  window.open(`${this.app_url}/generar_pdf/{comprobante_id}/${params}`, "_blank");
+                  //console.log(params);
+                  axios.get(
+                    `${this.app_url}/generar_ticket/{comprobante_id}/${params}`
+                  );
+                  window.open(
+                    `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
+                    "_blank"
+                  );
                   this.accion = "Mostrar";
                 } else {
                   console.log("Error");
