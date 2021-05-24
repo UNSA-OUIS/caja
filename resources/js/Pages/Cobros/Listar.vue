@@ -5,7 +5,7 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Lista de cobros {{url_pdf}}</li>
+        <li class="breadcrumb-item active">Lista de cobros</li>
       </ol>
     </nav>
     <div class="card">
@@ -135,9 +135,11 @@
             >
           </template>
           <template v-slot:cell(acciones)="row">
-            <b-button variant="info" size="sm" @click="visualizar(row.item.url_pdf)">
-              <b-icon icon="printer"></b-icon>
-            </b-button>
+            <b-button-group>
+              <b-button variant="info" size="sm" @click="visualizar(row.item.url_pdf)"> PDF </b-button>
+              <b-button variant="info" size="sm" @click="visualizar(row.item.url_ticket)"> Ticket </b-button>
+            </b-button-group>
+
             <inertia-link
               class="btn btn-primary btn-sm"
               :href="route('consulta.mostrar', row.item)"
@@ -178,7 +180,6 @@ import AppLayout from "@/Layouts/AppLayout";
 
 export default {
   name: "comprobantes.listar",
-  props: ["url_pdf"],
   components: {
     AppLayout,
   },
@@ -189,7 +190,11 @@ export default {
         { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
         { key: "codi_usuario", label: "Código usuario", class: "text-center" },
         { key: "usuario", label: "Usuario", sortable: true },
-        { key: "tipo_comprobante.nombre", label: "Comprobante", class: "text-center" },
+        {
+          key: "tipo_comprobante.nombre",
+          label: "Comprobante",
+          class: "text-center",
+        },
         { key: "serie", label: "Serie", class: "text-center" },
         { key: "correlativo", label: "Correlativo", class: "text-center" },
         { key: "estado", label: "Estado", class: "text-center" },
@@ -205,11 +210,6 @@ export default {
       sortDirection: "asc",
       filter: null,
     };
-  },
-  created () {
-      if(this.url_pdf){
-          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.url_pdf}`, "_blank");
-      }
   },
   methods: {
     refreshTable() {

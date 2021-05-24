@@ -1,12 +1,12 @@
 
 <template>
   <div>
-    <!--<b-alert show dismissible variant="success" v-if="this.alerta == false">
-      {{ this.alerta_mensaje }}
+    <b-alert show dismissible variant="success" v-if="alerta == false">
+      {{ alerta_mensaje }}
     </b-alert>
-    <b-alert show dismissible variant="danger" v-if="this.alerta == true">
-      {{ this.alerta_mensaje }}
-    </b-alert>-->
+    <b-alert show dismissible variant="danger" v-if="alerta == true">
+      {{ alerta_mensaje }}
+    </b-alert>
     <hr />
     <form @submit.prevent="agregarDetalle">
       <b-row>
@@ -140,10 +140,7 @@
       </b-col>
     </b-row>
     <div>
-      <b-button
-        v-if="accion === 'Crear'"
-        variant="success"
-        @click="registrar()"
+      <b-button v-if="accion === 'Crear'" variant="success" @click="registrar()"
         >Registrar</b-button
       >
     </div>
@@ -161,7 +158,7 @@ export default {
   data() {
     return {
       accion: "Crear",
-      alerta: false,
+      alerta: null,
       alerta_mensaje: "",
       app_url: this.$root.app_url,
       concepto: null,
@@ -175,7 +172,7 @@ export default {
           tdClass: "codigo",
         },
         {
-          key: "concepto",
+          key: "descripcion",
           label: "CONCEPTO",
           class: "text-center",
           tdClass: "concepto",
@@ -189,7 +186,7 @@ export default {
     };
   },
   created() {
-      this.accion = 'Crear';
+    this.accion = "Crear";
   },
   computed: {
     precioTotal() {
@@ -210,7 +207,7 @@ export default {
   },
   filters: {
     currency(value) {
-      return value.toFixed(2);
+      return value ? value.toFixed(2) : null;
     },
   },
   methods: {
@@ -277,23 +274,22 @@ export default {
         })
         .then((value) => {
           if (value) {
-            //this.$inertia.post(route("comprobantes.registrar", this.comprobante));
             axios
               .post(`${this.app_url}/comprobantes`, this.comprobante)
               .then((response) => {
                 if (!response.data.error) {
-                  //this.alerta = response.data.error;
+                  this.alerta = response.data.error;
                   this.alerta_mensaje = response.data.successMessage;
-                  console.log(response.data.comprobante_id);
-                  //this.$inertia.post(route("comprobantes.generar_pdf"));
                   let params = "?comprobanteId=" + response.data.comprobante_id;
-                  console.log(params);
+                  //console.log(params);
+                  axios.get(
+                    `${this.app_url}/generar_ticket/{comprobante_id}/${params}`
+                  );
                   window.open(
                     `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
-                    "_blanck"
+                    "_blank"
                   );
-                  this.accion = 'Mostrar';
-                  //window.open(`${this.app_url}/comprobantes/pdf`, response.data.comprobante_id , "_blank");
+                  this.accion = "Mostrar";
                 } else {
                   console.log("Error");
                 }

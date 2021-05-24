@@ -261,6 +261,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/comprobantes/mostrar/{comprobante}', [ComprobanteController::class, 'showConsulta'])->name('consulta.mostrar');
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
     Route::get('/generar_pdf/{comprobante_id}', [ComprobanteController::class, 'generar_pdf'])->name('comprobantes.generar_pdf');
+    Route::get('/generar_ticket/{comprobante_id}', [ComprobanteController::class, 'generar_ticket'])->name('comprobantes.generar_ticket');
 
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
     Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
@@ -278,6 +279,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/facturaPDF', [FacturaController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
     Route::get('/sunat/facturaCDR', [FacturaController::class, 'descargar_cdr'])->name('facturas.descargar-cdr');
     Route::get('/sunat/facturaXML', [FacturaController::class, 'descargar_xml'])->name('facturas.descargar-xml');
+    Route::post('/sunat/enviarFacturas', [FacturaController::class, 'enviar_facturas'])->name('facturas.enviar-bloque');
     Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
 

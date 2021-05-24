@@ -302,8 +302,6 @@ class ComprobanteController extends Controller
             $result = ['errorMessage' => 'No se pudo registrar el comprobante', 'error' => true];
             Log::error('ComprobanteController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
-        //return redirect()->route('comprobantes.iniciar');
-        //return $result;
         return $result;
     }
 
@@ -317,17 +315,83 @@ class ComprobanteController extends Controller
 
     public function showConsulta(Comprobante $comprobante)
     {
-        $comprobante = Comprobante::with('detalles')->with('tipo_comprobante')->with('comprobanteable')->where('id', 'like', $comprobante->id)->first();
-        $conceptos = array();
-        $detalle = $comprobante->detalles;
-        foreach ($detalle as $index => $value) {
-            $conceptos[$index] = Concepto::with('tipo_concepto')
-                ->with('clasificador')
-                ->with('unidad_medida')
-                ->where('id', 'like', $comprobante->detalles[$index]->concepto_id)->first();
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $comprobante->id)->first();
+        $matricula = Alumno::with('matriculas.escuela')->where('cui', $comprobante->codi_usuario)->select('cui', 'dic', 'apn')->first();
+
+        if ($comprobante->tipo_usuario == 'empresa') {
+            $data = [
+                'tipo_comprobante' => 'FACTURA',
+                'razon_social' => $comprobante->comprobanteable['razon_social'],
+                'email' => $comprobante->comprobanteable['email'],
+                'direccion' => $comprobante->comprobanteable['direccion'],
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'alumno') {
+            $tipo_de_documento = '';
+            $numero_de_documento = '';
+            if (strlen($comprobante->comprobanteable['dic']) > 8) {
+                switch ($comprobante->comprobanteable['dic'][0]) {
+                    case 'D':
+                        $tipo_de_documento = 'DNI';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+                    case 'P':
+                        $tipo_de_documento = 'Pasaporte';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+                    case 'E':
+                        $tipo_de_documento = 'Carnet Extra.';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            } else if (strlen($comprobante->comprobanteable['dic']) == 8) {
+                $tipo_de_documento = 'DNI';
+                $numero_de_documento = $comprobante->comprobanteable['dic'];
+            }
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'tipo_doc' => $tipo_de_documento,
+                'ndoc' => $numero_de_documento,
+                'escuela' => $matricula->matriculas[0]->escuela['nesc'],
+                'alumno' => $comprobante->comprobanteable['apn'],
+                //'email' => $email->mail . '@unsa.edu.pe',
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'docente') {
+            $depa = Departamento::where('depa', '=',  $comprobante->comprobanteable['depend'])->first();
+
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'dni' =>   $comprobante->comprobanteable['dic'],
+                'docente' => str_replace("/", " ",   $comprobante->comprobanteable['apn']),
+                'email' =>   $comprobante->comprobanteable['correo'] . '@unsa.edu.pe',
+                'departamento' => $depa->ndep,
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'dependencia') {
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'dependencia' => $comprobante->comprobanteable['nomb_depe'],
+                'email' => 'sizaisi@unsa.edu.pe',
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'particular') {
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
+                'email' => $comprobante->comprobanteable['email'],
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         }
-        //return $conceptos;
-        return Inertia::render('Comprobantes/Mostrar', compact('comprobante', 'conceptos'));
     }
 
     public function anular(Comprobante $comprobante)
@@ -436,6 +500,26 @@ class ComprobanteController extends Controller
         $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'), $pdfGuardado);
         if ($guardado) {
             $comprobante->url_pdf = $comprobante->serie . '-' . $comprobante->correlativo . '.pdf';
+            $comprobante->update();
+        }
+
+        return $pdf->stream($comprobante->serie . '-' . $comprobante->correlativo . '.pdf');
+    }
+    public function generar_ticket(Request $request)
+    {
+
+        $comprobante = new Comprobante();
+
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $request->comprobanteId)->first();
+
+        $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
+        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->setPaper('b5', 'portrait');
+        $pdfGuardado = $pdf->output();
+
+        $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf'), $pdfGuardado);
+        if ($guardado) {
+            $comprobante->url_ticket = $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf';
             $comprobante->update();
         }
 

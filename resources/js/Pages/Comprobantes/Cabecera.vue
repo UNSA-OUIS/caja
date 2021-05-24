@@ -59,7 +59,8 @@
                     <template v-else-if="comprobante.tipo_usuario === 'empresa'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
                     </template>
-                    <detalle :comprobante="comprobante"></detalle>
+                    <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
+                    <detalle v-else :comprobante="comprobante"></detalle>
                 </div>
             </div>
         </div>
@@ -73,6 +74,7 @@ import CabeceraDependencia from "./CabeceraDependencia";
 import CabeceraParticular from "./CabeceraParticular";
 import CabeceraEmpresa from "./CabeceraEmpresa";
 import Detalle from "./Detalle";
+import DetalleMostrar from "./DetalleMostrar";
 
 export default {
     name: "comprobantes.cabecera",
@@ -84,23 +86,14 @@ export default {
         CabeceraDependencia,
         CabeceraParticular,
         CabeceraEmpresa,
-        Detalle
+        Detalle,
+        DetalleMostrar
     },
     data() {
         return {
-            //editable: true,
             app_url: this.$root.app_url,
         };
     },
-    /*updated () {
-      if(this.comprobante.id){
-          this.editable = false;
-          console.log('Entro');
-          window.open(`${this.app_url}/sunat/facturaPDF?url_pdf=${this.comprobante.url_pdf}`, "_blank");
-      }else{
-          console.log('No Entro');
-      }
-    },*/
 };
 </script>
 <style scoped>

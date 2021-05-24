@@ -1,14 +1,117 @@
 <!DOCTYPE html>
 <html>
 <!-- Required meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>{{$comprobante->tipo_comprobante['nombre']}} {{$comprobante->serie}}-{{$comprobante->correlativo}}</title>
 
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUIyJ" crossorigin="anonymous">
-<title>{{$comprobante}} {{$comprobante->tipo_comprobante['nombre']}} {{$comprobante->serie}}-{{$comprobante->correlativo}}</title>
+<style>
+    body {
+        /*position: relative;*/
+        /*width: 16cm;  */
+        /*height: 29.7cm; */
+        /*margin: 0 auto; */
+        /*color: #555555;*/
+        /*background: #FFFFFF; */
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        /*font-family: SourceSansPro;*/
+    }
+
+    #logo {
+        float: left;
+        margin-top: 1%;
+        margin-left: 2%;
+        margin-right: 2%;
+    }
+
+    #imagen {
+        width: 150px;
+    }
+
+    #datos {
+        float: left;
+        margin-top: 0%;
+        margin-left: 2%;
+        margin-right: 2%;
+        /*text-align: justify;*/
+    }
+
+    #encabezado {
+        text-align: center;
+        margin-right: 50%;
+        font-size: 15px;
+    }
+
+    #fact {
+        /*position: relative;*/
+        float: right;
+        margin-left: 2%;
+        margin-right: 2%;
+        font-size: 15px;
+    }
+
+    section {
+        clear: left;
+    }
+
+    #cliente {
+        text-align: left;
+    }
+
+    #facliente {
+        width: 40%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-top: 15px;
+    }
+
+    #fac,
+    #fv,
+    #fa {
+        color: #FFFFFF;
+        font-size: 15px;
+    }
+
+    #facliente thead {
+        padding: 20px;
+        background: #2183E3;
+        text-align: left;
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    #facvendedor {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-bottom: 15px;
+    }
+
+    #facvendedor thead {
+        padding: 20px;
+        background: #2183E3;
+        text-align: center;
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    #facarticulo {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-bottom: 15px;
+    }
+
+    #facarticulo thead {
+        padding: 20px;
+        background: #2183E3;
+        text-align: center;
+        border-bottom: 1px solid #FFFFFF;
+    }
+
+    #gracias {
+        text-align: center;
+    }
+</style>
 
 <body>
     <header>
@@ -27,37 +130,32 @@
         <br>
         <div id="fact" align="center">
             <b>
-                <h1>{{$comprobante->tipo_comprobante['nombre']}} ELECTRONICA</h1><br>
-                <h2>R.U.C. 20163646499</h2><br>
-                <h3>{{$comprobante->serie}}-{{$comprobante->correlativo}}</h3><br>
+                R.U.C. 20163646499<br>
+                {{$comprobante->tipo_comprobante['nombre']}} ELECTRONICA<br>
+                {{$comprobante->serie}}-{{$comprobante->correlativo}}
             </b>
         </div>
     </header>
     <br>
     @if ($comprobante->tipo_comprobante['nombre'] == 'FACTURA')
     <section>
-        <div id="cliente">
-            <table style="width:100%">
+        <div>
+            <table id="facliente">
+                <thead>
+                    <tr>
+                        <th id="fac">Cliente</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr>
-                        <td colspan="2">
-                            <b>Razon Social:</b> {{$comprobante->comprobanteable['razon_social']}}
-                        </td>
                         <td>
-                            <b>Ruc:</b> {{$comprobante->comprobanteable['ruc']}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <b>Direccion:</b> {{$comprobante->comprobanteable['direccion']}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <b>Fecha y hora de emision:</b> {{$comprobante->created_at}}
-                        </td>
-                        <td>
-                            <b>Tipo moneda:</b> SOLES
+                            <p id="cliente">
+                                <b>Razon Social: {{$comprobante->comprobanteable['razon_social']}}</b><br>
+                                <b>Ruc::</b> {{$comprobante->comprobanteable['ruc']}}<br>
+                                <b>Dirección:</b> {{$comprobante->comprobanteable['direccion']}}<br>
+                                <b>Fecha y hora de emision:</b> {{$comprobante->created_at}}<br>
+                                <b>Tipo moneda: </b> SOLES
+                            </p>
                         </td>
                     </tr>
                 </tbody>
@@ -67,31 +165,26 @@
     @endif
     @if ($comprobante->tipo_comprobante['nombre'] == 'BOLETA')
     <section>
-        <div id="cliente">
-            <table style="width:100%">
+        <div>
+            <table id="facliente">
+                <thead>
+                    <tr>
+                        <th id="fac">Cliente</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr>
-                        <td colspan="3">
-                            <b>Nombre:</b> {{$comprobante->comprobanteable['apn']}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <b>CUI:</b> {{$comprobante->comprobanteable['cui']}}
-                        </td>
-                        @php
-                        $dni = substr($comprobante->comprobanteable['dic'], 1);
-                        @endphp
                         <td>
-                            <b>DNI:</b> {{$dni}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <b>Fecha y hora de emision:</b> {{$comprobante->created_at}}
-                        </td>
-                        <td>
-                            <b>Tipo moneda:</b> SOLES
+                            <p id="cliente">
+                                <b>Nombre: </b>{{$comprobante->comprobanteable['apn']}}<br>
+                                <b>CUI:</b> {{$comprobante->comprobanteable['cui']}}<br>
+                                @php
+                                $dni = substr($comprobante->comprobanteable['dic'], 1);
+                                @endphp
+                                <b>DNI:</b> {{$dni}}<br>
+                                <b>Fecha y hora de emision:</b> {{$comprobante->created_at}}<br>
+                                <b>Tipo moneda: </b> SOLES
+                            </p>
                         </td>
                     </tr>
                 </tbody>
@@ -103,9 +196,9 @@
     <br>
     <section>
         <div>
-            <table class="table table-striped">
+            <table id="facarticulo">
                 <thead>
-                    <tr>
+                    <tr id="fa">
                         <th>Cantidad</th>
                         <th>Codigo</th>
                         <th>Descripcion</th>
@@ -116,11 +209,11 @@
                 <tbody>
                     @foreach($comprobante->detalles as $detalle)
                     <tr>
-                        <td> {{$detalle->cantidad}} </td>
-                        <td> {{$detalle->concepto_id}} </td>
+                        <td align="center"> {{$detalle->cantidad}} </td>
+                        <td align="center"> {{$detalle->concepto_id}} </td>
                         <td> {{$detalle->concepto->descripcion}} </td>
-                        <td> {{$detalle->valor_unitario}} </td>
-                        <td> {{$detalle->valor_unitario * $detalle->cantidad}} </td>
+                        <td align="center"> {{$detalle->valor_unitario}} </td>
+                        <td align="right"> {{$detalle->valor_unitario * $detalle->cantidad}} </td>
                     </tr>
                     @endforeach
                 </tbody>

@@ -12,6 +12,7 @@ use App\Models\TipoComprobante;
 use App\Models\TiposConcepto;
 use App\Models\UnidadMedida;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DataTestSeeder extends Seeder
 {
@@ -93,12 +94,12 @@ class DataTestSeeder extends Seeder
         Clasificador::create([ 'nombre'=>'GRADOS, TITULOS, CONSTANCIAS Y CERTIFICADOS']);
         Clasificador::create([ 'nombre'=>'DERECHOS UNIVERSITARIOS']);
         Clasificador::create([ 'nombre'=>'REGISTROSR']);
-        
+
         TiposConcepto::create(['id'=> '1','nombre'=>'ACADEMICO']);
         TiposConcepto::create(['id'=> '2','nombre'=>'MEDICINA']);
         TiposConcepto::create(['id'=> '3','nombre'=>'SERTEL']);
         TiposConcepto::create(['id'=> '4','nombre'=>'NO ACADEMICO']);
-        
+
         Concepto::create([ 'codigo'=>'1','descripcion'=>'MATRICULA DE MAESTRIA O DOCTORADO','descripcion_imp'=>'MATRICULA MAEST. O DOCTO.','precio'=>'100','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
         Concepto::create([ 'codigo'=>'2','descripcion'=>'CONSTANCIA DE MAESTRIA','descripcion_imp'=>'CONSTANCIA DE MAESTRIA','precio'=>'20','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
         Concepto::create([ 'codigo'=>'3','descripcion'=>'CAMBIO DE APELLIDOS Y NOMBRE','descripcion_imp'=>'CAMBIO APELLIDOS/NOMBRES','precio'=>'20','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
@@ -109,12 +110,12 @@ class DataTestSeeder extends Seeder
         Concepto::create([ 'codigo'=>'8','descripcion'=>'CONSTANCIA DE BACHILLER Y O PROFESIONAL','descripcion_imp'=>'CONSTANCIA DE BACHILLER Y O PROFESIONAL','precio'=>'30','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
         Concepto::create([ 'codigo'=>'9','descripcion'=>'TITULO PROFES. X SUFICIENCIA - A. SOCIALES/BIOMED','descripcion_imp'=>'TITULO PROFES. X SUFICIENCIA - A. SOCIALES/BIOMED','precio'=>'75','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
         Concepto::create([ 'codigo'=>'10','descripcion'=>'CARNET UNIV. DE POSGRADO','descripcion_imp'=>'CARNET UNIV. DE POSGRADO','precio'=>'100','tipo_precio'=>'fijo','tipo_afectacion'=>'30','tipo_concepto_id'=>'1','clasificador_id'=>'1','unidad_medida_id'=>'59','semestre'=>'1','codi_depe'=>'306151900','estado'=>'true','detraccion'=>'false']);
-        
-        
-        
+
+
+
         // //TipoComprobante::create([]);
         // //Comprobante::create([]);
-        \DB::table('particulares')->truncate();
+        DB::table('particulares')->truncate();
 
         Particular::create(['dni'=>'48611654','nombres'=>'TITA CRISTINA','apellidos'=>'CAMPAÑA NAVARRO','email'=>'tita@gmail.com']);
         Particular::create(['dni'=>'75665521','nombres'=>'ELVIS','apellidos'=>'SORIA CARRERA','email'=>'elvis@gmail.com']);
@@ -125,11 +126,11 @@ class DataTestSeeder extends Seeder
         Particular::create([ 'dni'=>'47645598','nombres'=>'WENDY FLORMILA','apellidos'=>'MORALES VALVERDE','email'=>'wendy@gmail.com']);
         Particular::create([ 'dni'=>'45645598','nombres'=>'SIMION','apellidos'=>'SANGAMA SANGAMA','email'=>'simion@gmail.com']);
         Particular::create([ 'dni'=>'43987456','nombres'=>'LUISA','apellidos'=>'CCOYURI LIRA','email'=>'luisa@gmail.com']);
-        Particular::create([ 'dni'=>'73654189','nombres'=>'ARIANA ALESSANDRA','apellidos'=>'CELIS ZEVALLOS','email'=>'ariana@gmail.com']);        
+        Particular::create([ 'dni'=>'73654189','nombres'=>'ARIANA ALESSANDRA','apellidos'=>'CELIS ZEVALLOS','email'=>'ariana@gmail.com']);
 
-        
+
         // CuentaCorriente::create([]);
-        \DB::table('empresas')->truncate();
+        DB::table('empresas')->truncate();
         Empresa::create(['ruc'=>'20549263675','razon_social'=>'RH ADUANAS S.A.C.','direccion'=>'---- CJN HUANAUCARE NRO. 295 INT. 403 LIMA LIMA SAN MIGUEL','email'=>'huam@gmail.com']);
         Empresa::create(['ruc'=>'20532620580','razon_social'=>'LOGISTIC TRAVEL ILO S.A.C.','direccion'=>'MZA. B LOTE. 04 ASOC. F. BARRETO TACNA TACNA TACNA','email'=>'tacna@gmail.com']);
         Empresa::create(['ruc'=>'20100950180','razon_social'=>'AEROADUANA S.A.C. AGENTES AFIANZADOS DE ADUANA','direccion'=>'AV. ABEL B DU PETIT THOUARS NRO. 4655 INT. 503 URB. BARBONCITO LIMA LIMA MIRAFLORES','email'=>'agentes@gmail.com']);

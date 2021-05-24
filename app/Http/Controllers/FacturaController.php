@@ -16,6 +16,8 @@ use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Luecano\NumeroALetras\NumeroALetras;
@@ -51,7 +53,7 @@ class FacturaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
-            ->with('detalles')->where('tipo_comprobante_id', 'like', 2)->where('codi_usuario', 'like', '%' . $request->filter . '%');
+            ->with('detalles')->where('tipo_comprobante_id', 'like', 2)->whereIn('estado', ['noEnviado', 'observado'])->where('codi_usuario', 'like', '%' . $request->filter . '%');
 
         $sortby = $request->sortby;
 
@@ -62,12 +64,197 @@ class FacturaController extends Controller
 
         return $query->paginate($request->size);
     }
+    public function enviar_facturas(Request $request)
+    {
+        $see = require config_path('Sunat\config.php');
+        $facturas = $request->all();
+
+
+        foreach ($facturas as $index => $value) {
+            try {
+                $factura = new Comprobante();
+
+                $factura = Comprobante::with('comprobanteable')->with('tipo_comprobante')
+                    ->with('detalles.concepto')->where('id', 'like', $value['id'])->first();
+
+                // Cliente
+                $client = (new Client())
+                    ->setTipoDoc('6')
+                    ->setNumDoc($factura->comprobanteable->ruc)
+                    ->setRznSocial($factura->comprobanteable->razon_social);
+
+                // Venta
+                $invoice = new Invoice();
+
+                $total_gravadas = 0;
+                $total_exonerados = 0;
+                $total_inafectos = 0;
+                $subtotal = 0;
+                $igv = 0;
+
+                $detalle = $factura->detalles;
+                foreach ($detalle as $index => $value) {
+                    $concepto = Concepto::with('tipo_concepto')
+                        ->with('clasificador')
+                        ->with('unidad_medida')
+                        ->where('id', 'like', $factura->detalles[$index]->concepto_id)->first();
+                    $items[$index] = (new SaleDetail())
+                        ->setCodProducto($concepto->id)
+                        ->setUnidad('NIU') // Unidad - Catalog. 03
+                        ->setCantidad($value['cantidad'])
+                        ->setMtoValorUnitario($value['valor_unitario'])
+                        ->setDescripcion($concepto->descripcion)
+                        ->setMtoBaseIgv(100.00)
+                        ->setPorcentajeIgv(18.00) // 18%
+                        ->setIgv(18.00 / $value['cantidad'])
+                        ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
+                        ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
+                        ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
+                        ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
+                    if ($concepto->tipo_afectacion == 10) {
+                        $total_gravadas += $value['valor_unitario'] * $value['cantidad'];
+                    } elseif ($concepto->tipo_afectacion == 20) {
+                        $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
+                    } elseif ($concepto->tipo_afectacion == 30) {
+                        $total_inafectos += $value['valor_unitario'] * $value['cantidad'];
+                    }
+                    $igv += 18.00 / $value['cantidad'];
+                }
+
+                $formatter = new NumeroALetras();
+                $montoLetras = $formatter->toInvoice($factura->total, 2, 'soles');
+
+                $legend = (new Legend())
+                    ->setCode('1000') // Monto en letras - Catalog. 52
+                    ->setValue($montoLetras);
+
+                $invoice->setDetails($items)->setLegends([$legend]);
+
+                $invoice
+                    ->setUblVersion('2.1')
+                    ->setTipoOperacion('0101') // Venta - Catalog. 51
+                    ->setTipoDoc('01') // Factura - Catalog. 01
+                    ->setSerie($factura->serie)
+                    ->setCorrelativo($factura->correlativo)
+                    ->setFechaEmision(new DateTime(now())) // Zona horaria: Lima
+                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                    ->setCompany($this->empresa)
+                    ->setClient($client)
+                    ->setMtoIGV($igv)
+                    ->setTotalImpuestos($igv);
+                if ($total_gravadas) {
+                    $invoice
+                        ->setValorVenta($total_gravadas)
+                        ->setSubTotal($total_gravadas + $igv)
+                        ->setMtoImpVenta($total_gravadas + $igv)
+                        ->setMtoOperGravadas($total_agravadas);
+                } else if ($total_exonerados) {
+                    $invoice
+                        ->setValorVenta($total_exonerados)
+                        ->setSubTotal($total_exonerados + $igv)
+                        ->setMtoImpVenta($total_exonerados + $igv)
+                        ->setMtoOperGravadas($total_exonerados);
+                } else if ($total_inafectos) {
+                    $invoice
+                        ->setValorVenta($total_inafectos)
+                        ->setSubTotal($total_inafectos + $igv)
+                        ->setMtoImpVenta($total_inafectos + $igv)
+                        ->setMtoOperGravadas($total_inafectos);
+                }
+
+                if ($concepto->detraccion) {
+                    $invoice->setDetraccion(
+                        // MONEDA SIEMPRE EN SOLES
+                        (new Detraction())
+                            // Carnes y despojos comestibles
+                            ->setCodBienDetraccion('014') // catalog. 54
+                            // Deposito en cuenta
+                            ->setCodMedioPago('001') // catalog. 59
+                            ->setCtaBanco('0004-3342343243')
+                            ->setPercent(4.00)
+                            ->setMount(37.76)
+                    );
+                }
+
+
+
+                $result = $see->send($invoice);
+
+                // Guardar XML firmado digitalmente.
+                $xmlGuardado = file_put_contents(
+                    storage_path('app/public/Sunat/XML/' . $factura->serie . '-' . $factura->correlativo . '.xml'),
+                    $see->getFactory()->getLastXml()
+                );
+
+                if ($xmlGuardado) {
+                    $factura->url_xml = $factura->serie . '-' . $factura->correlativo . '.xml';
+                    $factura->update();
+                }
+
+                // Verificamos que la conexión con SUNAT fue exitosa.
+                if (!$result->isSuccess()) {
+                    // Mostrar error al conectarse a SUNAT.
+                    $factura->observaciones = 'Codigo Error: ' . $result->getError()->getCode() . '\n' . 'Mensaje Error: ' . $result->getError()->getMessage();
+                    $factura->update();
+                    return $factura;
+                    exit();
+                }
+
+                // Guardamos el CDR
+                $cdrGuardado = file_put_contents(storage_path('app/public/Sunat/CDR/' . 'R-' . $factura->serie . '-' . $factura->correlativo . '.zip'), $result->getCdrZip());
+                if ($cdrGuardado) {
+                    $factura->url_cdr = 'R-' . $factura->serie . '-' . $factura->correlativo . '.zip';
+                    $factura->update();
+                }
+
+                $cdr = $result->getCdrResponse();
+
+                $code = (int)$cdr->getCode();
+
+                if ($code === 0) {
+                    $factura->estado = 'aceptado';
+                    $factura->observaciones = $cdr->getDescription() . PHP_EOL;
+                    $factura->update();
+                    if (count($cdr->getNotes()) > 0) {
+                        // Corregir estas observaciones en siguientes emisiones.
+                        $factura->estado = 'observado';
+                        $factura->observaciones = '';
+                        $factura->update();
+                        foreach ($cdr->getNotes() as $index => $value) {
+                            $factura->observaciones .= json_encode('Observacion #' . $index . '=>' . $value, JSON_UNESCAPED_UNICODE) . "\n";
+                        }
+                        $factura->update();
+                    }
+                } else if ($code >= 2000 && $code <= 3999) {
+                    $factura->estado = 'rechazado';
+                    $factura->observaciones = '';
+                    $factura->update();
+                } else {
+                    /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
+                    /*code: 0100 a 1999 */
+                    $factura->estado = 'rechazado';
+                    $factura->observaciones = '';
+                    $factura->update();
+                }
+                $result = [
+                    'successMessage' => 'Facturas enviadas con exito',
+                    'error' => false
+                ];
+            } catch (\Exception $e) {;
+                $factura->observaciones = 'Error al enviar la factura' . $e;
+                $factura->update();
+                $result = ['errorMessage' => 'No se pudieron enviar las facturas', 'error' => true];
+                Log::error('FacturaController@enviar_facturas, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            }
+        }
+
+        return $result;
+    }
     public function enviar(Comprobante $factura)
     {
         $factura = Comprobante::with('comprobanteable')->with('tipo_comprobante')
             ->with('detalles')->where('id', 'like', $factura->id)->first();
-        //return $factura->detalles[0]->concepto_id;
-
 
         try {
             $see = require config_path('Sunat\config.php');
@@ -232,8 +419,67 @@ class FacturaController extends Controller
                 $factura->observaciones = '';
                 $factura->update();
             }
+        } catch (\Exception $e) {
+            $factura->observaciones = 'Error al enviar la factura' . $e;
+            $factura->update();
+            return $e;
+        }
 
-            $html = new HtmlReport();
+        return redirect()->route('facturas.iniciar');
+    }
+    public function anular(Comprobante $factura)
+    {
+        try {
+            $factura->estado = 'anulado';
+            $factura->observaciones = '';
+            $factura->update();
+        } catch (\Exception $e) {
+            $factura->observaciones = 'Error al anular la factura' . $e->getMessage();
+            $factura->update();
+        }
+
+        return redirect()->route('sunat.iniciarFacturas');
+    }
+
+    public function descargar_pdf(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
+            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_cdr(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
+            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_xml(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
+            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+}
+
+/*$html = new HtmlReport();
             $html->setTemplate('invoice.html.twig');
 
             $report = new PdfReport($html);
@@ -274,75 +520,4 @@ class FacturaController extends Controller
             if ($pdfGuardado) {
                 $factura->url_pdf = $invoice->getName() . '.pdf';
                 $factura->update();
-            }
-        } catch (\Exception $e) {
-            $factura->observaciones = 'Error al enviar la factura' . $e;
-            $factura->update();
-            return $e;
-        }
-
-        return redirect()->route('facturas.iniciar');
-    }
-    public function anular(Comprobante $factura)
-    {
-        try {
-            $factura->estado = 'anulado';
-            $factura->observaciones = '';
-            $factura->update();
-        } catch (\Exception $e) {
-            $factura->observaciones = 'Error al anular la factura' . $e->getMessage();
-            $factura->update();
-        }
-
-        return redirect()->route('sunat.iniciarFacturas');
-    }
-
-    public function descargar_pdf(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
-            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-            //return $content;
-            //return response()->file($path);
-            /*$headers = array(
-                'Content-Type: application/pdf',
-              );*/
-            //return $path;
-            //return response()->download($content);
-
-            //return Response::download($path, 'filename.pdf', $headers);
-            /*return Storage::download($content) > withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);*/
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_cdr(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
-            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_xml(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
-            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-}
+            }*/
