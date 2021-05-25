@@ -51,10 +51,15 @@ class FacturaController extends Controller
     public function index(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
+        //return $request->all();
+        //dd($request->all());
 
-        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
-            ->with('detalles.concepto')->where('tipo_usuario','like','empresa')->where('tipo_comprobante_id', 'like', 2)->whereIn('estado', ['noEnviado', 'observado'])->whereDate('created_at', '>=', $request->fechaInicio)
-            ->whereDate('created_at', '<=', $request->fechaFin);
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
+                 ->where('tipo_usuario','like','empresa')
+                 ->where('tipo_comprobante_id', 'like', 2)
+                 ->whereIn('estado', ['noEnviado', 'observado'])
+                 ->whereDate('created_at', '>=', $request->fecha_inicio)
+                 ->whereDate('created_at', '<=', $request->fecha_fin);
 
         $sortby = $request->sortby;
 
