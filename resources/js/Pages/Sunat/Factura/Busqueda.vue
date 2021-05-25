@@ -49,7 +49,12 @@
           </b-button>
         </div>
         <div class="row justify-content-center mb-1" v-if="mostrar_facturas">
-          <facturas :fecha_inicio="fecha_inicio" :fecha_fin="fecha_fin" :key="renderKey"> </facturas>
+          <facturas
+            :fecha_inicio="fecha_inicio"
+            :fecha_fin="fecha_fin"
+            :key="renderKey"
+          >
+          </facturas>
         </div>
       </div>
     </div>
@@ -95,6 +100,7 @@ export default {
       }
     },
     limpiar() {
+      this.mostrar_facturas = false;
       this.filtrado = false;
       this.alerta = false;
       this.fecha_inicio = "";

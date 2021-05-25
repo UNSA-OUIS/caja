@@ -9,6 +9,7 @@
       small
       responsive
       stacked="md"
+      :busy="isBusy"
       :items="myProvider"
       :fields="fields"
       :current-page="currentPage"
@@ -16,6 +17,13 @@
       empty-text="No hay fac para mostrar"
       empty-filtered-text="No hay usuarios que coincidan con su búsqueda."
     >
+      <template #table-busy>
+        <div class="text-center text-success my-2">
+          <b-spinner class="align-middle"></b-spinner>
+          <strong v-if="!enviado">Cargando ...</strong>
+          <strong v-else>Enviando facturas a sunat</strong>
+        </div>
+      </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
           >No Enviado</b-badge
@@ -66,9 +74,20 @@
         </b-card>
       </template>
       <template #table-caption
-        >Se encontraron {{ totalRows }} facturas</template
-      >
+        >Se encontraron {{ totalRows }} facturas
+      </template>
     </b-table>
+    <b-row>
+      <b-button
+        variant="success"
+        title="Enviar facturas a sunat"
+        @click="enviar_facturas()"
+      >
+        Enviar Facturas a Sunat
+        <b-icon icon="cloud-arrow-up"></b-icon>
+      </b-button>
+    </b-row>
+    <br />
     <b-row>
       <b-col class="ml-auto">
         <b-pagination
@@ -92,6 +111,9 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      items: [],
+      isBusy: false,
+      enviado: false,
       fields: [
         {
           key: "codi_usuario",
@@ -128,8 +150,8 @@ export default {
       ],
       totalRows: 1,
       currentPage: 1,
-      perPage: 5,
-      pageOptions: [5, 10, 15],
+      perPage: 50,
+      pageOptions: [50, 100, 150],
     };
   },
   methods: {
@@ -148,11 +170,55 @@ export default {
       });
 
       return promise.then((response) => {
-        const facturas = response.data.data;
+        this.items = response.data.data;
         this.totalRows = response.data.total;
 
-        return facturas || [];
+        return this.items || [];
       });
+    },
+    enviar_facturas() {
+      console.log(this.items);
+      this.enviado = true;
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer enviar estas facturas?", {
+          title: "Enviar facturas",
+          okVariant: "success",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            axios
+              .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
+              .then((response) => {
+                console.log(response.data);
+                if (!response.data.error) {
+                  console.log(response.data.error);
+                  console.log(response.data.successMessage);
+                  this.$bvToast.toast("Facturas enviadas con exito", {
+                    title: "Envio de facturas a sunat",
+                    variant: "success",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                } else {
+                  console.log(response.data.error);
+                  console.log(response.data.errorMessage);
+                  this.$bvToast.toast("Hubo un error al enviar las facturas", {
+                    title: "Error al enviar las facturas",
+                    variant: "danger",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+            this.refreshTable();
+          }
+        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
