@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([PermisoSeeder::class]);
         $this->call([DataTestSeeder::class]);
+        $this->call([ComprobanteSeeder::class]);
         //$this->call([AlumnoSeeder::class]);
         //$this->call([DocenteSeeder::class]);
         //$this->call([DependenciaSeeder::class]);
