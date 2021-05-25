@@ -301,20 +301,6 @@ export default {
                     toaster: "b-toaster-bottom-right",
                     solid: true,
                   });
-
-                  //this.alerta_mensaje = response.data.successMessage;
-                  /*let params =
-                    "?comprobante_id=" + response.data.comprobante_id;
-                  axios.get(`${this.app_url}/generar_pdf`, {
-                    params: {
-                      comprobante_id: response.data.comprobante_id,
-                    },
-                  });
-                  window.open(
-                    `${this.app_url}/generar_ticket/${params}`,
-                    "_blank"
-                  );
-                  this.accion = "Mostrar";*/
                 } else {
                   console.log("Error");
                 }
@@ -322,10 +308,6 @@ export default {
               .catch(function (error) {
                 console.log(error);
               });
-            /*this.result = this.$inertia.post(
-              route("facturas.enviar-bloque"),
-              this.items
-            );*/
             this.refreshTable();
           }
         });
