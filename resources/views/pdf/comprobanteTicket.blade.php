@@ -8,7 +8,7 @@
 
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-<title>Reporte de Venta</title>
+<title>Ticket de {{$comprobante->tipo_comprobante['nombre']}} {{$comprobante->serie}}-{{$comprobante->correlativo}}</title>
 
 <style>
     @charset "utf-8";
@@ -233,7 +233,7 @@
 
         text-align: right;
 
-        width: 140px;
+        width: 100%;
 
         color: #666;
 
@@ -255,7 +255,7 @@
 
         text-align: left;
 
-        width: 170px;
+        width: 100%;
 
         color: #333;
 
@@ -359,7 +359,7 @@
 
     .block {
 
-        width: 1000px;
+        width: 100%;
 
         padding-bottom: 5px;
 
@@ -387,7 +387,7 @@
 
     .wrapper {
 
-        width: 1000px;
+        width: 100%;
 
 
 
@@ -407,7 +407,7 @@
 
         background: #fff;
 
-        width: 960px;
+        width: 100%;
 
         /*border-left: 1px solid #ccc;
 
@@ -495,7 +495,7 @@
 
         height: 25px;
 
-        width: auto;
+        width: 100%;
 
         float: left;
 
@@ -523,7 +523,7 @@
 
         height: 25px;
 
-        width: 50;
+        width: 100%;
 
         float: left;
 
@@ -571,7 +571,7 @@
 
         height: 40px;
 
-        width: 40px;
+        width: 100%;
 
         padding-bottom: 10px;
 
@@ -705,19 +705,19 @@
     }
 
     table.toolbar td.spacer {
-        width: 10px;
+        width: 100%;
     }
 
     table.toolbar td.divider {
         border-right: 1px solid #eee;
-        width: 5px;
+        width: 100%;
     }
 
 
 
     table.toolbar span {
         float: none;
-        width: 32px;
+        width: 100%;
         height: 32px;
         margin: 0 auto;
         display: block;
@@ -833,7 +833,7 @@
 
     .zona_total {
 
-        width: 400px;
+        width: 100%;
 
         float: left;
 
@@ -851,7 +851,7 @@
 
 
 
-        width: 340px;
+        width: 100%;
 
         padding: 10px 5px 10px 5px;
 
@@ -975,7 +975,7 @@
 
         <br>
 
-        <table border="0" align="center" width="300px">
+        <table border="0" align="center" width="100%">
 
             <tr>
 
@@ -1030,7 +1030,7 @@
 
         <!-- Mostramos los detalles de la venta en el documento HTML -->
 
-        <table border="0" align="center" width="300px">
+        <table border="0" align="center" width="100%">
 
             <tr>
 
@@ -1044,7 +1044,7 @@
 
             <tr>
 
-                <td colspan="3">==========================================</td>
+                <td colspan="3">=================================================</td>
 
             </tr>
 
@@ -1094,31 +1094,13 @@
 
                 <td align="right"><b>TOTAL:</b></td>
 
-                <td align="right"><b>S/.  {{$comprobante->total}}</b></td>
+                <td align="right"><b>S/. {{$comprobante->total}}</b></td>
 
             </tr>
 
             <tr>
 
                 <td colspan="3">&nbsp;</td>
-
-            </tr>
-
-            <tr>
-
-                <td colspan="3" align="center">¡Gracias por su compra!</td>
-
-            </tr>
-
-            <tr>
-
-                <td colspan="3" align="center">Grupo Cardeña</td>
-
-            </tr>
-
-            <tr>
-
-                <td colspan="3" align="center">Chivay - Arequipa</td>
 
             </tr>
 

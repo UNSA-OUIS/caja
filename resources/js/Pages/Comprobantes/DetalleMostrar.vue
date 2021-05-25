@@ -48,8 +48,8 @@
                 disabled
                 v-model="row.item.tipo_descuento"
               >
-                <b-form-select-option value="S/.">S/.</b-form-select-option>
-                <b-form-select-option value="%">%</b-form-select-option>
+                <b-form-select-option value="soles">S/.</b-form-select-option>
+                <b-form-select-option value="porcentaje">%</b-form-select-option>
               </b-form-select>
               <b-form-input
                 readonly

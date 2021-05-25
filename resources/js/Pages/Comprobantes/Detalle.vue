@@ -104,8 +104,10 @@
                 @change="calcularSubTotal(row.item.concepto_id)"
                 :disabled="accion === 'Mostrar'"
               >
-                <b-form-select-option value="S/.">S/.</b-form-select-option>
-                <b-form-select-option value="%">%</b-form-select-option>
+                <b-form-select-option value="soles">S/.</b-form-select-option>
+                <b-form-select-option value="porcentaje"
+                  >%</b-form-select-option
+                >
               </b-form-select>
               <b-form-input
                 class="text-center"
@@ -233,7 +235,7 @@ export default {
         ).length == 0
       ) {
         this.$set(this.concepto, "cantidad", 1);
-        this.$set(this.concepto, "tipo_descuento", "S/.");
+        this.$set(this.concepto, "tipo_descuento", "soles");
         this.$set(this.concepto, "descuento", 0);
         this.concepto.precio =
           this.concepto.tipo_precio == "variable" ? 0 : this.concepto.precio;
@@ -258,9 +260,9 @@ export default {
         (detalle) => detalle.concepto_id === concepto_id
       );
       let subtotal_parcial = objDetalle.cantidad * objDetalle.precio;
-      if (objDetalle.tipo_descuento === "S/.") {
+      if (objDetalle.tipo_descuento === "soles") {
         objDetalle.subtotal = subtotal_parcial - objDetalle.descuento;
-      } else if (objDetalle.tipo_descuento === "%") {
+      } else if (objDetalle.tipo_descuento === "porcentaje") {
         objDetalle.subtotal =
           subtotal_parcial - (subtotal_parcial * objDetalle.descuento) / 100;
       }
@@ -283,13 +285,15 @@ export default {
                 if (!response.data.error) {
                   this.alerta = response.data.error;
                   this.alerta_mensaje = response.data.successMessage;
-                  let params = "?comprobanteId=" + response.data.comprobante_id;
-                  //console.log(params);
-                  axios.get(
-                    `${this.app_url}/generar_ticket/{comprobante_id}/${params}`
-                  );
+                  let params =
+                    "?comprobante_id=" + response.data.comprobante_id;
+                  axios.get(`${this.app_url}/generar_pdf`, {
+                    params: {
+                      comprobante_id: response.data.comprobante_id,
+                    },
+                  });
                   window.open(
-                    `${this.app_url}/generar_pdf/{comprobante_id}/${params}`,
+                    `${this.app_url}/generar_ticket/${params}`,
                     "_blank"
                   );
                   this.accion = "Mostrar";
