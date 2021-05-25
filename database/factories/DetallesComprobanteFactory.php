@@ -28,6 +28,8 @@ class DetallesComprobanteFactory extends Factory
             'valor_unitario' => $this->faker->randomNumber(2),
             'descuento' => $this->faker->randomNumber(2),
             'estado' => true,
+            'tipo_descuento' => $this->faker->randomElement(['soles', 'porcentaje']),
+            'subtotal' => $this->faker->randomNumber(2),
             'concepto_id' => function () {
                 return Concepto::inRandomOrder()->first()->id;
             },
