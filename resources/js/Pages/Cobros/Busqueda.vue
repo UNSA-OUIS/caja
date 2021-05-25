@@ -76,7 +76,34 @@
                             </div>
                         </div>
                     </fieldset>
-                </div>       
+                </div>  
+                <div class="row justify-content-center mb-1" v-show="show_busqueda_documento">
+                    <fieldset class="col-12 col-md-6 px-3">
+                        <legend>Comprobante a modificar:</legend>
+                        <div class="row justify-content-center">      
+                            <b-form inline v-on:submit.prevent="buscarComprobante">                        
+                                <b-form-input
+                                    v-model="serie"
+                                    :state="validation"
+                                    size="sm"
+                                    id="inline-form-input-serie"
+                                    class="mb-2 mr-sm-2 mb-sm-0"                                    
+                                    trim
+                                ></b-form-input>
+                                -
+                                <b-form-input
+                                    v-model="correlativo"
+                                    :state="validation"
+                                    size="sm"
+                                    id="inline-form-input-correlativo"
+                                    class="mb-2 mr-sm-2 mb-sm-0"                                    
+                                    trim
+                                ></b-form-input> 
+                                <b-button size="sm" variant="primary" @click="buscarComprobante">Buscar</b-button> 
+                            </b-form>
+                        </div>
+                    </fieldset>
+                </div>      
                 <div class="row justify-content-center mb-1" v-if="mostrar_usuarios">
                     <fieldset class="col-12 col-md-6 px-3">
                         <legend>Resultados de búsqueda:</legend>                                           
@@ -148,6 +175,8 @@ export default {
             tipo_usuario: null,
             opcion_busqueda: null,
             filtro: '',         
+            serie: '',         
+            correlativo: '',         
             tipos_comprobante: [                
                 { value: 'BOLETA', text: 'BOLETA' },
                 { value: 'FACTURA', text: 'FACTURA' },
@@ -194,6 +223,7 @@ export default {
             opciones_busqueda: [],
             show_select_tipos_usuario: false,
             show_opciones_de_busqueda: false,
+            show_busqueda_documento: false,
             mostrar_usuarios: false,
             renderKey: 1,                   
         };
@@ -227,13 +257,16 @@ export default {
             if (val === 'BOLETA') {
                 this.tipos_usuario = this.tipos_usuario_boleta
                 this.show_select_tipos_usuario = true
+                this.show_busqueda_documento = false
             }
             else if (val === 'FACTURA') {
                 this.tipos_usuario = this.tipos_usuario_factura
                 this.show_select_tipos_usuario = true
+                this.show_busqueda_documento = false
             }     
             else {
                 this.show_select_tipos_usuario = false
+                this.show_busqueda_documento = true
             }
         },
         tipo_usuario: function(val) {      
@@ -300,8 +333,8 @@ export default {
                 case 'NOMBRE':
                     this.filtro = ''
                     this.form_validation_variables.minsize=8;        
-                    this.form_validation_variables.maxsize=99; 
-                    this.form_validation_variables.only_letters=true;       
+                    this.form_validation_variables.maxsize=150; 
+                    this.form_validation_variables.only_letters=false;       
                     this.form_validation_variables.only_numbers=false;
                     break;
                 case 'CODIGO':
@@ -329,7 +362,14 @@ export default {
                 this.mostrar_usuarios = true
                 this.renderKey++
             }
-        },                        
+        },   
+        buscarComprobante() {
+            this.$inertia.get(route('comprobantes.nota'), {                
+                'serie' : this.serie,
+                'correlativo': this.correlativo,
+                'tipo_comprobante': this.tipo_comprobante,
+            })
+        },                      
     },
 };
 </script>

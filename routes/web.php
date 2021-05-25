@@ -255,6 +255,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/crear_dependencia', [ComprobanteController::class, 'crear_dependencia'])->name('comprobantes.crear_dependencia');
     Route::get('/crear_particular', [ComprobanteController::class, 'crear_particular'])->name('comprobantes.crear_particular');
     Route::get('/crear_empresa', [ComprobanteController::class, 'crear_empresa'])->name('comprobantes.crear_empresa');
+    Route::get('/crear_nota', [ComprobanteController::class, 'crear_nota'])->name('comprobantes.nota');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::get('/comprobantes/{comprobante}/visualizar', [ComprobanteController::class, 'visualizar'])->name('comprobantes.visualizar');

@@ -281,6 +281,25 @@ class ComprobanteController extends Controller
         return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
     }
 
+    public function crear_nota(Request $request)
+    {
+        $comprobante = Comprobante::with('detalles')->where('serie', $request->serie)
+                                    ->where('correlativo', $request->correlativo)
+                                    ->first();
+        
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
+        
+        $data = [
+            'tipo_comprobante' => $request->tipo_comprobante,
+            'serie' => $numeroOpe->serie,
+            'correlativo' => $numeroOpe->correlativo,
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Nota', compact('comprobante', 'data'));
+    }
+
     public function store(Request $request)
     {
         DB::beginTransaction();

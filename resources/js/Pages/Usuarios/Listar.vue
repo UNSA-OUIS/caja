@@ -97,6 +97,9 @@
                     empty-text="No hay usuarios para mostrar"
                     empty-filtered-text="No hay usuarios que coincidan con su búsqueda."
                 >
+                    <template v-slot:cell(roles)="row">
+                        {{ rolesUsuario(row.item.roles) }}
+                    </template>
                     <template v-slot:cell(condicion)="row">
                         <b-badge v-if="!row.item.deleted_at" variant="success"
                             >Activo</b-badge
@@ -171,7 +174,7 @@ export default {
                 },
                 { key: "name", label: "Nombre", sortable: true },
                 { key: "email", label: "Email", sortable: true },
-                { key: "roles[0].name", label: "Rol", sortable: true , class: "text-center"},        
+                { key: "roles", label: "Rol", sortable: true , class: "text-center"},        
                 { key: "condicion", label: "Condición", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],
@@ -189,6 +192,11 @@ export default {
     methods: {
         refreshTable() {
             this.$refs.tbl_usuarios.refresh();
+        },
+        rolesUsuario(roles) {
+            var rol = ""
+            rol += roles.map(a => ' ' + a.name)
+            return rol
         },
         myProvider(ctx) {
             let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
