@@ -281,6 +281,78 @@ class ComprobanteController extends Controller
         return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
     }
 
+    public function crear_nota(Request $request)
+    {
+        /*$comprobante = Comprobante::with('detalles')->where('serie', $request->serie)
+                                    ->where('correlativo', $request->correlativo)
+                                    ->first();
+        
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
+        
+        $data = [
+            'tipo_comprobante' => $request->tipo_comprobante,
+            'serie' => $numeroOpe->serie,
+            'correlativo' => $numeroOpe->correlativo,
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+
+        return Inertia::render('Comprobantes/Nota', compact('comprobante', 'data'));*/
+        $cobro = Comprobante::with('detalles.concepto', 'comprobanteable')->where('id', $request->comprobanteId)->first();
+
+        $comprobante = new Comprobante();
+
+        $comprobante->tipo_usuario = "alumno";
+        $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.' . $request->tipo_comprobante);
+
+        $usuario = Auth::user();
+        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
+        $comprobante->serie = $numeroOpe->serie;
+        $comprobante->correlativo = $numeroOpe->correlativo;
+
+        $comprobante->tipo_nota = "";
+        $comprobante->motivo = "";
+        $comprobante->serie_afectada = $cobro->serie;
+        $comprobante->correlativo_afectado = $cobro->correlativo;
+        $comprobante->total_descuento = "";
+        $comprobante->total_impuesto = "";
+        $comprobante->total = "";
+
+        
+
+        $data = [
+            'tipo_comprobante' => $request->tipo_comprobante,
+            'comprobante' => $cobro,
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+        ];
+        return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+    }
+
+    public function store_nota(Request $request)
+    {
+        $comprobante = new Comprobante();
+        $comprobante->serie = $request->serie;
+        $comprobante->correlativo = $request->correlativo;
+        $comprobante->serie_afectada = $request->serie_afectada;
+        $comprobante->correlativo_afectado = $request->correlativo_afectado;
+        $comprobante->motivo = $request->motivo;
+        $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
+        $comprobante->tipo_nota = $request->tipo_nota;
+        $comprobante->tipo_usuario = $request->tipo_usuario;
+        $comprobante->total = 10;
+        $comprobante->total_descuento = 10;
+        $comprobante->total_impuesto = 10;
+        $comprobante->estado = 'noEnviado';
+        $comprobante->cajero_id = Auth::user()->id;
+        $comprobante->save();
+
+        $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
+            $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+            $numeroComp->update();
+
+        return redirect()->route('cobros.iniciar');
+    }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -508,6 +580,9 @@ class ComprobanteController extends Controller
                     ->select('codi_depe', 'nomb_depe', 'mail_depe')
                     ->orderBy('nomb_depe', 'asc');
             }
+        } else if ($request->tipo_usuario == 'COMPROBANTE') {
+            $query = Comprobante::with('comprobanteable')->where('serie', $request->serie)
+                ->where('correlativo', $request->correlativo);
         }
 
         return $query->paginate($request->size);
@@ -541,7 +616,8 @@ class ComprobanteController extends Controller
 
         $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
-        $pdf->setPaper('b6', 'portrait');
+        $customPaper = array(0,0,567.00,283.80);
+        $pdf->setPaper($customPaper, 'landscape');
         $pdfGuardado = $pdf->output();
 
         $guardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf'), $pdfGuardado);

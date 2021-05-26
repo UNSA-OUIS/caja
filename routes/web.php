@@ -229,10 +229,10 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     /******************************* COBROS *******************************/
     Route::get('/cobros', function () {
-        return Inertia::render('Cobros/Listar');
+        return Inertia::render('Comprobantes/ListarCobros');
     })->name('cobros.iniciar');
     Route::get('/cobros/buscarUsuario', function () {
-        return Inertia::render('Cobros/Busqueda');
+        return Inertia::render('Comprobantes/Busqueda');
     })->name('cobros.buscarUsuario');
     /**********************************************************************/
 
@@ -243,9 +243,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/consultas', function () {
         return Inertia::render('Comprobantes/Consultas');
     })->name('comprobantes.consultas');
-    Route::get('/buscarUsuario', function () {
-        return Inertia::render('Comprobantes/Busqueda');
-    })->name('comprobantes.buscarUsuario');
 
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
     Route::get('/comprobantes/consultas', [ComprobanteController::class, 'consultas'])->name('comprobantes-consultas.listar');
@@ -255,7 +252,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/crear_dependencia', [ComprobanteController::class, 'crear_dependencia'])->name('comprobantes.crear_dependencia');
     Route::get('/crear_particular', [ComprobanteController::class, 'crear_particular'])->name('comprobantes.crear_particular');
     Route::get('/crear_empresa', [ComprobanteController::class, 'crear_empresa'])->name('comprobantes.crear_empresa');
+    Route::get('/crear_nota', [ComprobanteController::class, 'crear_nota'])->name('comprobantes.crear_nota');
     Route::post('/comprobantes', [ComprobanteController::class, 'store'])->name('comprobantes.registrar');
+    Route::post('/notas', [ComprobanteController::class, 'store_nota'])->name('comprobantes.registrar_nota');
     Route::get('/comprobantes/{comprobante}', [ComprobanteController::class, 'show'])->name('comprobantes.mostrar');
     Route::get('/comprobantes/{comprobante}/visualizar', [ComprobanteController::class, 'visualizar'])->name('comprobantes.visualizar');
     Route::get('/comprobantes/mostrar/{comprobante}', [ComprobanteController::class, 'showConsulta'])->name('consulta.mostrar');

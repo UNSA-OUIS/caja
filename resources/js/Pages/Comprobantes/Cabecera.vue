@@ -44,7 +44,7 @@
                         <label class="lbl-data" v-text="data.fecha_actual"></label>
                       </div>
                     </div>
-                    <template v-if="comprobante.tipo_usuario === 'alumno'">
+                    <template v-if="comprobante.tipo_usuario === 'alumno' && data.tipo_comprobante === 'BOLETA'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
                     </template>
                     <template v-else-if="comprobante.tipo_usuario === 'docente'">
@@ -58,6 +58,9 @@
                     </template>
                     <template v-else-if="comprobante.tipo_usuario === 'empresa'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
+                    </template>
+                    <template v-else-if="data.tipo_comprobante === 'NOTA_DEBITO' || data.tipo_comprobante === 'NOTA_CREDITO'">
+                        <cabecera-nota :comprobante="comprobante" :data="data"></cabecera-nota>
                     </template>
                     <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
                     <detalle v-else :comprobante="comprobante"></detalle>
@@ -73,6 +76,7 @@ import CabeceraDocente from "./CabeceraDocente";
 import CabeceraDependencia from "./CabeceraDependencia";
 import CabeceraParticular from "./CabeceraParticular";
 import CabeceraEmpresa from "./CabeceraEmpresa";
+import CabeceraNota from "./CabeceraNota";
 import Detalle from "./Detalle";
 import DetalleMostrar from "./DetalleMostrar";
 
@@ -86,6 +90,7 @@ export default {
         CabeceraDependencia,
         CabeceraParticular,
         CabeceraEmpresa,
+        CabeceraNota,
         Detalle,
         DetalleMostrar
     },
