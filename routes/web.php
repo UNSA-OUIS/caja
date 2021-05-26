@@ -273,7 +273,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     Route::get('/sunat/facturas', function () {
-        return Inertia::render('Sunat/ListarFacturas');
+        return Inertia::render('Sunat/Factura/Busqueda');
     })->name('facturas.iniciar');
     Route::get('/sunat/listarFacturas', [FacturaController::class, 'index'])->name('facturas.listar');
     Route::get('/sunat/facturaPDF', [FacturaController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
@@ -292,7 +292,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     Route::get('/sunat/boletas', function () {
-        return Inertia::render('Sunat/ListarBoletas');
+        return Inertia::render('Sunat/Boletas/Busqueda');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');

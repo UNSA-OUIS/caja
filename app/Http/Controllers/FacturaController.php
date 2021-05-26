@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comprobante;
 use App\Models\Concepto;
 use DateTime;
+use Exception;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
@@ -25,6 +26,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 class FacturaController extends Controller
 {
     private $empresa;
+    private $error = '';
 
     function __construct()
     {
@@ -52,9 +54,12 @@ class FacturaController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
-            ->with('detalles.concepto')->where('tipo_usuario','like','empresa')->where('tipo_comprobante_id', 'like', 2)->whereIn('estado', ['noEnviado', 'observado'])->whereDate('created_at', '>=', $request->fechaInicio)
-            ->whereDate('created_at', '<=', $request->fechaFin);
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
+            ->where('tipo_usuario', 'like', 'empresa')
+            ->where('tipo_comprobante_id', 'like', 2)
+            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->whereDate('created_at', '>=', $request->fecha_inicio)
+            ->whereDate('created_at', '<=', $request->fecha_fin);
 
         $sortby = $request->sortby;
 
@@ -70,7 +75,6 @@ class FacturaController extends Controller
         $see = require config_path('Sunat\config.php');
         $facturas = $request->all();
 
-
         foreach ($facturas as $index => $value) {
             try {
                 $factura = new Comprobante();
@@ -85,7 +89,60 @@ class FacturaController extends Controller
                     ->setRznSocial($factura->comprobanteable->razon_social);
 
                 // Venta
-                $invoice = new Invoice();
+                $invoice = (new Invoice())
+                    ->setUblVersion('2.1')
+                    ->setTipoOperacion('0101') // Venta - Catalog. 51
+                    ->setTipoDoc('01') // Factura - Catalog. 01
+                    ->setSerie($factura->serie)
+                    ->setCorrelativo($factura->correlativo)
+                    ->setFechaEmision(new DateTime('2020-08-24 13:05:00-05:00')) // Zona horaria: Lima
+                    ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+                    ->setTipoMoneda('PEN') // Sol - Catalog. 02
+                    ->setCompany($this->empresa)
+                    ->setClient($client)
+                    ->setMtoOperGravadas(100.00)
+                    ->setMtoIGV(18.00)
+                    ->setTotalImpuestos(18.00)
+                    ->setValorVenta(100.00)
+                    ->setSubTotal(118.00)
+                    ->setMtoImpVenta(118.00);
+
+                $detalle = $factura->detalles;
+                foreach ($detalle as $index => $value) {
+                    $concepto = Concepto::with('tipo_concepto')
+                        ->with('clasificador')
+                        ->with('unidad_medida')
+                        ->where('id', 'like', $factura->detalles[$index]->concepto_id)->first();
+                    $items[$index] = (new SaleDetail())
+                        ->setCodProducto($concepto->id)
+                        ->setUnidad('NIU') // Unidad - Catalog. 03
+                        ->setCantidad(2)
+                        ->setMtoValorUnitario(50.00)
+                        ->setDescripcion($concepto->descripcion)
+                        ->setMtoBaseIgv(100)
+                        ->setPorcentajeIgv(18.00) // 18%
+                        ->setIgv(18.00)
+                        ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
+                        ->setTotalImpuestos(18.00) // Suma de impuestos en el detalle
+                        ->setMtoValorVenta(100.00)
+                        ->setMtoPrecioUnitario(59.00);
+                    /*if ($concepto->tipo_afectacion == 10) {
+                        $total_gravadas += $value['valor_unitario'] * $value['cantidad'];
+                    } elseif ($concepto->tipo_afectacion == 20) {
+                        $total_exonerados += $value['valor_unitario'] * $value['cantidad'];
+                    } elseif ($concepto->tipo_afectacion == 30) {
+                        $total_inafectos += $value['valor_unitario'] * $value['cantidad'];
+                    }
+                    $igv += 18.00 / $value['cantidad'];*/
+                }
+
+                $legend = (new Legend())
+                    ->setCode('1000') // Monto en letras - Catalog. 52
+                    ->setValue('SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES');
+
+                $invoice->setDetails($items)
+                    ->setLegends([$legend]);
+                /*$invoice = new Invoice();
 
                 $total_gravadas = 0;
                 $total_exonerados = 0;
@@ -176,7 +233,7 @@ class FacturaController extends Controller
                             ->setPercent(4.00)
                             ->setMount(37.76)
                     );
-                }
+                }*/
 
 
 
@@ -238,19 +295,18 @@ class FacturaController extends Controller
                     $factura->observaciones = '';
                     $factura->update();
                 }
-                $result = [
+                $resultado = [
                     'successMessage' => 'Facturas enviadas con exito',
                     'error' => false
                 ];
-            } catch (\Exception $e) {;
-                $factura->observaciones = 'Error al enviar la factura' . $e;
+            } catch (Exception $e) {
+                $factura->observaciones = 'Error al enviar la factura' . $e->getMessage();
                 $factura->update();
-                $result = ['errorMessage' => 'No se pudieron enviar las facturas', 'error' => true];
+                $resultado = ['errorMessage' => $e, 'error' => true];
                 Log::error('FacturaController@enviar_facturas, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
             }
         }
-
-        return $result;
+        return $resultado;
     }
     public function enviar(Comprobante $factura)
     {
