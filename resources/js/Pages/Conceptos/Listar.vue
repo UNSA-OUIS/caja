@@ -104,36 +104,34 @@
             {{ row.item.unidad_medida.nombre }}
           </template>
           <template v-slot:cell(condicion)="row">
-            <span
-              v-if="!row.item.deleted_at"
-              class="badge badge-pill badge-soft-success font-size-12"
-              >Activo</span
-            >
-            <span v-else class="badge badge-pill badge-soft-danger font-size-12"
-              >Inactivo</span
-            >
+            <b-badge v-if="!row.item.deleted_at" variant="success">Activo</b-badge>
+            <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
-            <inertia-link
+            <inertia-link 
               v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+              class="btn btn-primary btn-sm"
               :href="route('conceptos.mostrar', row.item.id)"
             >
-              Ver
-            </inertia-link>
+              <b-icon icon="eye"></b-icon>
+            </inertia-link>             
             <b-button
               v-if="!row.item.deleted_at"
-              class="btn btn-danger btn-sm btn-rounded waves-effect waves-light"
+              variant="danger"
+              size="sm"
+              title="Eliminar"
               @click="eliminar(row.item)"
             >
-              Desactivar
+              <b-icon icon="trash"></b-icon>
             </b-button>
             <b-button
               v-else
-              class="btn btn-success btn-sm btn-rounded waves-effect waves-light"
+              variant="success"
+              size="sm"
+              title="Restaurar"
               @click="restaurar(row.item)"
             >
-              Restaurar
+              <b-icon icon="check"></b-icon>
             </b-button>
           </template>
         </b-table>

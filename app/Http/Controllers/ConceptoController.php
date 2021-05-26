@@ -25,7 +25,8 @@ class ConceptoController extends Controller
         $query = Concepto::with('tipo_concepto')
             ->with('clasificador')
             ->with('unidad_medida')
-            ->where('descripcion', 'like', '%' . $request->filter . '%');
+            ->where('descripcion', 'like', '%' . $request->filter . '%')
+            ->orderBy('id', 'desc');
 
         $sortby = $request->sortby;
 

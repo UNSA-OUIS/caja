@@ -14,7 +14,8 @@ class UnidadMedidaController extends Controller
     {
         $this->authorize("viewAny", UnidadMedida::class);        
 
-        $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%');
+        $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%')
+                    ->orderBy('id', 'desc');
 
         $sortby = $request->sortby;
 
