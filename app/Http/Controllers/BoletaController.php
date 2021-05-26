@@ -18,6 +18,7 @@ use Greenter\Model\Summary\SummaryDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -59,7 +60,8 @@ class BoletaController extends Controller
             ->where('tipo_comprobante_id', 'like', 1)
             ->whereIn('estado', ['noEnviado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
-            ->whereDate('created_at', '<=', $request->fecha_fin);
+            ->whereDate('created_at', '<=', $request->fecha_fin)
+            ->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 

@@ -31,6 +31,7 @@ class ComprobanteController extends Controller
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
             ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
+            ->where('cajero_id', 'like', Auth::user()->id)
             ->latest();
 
         $sortby = $request->sortby;
@@ -108,7 +109,7 @@ class ComprobanteController extends Controller
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => $request->alumno['apn'],
-            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe': '',
+            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe' : '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -152,7 +153,7 @@ class ComprobanteController extends Controller
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => str_replace("/", " ", $request->docente['apn']),
-            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe': '',
+            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe' : '',
             'departamento' => $ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -347,8 +348,8 @@ class ComprobanteController extends Controller
         $comprobante->save();
 
         $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
-            $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
-            $numeroComp->update();
+        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+        $numeroComp->update();
 
         return redirect()->route('cobros.iniciar');
     }
@@ -696,7 +697,7 @@ class ComprobanteController extends Controller
 
         $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
-        $customPaper = array(0,0,567.00,283.80);
+        $customPaper = array(0, 0, 567.00, 283.80);
         $pdf->setPaper($customPaper, 'landscape');
         $pdfGuardado = $pdf->output();
 
