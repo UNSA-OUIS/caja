@@ -53,9 +53,12 @@ class BoletaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
         //$this->fechaInicio = $request->fechaInicio;
 
-        $query = Comprobante::with('tipo_comprobante')
-            ->with('detalles')->where('tipo_comprobante_id', 'like', 1)->whereDate('created_at', '>=', $request->fechaInicio)
-            ->whereDate('created_at', '<=', $request->fechaFin);
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
+            ->where('tipo_usuario', 'like', 'empresa')
+            ->where('tipo_comprobante_id', 'like', 1)
+            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->whereDate('created_at', '>=', $request->fecha_inicio)
+            ->whereDate('created_at', '<=', $request->fecha_fin);
 
         $sortby = $request->sortby;
 

@@ -284,11 +284,11 @@
             </ul>
           </li>
           <li :class="{ 'mm-active': path == 'cobros' }">
-            <inertia-link 
+            <inertia-link
               :class="{ active: path == 'cobros' }"
               :href="route('cobros.iniciar')"
-            >            
-              <i class="uil-window-section"></i>        
+            >
+              <i class="uil-window-section"></i>
               <span>Cobros</span>
             </inertia-link>
           </li>
@@ -296,8 +296,8 @@
             <inertia-link
               :class="{ active: path == 'comprobantes' }"
               :href="route('comprobantes.iniciar')"
-            >            
-              <i class="uil-window-section"></i>        
+            >
+              <i class="uil-window-section"></i>
               <span>Comprobantes</span>
             </inertia-link>
           </li>-->
@@ -365,7 +365,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Resumen Diario
+                  Enviar boletas
                 </inertia-link>
               </li>
               <li
@@ -379,7 +379,7 @@
                     active: path == 'facturas',
                   }"
                 >
-                  Facturas
+                  Enviar facturas
                 </inertia-link>
               </li>
               <li

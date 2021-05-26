@@ -292,7 +292,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
 
     Route::get('/sunat/boletas', function () {
-        return Inertia::render('Sunat/ListarBoletas');
+        return Inertia::render('Sunat/Boletas/Busqueda');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
