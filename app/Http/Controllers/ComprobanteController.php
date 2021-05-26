@@ -286,10 +286,10 @@ class ComprobanteController extends Controller
         /*$comprobante = Comprobante::with('detalles')->where('serie', $request->serie)
                                     ->where('correlativo', $request->correlativo)
                                     ->first();
-        
+
         $usuario = Auth::user();
         $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
-        
+
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
             'serie' => $numeroOpe->serie,
@@ -318,7 +318,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
 
-        
+
 
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
@@ -489,6 +489,86 @@ class ComprobanteController extends Controller
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
+        }
+    }
+    public function consulta_comprobante(Comprobante $comprobante)
+    {
+        $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $comprobante->id)->first();
+        $matricula = Alumno::with('matriculas.escuela')->where('cui', $comprobante->codi_usuario)->select('cui', 'dic', 'apn')->first();
+
+        if ($comprobante->tipo_usuario == 'empresa') {
+            $data = [
+                'tipo_comprobante' => 'FACTURA',
+                'razon_social' => $comprobante->comprobanteable['razon_social'],
+                'email' => $comprobante->comprobanteable['email'],
+                'direccion' => $comprobante->comprobanteable['direccion'],
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'alumno') {
+            $tipo_de_documento = '';
+            $numero_de_documento = '';
+            if (strlen($comprobante->comprobanteable['dic']) > 8) {
+                switch ($comprobante->comprobanteable['dic'][0]) {
+                    case 'D':
+                        $tipo_de_documento = 'DNI';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+                    case 'P':
+                        $tipo_de_documento = 'Pasaporte';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+                    case 'E':
+                        $tipo_de_documento = 'Carnet Extra.';
+                        $numero_de_documento = substr($comprobante->comprobanteable['dic'], 1, -1);
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            } else if (strlen($comprobante->comprobanteable['dic']) == 8) {
+                $tipo_de_documento = 'DNI';
+                $numero_de_documento = $comprobante->comprobanteable['dic'];
+            }
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'tipo_doc' => $tipo_de_documento,
+                'ndoc' => $numero_de_documento,
+                'escuela' => $matricula->matriculas[0]->escuela['nesc'],
+                'alumno' => $comprobante->comprobanteable['apn'],
+                //'email' => $email->mail . '@unsa.edu.pe',
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'docente') {
+            $depa = Departamento::where('depa', '=',  $comprobante->comprobanteable['depend'])->first();
+
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'dni' =>   $comprobante->comprobanteable['dic'],
+                'docente' => str_replace("/", " ",   $comprobante->comprobanteable['apn']),
+                'email' =>   $comprobante->comprobanteable['correo'] . '@unsa.edu.pe',
+                'departamento' => $depa->ndep,
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'dependencia') {
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'dependencia' => $comprobante->comprobanteable['nomb_depe'],
+                'email' => 'sizaisi@unsa.edu.pe',
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
+        } else if ($comprobante->tipo_usuario == 'particular') {
+            $data = [
+                'tipo_comprobante' => 'BOLETA',
+                'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
+                'email' => $comprobante->comprobanteable['email'],
+                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            ];
+            return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
         }
     }
 

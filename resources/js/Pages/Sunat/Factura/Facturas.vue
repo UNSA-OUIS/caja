@@ -14,8 +14,8 @@
       :fields="fields"
       :current-page="currentPage"
       :per-page="perPage"
-      empty-text="No hay fac para mostrar"
-      empty-filtered-text="No hay usuarios que coincidan con su búsqueda."
+      empty-text="No hay facturas para mostrar"
+      empty-filtered-text="No hay facturas que coincidan con su búsqueda."
     >
       <template #table-busy>
         <div class="text-center text-success my-2">
