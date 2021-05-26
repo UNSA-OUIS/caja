@@ -19,6 +19,7 @@ use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Luecano\NumeroALetras\NumeroALetras;
 
@@ -124,7 +125,8 @@ class BoletaController extends Controller
             $result = $see->send($resumen);
             // Guardar XML
             $xmlGuardado = file_put_contents(
-                $resumen->getName() . '.xml',
+                storage_path('app/public/Sunat/XML/' .
+                    $resumen->getName() . '.xml'),
                 $see->getFactory()->getLastXml()
             );
             if ($xmlGuardado) {
@@ -153,7 +155,7 @@ class BoletaController extends Controller
                 exit();
             }
 
-            $cdrGuardado = file_put_contents('R-' . $resumen->getName() . '.zip', $statusResult->getCdrZip());
+            $cdrGuardado = file_put_contents(storage_path('app/public/Sunat/CDR/' . 'R-' . $resumen->getName() . '.zip'), $statusResult->getCdrZip());
             if ($cdrGuardado) {
                 $resumen_diario->url_cdr = 'R-' . $resumen->getName() . '.zip';
                 $resumen_diario->update();
@@ -222,7 +224,7 @@ class BoletaController extends Controller
                 return;
             }
 
-            $pdfGuardado = file_put_contents($resumen->getName() . '.pdf', $pdf);
+            $pdfGuardado = file_put_contents(storage_path('app/public/Sunat/PDF/' . $resumen->getName() . '.pdf'), $pdf);
             if ($pdfGuardado) {
                 $resumen_diario->url_pdf = $resumen->getName() . '.pdf';
                 $resumen_diario->update();
@@ -245,5 +247,41 @@ class BoletaController extends Controller
         }
 
         return redirect()->route('boletas.iniciar');
+    }
+    public function descargar_pdf(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
+            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_cdr(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
+            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_xml(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
+            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
     }
 }

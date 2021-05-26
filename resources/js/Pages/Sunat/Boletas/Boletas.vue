@@ -135,7 +135,7 @@ export default {
       fields: [
         { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
         { key: "codi_usuario", label: "Código usuario", class: "text-center" },
-        { key: "usuario", label: "Usuario", sortable: true },
+        { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
