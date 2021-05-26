@@ -54,7 +54,7 @@ class BoletaController extends Controller
         //$this->fechaInicio = $request->fechaInicio;
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_usuario', 'like', 'empresa')
+            ->where('tipo_usuario', ['alumno', 'docente', 'particular', 'dependencia'])
             ->where('tipo_comprobante_id', 'like', 1)
             ->whereIn('estado', ['noEnviado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
@@ -91,7 +91,7 @@ class BoletaController extends Controller
             foreach ($boletas as $index => $value) {
                 $details[$index] = (new SummaryDetail())
                     ->setTipoDoc('03') // Boleta
-                    ->setSerieNro('B00' . $index . '-' . $value['correlativo']);
+                    ->setSerieNro($value['serie'] . '-' . $value['correlativo']);
                 if ($value['estado'] == 'anulado') {
                     $details[$index]->setEstado('3'); // Anulación
                 } else {
@@ -176,6 +176,15 @@ class BoletaController extends Controller
                 $resumen_diario->observaciones = $cdr->getDescription() . PHP_EOL;
                 $resumen_diario->update();
             }
+            $resultado = [
+                'successMessage' => 'Resumen diario enviado con exito',
+                'error' => false
+            ];
+            foreach ($boletas as $index => $value) {
+                $boleta = Comprobante::where('id', 'like', $value['id'])->first();
+                $boleta->estado = 'aceptado';
+                $boleta->update();
+            }
             $html = new HtmlReport();
             $html->setTemplate('summary.html.twig');
 
@@ -218,11 +227,12 @@ class BoletaController extends Controller
                 $resumen_diario->url_pdf = $resumen->getName() . '.pdf';
                 $resumen_diario->update();
             }
-        } catch (\Throwable $th) {
-            return $th;
+        } catch (Exception $e) {
+            $resultado = ['errorMessage' => $e->getMessage(), 'error' => true];
         }
 
-        return redirect()->route('boletas.iniciar');
+        return $resultado;
+        //return redirect()->route('boletas.iniciar');
     }
     public function anular(Comprobante $boleta)
     {

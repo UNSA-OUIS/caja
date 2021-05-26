@@ -37,7 +37,7 @@
             title="Buscar Boletas"
             @click="buscar_boletas()"
           >
-            Buscar Facturas <b-icon icon="search"></b-icon>
+            Buscar Boletas <b-icon icon="search"></b-icon>
           </b-button>
           <b-button
             variant="primary"
@@ -49,12 +49,12 @@
           </b-button>
         </div>
         <div class="row justify-content-center mb-1" v-if="mostrar_boletas">
-          <facturas
+          <boletas
             :fecha_inicio="fecha_inicio"
             :fecha_fin="fecha_fin"
             :key="renderKey"
           >
-          </facturas>
+          </boletas>
         </div>
       </div>
     </div>
