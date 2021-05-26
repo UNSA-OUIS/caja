@@ -35,8 +35,8 @@ class CreateComprobantesTable extends Migration
             $table->bigInteger('cajero_id');
             $table->char('tipo_nota', 2)->nullable();
             $table->text('motivo')->nullable();
-            $table->string('serie_afectada', 4);
-            $table->string('correlativo_afectado', 8);
+            $table->string('serie_afectada', 4)->nullable();
+            $table->string('correlativo_afectado', 8)->nullable();
             $table->timestamps();
             $table->softDeletes();
 
