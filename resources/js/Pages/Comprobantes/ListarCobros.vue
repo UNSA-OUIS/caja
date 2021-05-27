@@ -101,7 +101,7 @@
         >
           <template v-slot:cell(usuario)="row">
             <span v-if="row.item.tipo_usuario === 'alumno'">
-              {{ row.item.comprobanteable.apn }}
+              {{ reemplazar(row.item.comprobanteable.apn) }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'empresa'">
               {{ row.item.comprobanteable.razon_social }}
@@ -111,7 +111,7 @@
               {{ row.item.comprobanteable.nombres }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'docente'">
-              {{ row.item.comprobanteable.apn }}
+              {{ reemplazar(row.item.comprobanteable.apn) }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'dependencia'">
               {{ row.item.comprobanteable.nomb_depe }}
@@ -186,9 +186,9 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
-        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
-        { key: "usuario", label: "Usuario", sortable: true },
+        { key: "tipo_usuario", label: "Tipo administrado", class: "text-center" },
+        { key: "codi_usuario", label: "Código administrado", class: "text-center" },
+        { key: "usuario", label: "Administrado", sortable: true },
         {
           key: "tipo_comprobante.nombre",
           label: "Comprobante",
@@ -213,6 +213,9 @@ export default {
   methods: {
     refreshTable() {
       this.$refs.tbl_comprobantes.refresh();
+    },
+    reemplazar(nombre){
+      return nombre.replace('/', ' ')
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;

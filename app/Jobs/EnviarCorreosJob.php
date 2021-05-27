@@ -15,15 +15,15 @@ class EnviarCorreosJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $mail_to;
+    public $data;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($mail_to)
+    public function __construct($data)
     {
-        $this->mail_to = $mail_to;
+        $this->data = $data;
     }
 
     /**
@@ -33,7 +33,7 @@ class EnviarCorreosJob implements ShouldQueue
      */
     public function handle()
     {
-        $email = new CobroRealizadoMailable($this->mail_to);
-        Mail::to($this->mail_to)->send($email);
+        $email = new CobroRealizadoMailable($this->data);
+        Mail::to($this->data['email'])->send($email);
     }
 }

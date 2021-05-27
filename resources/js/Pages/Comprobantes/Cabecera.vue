@@ -12,7 +12,7 @@
                 </li>
                 <li class="breadcrumb-item">
                     <inertia-link :href="route('cobros.buscarUsuario')">
-                        Buscar usuario
+                        Buscar administrado
                     </inertia-link>
                 </li>
                 <li class="breadcrumb-item active">
@@ -62,8 +62,10 @@
                     <template v-else-if="data.tipo_comprobante === 'NOTA_DEBITO' || data.tipo_comprobante === 'NOTA_CREDITO'">
                         <cabecera-nota :comprobante="comprobante" :data="data"></cabecera-nota>
                     </template>
-                    <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
-                    <detalle v-else :comprobante="comprobante"></detalle>
+                    <template v-if="comprobante.detalles != null">
+                        <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
+                        <detalle v-else :comprobante="comprobante"></detalle>
+                    </template>
                 </div>
             </div>
         </div>

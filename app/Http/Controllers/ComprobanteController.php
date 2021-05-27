@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade as PDF;
+use COM;
 use Illuminate\Support\Facades\Auth;
 
 class ComprobanteController extends Controller
@@ -108,8 +109,8 @@ class ComprobanteController extends Controller
             'tipo_doc' => $tipo_de_documento,
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
-            'alumno' => $request->alumno['apn'],
-            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe' : '',
+            'alumno' => str_replace('/', ' ', $request->alumno['apn']),
+            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe': '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -152,8 +153,8 @@ class ComprobanteController extends Controller
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
-            'docente' => str_replace("/", " ", $request->docente['apn']),
-            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe' : '',
+            'docente' => str_replace('/', ' ', $request->docente['apn']),
+            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe': '',
             'departamento' => $ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -303,7 +304,9 @@ class ComprobanteController extends Controller
 
         $comprobante = new Comprobante();
 
-        $comprobante->tipo_usuario = "alumno";
+        $comprobante->tipo_usuario = $cobro->tipo_usuario;
+        $comprobante->codi_usuario = $cobro->codi_usuario;
+
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.' . $request->tipo_comprobante);
 
         $usuario = Auth::user();
@@ -318,9 +321,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
-
-
-
+        
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
             'comprobante' => $cobro,
@@ -340,6 +341,7 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
         $comprobante->tipo_nota = $request->tipo_nota;
         $comprobante->tipo_usuario = $request->tipo_usuario;
+        $comprobante->codi_usuario = $request->codi_usuario;
         $comprobante->total = 10;
         $comprobante->total_descuento = 10;
         $comprobante->total_impuesto = 10;
@@ -457,7 +459,7 @@ class ComprobanteController extends Controller
                 'tipo_doc' => $tipo_de_documento,
                 'ndoc' => $numero_de_documento,
                 'escuela' => $matricula->matriculas[0]->escuela['nesc'],
-                'alumno' => $comprobante->comprobanteable['apn'],
+                'alumno' => str_replace('/', ' ', $comprobante->comprobanteable['apn']),
                 //'email' => $email->mail . '@unsa.edu.pe',
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
@@ -468,7 +470,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'BOLETA',
                 'dni' =>   $comprobante->comprobanteable['dic'],
-                'docente' => str_replace("/", " ",   $comprobante->comprobanteable['apn']),
+                'docente' => str_replace('/', ' ',   $comprobante->comprobanteable['apn']),
                 'email' =>   $comprobante->comprobanteable['correo'] . '@unsa.edu.pe',
                 'departamento' => $depa->ndep,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
@@ -589,7 +591,42 @@ class ComprobanteController extends Controller
 
     public function enviarCorreo(Request $request)
     {
-        EnviarCorreosJob::dispatch($request->to);
+        $comprobante = Comprobante::findOrFail($request->comprobanteId);
+        $data = [
+            'adjunto' => storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'),
+            'email' => ''
+        ];
+
+        switch ($comprobante->tipo_usuario) {
+            case "alumno":
+                $alumno = Alumno::where('cui', $comprobante->codi_usuario)->first();
+                $data['email'] = $alumno->email->mail != null ? $alumno->email->mail . '@unsa.edu.pe' : 'gnunezc@unsa.edu.pe';
+                return $data['email'];
+                break;
+            
+            case "particular":
+                $particular = Particular::where('dni', $comprobante->codi_usuario)->first();
+                $data['email'] = $particular->email != null ? $particular->email : '';
+                break;
+
+            case "docente":
+                $docente = Docente::where('codper', $comprobante->codi_usuario)->first();
+                $data['email'] = $docente->correo != null ? $docente->correo . '@unsa.edu.pe' : '';
+                break;
+
+            case "dependencia":
+                $data['email'] = 'gnunezc@unsa.edu.pe';
+                break;
+
+            case "empresa":
+                $empresa = Empresa::where('ruc', $comprobante->codi_usuario)->first();
+                $data['email'] = $empresa->email != null ? $empresa->email : '';
+                break;
+                            
+            default:
+                break;
+        }
+        EnviarCorreosJob::dispatch($data);
 
         //Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
         //$result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
@@ -620,11 +657,11 @@ class ComprobanteController extends Controller
         if ($request->tipo_usuario == 'ALUMNO') {
             if ($request->opcion_busqueda == 'CUI') {
                 $query = Alumno::with('matriculas.escuela')
-                    ->where('cui', $request->filtro)->select('cui', 'dic', 'apn');
+                    ->where('cui', $request->filtro)->select('cui', 'dic', DB::raw("REPLACE(apn, '/', ' ') as apn"));
             } else if ($request->opcion_busqueda == 'APN') {
                 $query = Alumno::with('matriculas.escuela')
                     ->whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
-                    ->select('cui', 'dic', 'apn')
+                    ->select('cui', 'dic', DB::raw("REPLACE(apn, '/', ' ') as apn"))
                     ->orderBy('apn', 'asc');
             }
         } else if ($request->tipo_usuario == 'PARTICULAR') {
@@ -645,11 +682,11 @@ class ComprobanteController extends Controller
             if ($request->opcion_busqueda == 'CODIGO') {
                 $query = Docente::where('codper', $request->filtro)
                     ->where('esta_doc', 'A')
-                    ->select('depend', 'codper', 'dic', 'apn', 'correo');
+                    ->select('depend', 'codper', 'dic', DB::raw("REPLACE(apn, '/', ' ') as apn"), 'correo');
             } else if ($request->opcion_busqueda == 'APN') {
                 $query = Docente::whereRaw("REPLACE(apn, '/', ' ') like ?", [$request->filtro . '%'])
                     ->where('esta_doc', 'A')
-                    ->select('depend', 'codper', 'dic', 'apn', 'correo')
+                    ->select('depend', 'codper', 'dic', DB::raw("REPLACE(apn, '/', ' ') as apn"), 'correo')
                     ->orderBy('apn', 'asc');
             }
         } else if ($request->tipo_usuario == 'DEPENDENCIA') {

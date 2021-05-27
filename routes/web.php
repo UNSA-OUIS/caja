@@ -263,7 +263,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/generar_pdf', [ComprobanteController::class, 'generar_pdf'])->name('comprobantes.generar_pdf');
     Route::get('/generar_ticket', [ComprobanteController::class, 'generar_ticket'])->name('comprobantes.generar_ticket');
 
-    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.emviarCorreo');
+    Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.enviarCorreo');
     Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
     /*******************************************************************/
 
