@@ -643,9 +643,8 @@ class ComprobanteController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')
-            ->where('codi_usuario', 'like', '%' . $request->filter . '%')
-            ->where('serie', 'ILIKE', '%' . $request->serie . '%')
-            ->where('correlativo', 'ILIKE', '%' . $request->correlativo . '%')
+            ->where('serie', 'ILIKE', $request->serie)
+            ->where('correlativo', 'ILIKE', $request->correlativo)
             ->latest();
 
         $sortby = $request->sortby;
