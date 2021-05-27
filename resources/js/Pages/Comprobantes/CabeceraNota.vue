@@ -24,10 +24,10 @@
             </div>                      
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Cliente:</label>
-                <label v-if="data.comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="data.comprobante.comprobanteable.apn"></label>
+                <label v-if="data.comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
                 <label v-else-if="data.comprobante.tipo_usuario === 'empresa'" class="lbl-data" v-text="data.comprobante.comprobanteable.razon_social"></label>
                 <label v-else-if="data.comprobante.tipo_usuario === 'particular'" class="lbl-data" v-text="data.comprobante.comprobanteable.nombres"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="data.comprobante.comprobanteable.apn"></label>
+                <label v-else-if="data.comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
                 <label v-else-if="data.comprobante.tipo_usuario === 'dependencia'" class="lbl-data" v-text="data.comprobante.comprobanteable.nomb_depe"></label>
             </div> 
             <div class="form-group col-md-4 border border-light">
@@ -137,6 +137,9 @@ export default {
         }
     },
     methods: {
+        reemplazar(nombre){
+            return nombre.replace('/', ' ')
+        },
         registrar() {
             this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar esta nota?", {
                 title: "Enviar nota",

@@ -10,16 +10,16 @@ use Illuminate\Queue\SerializesModels;
 class CobroRealizadoMailable extends Mailable
 {
     use Queueable, SerializesModels;
-    public $mail_to;
+    public $data;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mail_to)
+    public function __construct($data)
     {
-        $this->mail_to = $mail_to;
+        $this->data = $data;
     }
 
     /**
@@ -30,7 +30,7 @@ class CobroRealizadoMailable extends Mailable
     public function build()
     {
         return $this->subject('Cobro realizado')
-                    //->attach('D:\PROJECTS\OUIS\caja\public\20000000001-03-B001-1.pdf')
+                    ->attach($this->data['adjunto'])
                     ->view('emails.cobro');
     }
 }

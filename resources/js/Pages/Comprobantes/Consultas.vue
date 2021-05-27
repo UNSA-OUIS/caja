@@ -33,6 +33,9 @@
                   <b-button variant="outline-primary" @click="limpiar()">
                     Limpiar <b-icon icon="arrow-clockwise"></b-icon>
                   </b-button>
+                  <b-button variant="outline-warning" @click="reenviar()">
+                    Reenviar
+                  </b-button>
                 </b-button-group>
               </div>
             </template>
@@ -243,6 +246,20 @@ export default {
   methods: {
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
+    },
+    reenviar() {
+      axios.get(`${this.app_url}/enviarCorreo`, {
+          params: {
+            comprobanteId: this.items[0].id,
+          },
+        })
+        .then((response) => {
+          var success = response.data;
+          consolo.log(success);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     enviarResumenDiario() {
       console.log(this.items);

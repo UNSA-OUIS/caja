@@ -10,12 +10,12 @@
                         Lista de cobros
                     </inertia-link>
                 </li>                
-                <li class="breadcrumb-item active">Buscar usuario</li>
+                <li class="breadcrumb-item active">Buscar administrado</li>
             </ol>
         </nav> 
         <div class="card">
             <div class="card-header d-flex align-items-center">                
-                <span class="font-weight-bold">Buscar usuario</span>                
+                <span class="font-weight-bold">Buscar administrado</span>                
             </div>                   
             <div class="card-body">
                 <div class="row justify-content-center mb-1">
@@ -34,7 +34,7 @@
                             <div class="col col-lg-5">
                                 <b-form-select size="sm" v-model="tipo_usuario" :options="tipos_usuario">
                                     <template v-slot:first>
-                                        <option :value="null" disabled>Tipo de usuario...</option>
+                                        <option :value="null" disabled>Tipo de administrado...</option>
                                     </template>                            
                                 </b-form-select>
                             </div>                    

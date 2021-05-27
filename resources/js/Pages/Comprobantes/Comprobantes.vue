@@ -22,7 +22,7 @@
             </template>
             <template v-slot:cell(usuario)="row">                
                 <span v-if="row.item.tipo_usuario === 'alumno'">
-                {{ row.item.comprobanteable.apn }}
+                {{ reemplazar(row.item.comprobanteable.apn) }}
                 </span>
                 <span v-else-if="row.item.tipo_usuario === 'empresa'">
                 {{ row.item.comprobanteable.razon_social }}
@@ -32,7 +32,7 @@
                 {{ row.item.comprobanteable.nombres }}
                 </span>
                 <span v-else-if="row.item.tipo_usuario === 'docente'">
-                {{ row.item.comprobanteable.apn }}
+                {{ reemplazar(row.item.comprobanteable.apn) }}
                 </span>
                 <span v-else-if="row.item.tipo_usuario === 'dependencia'">
                 {{ row.item.comprobanteable.nomb_depe }}
@@ -79,6 +79,9 @@ export default {
     methods: {
         refreshTable() {
             this.$refs.tbl_usuarios.refresh();
+        },
+        reemplazar(nombre){
+            return nombre.replace('/', ' ')
         },
         myProvider(ctx) {
             //this.toggleBusy()

@@ -265,7 +265,7 @@ ul.social li{
 <td style="padding: 0 2.5em; text-align: left;">
 <div class="text">
 <h3>Hola, cobro realizado para el correo: </h3>
-<h2><center>{{ $mail_to }}</center></h2>
+<h2><center>{{ $data['email'] }}</center></h2>
 
 <hr/>
 </div>
