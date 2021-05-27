@@ -10,6 +10,7 @@
     <hr />
     <form @submit.prevent="agregarDetalle">
       <b-row>
+          {{comprobante}}
         <b-col cols="5">
           <v-select
             v-if="accion === 'Crear'"
@@ -268,44 +269,114 @@ export default {
       }
     },
     registrar() {
-      this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer registrar este comprobante?", {
-          title: "Enviar Comprobante",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelVariant: "danger",
-          cancelTitle: "NO",
-          centered: true,
-        })
-        .then((value) => {
-          if (value) {
-            axios
-              .post(`${this.app_url}/comprobantes`, this.comprobante)
-              .then((response) => {
-                if (!response.data.error) {
-                  this.alerta = response.data.error;
-                  this.alerta_mensaje = response.data.successMessage;
-                  let params =
-                    "?comprobante_id=" + response.data.comprobante_id;
-                  axios.get(`${this.app_url}/generar_pdf`, {
-                    params: {
-                      comprobante_id: response.data.comprobante_id,
-                    },
-                  });
-                  window.open(
-                    `${this.app_url}/generar_ticket/${params}`,
-                    "_blank"
-                  );
-                  this.accion = "Mostrar";
-                } else {
-                  console.log("Error");
-                }
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-          }
-        });
+      const h = this.$createElement;
+      if (this.comprobante.email != "") {
+        const messageVNode = "";
+        this.$bvModal
+          .msgBoxConfirm(
+            [
+              "¿Esta seguro de querer registrar este comprobante?",
+              "\n",
+              messageVNode,
+            ],
+            {
+              title: "Enviar Comprobante",
+              okVariant: "success",
+              okTitle: "SI",
+              cancelVariant: "danger",
+              cancelTitle: "NO",
+              centered: true,
+            }
+          )
+          .then((value) => {
+            if (value) {
+              axios
+                .post(`${this.app_url}/comprobantes`, this.comprobante)
+                .then((response) => {
+                  if (!response.data.error) {
+                    this.alerta = response.data.error;
+                    this.alerta_mensaje = response.data.successMessage;
+                    let params =
+                      "?comprobante_id=" + response.data.comprobante_id;
+                    axios.get(`${this.app_url}/generar_pdf`, {
+                      params: {
+                        comprobante_id: response.data.comprobante_id,
+                      },
+                    });
+                    window.open(
+                      `${this.app_url}/generar_ticket/${params}`,
+                      "_blank"
+                    );
+                    this.accion = "Mostrar";
+                  } else {
+                    console.log("Error");
+                  }
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          });
+      } else {
+        // More complex structure
+        const messageVNode = h(
+          "div",
+          { class: ["foobar"] },
+          [
+            h("p", { class: ["text-center"] }, [
+              h(
+                "strong",
+                "Al no introducir un email no se le enviara el comprobante en pdf al administrado"
+              ),
+            ]),
+          ]
+        );
+        this.$bvModal
+          .msgBoxConfirm(
+            [
+              "¿Esta seguro de querer registrar este comprobante?",
+              "\n",
+              messageVNode,
+            ],
+            {
+              title: "Enviar Comprobante",
+              okVariant: "success",
+              okTitle: "SI",
+              cancelVariant: "danger",
+              cancelTitle: "NO",
+              centered: true,
+            }
+          )
+          .then((value) => {
+            if (value) {
+              axios
+                .post(`${this.app_url}/comprobantes`, this.comprobante)
+                .then((response) => {
+                  if (!response.data.error) {
+                    this.alerta = response.data.error;
+                    this.alerta_mensaje = response.data.successMessage;
+                    let params =
+                      "?comprobante_id=" + response.data.comprobante_id;
+                    axios.get(`${this.app_url}/generar_pdf`, {
+                      params: {
+                        comprobante_id: response.data.comprobante_id,
+                      },
+                    });
+                    window.open(
+                      `${this.app_url}/generar_ticket/${params}`,
+                      "_blank"
+                    );
+                    this.accion = "Mostrar";
+                  } else {
+                    console.log("Error");
+                  }
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          });
+      }
     },
   },
 };

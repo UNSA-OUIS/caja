@@ -14,6 +14,6 @@ class DetallesComprobanteSeeder extends Seeder
      */
     public function run()
     {
-        DetallesComprobante::factory()->count(50)->create();
+        DetallesComprobante::factory()->count(1000)->create();
     }
 }
