@@ -96,23 +96,23 @@
             <div v-if="row.item.estado == 'aceptado'">
               <b-badge variant="success">Aceptado</b-badge>
               <br />
-              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-              <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
+              <b-button
+                variant="info"
+                size="sm"
+                @click="visualizar_xml(row.item.url_xml)"
+              >
+                XML
+              </b-button>
+              <b-button
+                variant="info"
+                size="sm"
+                @click="visualizar_pdf(row.item.url_pdf)"
+              >
+                PDF
+              </b-button>
             </div>
           </template>
           <template v-slot:cell(acciones)="row">
-            <b-button
-              v-if="
-                row.item.estado == 'aceptado' || row.item.estado == 'observado'
-              "
-              target="_blank"
-              variant="primary"
-              size="sm"
-              title="Ver"
-              :href="`${app_url}/${row.item.url_pdf}`"
-            >
-              <b-icon icon="printer"></b-icon>
-            </b-button>
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
@@ -201,6 +201,18 @@ export default {
 
         return resumenDiario || [];
       });
+    },
+    visualizar_xml(url_xml) {
+      window.open(
+        `${this.app_url}/sunat/boletaXML?url_xml=${url_xml}`,
+        "_blanck"
+      );
+    },
+    visualizar_pdf(url_pdf) {
+      window.open(
+        `${this.app_url}/sunat/boletaPDF?url_pdf=${url_pdf}`,
+        "_blanck"
+      );
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

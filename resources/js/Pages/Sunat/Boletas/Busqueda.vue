@@ -10,51 +10,57 @@
             Lista de cobros
           </inertia-link>
         </li>
-        <li class="breadcrumb-item active">Enviar boletas a sunat mediante resumen diario</li>
+        <li class="breadcrumb-item active">
+          Enviar boletas a sunat mediante resumen diario
+        </li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Enviar boletas a sunat mediante resumen diario</span>
+        <span class="font-weight-bold"
+          >Enviar boletas a sunat mediante resumen diario</span
+        >
       </div>
       <div class="card-body">
         <div>
-          <label for="example-datepicker">Fecha Inicio</label>
-          <b-form-datepicker
-            name="fecha_inicio"
-            v-model="fecha_inicio"
-            class="mb-2"
-          ></b-form-datepicker>
-          <label for="example-datepicker">Fecha Fin</label>
-          <b-form-datepicker
-            name="fecha_fin"
-            v-model="fecha_fin"
-            class="mb-2"
-          ></b-form-datepicker>
-          <b-button
-            variant="success"
-            size="sm"
-            title="Buscar Boletas"
-            @click="buscar_boletas()"
-          >
-            Buscar Facturas <b-icon icon="search"></b-icon>
-          </b-button>
-          <b-button
-            variant="primary"
-            size="sm"
-            title="Limpiar"
-            @click="limpiar()"
-          >
-            Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-          </b-button>
+          <b-form inline>
+            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
+              <b-form-datepicker
+                name="fecha_inicio"
+                v-model="fecha_inicio"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                placeholder="Fecha de Inicio"
+              ></b-form-datepicker>
+            </b-input-group>
+            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
+              <b-form-datepicker
+                name="fecha_fin"
+                v-model="fecha_fin"
+                class="mb-2 mr-sm-2 mb-sm-0"
+                placeholder="Fecha de Fin"
+              ></b-form-datepicker>
+            </b-input-group>
+            <template>
+              <div>
+                <b-button-group>
+                  <b-button variant="outline-success" @click="buscar_boletas()">
+                    Buscar Boletas <b-icon icon="search"></b-icon>
+                  </b-button>
+                  <b-button variant="outline-primary" @click="limpiar()">
+                    Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                  </b-button>
+                </b-button-group>
+              </div>
+            </template>
+          </b-form>
         </div>
         <div class="row justify-content-center mb-1" v-if="mostrar_boletas">
-          <facturas
+          <boletas
             :fecha_inicio="fecha_inicio"
             :fecha_fin="fecha_fin"
             :key="renderKey"
           >
-          </facturas>
+          </boletas>
         </div>
       </div>
     </div>
