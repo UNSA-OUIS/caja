@@ -289,7 +289,7 @@
               :href="route('cobros.iniciar')"
             >
               <i class="uil-window-section"></i>
-              <span>Cobros</span>
+              <span>Comprobantes</span>
             </inertia-link>
           </li>
           <!--<li :class="{ 'mm-active': path == 'comprobantes' }">

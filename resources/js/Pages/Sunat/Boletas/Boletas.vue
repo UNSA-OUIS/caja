@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-table
-      ref="tbl_facturas"
+      ref="tbl_boletas"
       show-empty
       striped
       hover
@@ -14,15 +14,33 @@
       :fields="fields"
       :current-page="currentPage"
       :per-page="perPage"
-      empty-text="No hay fac para mostrar"
-      empty-filtered-text="No hay usuarios que coincidan con su búsqueda."
+      empty-text="No hay boletas para mostrar"
+      empty-filtered-text="No hay boletas que coincidan con su búsqueda."
     >
       <template #table-busy>
         <div class="text-center text-success my-2">
           <b-spinner class="align-middle"></b-spinner>
           <strong v-if="!enviado">Cargando ...</strong>
-          <strong v-else>Enviando facturas a sunat</strong>
+          <strong v-else>Enviando resumen diario a sunat</strong>
         </div>
+      </template>
+      <template v-slot:cell(usuario)="row">
+        <span v-if="row.item.tipo_usuario === 'alumno'">
+          {{ row.item.comprobanteable.apn }}
+        </span>
+        <span v-else-if="row.item.tipo_usuario === 'empresa'">
+          {{ row.item.comprobanteable.razon_social }}
+        </span>
+        <span v-else-if="row.item.tipo_usuario === 'particular'">
+          {{ row.item.comprobanteable.apellidos }},
+          {{ row.item.comprobanteable.nombres }}
+        </span>
+        <span v-else-if="row.item.tipo_usuario === 'docente'">
+          {{ row.item.comprobanteable.apn }}
+        </span>
+        <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+          {{ row.item.comprobanteable.nomb_depe }}
+        </span>
       </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
@@ -74,7 +92,7 @@
         </b-card>
       </template>
       <template #table-caption
-        >Se encontraron {{ totalRows }} facturas
+        >Se encontraron {{ totalRows }} boletas
       </template>
     </b-table>
     <b-row>
@@ -83,7 +101,7 @@
         title="Enviar facturas a sunat"
         @click="enviar_facturas()"
       >
-        Enviar Facturas a Sunat
+        Enviar Resumen Diario a Sunat
         <b-icon icon="cloud-arrow-up"></b-icon>
       </b-button>
     </b-row>
@@ -106,7 +124,7 @@
 const axios = require("axios");
 
 export default {
-  name: "facturas.listar",
+  name: "boletas.listar",
   props: ["fecha_inicio", "fecha_fin"],
   data() {
     return {
@@ -115,18 +133,9 @@ export default {
       isBusy: false,
       enviado: false,
       fields: [
-        {
-          key: "codi_usuario",
-          label: "RUC",
-          class: "text-center",
-          sortable: true,
-        },
-        {
-          key: "comprobanteable.razon_social",
-          label: "Razon Social",
-          class: "text-left",
-          sortable: true,
-        },
+        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+        { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
@@ -156,7 +165,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_facturas.refresh();
+      this.$refs.tbl_boletas.refresh();
     },
     myProvider(ctx) {
       let params = {
@@ -165,7 +174,7 @@ export default {
         page: ctx.currentPage,
         size: ctx.perPage,
       };
-      const promise = axios.get(`${this.app_url}/sunat/listarFacturas`, {
+      const promise = axios.get(`${this.app_url}/sunat/listarBoletas`, {
         params,
       });
 
@@ -180,8 +189,8 @@ export default {
       console.log(this.items);
       this.enviado = true;
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar estas facturas?", {
-          title: "Enviar facturas",
+        .msgBoxConfirm("¿Esta seguro de querer enviar este resumen diario?", {
+          title: "Enviar resumen diario",
           okVariant: "success",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -190,7 +199,7 @@ export default {
         .then(async (value) => {
           if (value) {
             axios
-              .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
+              .post(`${this.app_url}/sunat/resumenDiario`, this.items)
               .then((response) => {
                 console.log(response.data);
                 if (!response.data.error) {

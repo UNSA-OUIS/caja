@@ -7,7 +7,7 @@
                         <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
                     </li>
                     <li class="breadcrumb-item active">Lista de cobros</li>
-                </ol>      
+                </ol>
                 <inertia-link class="btn btn-success float-right" :href="route('comprobantes.buscarUsuario')">Nuevo</inertia-link>
             </div>
             <div class="card-body">
@@ -193,7 +193,7 @@ export default {
             fields: [
                 { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
                 { key: "codi_usuario", label: "Código usuario", class: "text-center" },
-                { key: "usuario", label: "Usuario", sortable: true },
+                { key: "usuario", label: "Administrado", sortable: true },
                 { key: "tipo_comprobante.nombre", label: "Comprobante", class: "text-center" },
                 { key: "serie", label: "Serie", class: "text-center" },
                 { key: "correlativo", label: "Correlativo", class: "text-center" },
