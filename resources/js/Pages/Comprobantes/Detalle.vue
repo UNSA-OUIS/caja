@@ -314,6 +314,8 @@ export default {
                       );
                       this.accion = "Mostrar";
                     } else {
+                      this.alerta = response.data.error;
+                      this.alerta_mensaje = response.data.errorMessage;
                       console.log("Error");
                     }
                   })

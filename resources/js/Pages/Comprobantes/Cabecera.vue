@@ -44,6 +44,16 @@
                         <label class="lbl-data" v-text="data.fecha_actual"></label>
                       </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6 border border-light">
+                            <label class="text-info">Nro Operación:</label>
+                            <b-form-input id="input-3" v-model="nro_operacion" type="text" placeholder="Ingrese número de operación"></b-form-input>
+                        </div>
+                        <div class="form-group col-md-6 border border-light">
+                            <label class="text-info">Fecha de emisión:</label>
+                            <b-form-input id="input-3" v-model="fecha_operacion" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+                        </div>
+                    </div>
                     <template v-if="comprobante.tipo_usuario === 'alumno' && data.tipo_comprobante === 'BOLETA'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
                     </template>
@@ -99,13 +109,23 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
+            nro_operacion: "",
+            fecha_operacion: ""
         };
+    },
+    watch: {
+        nro_operacion: function () {
+            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+        },
+        fecha_operacion: function () {
+            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+        },
     },
     created(){
         if(this.data.email != ''){
             this.comprobante.email = this.data.email;
         }
-        }
+    }
 };
 </script>
 <style scoped>
