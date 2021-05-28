@@ -652,7 +652,6 @@ class ComprobanteController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        //$nro_operacion = $request->numero_operacion . '-' . $request->fecha;
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')
             ->where('serie', 'ILIKE', $request->serie)
             ->where('correlativo', 'ILIKE', $request->correlativo)

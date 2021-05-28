@@ -157,7 +157,7 @@
         </template>
         <template v-slot:cell(usuario)="row">
           <span v-if="row.item.tipo_usuario === 'alumno'">
-            {{ row.item.comprobanteable.apn }}
+            {{ row.item.comprobanteable.apn.replace("/"," ") }}
           </span>
           <span v-else-if="row.item.tipo_usuario === 'empresa'">
             {{ row.item.comprobanteable.razon_social }}
@@ -237,6 +237,7 @@ export default {
       alerta: false,
       alerta_mensaje: "",
       consulta: true,
+      usuario: "",
       documento: {
         serie: "",
         correlativo: "",
