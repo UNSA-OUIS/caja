@@ -74,6 +74,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->nro_operacion = "";
         $comprobante->email = "";
         $comprobante->detalles = array();
         $tipo_de_documento = '';
@@ -146,6 +147,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->nro_operacion = "";
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -192,6 +194,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->nro_operacion = "";
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -233,6 +236,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->nro_operacion = "";
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -274,6 +278,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->nro_operacion = "";
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -290,27 +295,13 @@ class ComprobanteController extends Controller
 
     public function crear_nota(Request $request)
     {
-        /*$comprobante = Comprobante::with('detalles')->where('serie', $request->serie)
-                                    ->where('correlativo', $request->correlativo)
-                                    ->first();
-
-        $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
-
-        $data = [
-            'tipo_comprobante' => $request->tipo_comprobante,
-            'serie' => $numeroOpe->serie,
-            'correlativo' => $numeroOpe->correlativo,
-            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
-        ];
-
-        return Inertia::render('Comprobantes/Nota', compact('comprobante', 'data'));*/
         $cobro = Comprobante::with('detalles.concepto', 'comprobanteable')->where('id', $request->comprobanteId)->first();
 
         $comprobante = new Comprobante();
 
         $comprobante->tipo_usuario = $cobro->tipo_usuario;
         $comprobante->codi_usuario = $cobro->codi_usuario;
+        $comprobante->tipo_comprobante_afectado = $cobro->tipo_comprobante->id;
 
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.' . $request->tipo_comprobante);
 
@@ -345,6 +336,7 @@ class ComprobanteController extends Controller
         $comprobante->motivo = $request->motivo;
         $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
         $comprobante->tipo_nota = $request->tipo_nota;
+        $comprobante->tipo_comprobante_afectado = $request->tipo_comprobante_afectado;
         $comprobante->tipo_usuario = $request->tipo_usuario;
         $comprobante->codi_usuario = $request->codi_usuario;
         $comprobante->total = 10;
@@ -373,6 +365,7 @@ class ComprobanteController extends Controller
             $comprobante->nues_espe = $request->nues_espe;
             $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
             $comprobante->serie = $request->serie;
+            $comprobante->nro_operacion = $request->nro_operacion;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total_descuento = 10.00;
             $comprobante->total_impuesto = 100.00;

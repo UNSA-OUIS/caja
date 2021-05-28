@@ -119,6 +119,7 @@ export default {
                 {value: '07', text: 'Devolución por ítem'},
                 {value: '08', text: 'Bonificación'},
                 {value: '09', text: 'Disminución en el valor'},
+                {value: '10', text: 'Otros conceptos'},
             ],
             fields: [
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
