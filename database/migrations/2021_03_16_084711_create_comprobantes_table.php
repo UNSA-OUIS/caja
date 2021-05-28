@@ -15,11 +15,12 @@ class CreateComprobantesTable extends Migration
     {
         Schema::create('comprobantes', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('nro_recibo')->nullable();
+            $table->string('nro_operacion')->unique()->nullable();
             $table->enum('tipo_usuario', ['alumno', 'docente', 'dependencia', 'particular', 'empresa']);
             $table->string('codi_usuario', 20)->nullable();
             $table->char('nues_espe', 3)->nullable();
             $table->tinyInteger('tipo_comprobante_id');
+            $table->tinyInteger('tipo_comprobante_afectado')->nullable();
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total_descuento');
@@ -46,6 +47,11 @@ class CreateComprobantesTable extends Migration
                 ->onDelete('cascade');
 
             $table->foreign('tipo_comprobante_id')->references('id')->on('tipo_comprobante')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreign('tipo_comprobante_afectado')->references('id')->on('tipo_comprobante')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

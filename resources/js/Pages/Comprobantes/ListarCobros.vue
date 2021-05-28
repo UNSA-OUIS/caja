@@ -117,6 +117,9 @@
               {{ row.item.comprobanteable.nomb_depe }}
             </span>
           </template>
+          <template v-slot:cell(numero)="row">
+            {{ row.item.serie }}-{{ row.item.correlativo }}
+          </template>
           <template v-slot:cell(estado)="row">
             <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
               >No Enviado</b-badge
@@ -187,15 +190,13 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "tipo_usuario", label: "Tipo administrado", class: "text-center" },
-        { key: "codi_usuario", label: "Código administrado", class: "text-center" },
         { key: "usuario", label: "Administrado", sortable: true },
         {
           key: "tipo_comprobante.nombre",
-          label: "Comprobante",
+          label: "Tipo comprobante",
           class: "text-center",
         },
-        { key: "serie", label: "Serie", class: "text-center" },
-        { key: "correlativo", label: "Correlativo", class: "text-center" },
+        { key: "numero", label: "Número de comprobante", class: "text-center" },
         { key: "estado", label: "Estado", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
