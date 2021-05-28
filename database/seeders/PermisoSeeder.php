@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\NumeroOperacion;
 use App\Models\Persona;
+use App\Models\PuntosVenta;
 use App\Models\User;
 use App\Models\Rol;
 use App\Models\TipoComprobante;
@@ -19,68 +21,229 @@ class PermisoSeeder extends Seeder
      */
     public function run()
     {
-        $superadmin = Rol::create([            
+        $superadmin = Rol::create([
             'name' => 'Administrador',
-            'guard_name' => 'sanctum'                                                          
+            'guard_name' => 'sanctum'
         ]);
-        
-        $cajero = Rol::create([            
+
+        $cajero = Rol::create([
             'name' => 'Cajero',
-            'guard_name' => 'sanctum'                                                          
+            'guard_name' => 'sanctum'
         ]);
-        
+
         User::create([
-            'name' => 'Jesus Ortiz Chavez', 
+            'name' => 'Caja UNSA',
+            'email' => 'cajaunsa@unsa.edu.pe',
+            'password' => bcrypt('cajaunsa2020')
+        ]);
+
+        User::create([
+            'name' => 'Jesus Ortiz Chavez',
             'email' => 'jortiz@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         User::create([
-            'name' => 'Gary Núñez Ccahuaya', 
+            'name' => 'Gary Núñez Ccahuaya',
             'email' => 'gnunezc@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         User::create([
-            'name' => 'Renzo Siza Tejada', 
+            'name' => 'Renzo Siza Tejada',
             'email' => 'rsiza@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         User::create([
-            'name' => 'Edson Lipa Urbina', 
+            'name' => 'Edson Lipa Urbina',
             'email' => 'elipau@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         User::create([
-            'name' => 'Elsa del Carpio', 
+            'name' => 'Elsa del Carpio',
             'email' => 'edelcarpioa@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         User::create([
-            'name' => 'Eulalia Velasquez', 
+            'name' => 'Eulalia Velasquez',
             'email' => 'evelasquezflo@unsa.edu.pe',
             'password' => bcrypt('password')
         ]);
 
         //usuario administrador
-        $user1 = User::find(1);
-        $user1->assignRole('Administrador');
-        $user2 = User::find(2);
-        $user2->assignRole('Administrador');
-        $user3 = User::find(3);
-        $user3->assignRole('Administrador');
-        $user4 = User::find(4);
-        $user4->assignRole('Administrador');
-        $user5 = User::find(5);
-        $user5->assignRole('Cajero');
-        $user6 = User::find(6);
-        $user6->assignRole('Cajero');
+        $caja_unsa = User::find(1);
+        $caja_unsa->assignRole('Administrador');
+        $caja_unsa->assignRole('Cajero');
+
+
+        $jesus = User::find(2);
+        $jesus->assignRole('Administrador');
+        $jesus->assignRole('Cajero');
+
+        $gary = User::find(3);
+        $gary->assignRole('Administrador');
+        $gary->assignRole('Cajero');
+
+        $renzo = User::find(4);
+        $renzo->assignRole('Administrador');
+        $renzo->assignRole('Cajero');
+
+        $edson = User::find(5);
+        $edson->assignRole('Administrador');
+        $edson->assignRole('Cajero');
+
+        $elsa = User::find(6);
+        $elsa->assignRole('Cajero');
+
+        $eulalia = User::find(7);
+        $eulalia->assignRole('Cajero');
+
+        TipoComprobante::create(['id' => '1', 'nombre' => 'BOLETA']);
+        TipoComprobante::create(['id' => '2', 'nombre' => 'FACTURA']);
+        TipoComprobante::create(['id' => '3', 'nombre' => 'NOTA DE DÉBITO']);
+        TipoComprobante::create(['id' => '4', 'nombre' => 'NOTA DE CRÉDITO']);
+
+        PuntosVenta::create([
+            'ip' => '192.168.0.1',
+            'nombre' => 'Punto de Venta 1',
+            'direccion' => 'Direccion de Punto de Venta 1',
+            'user_id' => 1
+
+        ]);
+
+        PuntosVenta::create([
+            'ip' => '192.168.0.2',
+            'nombre' => 'Punto de Venta 2',
+            'direccion' => 'Direccion de Punto de Venta 2',
+            'user_id' => 2
+
+        ]);
+        PuntosVenta::create([
+            'ip' => '192.168.0.3',
+            'nombre' => 'Punto de Venta 3',
+            'direccion' => 'Direccion de Punto de Venta 3',
+            'user_id' => 3
+
+        ]);
+        PuntosVenta::create([
+            'ip' => '192.168.0.4',
+            'nombre' => 'Punto de Venta 4',
+            'direccion' => 'Direccion de Punto de Venta 4',
+            'user_id' => 4
+
+        ]);
+        PuntosVenta::create([
+            'ip' => '192.168.0.5',
+            'nombre' => 'Punto de Venta 5',
+            'direccion' => 'Direccion de Punto de Venta 5',
+            'user_id' => 5
+
+        ]);
+        PuntosVenta::create([
+            'ip' => '192.168.0.6',
+            'nombre' => 'Punto de Venta 6',
+            'direccion' => 'Direccion de Punto de Venta 6',
+            'user_id' => 6
+
+        ]);
+        PuntosVenta::create([
+            'ip' => '192.168.0.7',
+            'nombre' => 'Punto de Venta 7',
+            'direccion' => 'Direccion de Punto de Venta 7',
+            'user_id' => 7
+
+        ]);
+
+        NumeroOperacion::create([
+            'serie' => 'B001',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 1
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F001',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 1
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B002',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 2
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F002',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 2
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B003',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 3
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F003',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 3
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B004',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 4
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F004',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 4
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B005',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 5
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F005',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 5
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B006',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 6
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F006',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 6
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'B007',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 1,
+            'punto_venta_id' => 7
+        ]);
+        NumeroOperacion::create([
+            'serie' => 'F007',
+            'correlativo' => '00000001',
+            'tipo_comprobante_id' => 2,
+            'punto_venta_id' => 7
+        ]);
 
         //Datos adicionales
-        Persona::create([
+        /*Persona::create([
             'codigo' => 'cajero1',
             'nombre' => 'CAJERO ' . $user1->name,
             'user_id' => $user1->id
@@ -116,14 +279,11 @@ class PermisoSeeder extends Seeder
             'codigo' => 'cajero6',
             'nombre' => 'CAJERO ' . $user6->name,
             'user_id' => $user6->id
-        ]);
+        ]);*/
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        TipoComprobante::create(['id' => '1', 'nombre' => 'BOLETA']);
-        TipoComprobante::create(['id' => '2', 'nombre' => 'FACTURA']);
-        TipoComprobante::create(['id' => '3', 'nombre' => 'NOTA DE DÉBITO']);
-        TipoComprobante::create(['id' => '4', 'nombre' => 'NOTA DE CRÉDITO']);
+
 
         Permission::create(['name' => 'Listar Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
@@ -198,20 +358,20 @@ class PermisoSeeder extends Seeder
 
         Permission::create(['name' => 'Listar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Crear Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
-        Permission::create(['name' => 'Mostrar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
+        Permission::create(['name' => 'Mostrar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Anular Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
-        Permission::create(['name' => 'Restaurar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
-        Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
+        Permission::create(['name' => 'Restaurar Comprobantes', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+        Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Anular Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
-        Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);        
-    
+        Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+
         Permission::create(['name' => 'Listar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Mostrar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Editar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Eliminar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Restaurar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
- 
+
         Permission::create(['name' => 'Listar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Mostrar Números-Comprobante', 'guard_name' => 'sanctum'])->assignRole($superadmin);
@@ -226,8 +386,5 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Consolidado Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
-
-
     }
 }
-

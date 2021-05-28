@@ -10,7 +10,7 @@
     <hr />
     <form @submit.prevent="agregarDetalle">
       <b-row>
-        <b-col cols="5">
+        <b-col cols="6">
           <v-select
             v-if="accion === 'Crear'"
             v-model="concepto"

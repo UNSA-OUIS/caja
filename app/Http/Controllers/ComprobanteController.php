@@ -631,7 +631,24 @@ class ComprobanteController extends Controller
         //$result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
         //return $result;
     }
-    public function consultas(Request $request)
+    public function consultas_numero_operacion(Request $request)
+    {
+        //$this->authorize("viewAny", Comprobante::class);
+
+        $nro_operacion = $request->numero_operacion . '-' . $request->fecha;
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')
+            ->where('nro_operacion', 'ILIKE', $nro_operacion)
+            ->latest();
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
+    }
+    public function consultas_serie_correlativo(Request $request)
     {
         //$this->authorize("viewAny", Comprobante::class);
 
@@ -639,7 +656,6 @@ class ComprobanteController extends Controller
             ->where('serie', 'ILIKE', $request->serie)
             ->where('correlativo', 'ILIKE', $request->correlativo)
             ->latest();
-
         $sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {

@@ -9,192 +9,214 @@
       </ol>
     </nav>
     <div class="card">
-      <div class="card-header">
-        <div class="card-header d-flex align-items-center">
-          <span class="font-weight-bold">Buscar comprobante</span>
-        </div>
-        <div>
-          <b-container class="bv-example-row">
-            <b-row>
-              <b-col></b-col>
-              <b-col cols="8">
-                Buscar Por:
-                <b-form-select
-                  size="sm"
-                  class="mb-2 mr-sm-2 mb-sm-0"
-                  v-model="selected"
-                  :options="options"
-                ></b-form-select>
-                <b-form v-show="selected == 2" inline>
-                  <label class="sr-only" for="inline-form-input-serie"
-                    >Serie</label
-                  >
-                  <b-form-input
-                    v-model="documento.serie"
-                    id="inline-form-input-serie"
-                    class="mb-2 mr-sm-2 mb-sm-0"
-                    placeholder="Serie"
-                  ></b-form-input>
-
-                  <label class="sr-only" for="inline-form-input-correlativo"
-                    >Correlativo</label
-                  >
-                  <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-                    <b-form-input
-                      v-model="documento.correlativo"
-                      id="inline-form-input-correlativo"
-                      placeholder="Correlativo"
-                    ></b-form-input>
-                  </b-input-group>
-
-                  <template>
-                    <div>
-                      <b-button-group>
-                        <b-button variant="outline-success" @click="buscar()">
-                          Buscar <b-icon icon="search"></b-icon>
-                        </b-button>
-                        <b-button variant="outline-primary" @click="limpiar()">
-                          Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-                        </b-button>
-                      </b-button-group>
-                    </div>
-                  </template>
-                </b-form>
-                <b-form v-show="selected == 1" inline>
-                  <label class="sr-only" for="inline-form-input-serie"
-                    >Serie</label
-                  >
-                  <b-form-input
-                    v-model="documento.numero_operacion"
-                    id="inline-form-input-serie"
-                    class="mb-2 mr-sm-2 mb-sm-0"
-                    placeholder="Numero de Operacion"
-                  ></b-form-input>
-
-                  <label class="sr-only" for="inline-form-input-correlativo"
-                    >Correlativo</label
-                  >
-                  <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-                    <b-form-datepicker
-                      name="fecha_inicio"
-                      v-model="documento.fecha"
-                      class="mb-2 mr-sm-2 mb-sm-0"
-                      placeholder="Fecha"
-                    ></b-form-datepicker>
-                  </b-input-group>
-
-                  <template>
-                    <div>
-                      <b-button-group>
-                        <b-button variant="outline-success" @click="buscar()">
-                          Buscar <b-icon icon="search"></b-icon>
-                        </b-button>
-                        <b-button variant="outline-primary" @click="limpiar()">
-                          Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-                        </b-button>
-                      </b-button-group>
-                    </div>
-                  </template>
-                </b-form>
-                {{documento}}
-                <b-alert
-                  class="mb-2 mr-sm-2 mb-sm-0"
-                  variant="danger"
-                  show
-                  v-show="alerta"
-                >
-                  {{ this.mensajeAlerta }}
-                </b-alert></b-col
-              >
-              <b-col></b-col>
-            </b-row>
-          </b-container>
-        </div>
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Buscar comprobante</span>
       </div>
-      <div class="card-body" v-show="filtrado">
-        <b-table
-          stacked
-          :items="comprobante"
-          :fields="fields"
-          empty-text="No hay documentos para mostrar"
-          empty-filtered-text="No hay documentos que coincidan con su búsqueda."
-        >
-          <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-              >No Enviado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-              >Observado
-            </b-badge>
-            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-              >Rechazado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-              >Anulado</b-badge
-            >
-            <div v-if="row.item.estado == 'aceptado'">
-              <b-badge variant="success">Aceptado</b-badge>
+      <div class="card-body">
+        <div class="row justify-content-center mb-1">
+          <fieldset class="col-12 col-md-6 px-3">
+            <div class="row justify-content-center mb-2">
+              <div class="col col-lg-6">
+                <b-form-select size="sm" v-model="selected" :options="options">
+                  <template v-slot:first>
+                    <option :value="null" disabled>Buscar por...</option>
+                  </template>
+                </b-form-select>
+              </div>
             </div>
-          </template>
-          <template v-slot:cell(usuario)="row">
-            <span v-if="row.item.tipo_usuario === 'alumno'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'empresa'">
-              {{ row.item.comprobanteable.razon_social }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'particular'">
-              {{ row.item.comprobanteable.apellidos }},
-              {{ row.item.comprobanteable.nombres }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'docente'">
-              {{ row.item.comprobanteable.apn }}
-            </span>
-            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
-              {{ row.item.comprobanteable.nomb_depe }}
-            </span>
-          </template>
-          <template v-slot:cell(acciones)="row">
-            <inertia-link
-              v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-              :href="route('consulta.comprobante', row.item.id)"
-            >
-              Detalles
-            </inertia-link>
-            <b-button
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-              size="sm"
-              @click="visualizar_pdf(row.item.url_pdf)"
-            >
-              PDF
-            </b-button>
-            <b-button
-              v-if="row.item.tipo_comprobante == 2"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-              size="sm"
-              @click="visualizar_xml(row.item.url_xml)"
-            >
-              XML
-            </b-button>
-            <b-button
-              v-if="row.item.tipo_comprobante == 2"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-              size="sm"
-              @click="visualizar_cdr(row.item.url_cdr)"
-            >
-              CDR
-            </b-button>
-            <b-button
-              class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
-              size="sm"
-              @click="reenviar()"
-            >
-              Reenviar
-            </b-button>
-          </template>
-        </b-table>
+          </fieldset>
+        </div>
+        <div class="row justify-content-center mb-1" v-show="selected == 1">
+          <fieldset class="col-12 col-md-6 px-3">
+            <div class="row justify-content-center">
+              <b-form inline>
+                <b-form-input
+                  v-model="documento.numero_operacion"
+                  placeholder="Numero de Operacion"
+                  size="sm"
+                  id="inline-form-input-numero-operacion"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  trim
+                ></b-form-input>
+                <b-form-datepicker
+                  placeholder="Fecha"
+                  v-model="documento.fecha"
+                  size="sm"
+                  id="inline-form-custom-select-fecha"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                >
+                </b-form-datepicker>
+
+                <template>
+                  <div>
+                    <b-button-group>
+                      <b-button
+                        size="sm"
+                        variant="outline-success"
+                        @click="buscar_numero_operacion"
+                      >
+                        Buscar <b-icon icon="search"></b-icon>
+                      </b-button>
+                      <b-button
+                        size="sm"
+                        variant="outline-primary"
+                        @click="limpiar"
+                      >
+                        Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                      </b-button>
+                    </b-button-group>
+                  </div>
+                </template>
+              </b-form>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="row justify-content-center mb-1" v-show="selected == 2">
+          <fieldset class="col-12 col-md-6 px-3">
+            <div class="row justify-content-center">
+              <b-form inline>
+                <b-form-input
+                  v-model="documento.serie"
+                  placeholder="Serie"
+                  size="sm"
+                  id="inline-form-input-serie"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  trim
+                ></b-form-input>
+                <b-form-input
+                  placeholder="Correlativo"
+                  v-model="documento.correlativo"
+                  size="sm"
+                  id="inline-form-custom-select-correlativo"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                >
+                </b-form-input>
+
+                <template>
+                  <div>
+                    <b-button-group>
+                      <b-button
+                        size="sm"
+                        variant="outline-success"
+                        @click="buscar_serie_correlativo"
+                      >
+                        Buscar <b-icon icon="search"></b-icon>
+                      </b-button>
+                      <b-button
+                        size="sm"
+                        variant="outline-primary"
+                        @click="limpiar"
+                      >
+                        Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                      </b-button>
+                    </b-button-group>
+                  </div>
+                </template>
+              </b-form>
+            </div>
+          </fieldset>
+        </div>
       </div>
+    </div>
+    <div>
+      <b-alert
+        class="mb-2 mr-sm-2 mb-sm-0"
+        variant="danger"
+        show
+        v-show="alerta"
+      >
+        {{ this.alerta_mensaje }}
+      </b-alert>
+    </div>
+
+    <div class="card-body" v-show="filtrado">
+      <b-table
+        stacked
+        :items="comprobante"
+        :fields="fields"
+        empty-text="No hay documentos para mostrar"
+        empty-filtered-text="No hay documentos que coincidan con su búsqueda."
+      >
+        <template v-slot:cell(estado)="row">
+          <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
+            >No Enviado</b-badge
+          >
+          <b-badge v-if="row.item.estado == 'observado'" variant="warning"
+            >Observado
+          </b-badge>
+          <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
+            >Rechazado</b-badge
+          >
+          <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
+            >Anulado</b-badge
+          >
+          <div v-if="row.item.estado == 'aceptado'">
+            <b-badge variant="success">Aceptado</b-badge>
+          </div>
+        </template>
+        <template v-slot:cell(usuario)="row">
+          <span v-if="row.item.tipo_usuario === 'alumno'">
+            {{ row.item.comprobanteable.apn.replace("/"," ") }}
+          </span>
+          <span v-else-if="row.item.tipo_usuario === 'empresa'">
+            {{ row.item.comprobanteable.razon_social }}
+          </span>
+          <span v-else-if="row.item.tipo_usuario === 'particular'">
+            {{ row.item.comprobanteable.apellidos }},
+            {{ row.item.comprobanteable.nombres }}
+          </span>
+          <span v-else-if="row.item.tipo_usuario === 'docente'">
+            {{ row.item.comprobanteable.apn }}
+          </span>
+          <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+            {{ row.item.comprobanteable.nomb_depe }}
+          </span>
+        </template>
+        <template v-slot:cell(acciones)="row">
+          <inertia-link
+            v-if="!row.item.deleted_at"
+            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+            :href="route('consulta.comprobante', row.item.id)"
+          >
+            Detalles
+          </inertia-link>
+          <b-button
+            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+            size="sm"
+            @click="visualizar_pdf(row.item.url_pdf)"
+          >
+            PDF
+          </b-button>
+          <b-button
+            v-if="
+              row.item.tipo_comprobante_id == 2 && row.item.estado == 'aceptado'
+            "
+            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+            size="sm"
+            @click="visualizar_xml(row.item.url_xml)"
+          >
+            XML
+          </b-button>
+          <b-button
+            v-if="
+              row.item.tipo_comprobante_id == 2 && row.item.estado == 'aceptado'
+            "
+            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+            size="sm"
+            @click="visualizar_cdr(row.item.url_cdr)"
+          >
+            CDR
+          </b-button>
+          <b-button
+            class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
+            size="sm"
+            @click="reenviar()"
+          >
+            Reenviar
+          </b-button>
+        </template>
+      </b-table>
     </div>
   </app-layout>
 </template>
@@ -213,8 +235,9 @@ export default {
       app_url: this.$root.app_url,
       filtrado: false,
       alerta: false,
-      mensajeAlerta: "",
+      alerta_mensaje: "",
       consulta: true,
+      usuario: "",
       documento: {
         serie: "",
         correlativo: "",
@@ -279,9 +302,6 @@ export default {
     };
   },
   methods: {
-    refreshTable() {
-      this.$refs.tbl_boletas.refresh();
-    },
     reenviar() {
       axios
         .get(`${this.app_url}/enviarCorreo`, {
@@ -297,27 +317,70 @@ export default {
           console.log(error);
         });
     },
-    buscar() {
-      if (!this.documento.serie && !this.documento.correlativo) {
+    buscar_numero_operacion() {
+      if (!this.documento.fecha && !this.documento.numero_operacion) {
         this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar una serie y correlativo";
-      } else if (!this.documento.serie) {
+        this.alerta_mensaje =
+          "Debe seleccionar un numero de operacion y una fecha";
+      } else if (!this.documento.fecha) {
         this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar una serie";
-      } else if (!this.documento.correlativo) {
+        this.alerta_mensaje = "Debe seleccionar una fecha";
+      } else if (!this.documento.numero_operacion) {
         this.alerta = true;
-        this.mensajeAlerta = "Debe seleccionar un correlativo";
+        this.alerta_mensaje = "Debe seleccionar un numero de operacion";
       } else {
         this.filtrado = true;
         this.alerta = false;
-        this.mensajeAlerta = "";
+        this.alerta_mensaje = "";
 
-        const promise = axios.get(`${this.app_url}/comprobantes/consultas`, {
-          params: {
-            serie: this.documento.serie,
-            correlativo: this.documento.correlativo,
-          },
-        });
+        const promise = axios.get(
+          `${this.app_url}/comprobantes/consultas/numero_operacion`,
+          {
+            params: {
+              numero_operacion: this.documento.numero_operacion,
+              fecha: this.documento.fecha,
+            },
+          }
+        );
+
+        return promise
+          .then((response) => {
+            this.comprobante = response.data.data;
+            console.log(this.comprobante);
+            this.totalRows = response.data.total;
+            this.refreshTable();
+
+            return this.comprobante || [];
+          })
+          .catch((error) => {
+            console.log(error.response);
+          });
+      }
+    },
+    buscar_serie_correlativo() {
+      if (!this.documento.serie && !this.documento.correlativo) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una serie y correlativo";
+      } else if (!this.documento.serie) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una serie";
+      } else if (!this.documento.correlativo) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar un correlativo";
+      } else {
+        this.filtrado = true;
+        this.alerta = false;
+        this.alerta_mensaje = "";
+
+        const promise = axios.get(
+          `${this.app_url}/comprobantes/consultas/serie_correlativo`,
+          {
+            params: {
+              serie: this.documento.serie,
+              correlativo: this.documento.correlativo,
+            },
+          }
+        );
 
         return promise
           .then((response) => {
@@ -338,8 +401,9 @@ export default {
       this.alerta = false;
       this.documento.serie = "";
       this.documento.correlativo = "";
-      this.mensajeAlerta = "";
-      this.refreshTable();
+      this.documento.numero_operacion = "";
+      this.documento.fecha = "";
+      this.alerta_mensaje = "";
     },
 
     visualizar_pdf(url_pdf) {
