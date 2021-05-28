@@ -10,7 +10,6 @@
     <hr />
     <form @submit.prevent="agregarDetalle">
       <b-row>
-        {{ comprobante }}
         <b-col cols="5">
           <v-select
             v-if="accion === 'Crear'"
@@ -324,14 +323,13 @@ export default {
             });
         } else {
           this.$bvModal
-            .msgBoxOk("Debe ingresar un correo electronico valido",{
+            .msgBoxOk("Debe ingresar un correo electronico valido", {
               title: "Correo Electronico",
               okVariant: "success",
               okTitle: "ACEPTAR",
               centered: true,
             })
-            .then((value) => {
-            })
+            .then((value) => {})
             .catch((err) => {
               // An error occurred
             });
@@ -339,19 +337,19 @@ export default {
       } else {
         // More complex structure
         const messageVNode = h("div", { class: ["foobar"] }, [
-          h("p", { class: ["text-center"] }, [
+          h("p", { class: ["text-danger"] }, [
             h(
               "strong",
-              "Al no introducir un email no se le enviara el comprobante en pdf al administrado"
+              "ADVERTENCIA: Al no introducir un email no se le enviara el comprobante en pdf al administrado"
             ),
           ]),
         ]);
         this.$bvModal
           .msgBoxConfirm(
             [
-              "¿Esta seguro de querer registrar este comprobante?",
-              "\n",
               messageVNode,
+              "\n",
+              "¿Esta seguro de querer registrar este comprobante?",
             ],
             {
               title: "Enviar Comprobante",

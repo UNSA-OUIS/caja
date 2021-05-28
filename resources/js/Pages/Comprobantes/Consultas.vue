@@ -1,53 +1,114 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item active">Buscar comprobante</li>
+      </ol>
+    </nav>
     <div class="card">
       <div class="card-header">
-        <h1>Buscar documento</h1>
+        <div class="card-header d-flex align-items-center">
+          <span class="font-weight-bold">Buscar comprobante</span>
+        </div>
         <div>
-          <b-form inline>
-            <label class="sr-only" for="inline-form-input-serie">Serie</label>
-            <b-form-input
-              v-model="documento.serie"
-              id="inline-form-input-serie"
-              class="mb-2 mr-sm-2 mb-sm-0"
-              placeholder="Serie"
-            ></b-form-input>
+          <b-container class="bv-example-row">
+            <b-row>
+              <b-col></b-col>
+              <b-col cols="8">
+                Buscar Por:
+                <b-form-select
+                  size="sm"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  v-model="selected"
+                  :options="options"
+                ></b-form-select>
+                <b-form v-show="selected == 2" inline>
+                  <label class="sr-only" for="inline-form-input-serie"
+                    >Serie</label
+                  >
+                  <b-form-input
+                    v-model="documento.serie"
+                    id="inline-form-input-serie"
+                    class="mb-2 mr-sm-2 mb-sm-0"
+                    placeholder="Serie"
+                  ></b-form-input>
 
-            <label class="sr-only" for="inline-form-input-correlativo"
-              >Correlativo</label
-            >
-            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-              <b-form-input
-                v-model="documento.correlativo"
-                id="inline-form-input-correlativo"
-                placeholder="Correlativo"
-              ></b-form-input>
-            </b-input-group>
+                  <label class="sr-only" for="inline-form-input-correlativo"
+                    >Correlativo</label
+                  >
+                  <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
+                    <b-form-input
+                      v-model="documento.correlativo"
+                      id="inline-form-input-correlativo"
+                      placeholder="Correlativo"
+                    ></b-form-input>
+                  </b-input-group>
 
-            <template>
-              <div>
-                <b-button-group>
-                  <b-button variant="outline-success" @click="buscar()">
-                    Buscar <b-icon icon="search"></b-icon>
-                  </b-button>
-                  <b-button variant="outline-primary" @click="limpiar()">
-                    Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-                  </b-button>
-                  <b-button variant="outline-warning" @click="reenviar()">
-                    Reenviar
-                  </b-button>
-                </b-button-group>
-              </div>
-            </template>
-          </b-form>
-          <b-alert
-            class="mb-2 mr-sm-2 mb-sm-0"
-            variant="danger"
-            show
-            v-show="alerta"
-          >
-            {{ this.mensajeAlerta }}
-          </b-alert>
+                  <template>
+                    <div>
+                      <b-button-group>
+                        <b-button variant="outline-success" @click="buscar()">
+                          Buscar <b-icon icon="search"></b-icon>
+                        </b-button>
+                        <b-button variant="outline-primary" @click="limpiar()">
+                          Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                        </b-button>
+                      </b-button-group>
+                    </div>
+                  </template>
+                </b-form>
+                <b-form v-show="selected == 1" inline>
+                  <label class="sr-only" for="inline-form-input-serie"
+                    >Serie</label
+                  >
+                  <b-form-input
+                    v-model="documento.numero_operacion"
+                    id="inline-form-input-serie"
+                    class="mb-2 mr-sm-2 mb-sm-0"
+                    placeholder="Numero de Operacion"
+                  ></b-form-input>
+
+                  <label class="sr-only" for="inline-form-input-correlativo"
+                    >Correlativo</label
+                  >
+                  <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
+                    <b-form-datepicker
+                      name="fecha_inicio"
+                      v-model="documento.fecha"
+                      class="mb-2 mr-sm-2 mb-sm-0"
+                      placeholder="Fecha"
+                    ></b-form-datepicker>
+                  </b-input-group>
+
+                  <template>
+                    <div>
+                      <b-button-group>
+                        <b-button variant="outline-success" @click="buscar()">
+                          Buscar <b-icon icon="search"></b-icon>
+                        </b-button>
+                        <b-button variant="outline-primary" @click="limpiar()">
+                          Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                        </b-button>
+                      </b-button-group>
+                    </div>
+                  </template>
+                </b-form>
+                {{documento}}
+                <b-alert
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  variant="danger"
+                  show
+                  v-show="alerta"
+                >
+                  {{ this.mensajeAlerta }}
+                </b-alert></b-col
+              >
+              <b-col></b-col>
+            </b-row>
+          </b-container>
         </div>
       </div>
       <div class="card-body" v-show="filtrado">
@@ -109,12 +170,27 @@
               PDF
             </b-button>
             <b-button
-              v-if="row.item.tipo_comprobante === 2"
+              v-if="row.item.tipo_comprobante == 2"
               class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
               size="sm"
               @click="visualizar_xml(row.item.url_xml)"
             >
               XML
+            </b-button>
+            <b-button
+              v-if="row.item.tipo_comprobante == 2"
+              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+              size="sm"
+              @click="visualizar_cdr(row.item.url_cdr)"
+            >
+              CDR
+            </b-button>
+            <b-button
+              class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
+              size="sm"
+              @click="reenviar()"
+            >
+              Reenviar
             </b-button>
           </template>
         </b-table>
@@ -142,18 +218,25 @@ export default {
       documento: {
         serie: "",
         correlativo: "",
+        numero_operacion: "",
+        fecha: "",
       },
+      selected: null,
+      options: [
+        { value: 1, text: "Buscar por numero de operacion" },
+        { value: 2, text: "Buscar por serie y correlativo" },
+      ],
       comprobante: [],
       fields: [
         {
-          key: "codi_usuario",
-          label: "Código usuario",
+          key: "tipo_usuario",
+          label: "Tipo usuario",
           class: "text-left",
           sortable: true,
         },
         {
-          key: "tipo_usuario",
-          label: "Tipo usuario",
+          key: "codi_usuario",
+          label: "Código usuario",
           class: "text-left",
           sortable: true,
         },
@@ -200,7 +283,8 @@ export default {
       this.$refs.tbl_boletas.refresh();
     },
     reenviar() {
-      axios.get(`${this.app_url}/enviarCorreo`, {
+      axios
+        .get(`${this.app_url}/enviarCorreo`, {
           params: {
             comprobanteId: this.items[0].id,
           },
@@ -270,6 +354,22 @@ export default {
         "_blanck"
       );
     },
+    visualizar_cdr(url_cdr) {
+      window.open(
+        `${this.app_url}/sunat/facturaCDR?url_pdf=${url_cdr}`,
+        "_blanck"
+      );
+    },
   },
 };
 </script>
+
+<style scoped>
+.breadcrumb li a {
+  color: blue;
+}
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>
