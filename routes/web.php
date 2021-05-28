@@ -245,7 +245,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('comprobantes.consultas');
 
     Route::get('/comprobantes/listar', [ComprobanteController::class, 'index'])->name('comprobantes.listar');
-    Route::get('/comprobantes/consultas', [ComprobanteController::class, 'consultas'])->name('comprobantes-consultas.listar');
+    Route::get('/comprobantes/consultas/numero_operacion', [ComprobanteController::class, 'consultas_numero_operacion'])->name('comprobantes-consultas.numero_operacion');
+    Route::get('/comprobantes/consultas/serie_correlativo', [ComprobanteController::class, 'consultas_serie_correlativo'])->name('comprobantes-consultas.serie_correlativo');
     Route::get('/comprobantes/crear', [ComprobanteController::class, 'create'])->name('comprobantes.crear');
     Route::get('/crear_alumno', [ComprobanteController::class, 'crear_alumno'])->name('comprobantes.crear_alumno');
     Route::get('/crear_docente', [ComprobanteController::class, 'crear_docente'])->name('comprobantes.crear_docente');
