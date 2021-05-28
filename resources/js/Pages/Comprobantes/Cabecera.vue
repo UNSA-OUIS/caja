@@ -101,6 +101,11 @@ export default {
             app_url: this.$root.app_url,
         };
     },
+    created(){
+        if(this.data.email != ''){
+            this.comprobante.email = this.data.email;
+        }
+        }
 };
 </script>
 <style scoped>

@@ -74,6 +74,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->email = "";
         $comprobante->detalles = array();
         $tipo_de_documento = '';
         $numero_de_documento = '';
@@ -110,7 +111,7 @@ class ComprobanteController extends Controller
             'ndoc' => $numero_de_documento,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => str_replace('/', ' ', $request->alumno['apn']),
-            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe': '',
+            'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe' : '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -145,6 +146,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->email = "";
         $comprobante->detalles = array();
 
         $depa = Departamento::where('depa', '=', $request->docente['depend'])->first();
@@ -154,7 +156,7 @@ class ComprobanteController extends Controller
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
             'docente' => str_replace('/', ' ', $request->docente['apn']),
-            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe': '',
+            'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe' : '',
             'departamento' => $ndep,
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -190,6 +192,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->email = "";
         $comprobante->detalles = array();
 
         $data = [
@@ -230,12 +233,13 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->email = "";
         $comprobante->detalles = array();
 
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'particular' => $request->particular['apellidos'] . ", " . $request->particular['nombres'],
-            'email' => $request->particular['email'],
+            'email' => $request->particular['email'] != null ? $request->particular['email'] : '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
 
@@ -270,12 +274,13 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
+        $comprobante->email = "";
         $comprobante->detalles = array();
 
         $data = [
             'tipo_comprobante' => 'FACTURA',
             'razon_social' => $request->empresa['razon_social'],
-            'email' => $request->empresa['email'],
+            'email' => $request->empresa['email'] != null ? $request->empresa['email'] : '',
             'direccion' => $request->empresa['direccion'],
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -321,7 +326,7 @@ class ComprobanteController extends Controller
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
-        
+
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
             'comprobante' => $cobro,
@@ -372,6 +377,7 @@ class ComprobanteController extends Controller
             $comprobante->total_descuento = 10.00;
             $comprobante->total_impuesto = 100.00;
             $comprobante->total = $request->total;
+            $comprobante->email = $request->email;
             $comprobante->estado = 'noEnviado';
             $comprobante->cajero_id = Auth::user()->id;
             $comprobante->save();
@@ -423,7 +429,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'FACTURA',
                 'razon_social' => $comprobante->comprobanteable['razon_social'],
-                'email' => $comprobante->comprobanteable['email'],
+                'email' => $comprobante->email,
                 'direccion' => $comprobante->comprobanteable['direccion'],
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
@@ -460,7 +466,7 @@ class ComprobanteController extends Controller
                 'ndoc' => $numero_de_documento,
                 'escuela' => $matricula->matriculas[0]->escuela['nesc'],
                 'alumno' => str_replace('/', ' ', $comprobante->comprobanteable['apn']),
-                //'email' => $email->mail . '@unsa.edu.pe',
+                'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
@@ -471,7 +477,7 @@ class ComprobanteController extends Controller
                 'tipo_comprobante' => 'BOLETA',
                 'dni' =>   $comprobante->comprobanteable['dic'],
                 'docente' => str_replace('/', ' ',   $comprobante->comprobanteable['apn']),
-                'email' =>   $comprobante->comprobanteable['correo'] . '@unsa.edu.pe',
+                'email' =>    $comprobante->email,
                 'departamento' => $depa->ndep,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
@@ -480,7 +486,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'BOLETA',
                 'dependencia' => $comprobante->comprobanteable['nomb_depe'],
-                'email' => 'sizaisi@unsa.edu.pe',
+                'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
@@ -488,7 +494,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'BOLETA',
                 'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
-                'email' => $comprobante->comprobanteable['email'],
+                'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
@@ -503,7 +509,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'FACTURA',
                 'razon_social' => $comprobante->comprobanteable['razon_social'],
-                'email' => $comprobante->comprobanteable['email'],
+                'email' =>  $comprobante->email,
                 'direccion' => $comprobante->comprobanteable['direccion'],
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
@@ -540,7 +546,7 @@ class ComprobanteController extends Controller
                 'ndoc' => $numero_de_documento,
                 'escuela' => $matricula->matriculas[0]->escuela['nesc'],
                 'alumno' => $comprobante->comprobanteable['apn'],
-                //'email' => $email->mail . '@unsa.edu.pe',
+                'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
@@ -551,7 +557,7 @@ class ComprobanteController extends Controller
                 'tipo_comprobante' => 'BOLETA',
                 'dni' =>   $comprobante->comprobanteable['dic'],
                 'docente' => str_replace("/", " ",   $comprobante->comprobanteable['apn']),
-                'email' =>   $comprobante->comprobanteable['correo'] . '@unsa.edu.pe',
+                'email' =>    $comprobante->email,
                 'departamento' => $depa->ndep,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
@@ -560,7 +566,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'BOLETA',
                 'dependencia' => $comprobante->comprobanteable['nomb_depe'],
-                'email' => 'sizaisi@unsa.edu.pe',
+                'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
@@ -568,7 +574,7 @@ class ComprobanteController extends Controller
             $data = [
                 'tipo_comprobante' => 'BOLETA',
                 'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
-                'email' => $comprobante->comprobanteable['email'],
+                'email' => $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/CabeceraConsulta', compact('comprobante', 'data'));
@@ -603,7 +609,7 @@ class ComprobanteController extends Controller
                 $data['email'] = $alumno->email->mail != null ? $alumno->email->mail . '@unsa.edu.pe' : 'gnunezc@unsa.edu.pe';
                 return $data['email'];
                 break;
-            
+
             case "particular":
                 $particular = Particular::where('dni', $comprobante->codi_usuario)->first();
                 $data['email'] = $particular->email != null ? $particular->email : '';
@@ -622,7 +628,7 @@ class ComprobanteController extends Controller
                 $empresa = Empresa::where('ruc', $comprobante->codi_usuario)->first();
                 $data['email'] = $empresa->email != null ? $empresa->email : '';
                 break;
-                            
+
             default:
                 break;
         }
@@ -637,9 +643,8 @@ class ComprobanteController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles')
-            ->where('codi_usuario', 'like', '%' . $request->filter . '%')
-            ->where('serie', 'ILIKE', '%' . $request->serie . '%')
-            ->where('correlativo', 'ILIKE', '%' . $request->correlativo . '%')
+            ->where('serie', 'ILIKE', $request->serie)
+            ->where('correlativo', 'ILIKE', $request->correlativo)
             ->latest();
 
         $sortby = $request->sortby;
