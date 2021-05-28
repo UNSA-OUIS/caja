@@ -120,6 +120,11 @@ export default {
         fecha_operacion: function () {
             this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
         },
+    },
+    created(){
+        if(this.data.email != ''){
+            this.comprobante.email = this.data.email;
+        }
     }
 };
 </script>

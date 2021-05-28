@@ -164,7 +164,7 @@ export default {
           sortable: true,
         },
         {
-          key: "comprobanteable.email",
+          key: "email",
           label: "Email",
           class: "text-left",
           sortable: true,
@@ -212,7 +212,7 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-    },    
+    },
     buscar() {
       if (!this.documento.serie && !this.documento.correlativo) {
         this.alerta = true;
