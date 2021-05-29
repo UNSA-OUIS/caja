@@ -301,7 +301,8 @@ class ComprobanteController extends Controller
 
         $comprobante->tipo_usuario = $cobro->tipo_usuario;
         $comprobante->codi_usuario = $cobro->codi_usuario;
-        $comprobante->tipo_comprobante_afectado = $cobro->tipo_comprobante->id;
+        $comprobante->email = $cobro->email;
+        $comprobante->comprobante_afectado_id = $cobro->id;
 
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.' . $request->tipo_comprobante);
 
@@ -312,8 +313,6 @@ class ComprobanteController extends Controller
 
         $comprobante->tipo_nota = "";
         $comprobante->motivo = "";
-        $comprobante->serie_afectada = $cobro->serie;
-        $comprobante->correlativo_afectado = $cobro->correlativo;
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
@@ -321,7 +320,8 @@ class ComprobanteController extends Controller
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
             'comprobante' => $cobro,
-            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+            'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d'),
+            'email' => $cobro->email
         ];
         return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
     }
@@ -331,13 +331,12 @@ class ComprobanteController extends Controller
         $comprobante = new Comprobante();
         $comprobante->serie = $request->serie;
         $comprobante->correlativo = $request->correlativo;
-        $comprobante->serie_afectada = $request->serie_afectada;
-        $comprobante->correlativo_afectado = $request->correlativo_afectado;
         $comprobante->motivo = $request->motivo;
         $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
         $comprobante->tipo_nota = $request->tipo_nota;
-        $comprobante->tipo_comprobante_afectado = $request->tipo_comprobante_afectado;
+        $comprobante->comprobante_afectado_id = $request->comprobante_afectado_id;
         $comprobante->tipo_usuario = $request->tipo_usuario;
+        $comprobante->email = $request->email;
         $comprobante->codi_usuario = $request->codi_usuario;
         $comprobante->total = 10;
         $comprobante->total_descuento = 10;
@@ -592,11 +591,12 @@ class ComprobanteController extends Controller
     {
         $comprobante = Comprobante::findOrFail($request->comprobanteId);
         $data = [
-            'adjunto' => storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'),
-            'email' => ''
+            'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '.pdf'),
+            'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $comprobante->serie . '-' . $comprobante->correlativo . '-ticket' . '.pdf'),
+            'email' => $comprobante->email
         ];
 
-        switch ($comprobante->tipo_usuario) {
+        /*switch ($comprobante->tipo_usuario) {
             case "alumno":
                 $alumno = Alumno::where('cui', $comprobante->codi_usuario)->first();
                 $data['email'] = $alumno->email->mail != null ? $alumno->email->mail . '@unsa.edu.pe' : 'gnunezc@unsa.edu.pe';
@@ -624,8 +624,11 @@ class ComprobanteController extends Controller
 
             default:
                 break;
-        }
+        }*/
+        
         EnviarCorreosJob::dispatch($data);
+        $result = ['successMessage' => 'Correo reenviado con éxito', 'error' => false];
+        return $result;
 
         //Mail::to($request->to)->queue(new CobroRealizadoMailable($request->to));
         //$result = ['successMessage' => 'Particular registrado con éxito', 'error' => false];
@@ -933,4 +936,17 @@ class ComprobanteController extends Controller
             return 0;
         }
     }*/
+
+    public function verificarNroOperacion(Request $request)
+    {
+        if (Comprobante::where('nro_operacion', '=', $request->nro_operacion)->exists()) {
+            
+            $result = ['errorMessage' => 'El número de operación ingresado ya se encuentra registrado en la fecha indicada.', 'error' => true];
+            return $result;
+        }
+        else{
+            $result = ['successMessage' => 'El número de operación ingresado se encuentra disponible en la fecha indicada.', 'error' => false];
+            return $result;
+        }
+    }
 }

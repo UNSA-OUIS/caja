@@ -30,7 +30,8 @@ class CobroRealizadoMailable extends Mailable
     public function build()
     {
         return $this->subject('Cobro realizado')
-                    ->attach($this->data['adjunto'])
+                    ->attach($this->data['adjuntoPDF'])
+                    ->attach($this->data['adjuntoTicket'])
                     ->view('emails.cobro');
     }
 }

@@ -9,10 +9,13 @@
                 <label class="text-info">Particular:</label>
                 <label class="lbl-data" v-text="data.particular"></label>
             </div>
-            <div class="form-group col-md-4 border border-light">
+            <div v-if="data.email != ''" class="form-group col-md-4 border border-light">
                 <label class="text-info">Email:</label>
-                <label v-if="data.email != ''" class="lbl-data" v-text="data.email"></label>
-                <b-input v-else class="lbl-data" placeholder="Ingrese un email" v-model="comprobante.email"></b-input>
+                <label class="lbl-data" v-text="data.email"></label>
+            </div>
+            <div v-else class="form-group col-md-4 border border-light">
+                <label class="text-warning">Email:</label>
+                <b-input class="lbl-data" placeholder="Ingrese un email" v-model="comprobante.email"></b-input>
             </div>
         </div>
     </div>

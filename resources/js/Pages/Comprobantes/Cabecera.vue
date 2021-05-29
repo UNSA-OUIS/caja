@@ -44,16 +44,19 @@
                         <label class="lbl-data" v-text="data.fecha_actual"></label>
                       </div>
                     </div>
+                    <template v-if="comprobante.detalles != null">
                     <div class="form-row">
                         <div class="form-group col-md-6 border border-light">
-                            <label class="text-info">Nro Operación:</label>
-                            <b-form-input id="input-3" v-model="nro_operacion" type="text" placeholder="Ingrese número de operación"></b-form-input>
+                            <label class="text-warning">Nro Operación:</label>
+                            <b-form-input id="input-3" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
                         </div>
                         <div class="form-group col-md-6 border border-light">
-                            <label class="text-info">Fecha de emisión:</label>
-                            <b-form-input id="input-3" v-model="fecha_operacion" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+                            <label class="text-warning">Fecha de emisión:</label>
+                            <b-form-input id="input-3" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
                         </div>
+                        <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
                     </div>
+                    </template>
                     <template v-if="comprobante.tipo_usuario === 'alumno' && data.tipo_comprobante === 'BOLETA'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
                     </template>
@@ -91,6 +94,7 @@ import CabeceraEmpresa from "./CabeceraEmpresa";
 import CabeceraNota from "./CabeceraNota";
 import Detalle from "./Detalle";
 import DetalleMostrar from "./DetalleMostrar";
+const axios = require("axios");
 
 export default {
     name: "comprobantes.cabecera",
@@ -110,7 +114,11 @@ export default {
         return {
             app_url: this.$root.app_url,
             nro_operacion: "",
-            fecha_operacion: ""
+            fecha_operacion: "",
+            error:{
+                estado: false,
+                mensaje: ""
+            }
         };
     },
     watch: {
@@ -124,6 +132,25 @@ export default {
     created(){
         if(this.data.email != ''){
             this.comprobante.email = this.data.email;
+        }
+    },
+    methods: {
+        verificar() {
+            axios.get(`${this.app_url}/verificarNroOperacion`, {
+                params: {
+                    nro_operacion: this.comprobante.nro_operacion,
+                },
+            }).then((response) => {
+                if (!response.data.error) { 
+                        this.error.estado = false                     
+                    }
+                    else {
+                        this.error.estado = true
+                        this.error.mensaje = response.data.errorMessage
+                    }
+            }).catch(function (error) {
+                console.log(error);
+            });
         }
     }
 };
