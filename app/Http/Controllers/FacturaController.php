@@ -293,7 +293,7 @@ class FacturaController extends Controller
                         'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $factura->serie . '-' . $factura->correlativo . '-ticket' . '.pdf'),
                         'email' => $factura->email
                     ];
-    
+
                     EnviarCorreosJob::dispatch($data);
 
                 } else if ($code >= 2000 && $code <= 3999) {
@@ -314,7 +314,7 @@ class FacturaController extends Controller
             } catch (Exception $e) {
                 $factura->observaciones = 'Error al enviar la factura' . $e->getMessage();
                 $factura->update();
-                $resultado = ['errorMessage' => $e, 'error' => true];
+                $resultado = ['errorMessage' => $e->getMessage(), 'error' => true];
                 Log::error('FacturaController@enviar_facturas, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
             }
         }

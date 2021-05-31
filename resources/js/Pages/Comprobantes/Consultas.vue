@@ -29,12 +29,12 @@
         </div>
         <div class="row justify-content-center mb-1" v-show="selected == 1">
           <fieldset class="col-12 col-md-7 px-3">
-            <legend>Fecha y Numero de Operacion</legend>
+            <legend>Fecha y Número de Operación</legend>
             <div class="row justify-content-center">
               <b-form inline>
                 <b-form-input
                   v-model="documento.numero_operacion"
-                  placeholder="Numero de Operacion"
+                  placeholder="Número de Operación"
                   size="sm"
                   id="inline-form-input-numero-operacion"
                   class="mb-2 mr-sm-2 mb-sm-0"
@@ -120,16 +120,14 @@
             </div>
           </fieldset>
         </div>
-        <div>
-          <b-alert
-            class="mb-2 mr-sm-2 mb-sm-0"
-            variant="danger"
-            show
-            v-show="alerta"
-          >
-            {{ this.alerta_mensaje }}
-          </b-alert>
-        </div>
+        <b-alert
+          class="mb-2 mr-sm-2 mb-sm-0"
+          variant="danger"
+          show
+          v-show="alerta"
+        >
+          {{ this.alerta_mensaje }}
+        </b-alert>
         <div class="card-body" v-show="filtrado">
           <b-table
             stacked
@@ -211,6 +209,7 @@
                 CDR
               </b-button>
               <b-button
+                v-if="row.item.estado == 'aceptado'"
                 class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
                 @click="reenviar()"
@@ -250,7 +249,7 @@ export default {
       },
       selected: null,
       options: [
-        { value: 1, text: "Buscar por numero de operacion" },
+        { value: 1, text: "Buscar por número de operación" },
         { value: 2, text: "Buscar por serie y correlativo" },
       ],
       comprobante: [],
@@ -288,7 +287,7 @@ export default {
         },
         {
           key: "estado",
-          label: "Estado",
+          label: "Estado Sunat",
           class: "text-left",
           sortable: true,
         },
@@ -316,14 +315,14 @@ export default {
         .then((response) => {
           var success = response.data.successMessage;
           this.$bvToast.toast(response.data.successMessage, {
-                            title: `Correo reenviado`,
-                            variant: 'success',
-                            solid: true
-                        }) 
-          console.log(success);
+            title: `Correo reenviado`,
+            variant: "success",
+            solid: true,
+          });
+          //console.log(success);
         })
         .catch(function (error) {
-          console.log(error);
+          //console.log(error);
         });
     },
     buscar_numero_operacion() {
@@ -354,15 +353,20 @@ export default {
 
         return promise
           .then((response) => {
-            this.comprobante = response.data.data;
-            console.log(this.comprobante);
-            this.totalRows = response.data.total;
-            this.refreshTable();
+            if (this.comprobante != "") {
+              this.totalRows = response.data.total;
+              this.refreshTable();
+
+              return this.comprobante || [];
+            } else {
+              this.alerta = true;
+              this.alerta_mensaje = "No se encontro ningun comprobante";
+            }
 
             return this.comprobante || [];
           })
           .catch((error) => {
-            console.log(error.response);
+            //console.log(error.response);
           });
       }
     },
@@ -394,14 +398,18 @@ export default {
         return promise
           .then((response) => {
             this.comprobante = response.data.data;
-            console.log(this.comprobante);
-            this.totalRows = response.data.total;
-            this.refreshTable();
+            if (this.comprobante != "") {
+              this.totalRows = response.data.total;
+              this.refreshTable();
 
-            return this.comprobante || [];
+              return this.comprobante || [];
+            } else {
+              this.alerta = true;
+              this.alerta_mensaje = "No se encontro ningun comprobante";
+            }
           })
           .catch((error) => {
-            console.log(error.response);
+            //console.log(error.response);
           });
       }
     },
