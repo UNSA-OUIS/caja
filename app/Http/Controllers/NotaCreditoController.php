@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comprobante;
 use App\Models\NotaCredito;
 use DateTime;
 use Greenter\Model\Client\Client;
@@ -13,6 +14,7 @@ use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
 use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class NotaCreditoController extends Controller
@@ -40,7 +42,10 @@ class NotaCreditoController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = NotaCredito::with('detalles')->where('codigo', 'like', '%' . $request->filter . '%');
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
+            ->where('tipo_comprobante_id', 'like', 4)
+            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 

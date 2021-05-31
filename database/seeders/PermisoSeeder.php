@@ -170,13 +170,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 1
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC01',
+            'serie' => 'ND01',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 1
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND01',
+            'serie' => 'NC01',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 1
@@ -194,13 +194,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 2
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC02',
+            'serie' => 'ND02',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 2
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND02',
+            'serie' => 'NC02',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 2
@@ -218,13 +218,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 3
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC03',
+            'serie' => 'ND03',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 3
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND03',
+            'serie' => 'NC03',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 3
@@ -242,13 +242,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 4
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC04',
+            'serie' => 'ND04',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 4
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND04',
+            'serie' => 'NC04',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 4
@@ -266,13 +266,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 5
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC05',
+            'serie' => 'ND05',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 5
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND05',
+            'serie' => 'NC05',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 5
@@ -290,13 +290,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 6
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC06',
+            'serie' => 'ND06',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 6
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND06',
+            'serie' => 'NC06',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 6
@@ -314,13 +314,13 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 7
         ]);
         NumeroOperacion::create([
-            'serie' => 'NC07',
+            'serie' => 'ND07',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 7
         ]);
         NumeroOperacion::create([
-            'serie' => 'ND07',
+            'serie' => 'NC07',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 7
