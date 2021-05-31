@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\EnviarCorreosJob;
 use App\Models\Comprobante;
 use App\Models\ResumenDiario;
 use DateTime;
@@ -188,6 +189,15 @@ class BoletaController extends Controller
                 $boleta = Comprobante::where('id', 'like', $value['id'])->first();
                 $boleta->estado = 'aceptado';
                 $boleta->update();
+                
+                $data = [
+                    'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),
+                    'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '-ticket' . '.pdf'),
+                    'email' => $value['email']
+                ];
+
+                EnviarCorreosJob::dispatch($data);
+                
             }
             $html = new HtmlReport();
             $html->setTemplate('summary.html.twig');

@@ -30,4 +30,9 @@ class Comprobante extends Model
     {
         return $this->morphTo(__FUNCTION__, 'tipo_usuario', 'codi_usuario');
     }
+
+    public function comprobante_afectado()
+    {
+        return $this->hasOne(Comprobante::class);
+    }
 }

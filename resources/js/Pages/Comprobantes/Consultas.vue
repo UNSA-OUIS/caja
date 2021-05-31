@@ -306,12 +306,17 @@ export default {
       axios
         .get(`${this.app_url}/enviarCorreo`, {
           params: {
-            comprobanteId: this.items[0].id,
+            comprobanteId: this.comprobante[0].id,
           },
         })
         .then((response) => {
-          var success = response.data;
-          consolo.log(success);
+          var success = response.data.successMessage;
+          this.$bvToast.toast(response.data.successMessage, {
+                            title: `Correo reenviado`,
+                            variant: 'success',
+                            solid: true
+                        }) 
+          console.log(success);
         })
         .catch(function (error) {
           console.log(error);

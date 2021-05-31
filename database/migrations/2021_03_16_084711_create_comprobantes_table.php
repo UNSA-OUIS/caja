@@ -20,7 +20,6 @@ class CreateComprobantesTable extends Migration
             $table->string('codi_usuario', 20)->nullable();
             $table->char('nues_espe', 3)->nullable();
             $table->tinyInteger('tipo_comprobante_id');
-            $table->tinyInteger('tipo_comprobante_afectado')->nullable();
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total_descuento');
@@ -37,8 +36,7 @@ class CreateComprobantesTable extends Migration
             $table->bigInteger('cajero_id');
             $table->char('tipo_nota', 2)->nullable();
             $table->text('motivo')->nullable();
-            $table->string('serie_afectada', 4)->nullable();
-            $table->string('correlativo_afectado', 8)->nullable();
+            $table->bigInteger('comprobante_afectado_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -52,7 +50,7 @@ class CreateComprobantesTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreign('tipo_comprobante_afectado')->references('id')->on('tipo_comprobante')
+            $table->foreign('comprobante_afectado_id')->references('id')->on('comprobantes')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

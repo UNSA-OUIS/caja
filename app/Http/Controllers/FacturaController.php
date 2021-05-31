@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\EnviarCorreosJob;
 use App\Models\Comprobante;
 use App\Models\Concepto;
 use DateTime;
@@ -286,6 +287,15 @@ class FacturaController extends Controller
                         }
                         $factura->update();
                     }
+
+                    $data = [
+                        'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $factura->serie . '-' . $factura->correlativo . '.pdf'),
+                        'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $factura->serie . '-' . $factura->correlativo . '-ticket' . '.pdf'),
+                        'email' => $factura->email
+                    ];
+    
+                    EnviarCorreosJob::dispatch($data);
+
                 } else if ($code >= 2000 && $code <= 3999) {
                     $factura->estado = 'rechazado';
                     $factura->observaciones = '';
