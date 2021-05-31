@@ -15,11 +15,12 @@
       <div class="card-body">
         <div class="row justify-content-center mb-1">
           <fieldset class="col-12 col-md-6 px-3">
+            <legend>Buscar Por:</legend>
             <div class="row justify-content-center mb-2">
               <div class="col col-lg-6">
                 <b-form-select size="sm" v-model="selected" :options="options">
                   <template v-slot:first>
-                    <option :value="null" disabled>Buscar por...</option>
+                    <option :value="null" disabled>Seleccione uno ...</option>
                   </template>
                 </b-form-select>
               </div>
@@ -27,7 +28,8 @@
           </fieldset>
         </div>
         <div class="row justify-content-center mb-1" v-show="selected == 1">
-          <fieldset class="col-12 col-md-6 px-3">
+          <fieldset class="col-12 col-md-7 px-3">
+            <legend>Fecha y Numero de Operacion</legend>
             <div class="row justify-content-center">
               <b-form inline>
                 <b-form-input
@@ -73,7 +75,8 @@
         </div>
 
         <div class="row justify-content-center mb-1" v-show="selected == 2">
-          <fieldset class="col-12 col-md-6 px-3">
+          <fieldset class="col-12 col-md-6 px-6">
+            <legend>Serie y Correlativo</legend>
             <div class="row justify-content-center">
               <b-form inline>
                 <b-form-input
@@ -117,106 +120,107 @@
             </div>
           </fieldset>
         </div>
+        <div>
+          <b-alert
+            class="mb-2 mr-sm-2 mb-sm-0"
+            variant="danger"
+            show
+            v-show="alerta"
+          >
+            {{ this.alerta_mensaje }}
+          </b-alert>
+        </div>
+        <div class="card-body" v-show="filtrado">
+          <b-table
+            stacked
+            :items="comprobante"
+            :fields="fields"
+            empty-text="No hay documentos para mostrar"
+            empty-filtered-text="No hay documentos que coincidan con su búsqueda."
+          >
+            <template v-slot:cell(estado)="row">
+              <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
+                >No Enviado</b-badge
+              >
+              <b-badge v-if="row.item.estado == 'observado'" variant="warning"
+                >Observado
+              </b-badge>
+              <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
+                >Rechazado</b-badge
+              >
+              <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
+                >Anulado</b-badge
+              >
+              <div v-if="row.item.estado == 'aceptado'">
+                <b-badge variant="success">Aceptado</b-badge>
+              </div>
+            </template>
+            <template v-slot:cell(usuario)="row">
+              <span v-if="row.item.tipo_usuario === 'alumno'">
+                {{ row.item.comprobanteable.apn.replace("/", " ") }}
+              </span>
+              <span v-else-if="row.item.tipo_usuario === 'empresa'">
+                {{ row.item.comprobanteable.razon_social }}
+              </span>
+              <span v-else-if="row.item.tipo_usuario === 'particular'">
+                {{ row.item.comprobanteable.apellidos }},
+                {{ row.item.comprobanteable.nombres }}
+              </span>
+              <span v-else-if="row.item.tipo_usuario === 'docente'">
+                {{ row.item.comprobanteable.apn }}
+              </span>
+              <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+                {{ row.item.comprobanteable.nomb_depe }}
+              </span>
+            </template>
+            <template v-slot:cell(acciones)="row">
+              <inertia-link
+                v-if="!row.item.deleted_at"
+                class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+                :href="route('consulta.comprobante', row.item.id)"
+              >
+                Detalles
+              </inertia-link>
+              <b-button
+                class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+                size="sm"
+                @click="visualizar_pdf(row.item.url_pdf)"
+              >
+                PDF
+              </b-button>
+              <b-button
+                v-if="
+                  row.item.tipo_comprobante_id == 2 &&
+                  row.item.estado == 'aceptado'
+                "
+                class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+                size="sm"
+                @click="visualizar_xml(row.item.url_xml)"
+              >
+                XML
+              </b-button>
+              <b-button
+                v-if="
+                  row.item.tipo_comprobante_id == 2 &&
+                  row.item.estado == 'aceptado'
+                "
+                class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+                size="sm"
+                @click="visualizar_cdr(row.item.url_cdr)"
+              >
+                CDR
+              </b-button>
+              <b-button
+                class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
+                size="sm"
+                @click="reenviar()"
+              >
+                Reenviar
+              </b-button>
+            </template>
+          </b-table>
+        </div>
       </div>
-    </div>
-    <div>
-      <b-alert
-        class="mb-2 mr-sm-2 mb-sm-0"
-        variant="danger"
-        show
-        v-show="alerta"
-      >
-        {{ this.alerta_mensaje }}
-      </b-alert>
-    </div>
-
-    <div class="card-body" v-show="filtrado">
-      <b-table
-        stacked
-        :items="comprobante"
-        :fields="fields"
-        empty-text="No hay documentos para mostrar"
-        empty-filtered-text="No hay documentos que coincidan con su búsqueda."
-      >
-        <template v-slot:cell(estado)="row">
-          <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-            >No Enviado</b-badge
-          >
-          <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-            >Observado
-          </b-badge>
-          <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-            >Rechazado</b-badge
-          >
-          <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-            >Anulado</b-badge
-          >
-          <div v-if="row.item.estado == 'aceptado'">
-            <b-badge variant="success">Aceptado</b-badge>
-          </div>
-        </template>
-        <template v-slot:cell(usuario)="row">
-          <span v-if="row.item.tipo_usuario === 'alumno'">
-            {{ row.item.comprobanteable.apn.replace("/"," ") }}
-          </span>
-          <span v-else-if="row.item.tipo_usuario === 'empresa'">
-            {{ row.item.comprobanteable.razon_social }}
-          </span>
-          <span v-else-if="row.item.tipo_usuario === 'particular'">
-            {{ row.item.comprobanteable.apellidos }},
-            {{ row.item.comprobanteable.nombres }}
-          </span>
-          <span v-else-if="row.item.tipo_usuario === 'docente'">
-            {{ row.item.comprobanteable.apn }}
-          </span>
-          <span v-else-if="row.item.tipo_usuario === 'dependencia'">
-            {{ row.item.comprobanteable.nomb_depe }}
-          </span>
-        </template>
-        <template v-slot:cell(acciones)="row">
-          <inertia-link
-            v-if="!row.item.deleted_at"
-            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-            :href="route('consulta.comprobante', row.item.id)"
-          >
-            Detalles
-          </inertia-link>
-          <b-button
-            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-            size="sm"
-            @click="visualizar_pdf(row.item.url_pdf)"
-          >
-            PDF
-          </b-button>
-          <b-button
-            v-if="
-              row.item.tipo_comprobante_id == 2 && row.item.estado == 'aceptado'
-            "
-            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-            size="sm"
-            @click="visualizar_xml(row.item.url_xml)"
-          >
-            XML
-          </b-button>
-          <b-button
-            v-if="
-              row.item.tipo_comprobante_id == 2 && row.item.estado == 'aceptado'
-            "
-            class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
-            size="sm"
-            @click="visualizar_cdr(row.item.url_cdr)"
-          >
-            CDR
-          </b-button>
-          <b-button
-            class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
-            size="sm"
-            @click="reenviar()"
-          >
-            Reenviar
-          </b-button>
-        </template>
-      </b-table>
     </div>
   </app-layout>
 </template>
@@ -429,6 +433,32 @@ export default {
 </script>
 
 <style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
 .breadcrumb li a {
   color: blue;
 }

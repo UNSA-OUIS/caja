@@ -108,51 +108,51 @@ class PermisoSeeder extends Seeder
 
         PuntosVenta::create([
             'ip' => '192.168.0.1',
-            'nombre' => 'Punto de Venta 1',
-            'direccion' => 'Direccion de Punto de Venta 1',
+            'nombre' => 'CUNSA01',
+            'direccion' => 'Direccion CUNSA01',
             'user_id' => 1
 
         ]);
 
         PuntosVenta::create([
             'ip' => '192.168.0.2',
-            'nombre' => 'Punto de Venta 2',
-            'direccion' => 'Direccion de Punto de Venta 2',
+            'nombre' => 'CUNSA02',
+            'direccion' => 'Direccion CUNSA02',
             'user_id' => 2
 
         ]);
         PuntosVenta::create([
             'ip' => '192.168.0.3',
-            'nombre' => 'Punto de Venta 3',
-            'direccion' => 'Direccion de Punto de Venta 3',
+            'nombre' => 'CUNSA03',
+            'direccion' => 'Direccion CUNSA03',
             'user_id' => 3
 
         ]);
         PuntosVenta::create([
             'ip' => '192.168.0.4',
-            'nombre' => 'Punto de Venta 4',
-            'direccion' => 'Direccion de Punto de Venta 4',
+            'nombre' => 'CUNSA04',
+            'direccion' => 'Direccion CUNSA04',
             'user_id' => 4
 
         ]);
         PuntosVenta::create([
             'ip' => '192.168.0.5',
-            'nombre' => 'Punto de Venta 5',
-            'direccion' => 'Direccion de Punto de Venta 5',
+            'nombre' => 'CUNSA05',
+            'direccion' => 'Direccion CUNSA05',
             'user_id' => 5
 
         ]);
         PuntosVenta::create([
             'ip' => '192.168.0.6',
-            'nombre' => 'Punto de Venta 6',
-            'direccion' => 'Direccion de Punto de Venta 6',
+            'nombre' => 'CUNSA06',
+            'direccion' => 'Direccion CUNSA06',
             'user_id' => 6
 
         ]);
         PuntosVenta::create([
             'ip' => '192.168.0.7',
-            'nombre' => 'Punto de Venta 7',
-            'direccion' => 'Direccion de Punto de Venta 7',
+            'nombre' => 'CUNSA07',
+            'direccion' => 'Direccion CUNSA07',
             'user_id' => 7
 
         ]);
