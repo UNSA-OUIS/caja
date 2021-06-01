@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\EnviarCorreosJob;
 use App\Models\Comprobante;
 use App\Models\ResumenDiario;
+use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Greenter\Model\Client\Client;
@@ -63,6 +64,26 @@ class BoletaController extends Controller
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin)
             ->where('cajero_id', 'like', Auth::user()->id);
+
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
+    }
+
+    public function index_actual(Request $request)
+    {
+        //$this->authorize("viewAny", Comprobante::class);
+
+        $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
+            ->where('tipo_usuario', ['alumno', 'docente', 'particular', 'dependencia'])
+            ->where('tipo_comprobante_id', 'like', 1)
+            ->whereIn('estado', ['noEnviado'])
+            ->whereDate('created_at', '=', Carbon::now()->format('Y-m-d'));
 
         $sortby = $request->sortby;
 
@@ -189,7 +210,7 @@ class BoletaController extends Controller
                 $boleta = Comprobante::where('id', 'like', $value['id'])->first();
                 $boleta->estado = 'aceptado';
                 $boleta->update();
-                
+
                 $data = [
                     'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),
                     'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '-ticket' . '.pdf'),
@@ -197,7 +218,7 @@ class BoletaController extends Controller
                 ];
 
                 EnviarCorreosJob::dispatch($data);
-                
+
             }
             $html = new HtmlReport();
             $html->setTemplate('summary.html.twig');

@@ -10,16 +10,12 @@
             Lista de cobros
           </inertia-link>
         </li>
-        <li class="breadcrumb-item active">
-          Enviar boletas a sunat mediante resumen diario
-        </li>
+        <li class="breadcrumb-item active">Enviar boletas a sunat</li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold"
-          >Enviar boletas a sunat mediante resumen diario</span
-        >
+        <span class="font-weight-bold">Enviar boletas a sunat</span>
       </div>
       <div class="card-body">
         <div class="row justify-content-center mb-1">

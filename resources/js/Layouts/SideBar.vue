@@ -176,8 +176,8 @@
                   path == 'conceptos' ||
                   path == 'particulares' ||
                   path == 'empresas' ||
-                  path == 'cuentas-corrientes' ||
-                  path == 'asignar',
+                  path == 'cuentas-corrientes',
+                //path == 'asignar',
               }"
             >
               <i class="uil-window-section"></i>
@@ -273,7 +273,7 @@
                   Cuentas Corrientes
                 </inertia-link>
               </li>
-              <li
+              <!--<li
                 :class="{
                   'mm-active': path == 'asignar',
                 }"
@@ -286,7 +286,7 @@
                 >
                   Asignar Serie y Correlativo
                 </inertia-link>
-              </li>
+              </li>-->
             </ul>
           </li>
           <li :class="{ 'mm-active': path == 'cobros' }">

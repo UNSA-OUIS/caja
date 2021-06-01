@@ -297,6 +297,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/Boletas/Busqueda');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
+    Route::get('/sunat/listarBoletasActuales', [BoletaController::class, 'index_actual'])->name('boletas_actuales.listar');
     Route::get('/sunat/boletaPDF', [BoletaController::class, 'descargar_pdf'])->name('boleta.descargar-pdf');
     Route::get('/sunat/boletaCDR', [BoletaController::class, 'descargar_cdr'])->name('boleta.descargar-cdr');
     Route::get('/sunat/boletaXML', [BoletaController::class, 'descargar_xml'])->name('boleta.descargar-xml');

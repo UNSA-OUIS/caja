@@ -34,7 +34,8 @@ class ResumenDiarioController extends Controller
 
     public function index(Request $request)
     {
-        $query = ResumenDiario::where('correlativo', 'like', '%' . $request->filter . '%');
+        $fecha_actual = date("Y-m-d H:i:s");
+        $query = Comprobante::with('comprobanteable')->with('detalles.concepto')->with('tipo_comprobante')->where('tipo_comprobante_id', 'like', 1);
 
         $sortby = $request->sortby;
 

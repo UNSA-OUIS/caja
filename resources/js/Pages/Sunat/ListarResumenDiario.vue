@@ -1,13 +1,16 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item active">Boletas creadas el dia de hoy</li>
+      </ol>
+    </nav>
     <div class="card">
-      <div class="card-header">
-        <ol class="breadcrumb float-left">
-          <li class="breadcrumb-item">
-            <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
-          </li>
-          <li class="breadcrumb-item active">Lista de resumenes diarios</li>
-        </ol>
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Boletas creadas el dia de hoy</span>
       </div>
       <div class="card-body">
         <b-alert show variant="success" v-if="$page.props.successMessage">{{
@@ -93,30 +96,35 @@
             <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
               >Anulado</b-badge
             >
-            <div v-if="row.item.estado == 'aceptado'">
-              <b-badge variant="success">Aceptado</b-badge>
-              <br />
-              <b-button
-                variant="info"
-                size="sm"
-                @click="visualizar_xml(row.item.url_xml)"
-              >
-                XML
-              </b-button>
-              <b-button
-                variant="info"
-                size="sm"
-                @click="visualizar_pdf(row.item.url_pdf)"
-              >
-                PDF
-              </b-button>
-            </div>
+          </template>
+          <template v-slot:cell(fecha)="row">
+            <span>
+              {{ row.item.created_at.substring(0,10) }}
+            </span>
+          </template>
+          <template v-slot:cell(usuario)="row">
+            <span v-if="row.item.tipo_usuario === 'alumno'">
+              {{ row.item.comprobanteable.apn.replace("/", " ") }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'empresa'">
+              {{ row.item.comprobanteable.razon_social }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'particular'">
+              {{ row.item.comprobanteable.apellidos }},
+              {{ row.item.comprobanteable.nombres }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'docente'">
+              {{ row.item.comprobanteable.apn }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+              {{ row.item.comprobanteable.nomb_depe }}
+            </span>
           </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
-              :href="route('resumen-diario.mostrar', row.item.id)"
+              :href="route('consulta.mostrar', row.item)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>
@@ -151,18 +159,38 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      fecha: "",
       fields: [
         {
-          key: "id",
-          label: "ID",
-          sortable: true,
+          key: "tipo_usuario",
+          label: "Tipo",
           class: "text-center",
         },
-        { key: "fecha_envio", label: "Fecha de Envio" },
-        { key: "fecha_emision", label: "Fecha de Emision" },
-        { key: "correlativo", label: "Correlativo", class: "text-center" },
-        { key: "ticket", label: "Ticket", class: "text-center" },
-        { key: "estado", label: "Estado", class: "text-center" },
+        {
+          key: "codi_usuario",
+          label: "Código",
+          class: "text-center",
+        },
+        { key: "usuario", label: "Administrado", sortable: true },
+        { key: "serie", label: "Serie", class: "text-center", sortable: true },
+        {
+          key: "correlativo",
+          label: "Correlativo",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "fecha",
+          label: "Fecha de Creacion",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "estado",
+          label: "Estado",
+          class: "text-center",
+          sortable: true,
+        },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -192,27 +220,16 @@ export default {
       }
 
       const promise = axios.get(
-        `${this.app_url}/sunat/listarResumenDiario${params}`
+        `${this.app_url}/sunat/listarBoletasActuales${params}`
       );
 
       return promise.then((response) => {
-        const resumenDiario = response.data.data;
+        const boletas = response.data.data;
+        console.log(boletas);
         this.totalRows = response.data.total;
 
-        return resumenDiario || [];
+        return boletas || [];
       });
-    },
-    visualizar_xml(url_xml) {
-      window.open(
-        `${this.app_url}/sunat/boletaXML?url_xml=${url_xml}`,
-        "_blanck"
-      );
-    },
-    visualizar_pdf(url_pdf) {
-      window.open(
-        `${this.app_url}/sunat/boletaPDF?url_pdf=${url_pdf}`,
-        "_blanck"
-      );
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
@@ -221,3 +238,31 @@ export default {
   },
 };
 </script>
+<style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>
