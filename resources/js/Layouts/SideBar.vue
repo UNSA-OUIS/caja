@@ -107,17 +107,21 @@
               </li>
             </ul>
           </li>
-          <li v-if="
+          <li
+            v-if="
               $permissions.can([
                 { name: 'Listar Puntos-Venta' },
                 { name: 'Listar Números-Comprobante' },
-              ])">
+              ])
+            "
+          >
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
               @click="mostrarMenu(1)"
               :class="{
-                'mm-active': path == 'puntos-venta' || path == 'numeros-operacion',
+                'mm-active':
+                  path == 'puntos-venta' || path == 'numeros-operacion',
               }"
             >
               <i class="uil-window-section"></i>
@@ -137,7 +141,9 @@
                 <inertia-link
                   :href="route('numerosOperacion.iniciar')"
                   :class="{ active: path == 'numeros-operacion' }"
-                  v-if="$permissions.can([{ name: 'Listar Números-Comprobante' }])"
+                  v-if="
+                    $permissions.can([{ name: 'Listar Números-Comprobante' }])
+                  "
                 >
                   Números de comprobante
                 </inertia-link>
@@ -171,7 +177,7 @@
                   path == 'particulares' ||
                   path == 'empresas' ||
                   path == 'cuentas-corrientes' ||
-                  path == 'asignar' ,
+                  path == 'asignar',
               }"
             >
               <i class="uil-window-section"></i>
@@ -267,7 +273,7 @@
                   Cuentas Corrientes
                 </inertia-link>
               </li>
-               <li
+              <li
                 :class="{
                   'mm-active': path == 'asignar',
                 }"
@@ -329,10 +335,11 @@
               @click="mostrarMenu(3)"
               :class="{
                 'mm-active':
-                  path == 'facturas' ||
                   path == 'boletas' ||
+                  path == 'facturas' ||
                   path == 'notas-credito' ||
-                  path == 'notas-debito',
+                  path == 'notas-debito' ||
+                  path == 'consultas-resumen-diario',
               }"
             >
               <i class="fas fa-cloud-upload-alt"></i>
@@ -364,7 +371,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Enviar boletas
+                  Enviar boletas por fecha
                 </inertia-link>
               </li>
               <li
@@ -378,21 +385,7 @@
                     active: path == 'facturas',
                   }"
                 >
-                  Enviar facturas
-                </inertia-link>
-              </li>
-              <li
-                :class="{
-                  'mm-active': path == 'notas-credito',
-                }"
-              >
-                <inertia-link
-                  :href="route('notas-credito.iniciar')"
-                  :class="{
-                    active: path == 'notas-credito',
-                  }"
-                >
-                  Notas de Credito
+                  Enviar facturas por fecha
                 </inertia-link>
               </li>
               <li
@@ -406,7 +399,29 @@
                     active: path == 'notas-debito',
                   }"
                 >
-                  Notas de Debito
+                  Enviar notas de debito
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'notas-credito',
+                }"
+              >
+                <inertia-link
+                  :href="route('notas-credito.iniciar')"
+                  :class="{
+                    active: path == 'notas-credito',
+                  }"
+                >
+                  Enviar notas de credito
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('resumen-diario.iniciar')"
+                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
+                >
+                  Enviar resumen diario
                 </inertia-link>
               </li>
             </ul>
@@ -420,15 +435,21 @@
                 'mm-active':
                   path == 'tipo-comprobante' ||
                   path == 'consultas-dependencias' ||
-                  path == 'consultas-resumen-diario' ||
                   path == 'comprobantes-consultas',
-
               }"
             >
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+              <li>
+                <inertia-link
+                  :href="route('comprobantes.consultas')"
+                  :class="{ 'mm-active': path == 'comprobantes-consultas' }"
+                >
+                  Documentos
+                </inertia-link>
+              </li>
               <li
                 :class="{
                   'mm-active': path == 'tipo-comprobante',
@@ -454,25 +475,10 @@
                   Dependencias
                 </inertia-link>
               </li>
-              <li>
-                <inertia-link
-                  :href="route('resumen-diario.iniciar')"
-                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
-                >
-                  Resumenes Diarios
-                </inertia-link>
-              </li>
-              <li>
-                <inertia-link
-                  :href="route('comprobantes.consultas')"
-                  :class="{ 'mm-active': path == 'comprobantes-consultas' }"
-                >
-                  Documentos
-                </inertia-link>
-              </li>
             </ul>
           </li>
-          <li v-if="
+          <li
+            v-if="
               $permissions.can([
                 { name: 'Cajero Reportes-Periodo' },
                 { name: 'Descuento Reportes-Periodo' },
@@ -481,7 +487,9 @@
                 { name: 'Consolidado Reportes-Periodo' },
                 { name: 'Facturas Reportes-Periodo' },
                 { name: 'Notas Reportes-Periodo' },
-              ])">
+              ])
+            "
+          >
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
@@ -511,15 +519,16 @@
                   :href="route('reportes.cajero')"
                   :class="{ 'mm-active': path == 'reportes-periodo' }"
                   v-if="
-                  $permissions.can([
-                    { name: 'Cajero Reportes-Periodo' },
-                    { name: 'Descuento Reportes-Periodo' },
-                    { name: 'Centro-Costo Reportes-Periodo' },
-                    { name: 'Recibo-Ingreso Reportes-Periodo' },
-                    { name: 'Consolidado Reportes-Periodo' },
-                    { name: 'Facturas Reportes-Periodo' },
-                    { name: 'Notas Reportes-Periodo' },
-                  ])"
+                    $permissions.can([
+                      { name: 'Cajero Reportes-Periodo' },
+                      { name: 'Descuento Reportes-Periodo' },
+                      { name: 'Centro-Costo Reportes-Periodo' },
+                      { name: 'Recibo-Ingreso Reportes-Periodo' },
+                      { name: 'Consolidado Reportes-Periodo' },
+                      { name: 'Facturas Reportes-Periodo' },
+                      { name: 'Notas Reportes-Periodo' },
+                    ])
+                  "
                 >
                   Por periodo
                 </inertia-link>
