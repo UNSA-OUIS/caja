@@ -117,7 +117,7 @@
             <b-col>
               <b-form-group
                 id="input-group-7"
-                label="Sujeto a Detraccion :"
+                label="Sujeto a Detraccion:"
                 label-for="input-7"
               >
                 <b-form-radio-group

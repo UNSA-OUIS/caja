@@ -49,11 +49,11 @@ class ConceptoController extends Controller
         $concepto->descripcion_imp = "";
         $concepto->precio = "";
         $concepto->tipo_precio = "";
-        $concepto->tipo_afectacion = "";
+        $concepto->tipo_afectacion = null;
         $concepto->tipo_concepto_id = null;
         $concepto->clasificador_id = null;
         $concepto->unidad_medida_id = null;
-        $concepto->semestre = "";
+        $concepto->semestre = null;
         $concepto->codi_depe = "";
         $concepto->detraccion = false;
 

@@ -94,7 +94,7 @@
               v-model="row.item.precio"
               @keyup="calcularSubTotal(row.item.concepto_id)"
               @change="calcularSubTotal(row.item.concepto_id)"
-              :readonly="row.item.tipo_precio == 'fijo'"
+              :readonly="row.item.tipo_precio == 'fijo' || accion === 'Mostrar' "
             ></b-form-input>
           </template>
           <template v-slot:cell(descuento)="row">
@@ -156,13 +156,13 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 export default {
   name: "comprobantes.detalle",
-  props: ["comprobante"],
+  props: ["comprobante", "accion"],
   components: {
     AppLayout,
   },
   data() {
     return {
-      accion: "Crear",
+      //accion: "Crear",
       alerta: null,
       alerta_mensaje: "",
       app_url: this.$root.app_url,
@@ -190,9 +190,9 @@ export default {
       ],
     };
   },
-  created() {
+  /*created() {
     this.accion = "Crear";
-  },
+  },*/
   computed: {
     precioTotal() {
       this.comprobante.total = this.comprobante.detalles.reduce(
