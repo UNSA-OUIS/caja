@@ -156,11 +156,10 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "id", label: "ID", sortable: true, class: "text-center" },
-        { key: "codigo", label: "Codigo", sortable: true },
         { key: "serie", label: "Serie", class: "text-center" },
         { key: "correlativo", label: "Correlativo", class: "text-center" },
-        { key: "codigo_motivo", label: "Codigo Motivo", class: "text-center" },
-        { key: "descripcion_motivo", label: "Descripcion Motivo", class: "text-center" },
+        { key: "tipo_nota", label: "Codigo Motivo", class: "text-center" },
+        { key: "motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -195,6 +194,7 @@ export default {
 
       return promise.then((response) => {
         const notaCredito = response.data.data;
+        console.log(notaCredito);
         this.totalRows = response.data.total;
 
         return notaCredito || [];

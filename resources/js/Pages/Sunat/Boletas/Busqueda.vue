@@ -22,39 +22,39 @@
         >
       </div>
       <div class="card-body">
-        <div>
-          <b-form inline>
-            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-              <b-form-datepicker
-                name="fecha_inicio"
-                v-model="fecha_inicio"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                placeholder="Fecha de Inicio"
-              ></b-form-datepicker>
-            </b-input-group>
-            <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-              <b-form-datepicker
-                name="fecha_fin"
-                v-model="fecha_fin"
-                class="mb-2 mr-sm-2 mb-sm-0"
-                placeholder="Fecha de Fin"
-              ></b-form-datepicker>
-            </b-input-group>
-            <template>
-              <div>
-                <b-button-group>
-                  <b-button variant="outline-success" @click="buscar_boletas()">
-                    Buscar Boletas <b-icon icon="search"></b-icon>
-                  </b-button>
-                  <b-button variant="outline-primary" @click="limpiar()">
-                    Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-                  </b-button>
-                </b-button-group>
-              </div>
-            </template>
-          </b-form>
+        <div class="row justify-content-center mb-1">
+          <fieldset class="col-12 col-md-10 px-3">
+            <legend>Opciones de búsqueda:</legend>
+            <div class="row justify-content-center">
+              <b-form inline>
+                <b-form-datepicker
+                  name="fecha_inicio"
+                  v-model="fecha_inicio"
+                  placeholder="Fecha de Inicio"
+                ></b-form-datepicker>
+                &nbsp;
+                <b-form-datepicker
+                  name="fecha_fin"
+                  v-model="fecha_fin"
+                  placeholder="Fecha de Fin"
+                ></b-form-datepicker>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b-button variant="outline-success" @click="buscar_boletas()">
+                  Buscar Boletas <b-icon icon="search"></b-icon>
+                </b-button>
+                &nbsp;
+                <b-button variant="outline-primary" @click="limpiar()">
+                  Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                </b-button>
+              </b-form>
+              <b-alert v-show="alerta" show variant="danger" dismissible>
+                {{ alerta_mensaje }}
+              </b-alert>
+            </div>
+          </fieldset>
         </div>
-        <div class="row justify-content-center mb-1" v-if="mostrar_boletas">
+        <br />
+        <div v-if="mostrar_boletas">
           <boletas
             :fecha_inicio="fecha_inicio"
             :fecha_fin="fecha_fin"

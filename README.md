@@ -49,7 +49,6 @@ _Por otro lado podemos ejecutar seeders con sus factorys asociados de manera ind
 php artisan db:seed --class=PermisoSeeder
 php artisan db:seed --class=DataTestSeeder
 php artisan db:seed --class=ComprobanteSeeder
-php artisan db:seed --class=DetallesComprobanteSeeder
 ```
 ## Construido con 🛠️
 

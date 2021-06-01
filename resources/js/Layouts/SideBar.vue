@@ -329,7 +329,6 @@
               @click="mostrarMenu(3)"
               :class="{
                 'mm-active':
-                  path == 'dashboard-sunat' ||
                   path == 'facturas' ||
                   path == 'boletas' ||
                   path == 'notas-credito' ||
@@ -340,7 +339,7 @@
               <span>Sunat</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
-              <li
+              <!--<li
                 :class="{
                   'mm-active': path == 'dashboard-sunat',
                 }"
@@ -353,7 +352,7 @@
                 >
                   Dashboard Sunat
                 </inertia-link>
-              </li>
+              </li>-->
               <li
                 :class="{
                   'mm-active': path == 'boletas',

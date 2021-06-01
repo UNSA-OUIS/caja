@@ -78,18 +78,7 @@
       </template>
     </b-table>
     <b-row>
-      <b-button
-        variant="success"
-        title="Enviar facturas a sunat"
-        @click="enviar_facturas()"
-      >
-        Enviar Facturas a Sunat
-        <b-icon icon="cloud-arrow-up"></b-icon>
-      </b-button>
-    </b-row>
-    <br />
-    <b-row>
-      <b-col class="ml-auto">
+      <b-col offset-md="8" md="4" class="my-1">
         <b-pagination
           v-model="currentPage"
           :total-rows="totalRows"
@@ -99,6 +88,17 @@
           class="my-0"
         ></b-pagination>
       </b-col>
+    </b-row>
+    <b-row>
+      <b-button
+        v-if="items != ''"
+        variant="success"
+        title="Enviar facturas a sunat"
+        @click="enviar_facturas()"
+      >
+        Enviar Facturas a Sunat
+        <b-icon icon="cloud-arrow-up"></b-icon>
+      </b-button>
     </b-row>
   </div>
 </template>
