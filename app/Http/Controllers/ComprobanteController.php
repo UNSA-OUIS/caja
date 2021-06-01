@@ -75,6 +75,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
+        $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
         $tipo_de_documento = '';
@@ -148,6 +149,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
+        $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -195,6 +197,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
+        $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -237,6 +240,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
+        $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -279,6 +283,7 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
+        $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
@@ -311,7 +316,7 @@ class ComprobanteController extends Controller
         $comprobante->serie = $numeroOpe->serie;
         $comprobante->correlativo = $numeroOpe->correlativo;
 
-        $comprobante->tipo_nota = "";
+        $comprobante->tipo_nota = null;
         $comprobante->motivo = "";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
@@ -365,6 +370,7 @@ class ComprobanteController extends Controller
             $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
             $comprobante->serie = $request->serie;
             $comprobante->nro_operacion = $request->nro_operacion;
+            $comprobante->entidad_bancaria = $request->entidad_bancaria;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total_descuento = 10.00;
             $comprobante->total_impuesto = 100.00;

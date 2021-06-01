@@ -16,6 +16,7 @@ class CreateComprobantesTable extends Migration
         Schema::create('comprobantes', function (Blueprint $table) {
             $table->id();
             $table->string('nro_operacion')->unique()->nullable();
+            $table->char('entidad_bancaria', 3)->nullable();
             $table->enum('tipo_usuario', ['alumno', 'docente', 'dependencia', 'particular', 'empresa']);
             $table->string('codi_usuario', 20)->nullable();
             $table->char('nues_espe', 3)->nullable();
