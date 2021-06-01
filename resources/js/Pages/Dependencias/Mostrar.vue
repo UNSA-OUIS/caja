@@ -1,21 +1,24 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('dependencias.iniciar')"
+            >Lista de dependencias</inertia-link
+          >
+        </li>
+        <li class="breadcrumb-item active">Mostrar dependencia</li>
+      </ol>
+    </nav>
     <div class="card">
-      <div class="card-header">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">
-            <inertia-link :href="route('dashboard')">Inicio</inertia-link>
-          </li>
-          <li class="breadcrumb-item">
-            <inertia-link :href="route('dependencias.iniciar')"
-              >Lista de dependencias</inertia-link
-            >
-          </li>
-          <li class="breadcrumb-item active">{{ accion }} dependencia</li>
-        </ol>
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Mostrar dependencia</span>
       </div>
       <div class="card-body">
-        <b-form >
+        <b-form>
           <b-row>
             <b-col cols="2">
               <b-form-group
@@ -156,7 +159,6 @@
               </b-form-group>
             </b-col>
           </b-row>
-        
         </b-form>
       </div>
     </div>
@@ -165,7 +167,6 @@
 
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-const axios = require("axios");
 
 export default {
   name: "dependencias.mostrar",
@@ -174,14 +175,13 @@ export default {
     AppLayout,
   },
   remember: "formData",
-  
+
   data() {
     return {
       app_url: this.$root.app_url,
       formData: this.dependencia,
       accion: "",
       estado: "Activo",
-      
     };
   },
   created() {
@@ -189,23 +189,40 @@ export default {
       this.accion = "Crear";
     } else {
       this.accion = "Mostrar";
-      if(this.formData.esta_depe=='A'){
-          this.estado="Activo"
-      }else if(formData.esta_depe=='I') {
-          this.estado="Inactivo"
-      } 
+      if (this.formData.esta_depe == "A") {
+        this.estado = "Activo";
+      } else if (formData.esta_depe == "I") {
+        this.estado = "Inactivo";
+      }
     }
-  },
-  methods: {
-    // enviar() {
-    //   if (this.accion == "Crear") {
-    //     this.registrar();
-    //   } else if (this.accion == "Mostrar") {
-    //     this.accion = "Editar";
-    //   } else if (this.accion == "Editar") {
-    //     this.actualizar();
-    //   }
-    // },
   },
 };
 </script>
+<style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>

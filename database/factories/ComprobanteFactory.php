@@ -56,16 +56,16 @@ class ComprobanteFactory extends Factory
                 return $this->tipo_comprobante;
             },
             'serie' => function () {
-                if ($this->tipo_comprobante === 1 && $this->tipo_usuario != 'empresa') {
+                if ($this->tipo_comprobante === 1) {
                     return 'B001';
                 } elseif ($this->tipo_comprobante === 2 && $this->tipo_usuario === 'empresa') {
                     return 'F001';
-                } elseif ($this->tipo_comprobante === 3 && $this->tipo_usuario != 'empresa') {
-                    return 'NC01';
-                } elseif ($this->tipo_comprobante === 4 && $this->tipo_usuario != 'empresa') {
+                } elseif ($this->tipo_comprobante === 3) {
                     return 'ND01';
-                } else {
+                } elseif ($this->tipo_comprobante === 4) {
                     return 'NC01';
+                } else {
+                    return $this->faker->randomElement(['NC01', 'ND01']);
                 }
             },
             'correlativo' => $this->faker->randomNumber(8),

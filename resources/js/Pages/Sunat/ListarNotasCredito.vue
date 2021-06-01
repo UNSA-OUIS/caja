@@ -1,7 +1,25 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('cobros.iniciar')">
+            Lista de cobros
+          </inertia-link>
+        </li>
+        <li class="breadcrumb-item active">
+          Enviar boletas a sunat mediante resumen diario
+        </li>
+      </ol>
+    </nav>
     <div class="card">
-      <div class="card-header">
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Envio de nota de credito</span>
+      </div>
+      <!--<div class="card-header">
         <ol class="breadcrumb float-left">
           <li class="breadcrumb-item">
             <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
@@ -13,20 +31,14 @@
           :href="route('notas-credito.crear')"
           >Nuevo</inertia-link
         >
-      </div>
+      </div>-->
       <div class="card-body">
-        <b-alert
-                    show
-                    variant="success"
-                    v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
-                >
-                <b-alert
-                    show
-                    variant="danger"
-                    v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
-                >
+        <b-alert show variant="success" v-if="$page.props.successMessage">{{
+          $page.props.successMessage
+        }}</b-alert>
+        <b-alert show variant="danger" v-if="$page.props.errorMessage">{{
+          $page.props.errorMessage
+        }}</b-alert>
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -97,6 +109,24 @@
             >
             <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
+          <template v-slot:cell(usuario)="row">
+            <span v-if="row.item.tipo_usuario === 'alumno'">
+              {{ row.item.comprobanteable.apn }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'empresa'">
+              {{ row.item.comprobanteable.razon_social }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'particular'">
+              {{ row.item.comprobanteable.apellidos }},
+              {{ row.item.comprobanteable.nombres }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'docente'">
+              {{ row.item.comprobanteable.apn }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+              {{ row.item.comprobanteable.nomb_depe }}
+            </span>
+          </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
@@ -155,7 +185,9 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "id", label: "ID", sortable: true, class: "text-center" },
+        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+        { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center" },
         { key: "correlativo", label: "Correlativo", class: "text-center" },
         { key: "tipo_nota", label: "Codigo Motivo", class: "text-center" },
@@ -215,11 +247,9 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.delete(
-                            route("tipo-comprobante.eliminar", [
-                                tipo_comprobante.id
-                            ])
-                        );
-                        this.refreshTable();
+              route("tipo-comprobante.eliminar", [tipo_comprobante.id])
+            );
+            this.refreshTable();
           }
         });
     },
@@ -238,11 +268,9 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.post(
-                            route("tipo-comprobante.restaurar", [
-                                tipo_comprobante.id
-                            ])
-                        );
-                        this.refreshTable();
+              route("tipo-comprobante.restaurar", [tipo_comprobante.id])
+            );
+            this.refreshTable();
           }
         });
     },
@@ -253,3 +281,31 @@ export default {
   },
 };
 </script>
+<style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>

@@ -188,8 +188,9 @@
               </b-button>
               <b-button
                 v-if="
-                  row.item.tipo_comprobante_id == 2 &&
-                  row.item.estado == 'aceptado'
+                  (row.item.tipo_comprobante_id == 2 &&
+                    row.item.estado == 'aceptado') ||
+                  row.item.estado == 'observado'
                 "
                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
@@ -199,8 +200,9 @@
               </b-button>
               <b-button
                 v-if="
-                  row.item.tipo_comprobante_id == 2 &&
-                  row.item.estado == 'aceptado'
+                  (row.item.tipo_comprobante_id == 2 &&
+                    row.item.estado == 'aceptado') ||
+                  row.item.estado == 'observado'
                 "
                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
@@ -209,7 +211,10 @@
                 CDR
               </b-button>
               <b-button
-                v-if="row.item.estado == 'aceptado'"
+                v-if="
+                  row.item.estado == 'aceptado' ||
+                  row.item.estado == 'observado'
+                "
                 class="btn btn-warning btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
                 @click="reenviar()"
