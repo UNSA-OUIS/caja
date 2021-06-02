@@ -70,22 +70,47 @@
                     ></b-form-input>
                     </div>
                 </template>
-                <template v-slot:cell(precio)="row">
+                <template v-slot:cell(valor_unitario)="row">
                     <b-form-input
                     class="text-center"
-                    v-model="row.item.precio"
+                    v-model="row.item.valor_unitario"
                     readonly
                     ></b-form-input>
+                </template>
+                <template v-slot:cell(valor_venta)="row">
+                    <div v-if="row.item.gravado != '0' ">
+                        {{ row.item.gravado }}
+                    </div>
+                    <div v-else>
+                        {{ row.item.inafecto }}
+                    </div>
                 </template>
                 <template v-slot:cell(subTotal)="row">
                     <span class="font-weight-bold">
                     S/. {{ row.item.subtotal }}
                     </span>
                 </template>
-                <template slot="bottom-row" slot-scope="">
-                    <b-td /><b-td />
-                    <b-td class="text-right font-weight-bold">TOTAL</b-td>
-                    <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total }}</b-td>
+                <template slot="custom-foot" slot-scope="">
+                    <b-tr>
+                        <b-td colspan="4"></b-td>
+                        <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_inafecta }}</b-td>
+                    </b-tr>
+                    <b-tr>
+                        <b-td colspan="4"></b-td>
+                        <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_gravada }}</b-td>
+                    </b-tr>
+                    <b-tr>
+                        <b-td colspan="4"></b-td>
+                        <b-td class="text-right font-weight-bold">IGV:</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_impuesto }}</b-td>
+                    </b-tr>
+                    <b-tr>
+                        <b-td colspan="4"></b-td>
+                        <b-td class="text-right font-weight-bold">Importe total:</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total }}</b-td>
+                    </b-tr>
                 </template>
                 </b-table>
             </b-col>
@@ -123,8 +148,10 @@ export default {
             ],
             fields: [
                 { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-                { key: "concepto.descripcion", label: "CONCEPTO", class: "text-center", tdClass: "concepto" },
-                { key: "concepto.precio", label: "COSTO", class: "text-center" },
+                { key: "concepto.descripcion", label: "CONCEPTO", tdClass: "concepto" },
+                { key: "valor_unitario", label: "PRECIO. UNIT.", class: "text-center" },
+                { key: "valor_venta", label: "VAL. VENTA", class: "text-center" },
+                { key: "impuesto", label: "IGV", class: "text-center" },
                 { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
             ],
         };

@@ -1,6 +1,30 @@
 
 <template>
+
+  
   <div>
+    <div class="form-row">
+                        <div class="form-group col-md-4 border border-light">
+                            <label class="text-warning">Entidad bancaria (Opcional):</label>
+                            <b-form-select id="input-2" :disabled="accion === 'Mostrar'" v-model="comprobante.entidad_bancaria" :options="entidades_bancarias" >
+                                <template v-slot:first>
+                                    <option :value="null" disabled>Seleccione...</option>
+                                </template>
+                            </b-form-select>
+                        </div> 
+                        <div class="form-group col-md-4 border border-light">
+                            <label class="text-warning">Nro Operación (Opcional):</label>
+                            <b-form-input id="input-3" :readonly="accion === 'Mostrar'" :state="validacion" aria-describedby="input-3-feedback" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
+                            <b-form-invalid-feedback id="input-3-feedback">
+                                {{ validacion_mensaje }}
+                            </b-form-invalid-feedback>
+                        </div>
+                        <div class="form-group col-md-4 border border-light">
+                            <label class="text-warning">Fecha de emisión (Opcional):</label>
+                            <b-form-input id="input-4" :readonly="accion === 'Mostrar'" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+                        </div>
+                        <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
+                    </div>
     <b-alert show dismissible variant="success" v-if="alerta == false">
       {{ alerta_mensaje }}
     </b-alert>
@@ -156,13 +180,13 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 export default {
   name: "comprobantes.detalle",
-  props: ["comprobante", "accion"],
+  props: ["comprobante"],
   components: {
     AppLayout,
   },
   data() {
     return {
-      //accion: "Crear",
+      accion: "Crear",
       alerta: null,
       alerta_mensaje: "",
       app_url: this.$root.app_url,
@@ -188,19 +212,55 @@ export default {
         { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
         { key: "acciones", label: "", class: "text-center" },
       ],
+      validacion_mensaje: "",
+      entidades_bancarias: [
+                {value: 'BCP', text: 'Banco de Crédito del Perú (BCP)'},
+                {value: 'BN', text: 'Banco de la Nación'},
+            ],
+            nro_operacion: "",
+            fecha_operacion: "",
+            error:{
+                estado: false,
+                mensaje: ""
+            },
     };
   },
-  /*created() {
+  created() {
     this.accion = "Crear";
-  },*/
+  },
   computed: {
     precioTotal() {
       this.comprobante.total = this.comprobante.detalles.reduce(
-        (acc, item) => acc + item.subtotal,
-        0
+        (acc, item) => acc + item.subtotal, 0
+      );
+      this.comprobante.total_descuento = this.comprobante.detalles.reduce(
+        (acc, item) => acc + (parseFloat(item.precio) - item.subtotal), 0
+      );
+      this.comprobante.total_gravada = this.comprobante.detalles.reduce(
+        (acc, item) => acc + item.gravado, 0
+      );
+      this.comprobante.total_impuesto = this.comprobante.detalles.reduce(
+        (acc, item) => acc + item.impuesto, 0
+      );
+      this.comprobante.total_inafecta = this.comprobante.detalles.reduce(
+        (acc, item) => acc + item.inafecto, 0
       );
       return this.comprobante.total;
     },
+    validacion() {
+            if (this.comprobante.nro_operacion.length == 0 ) return null
+            else{
+                if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6){
+                    this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
+                    return false
+                }
+                if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 4){
+                    this.validacion_mensaje = "Debe ingresar exactamente 4 dígitos"
+                    return false
+                }
+            }
+            return true
+        }
   },
   watch: {
     filtro: function (val) {
@@ -209,6 +269,12 @@ export default {
     concepto: function (val) {
       this.filtro = "";
     },
+    nro_operacion: function () {
+            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+        },
+        fecha_operacion: function () {
+            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+        },
   },
   filters: {
     currency(value) {
@@ -216,6 +282,25 @@ export default {
     },
   },
   methods: {
+    verificar() {
+            if (this.validacion && this.fecha_operacion.length == 10){
+                axios.get(`${this.app_url}/verificarNroOperacion`, {
+                    params: {
+                        nro_operacion: this.comprobante.nro_operacion,
+                    },
+                }).then((response) => {
+                    if (!response.data.error) { 
+                            this.error.estado = false                     
+                        }
+                        else {
+                            this.error.estado = true
+                            this.error.mensaje = response.data.errorMessage
+                        }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        },
     buscarConcepto(search, loading) {
       loading(true);
       axios
@@ -239,6 +324,12 @@ export default {
         this.$set(this.concepto, "descuento", 0);
         this.concepto.precio =
           this.concepto.tipo_precio == "variable" ? 0 : this.concepto.precio;
+        this.concepto.gravado =
+          this.concepto.tipo_afectacion == "30" ? 0 : this.concepto.precio * 0.82;
+        this.concepto.inafecto =
+          this.concepto.tipo_afectacion == "30" ? parseFloat(this.concepto.precio) : 0;
+        this.concepto.impuesto =
+          this.concepto.tipo_afectacion == "30" ? 0 : this.concepto.precio * 0.18;
         this.$set(this.concepto, "subtotal", parseFloat(this.concepto.precio));
         this.comprobante.detalles.push(this.concepto);
       } else {
@@ -265,6 +356,17 @@ export default {
       } else if (objDetalle.tipo_descuento === "porcentaje") {
         objDetalle.subtotal =
           subtotal_parcial - (subtotal_parcial * objDetalle.descuento) / 100;
+      }
+
+      if(objDetalle.tipo_afectacion === "30"){
+        objDetalle.inafecto = objDetalle.subtotal;
+        objDetalle.impuesto = 0;
+        objDetalle.gravado = 0;
+      }
+      else{
+        objDetalle.gravado = objDetalle.subtotal * 0.82;
+        objDetalle.impuesto = objDetalle.subtotal * 0.18;
+        objDetalle.inafecto = 0;
       }
     },
     validarEmail(email) {

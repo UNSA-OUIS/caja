@@ -73,6 +73,8 @@ class ComprobanteController extends Controller
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
@@ -147,6 +149,8 @@ class ComprobanteController extends Controller
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
@@ -195,6 +199,8 @@ class ComprobanteController extends Controller
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
@@ -238,6 +244,8 @@ class ComprobanteController extends Controller
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
@@ -281,6 +289,8 @@ class ComprobanteController extends Controller
 
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
@@ -320,6 +330,8 @@ class ComprobanteController extends Controller
         $comprobante->motivo = "";
         $comprobante->total_descuento = "";
         $comprobante->total_impuesto = "";
+        $comprobante->total_inafecta = "";
+        $comprobante->total_gravada = "";
         $comprobante->total = "";
 
         $data = [
@@ -343,9 +355,11 @@ class ComprobanteController extends Controller
         $comprobante->tipo_usuario = $request->tipo_usuario;
         $comprobante->email = $request->email;
         $comprobante->codi_usuario = $request->codi_usuario;
-        $comprobante->total = 10;
-        $comprobante->total_descuento = 10;
-        $comprobante->total_impuesto = 10;
+        $comprobante->total = 0;
+        $comprobante->total_descuento = 0;
+        $comprobante->total_impuesto = 0;
+        $comprobante->total_inafecta = 0;
+        $comprobante->total_gravada = 0;
         $comprobante->estado = 'noEnviado';
         $comprobante->cajero_id = Auth::user()->id;
         $comprobante->save();
@@ -372,8 +386,10 @@ class ComprobanteController extends Controller
             $comprobante->nro_operacion = $request->nro_operacion;
             $comprobante->entidad_bancaria = $request->entidad_bancaria;
             $comprobante->correlativo = $request->correlativo;
-            $comprobante->total_descuento = 10.00;
-            $comprobante->total_impuesto = 100.00;
+            $comprobante->total_descuento = $request->total_descuento;
+            $comprobante->total_impuesto = $request->total_impuesto;
+            $comprobante->total_inafecta = $request->total_inafecta;
+            $comprobante->total_gravada = $request->total_gravada;
             $comprobante->total = $request->total;
             $comprobante->email = $request->email;
             $comprobante->estado = 'noEnviado';
@@ -384,6 +400,9 @@ class ComprobanteController extends Controller
                 $detalle_comprobante = new DetallesComprobante();
                 $detalle_comprobante->cantidad = $detalle['cantidad'];
                 $detalle_comprobante->valor_unitario =  $detalle['precio'];
+                $detalle_comprobante->gravado =  $detalle['gravado'];
+                $detalle_comprobante->inafecto =  $detalle['inafecto'];
+                $detalle_comprobante->impuesto =  $detalle['impuesto'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];

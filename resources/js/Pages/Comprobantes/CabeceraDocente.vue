@@ -14,7 +14,7 @@
                 <label class="lbl-data" v-text="data.email"></label>
             </div>
             <div v-else class="form-group col-md-6 border border-light">
-                <label class="text-warning">Email:</label>
+                <label class="text-warning">Email (Opcional):</label>
                 <b-input class="lbl-data" placeholder="Ingrese un email" v-model="comprobante.email"></b-input>
             </div>
         </div>
