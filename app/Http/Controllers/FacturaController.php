@@ -295,7 +295,6 @@ class FacturaController extends Controller
                     ];
 
                     EnviarCorreosJob::dispatch($data);
-
                 } else if ($code >= 2000 && $code <= 3999) {
                     $factura->estado = 'rechazado';
                     $factura->observaciones = '';
@@ -508,43 +507,6 @@ class FacturaController extends Controller
         }
 
         return redirect()->route('facturas.iniciar');
-    }
-
-    public function descargar_pdf(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
-            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_cdr(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
-            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_xml(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
-            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
     }
 }
 

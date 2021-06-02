@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\EnviarCorreosJob;
+use App\Models\Alumno;
 use App\Models\Comprobante;
+use App\Models\Docente;
+use App\Models\Particular;
 use App\Models\ResumenDiario;
 use Carbon\Carbon;
 use DateTime;
@@ -58,7 +61,6 @@ class BoletaController extends Controller
         //$this->fechaInicio = $request->fechaInicio;
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_usuario', ['alumno', 'docente', 'particular', 'dependencia'])
             ->where('tipo_comprobante_id', 'like', 1)
             ->whereIn('estado', ['noEnviado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
@@ -124,9 +126,30 @@ class BoletaController extends Controller
                     $details[$index]->setEstado('2');
                 }
                 if ($value['tipo_usuario'] == 'alumno') {
+                    $alumno = Alumno::where('cui', 'like', $value['codi_usuario'])->first();
+                    $dni = substr($alumno->dic, 1);
+                    //return $dni;
                     $details[$index]
                         ->setClienteTipo('1')
-                        ->setClienteNro($value['codi_usuario']);
+                        ->setClienteNro($dni);
+                } elseif ($value['tipo_usuario'] == 'particular') {
+                    $particular = Particular::where('dni', 'like', $value['codi_usuario'])->first();
+                    $dni = $particular->dni;
+                    $details[$index]
+                        ->setClienteTipo('1')
+                        ->setClienteNro($dni);
+                } elseif ($value['tipo_usuario'] == 'docente') {
+                    //return $boletas[$index];
+                    $docente = Docente::where('codper', 'like', $value['codi_usuario'])->first();
+                    $dni = $docente->dic;
+                    $details[$index]
+                        ->setClienteTipo('1')
+                        ->setClienteNro($dni);
+                } elseif ($value['tipo_usuario'] == 'dependencia') {
+                    $dni = '72351610';
+                    $details[$index]
+                        ->setClienteTipo('1')
+                        ->setClienteNro($dni);
                 }
                 $details[$index]->setTotal($value['total'])
                     ->setMtoOperGravadas($value['total_impuesto'])
@@ -163,8 +186,8 @@ class BoletaController extends Controller
                 // Si hubo error al conectarse al servicio de SUNAT.
                 $resumen_diario->observaciones = var_dump($result->getError());
                 $resumen_diario->update();
-                return $resumen_diario;
-                exit();
+                $resultado = ['errorMessage' => var_dump($result->getError()), 'error' => true];
+                return $resultado;
             }
 
             $ticket = $result->getTicket();
@@ -176,8 +199,8 @@ class BoletaController extends Controller
                 // Si hubo error al conectarse al servicio de SUNAT.
                 $resumen_diario->observaciones = var_dump($statusResult->getError());
                 $resumen_diario->update();
-                return $resumen_diario;
-                exit();
+                $resultado = ['errorMessage' => var_dump($statusResult->getError()), 'error' => true];
+                return $resultado;
             }
 
             $cdrGuardado = file_put_contents(storage_path('app/public/Sunat/CDR/' . 'R-' . $resumen->getName() . '.zip'), $statusResult->getCdrZip());
@@ -207,20 +230,42 @@ class BoletaController extends Controller
                 'successMessage' => 'Resumen diario enviado con exito',
                 'error' => false
             ];
-            foreach ($boletas as $index => $value) {
-                $boleta = Comprobante::where('id', 'like', $value['id'])->first();
-                $boleta->estado = 'aceptado';
-                $boleta->update();
+        } catch (Exception $e) {
+            $resultado = ['errorMessage' => $e->getMessage(), 'error' => true];
+            Log::error('BoletaController@resumenDiario, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            return $resultado;
+        }
+        foreach ($boletas as $index => $value) {
+            $boleta = Comprobante::where('id', 'like', $value['id'])->first();
+            $boleta->estado = 'aceptado';
+            $boleta->update();
 
-                $data = [
-                    'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),
-                    'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '-ticket' . '.pdf'),
-                    'email' => $value['email']
-                ];
+            $data = [
+                'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),
+                'adjuntoTicket' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '-ticket' . '.pdf'),
+                'email' => $value['email']
+            ];
 
-                EnviarCorreosJob::dispatch($data);
-            }
-            $html = new HtmlReport();
+            EnviarCorreosJob::dispatch($data);
+        }
+
+        return $resultado;
+        //return redirect()->route('boletas.iniciar');
+    }
+    public function anular(Comprobante $boleta)
+    {
+        try {
+            $boleta->estado = 'anulado';
+            $boleta->observaciones = '';
+            $boleta->update();
+        } catch (Exception $e) {
+            Log::error('BoletaController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+
+        return redirect()->route('boletas.iniciar');
+    }
+
+    /*$html = new HtmlReport();
             $html->setTemplate('summary.html.twig');
 
             $report = new PdfReport($html);
@@ -261,60 +306,5 @@ class BoletaController extends Controller
             if ($pdfGuardado) {
                 $resumen_diario->url_pdf = $resumen->getName() . '.pdf';
                 $resumen_diario->update();
-            }
-        } catch (Exception $e) {
-            $resultado = ['errorMessage' => $e->getMessage(), 'error' => true];
-        }
-
-        return $resultado;
-        //return redirect()->route('boletas.iniciar');
-    }
-    public function anular(Comprobante $boleta)
-    {
-        try {
-            $boleta->estado = 'anulado';
-            $boleta->observaciones = '';
-            $boleta->update();
-        } catch (\Exception $e) {
-            Log::error('SunatController@anularBoleta, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
-        }
-
-        return redirect()->route('boletas.iniciar');
-    }
-    public function descargar_pdf(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
-            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_cdr(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
-            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
-    public function descargar_xml(Request $request)
-    {
-        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
-            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
-            $content = file_get_contents($path);
-            return response($content)->withHeaders([
-                'Content-Type' => mime_content_type($path)
-            ]);
-        } else {
-            return redirect('/404');
-        }
-    }
+            }*/
 }

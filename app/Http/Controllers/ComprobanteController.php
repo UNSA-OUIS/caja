@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade as PDF;
 use COM;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ComprobanteController extends Controller
 {
@@ -949,10 +950,45 @@ class ComprobanteController extends Controller
 
             $result = ['errorMessage' => 'El número de operación ingresado ya se encuentra registrado en la fecha indicada.', 'error' => true];
             return $result;
-        }
-        else{
+        } else {
             $result = ['successMessage' => 'El número de operación ingresado se encuentra disponible en la fecha indicada.', 'error' => false];
             return $result;
+        }
+    }
+    public function descargar_pdf(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/PDF/$request->url_pdf")) {
+            $path = Storage::disk('public')->path("Sunat/PDF/$request->url_pdf");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_cdr(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/CDR/$request->url_cdr")) {
+            $path = Storage::disk('public')->path("Sunat/CDR/$request->url_cdr");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
+        }
+    }
+    public function descargar_xml(Request $request)
+    {
+        if (Storage::disk('public')->exists("Sunat/XML/$request->url_xml")) {
+            $path = Storage::disk('public')->path("Sunat/XML/$request->url_xml");
+            $content = file_get_contents($path);
+            return response($content)->withHeaders([
+                'Content-Type' => mime_content_type($path)
+            ]);
+        } else {
+            return redirect('/404');
         }
     }
 }

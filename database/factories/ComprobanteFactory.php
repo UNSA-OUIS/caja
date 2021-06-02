@@ -39,15 +39,15 @@ class ComprobanteFactory extends Factory
                 return $this->tipo_usuario;
             },
             'codi_usuario' => function () {
-                if ($this->tipo_usuario === 'alumno') {
+                if ($this->tipo_usuario == 'alumno') {
                     return Alumno::inRandomOrder()->first()->cui;
-                } elseif ($this->tipo_usuario === 'docente') {
+                } elseif ($this->tipo_usuario == 'docente') {
                     return Docente::inRandomOrder()->first()->codper;
-                } elseif ($this->tipo_usuario === 'dependencia') {
+                } elseif ($this->tipo_usuario == 'dependencia') {
                     return Dependencia::inRandomOrder()->first()->codi_depe;
-                } elseif ($this->tipo_usuario === 'particular') {
+                } elseif ($this->tipo_usuario == 'particular') {
                     return Particular::inRandomOrder()->first()->dni;
-                } elseif ($this->tipo_usuario === 'empresa') {
+                } elseif ($this->tipo_usuario == 'empresa') {
                     return Empresa::inRandomOrder()->first()->ruc;
                 }
             },
@@ -56,19 +56,19 @@ class ComprobanteFactory extends Factory
                 return $this->tipo_comprobante;
             },
             'serie' => function () {
-                if ($this->tipo_comprobante === 1) {
+                if ($this->tipo_comprobante == 1 && $this->tipo_usuario != 'empresa') {
                     return 'B001';
-                } elseif ($this->tipo_comprobante === 2 && $this->tipo_usuario === 'empresa') {
+                } elseif ($this->tipo_comprobante == 2 && $this->tipo_usuario == 'empresa') {
                     return 'F001';
-                } elseif ($this->tipo_comprobante === 3) {
+                } elseif ($this->tipo_comprobante == 3) {
                     return 'ND01';
-                } elseif ($this->tipo_comprobante === 4) {
+                } elseif ($this->tipo_comprobante == 4) {
                     return 'NC01';
                 } else {
-                    return $this->faker->randomElement(['NC01', 'ND01']);
+                    return 'ND01';
                 }
             },
-            'correlativo' => $this->faker->randomNumber(8),
+            'correlativo' => '00000' . $this->faker->randomNumber(3),
             'total_descuento' => $this->faker->randomNumber(2),
             'total_impuesto' => $this->faker->randomNumber(2),
             'total' => $this->faker->randomNumber(2),
