@@ -25,6 +25,8 @@ class CreateComprobantesTable extends Migration
             $table->string('correlativo', 8);
             $table->decimal('total_descuento');
             $table->decimal('total_impuesto');
+            $table->decimal('total_inafecta');
+            $table->decimal('total_gravada');
             $table->decimal('total');
             $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
             $table->string('email', 100)->nullable();

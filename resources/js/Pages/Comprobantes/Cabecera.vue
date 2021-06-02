@@ -44,30 +44,6 @@
                         <label class="lbl-data" v-text="data.fecha_actual"></label>
                       </div>
                     </div>
-                    <template v-if="comprobante.detalles != null">
-                    <div class="form-row">
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Entidad bancaria:</label>
-                            <b-form-select id="input-2" :disabled="accion === 'Mostrar'" v-model="comprobante.entidad_bancaria" :options="entidades_bancarias" >
-                                <template v-slot:first>
-                                    <option :value="null" disabled>Seleccione...</option>
-                                </template>
-                            </b-form-select>
-                        </div> 
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Nro Operación (Opcional):</label>
-                            <b-form-input id="input-3" :readonly="accion === 'Mostrar'" :state="validacion" aria-describedby="input-3-feedback" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
-                            <b-form-invalid-feedback id="input-3-feedback">
-                                {{ validacion_mensaje }}
-                            </b-form-invalid-feedback>
-                        </div>
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Fecha de emisión (Opcional):</label>
-                            <b-form-input id="input-4" :readonly="accion === 'Mostrar'" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
-                        </div>
-                        <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
-                    </div>
-                    </template>
                     <template v-if="comprobante.tipo_usuario === 'alumno' && data.tipo_comprobante === 'BOLETA'">
                         <cabecera-alumno :comprobante="comprobante" :data="data"></cabecera-alumno>
                     </template>
@@ -88,7 +64,7 @@
                     </template>
                     <template v-if="comprobante.detalles != null">
                         <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
-                        <detalle v-else :comprobante="comprobante" :accion="accion"></detalle>
+                        <detalle v-else :comprobante="comprobante"></detalle>
                     </template>
                 </div>
             </div>
@@ -124,71 +100,13 @@ export default {
     data() {
         return {
             app_url: this.$root.app_url,
-            nro_operacion: "",
-            fecha_operacion: "",
-            accion: "Crear",
-            error:{
-                estado: false,
-                mensaje: ""
-            },
-            entidades_bancarias: [
-                {value: 'BCP', text: 'Banco de Crédito del Perú (BCP)'},
-                {value: 'BN', text: 'Banco de la Nación'},
-            ],
-            validacion_mensaje: "",
         };
-    },
-    computed:{
-        validacion() {
-            if (this.comprobante.nro_operacion.length == 0 ) return null
-            else{
-                if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6){
-                    this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
-                    return false
-                }
-                if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 4){
-                    this.validacion_mensaje = "Debe ingresar exactamente 4 dígitos"
-                    return false
-                }
-            }
-            return true
-        }
-    },
-    watch: {
-        nro_operacion: function () {
-            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
-        },
-        fecha_operacion: function () {
-            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
-        },
     },
     created(){
         if(this.data.email != ''){
             this.comprobante.email = this.data.email;
         }
-        this.accion = "Crear";
     },
-    methods: {
-        verificar() {
-            if (this.validacion && this.fecha_operacion.length == 10){
-                axios.get(`${this.app_url}/verificarNroOperacion`, {
-                    params: {
-                        nro_operacion: this.comprobante.nro_operacion,
-                    },
-                }).then((response) => {
-                    if (!response.data.error) { 
-                            this.error.estado = false                     
-                        }
-                        else {
-                            this.error.estado = true
-                            this.error.mensaje = response.data.errorMessage
-                        }
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            }
-        }
-    }
 };
 </script>
 <style scoped>
