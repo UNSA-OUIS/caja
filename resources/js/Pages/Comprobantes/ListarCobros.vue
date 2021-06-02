@@ -190,7 +190,7 @@ export default {
       app_url: this.$root.app_url,
       fields: [
         { key: "tipo_usuario", label: "Tipo administrado", class: "text-center" },
-        { key: "usuario", label: "Administrado", sortable: true },
+        { key: "usuario", label: "Administrado" },
         {
           key: "tipo_comprobante.nombre",
           label: "Tipo comprobante",
@@ -251,27 +251,6 @@ export default {
         .then(async (value) => {
           if (value) {
             this.$inertia.post(route("comprobantes.anular", [comprobante]));
-            this.refreshTable();
-          }
-        });
-    },
-    async restaurar(tipo_comprobante) {
-      this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer restaurar este tipo de comprobante?",
-          {
-            title: "Restaurar tipo de comprobante",
-            okVariant: "primary",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(
-              route("tipo-comprobante.restaurar", [tipo_comprobante.id])
-            );
             this.refreshTable();
           }
         });

@@ -263,6 +263,12 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/comprobantes/{comprobante}', [ComprobanteController::class, 'anular'])->name('comprobantes.anular');
     Route::get('/generar_pdf', [ComprobanteController::class, 'generar_pdf'])->name('comprobantes.generar_pdf');
     Route::get('/generar_ticket', [ComprobanteController::class, 'generar_ticket'])->name('comprobantes.generar_ticket');
+    Route::get('/sunat/facturaPDF', [ComprobanteController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
+    Route::get('/sunat/facturaCDR', [ComprobanteController::class, 'descargar_cdr'])->name('facturas.descargar-cdr');
+    Route::get('/sunat/facturaXML', [ComprobanteController::class, 'descargar_xml'])->name('facturas.descargar-xml');
+    Route::get('/sunat/boletaPDF', [ComprobanteController::class, 'descargar_pdf'])->name('boleta.descargar-pdf');
+    Route::get('/sunat/boletaCDR', [ComprobanteController::class, 'descargar_cdr'])->name('boleta.descargar-cdr');
+    Route::get('/sunat/boletaXML', [ComprobanteController::class, 'descargar_xml'])->name('boleta.descargar-xml');
     Route::get('/verificarNroOperacion', [ComprobanteController::class, 'verificarNroOperacion'])->name('comprobantes.verificarNroOperacion');
 
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.enviarCorreo');
@@ -278,9 +284,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/Factura/Busqueda');
     })->name('facturas.iniciar');
     Route::get('/sunat/listarFacturas', [FacturaController::class, 'index'])->name('facturas.listar');
-    Route::get('/sunat/facturaPDF', [FacturaController::class, 'descargar_pdf'])->name('facturas.descargar-pdf');
-    Route::get('/sunat/facturaCDR', [FacturaController::class, 'descargar_cdr'])->name('facturas.descargar-cdr');
-    Route::get('/sunat/facturaXML', [FacturaController::class, 'descargar_xml'])->name('facturas.descargar-xml');
     Route::post('/sunat/enviarFacturas', [FacturaController::class, 'enviar_facturas'])->name('facturas.enviar-bloque');
     Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
@@ -297,9 +300,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/Boletas/Busqueda');
     })->name('boletas.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
-    Route::get('/sunat/boletaPDF', [BoletaController::class, 'descargar_pdf'])->name('boleta.descargar-pdf');
-    Route::get('/sunat/boletaCDR', [BoletaController::class, 'descargar_cdr'])->name('boleta.descargar-cdr');
-    Route::get('/sunat/boletaXML', [BoletaController::class, 'descargar_xml'])->name('boleta.descargar-xml');
+    Route::get('/sunat/listarBoletasActuales', [BoletaController::class, 'index_actual'])->name('boletas_actuales.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');
 

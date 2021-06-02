@@ -30,6 +30,13 @@ class DependenciaController extends Controller
         return $query->paginate($request->size);
     }
 
+    public function show(Dependencia $dependencia)
+    {
+        $dependencia = Dependencia::where('codi_depe', $dependencia->codi_depe)->first();
+
+        return Inertia::render('Dependencias/Mostrar', compact('dependencia'));
+        }
+
     public function buscarCodigoDependencia($codigo)
     {
         $dependencia = Dependencia::where('codi_depe', $codigo)->first();

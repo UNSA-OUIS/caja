@@ -24,6 +24,11 @@
           <strong v-else>Enviando resumen diario a sunat</strong>
         </div>
       </template>
+      <template v-slot:cell(fecha)="row">
+            <span>
+              {{ row.item.created_at.substring(0,10) }}
+            </span>
+          </template>
       <template v-slot:cell(usuario)="row">
         <span v-if="row.item.tipo_usuario === 'alumno'">
           {{ row.item.comprobanteable.apn }}
@@ -112,9 +117,9 @@
         v-if="items != ''"
         variant="success"
         title="Enviar facturas a sunat"
-        @click="enviar_facturas()"
+        @click="enviar_boletas()"
       >
-        Enviar Resumen Diario a Sunat
+        Enviar boletas a Sunat
         <b-icon icon="cloud-arrow-up"></b-icon>
       </b-button>
     </b-row>
@@ -144,7 +149,7 @@ export default {
           sortable: true,
         },
         {
-          key: "created_at",
+          key: "fecha",
           label: "Fecha de Creacion",
           class: "text-center",
           sortable: true,
@@ -185,7 +190,7 @@ export default {
         return this.items || [];
       });
     },
-    enviar_facturas() {
+    enviar_boletas() {
       console.log(this.items);
       this.enviado = true;
       this.$bvModal
@@ -225,6 +230,22 @@ export default {
               .catch(function (error) {
                 console.log(error);
               });
+            this.refreshTable();
+          }
+        });
+    },
+    anular(comprobante) {
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
+          title: "Anular comprobante",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            this.$inertia.post(route("boletas.anular", [comprobante]));
             this.refreshTable();
           }
         });

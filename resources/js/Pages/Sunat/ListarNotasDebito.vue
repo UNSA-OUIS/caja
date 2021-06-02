@@ -15,18 +15,12 @@
         >
       </div>
       <div class="card-body">
-        <b-alert
-                    show
-                    variant="success"
-                    v-if="$page.props.successMessage"
-                    >{{ $page.props.successMessage }}</b-alert
-                >
-                <b-alert
-                    show
-                    variant="danger"
-                    v-if="$page.props.errorMessage"
-                    >{{ $page.props.errorMessage }}</b-alert
-                >
+        <b-alert show variant="success" v-if="$page.props.successMessage">{{
+          $page.props.successMessage
+        }}</b-alert>
+        <b-alert show variant="danger" v-if="$page.props.errorMessage">{{
+          $page.props.errorMessage
+        }}</b-alert>
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -97,31 +91,40 @@
             >
             <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
+          <template v-slot:cell(codigo_nota)="row">
+            <span v-if="row.item.tipo_nota == '01'"> Interés por mora </span>
+            <span v-else-if="row.item.tipo_nota == '02'">
+              Aumento en el valor
+            </span>
+            <span v-else-if="row.item.tipo_nota == '03'"> Penalidades </span>
+          </template>
+          <template v-slot:cell(usuario)="row">
+            <span v-if="row.item.tipo_usuario === 'alumno'">
+              {{ row.item.comprobanteable.apn }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'empresa'">
+              {{ row.item.comprobanteable.razon_social }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'particular'">
+              {{ row.item.comprobanteable.apellidos }},
+              {{ row.item.comprobanteable.nombres }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'docente'">
+              {{ row.item.comprobanteable.apn }}
+            </span>
+            <span v-else-if="row.item.tipo_usuario === 'dependencia'">
+              {{ row.item.comprobanteable.nomb_depe }}
+            </span>
+          </template>
           <template v-slot:cell(acciones)="row">
-            <inertia-link
-              v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm"
-              :href="route('tipo-comprobante.mostrar', row.item.id)"
-            >
-              <b-icon icon="eye"></b-icon>
-            </inertia-link>
             <b-button
-              v-if="!row.item.deleted_at"
+              v-if="row.item.estado == 'noEnviado'"
               variant="danger"
               size="sm"
-              title="Eliminar"
-              @click="eliminar(row.item)"
+              title="Anular"
+              @click="anular(row.item)"
             >
-              <b-icon icon="trash"></b-icon>
-            </b-button>
-            <b-button
-              v-else
-              variant="success"
-              size="sm"
-              title="Restaurar"
-              @click="restaurar(row.item)"
-            >
-              <b-icon icon="check"></b-icon>
+              <b-icon icon="x-circle"></b-icon>
             </b-button>
           </template>
         </b-table>
@@ -155,10 +158,12 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "id", label: "ID", sortable: true, class: "text-center" },
+        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+        { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center" },
         { key: "correlativo", label: "Correlativo", class: "text-center" },
-        { key: "tipo_nota", label: "Codigo Motivo", class: "text-center" },
+        { key: "codigo_nota", label: "Motivo", class: "text-center" },
         { key: "motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
@@ -188,9 +193,7 @@ export default {
         params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
       }
 
-      const promise = axios.get(
-        `${this.app_url}/notas-credito/listar${params}`
-      );
+      const promise = axios.get(`${this.app_url}/notas-debito/listar${params}`);
 
       return promise.then((response) => {
         const notaCredito = response.data.data;
@@ -199,49 +202,19 @@ export default {
         return notaCredito || [];
       });
     },
-    eliminar(tipo_comprobante) {
+    anular(comprobante) {
       this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer eliminar este tipo de comprobante?",
-          {
-            title: "Eliminar tipo de comprobante",
-            okVariant: "danger",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
+        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
+          title: "Anular comprobante",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
         .then(async (value) => {
           if (value) {
-            this.$inertia.delete(
-                            route("tipo-comprobante.eliminar", [
-                                tipo_comprobante.id
-                            ])
-                        );
-                        this.refreshTable();
-          }
-        });
-    },
-    async restaurar(tipo_comprobante) {
-      this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer restaurar este tipo de comprobante?",
-          {
-            title: "Restaurar tipo de comprobante",
-            okVariant: "primary",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(
-                            route("tipo-comprobante.restaurar", [
-                                tipo_comprobante.id
-                            ])
-                        );
-                        this.refreshTable();
+            this.$inertia.post(route("comprobantes.anular", [comprobante]));
+            this.refreshTable();
           }
         });
     },
