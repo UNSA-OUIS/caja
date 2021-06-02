@@ -13,55 +13,6 @@
         <span class="font-weight-bold">Boletas creadas el dia de hoy</span>
       </div>
       <div class="card-body">
-        <b-alert show variant="success" v-if="$page.props.successMessage">{{
-          $page.props.successMessage
-        }}</b-alert>
-        <b-alert show variant="danger" v-if="$page.props.errorMessage">{{
-          $page.props.errorMessage
-        }}</b-alert>
-        <b-row>
-          <b-col sm="12" md="4" lg="4" class="my-1">
-            <b-form-group
-              label="Registros por página: "
-              label-cols-sm="6"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="perPageSelect"
-              class="mb-0"
-            >
-              <b-form-select
-                v-model="perPage"
-                id="perPageSelect"
-                size="sm"
-                :options="pageOptions"
-              ></b-form-select>
-            </b-form-group>
-          </b-col>
-          <b-col sm="12" offset-md="3" md="5" lg="5" class="my-1">
-            <b-form-group
-              label="Buscar: "
-              label-cols-sm="3"
-              label-align-sm="right"
-              label-size="sm"
-              label-for="filterInput"
-              class="mb-0"
-            >
-              <b-input-group size="sm">
-                <b-form-input
-                  v-model="filter"
-                  type="search"
-                  id="filterInput"
-                  placeholder="Escriba el texto a buscar..."
-                ></b-form-input>
-                <b-input-group-append>
-                  <b-button :disabled="!filter" @click="filter = ''"
-                    >Limpiar</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-          </b-col>
-        </b-row>
         <b-table
           ref="tbl_resumen_diario"
           show-empty
@@ -83,6 +34,10 @@
           empty-text="No hay resumenes diarios para mostrar"
           empty-filtered-text="No hay resumenes diarios que coincidan con su búsqueda."
         >
+          <template #table-caption
+            >Se encontraron {{ totalRows }} boletas registradas que no se
+            enviaron a sunat el dia de hoy</template
+          >
           <template v-slot:cell(estado)="row">
             <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
               >No Enviado</b-badge
@@ -99,7 +54,7 @@
           </template>
           <template v-slot:cell(fecha)="row">
             <span>
-              {{ row.item.created_at.substring(0,10) }}
+              {{ row.item.created_at.substring(0, 10) }}
             </span>
           </template>
           <template v-slot:cell(usuario)="row">
@@ -131,16 +86,15 @@
           </template>
         </b-table>
         <b-row>
-          <b-col offset-md="8" md="4" class="my-1">
-            <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="fill"
-              size="sm"
-              class="my-0"
-            ></b-pagination>
-          </b-col>
+          <b-button
+            v-if="boletas != ''"
+            variant="success"
+            title="Enviar facturas a sunat"
+            @click="enviar_boletas()"
+          >
+            Enviar boletas a Sunat
+            <b-icon icon="cloud-arrow-up"></b-icon>
+          </b-button>
         </b-row>
       </div>
     </div>
@@ -159,7 +113,7 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
-      fecha: "",
+      boletas: "",
       fields: [
         {
           key: "tipo_usuario",
@@ -171,30 +125,27 @@ export default {
           label: "Código",
           class: "text-center",
         },
-        { key: "usuario", label: "Administrado", sortable: true },
-        { key: "serie", label: "Serie", class: "text-center", sortable: true },
+        { key: "usuario", label: "Administrado" },
+        { key: "serie", label: "Serie", class: "text-center" },
         {
           key: "correlativo",
           label: "Correlativo",
           class: "text-center",
-          sortable: true,
         },
         {
           key: "fecha",
           label: "Fecha de Creacion",
           class: "text-center",
-          sortable: true,
         },
         {
           key: "estado",
           label: "Estado",
           class: "text-center",
-          sortable: true,
         },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
-      totalRows: 1,
+      totalRows: "",
       currentPage: 1,
       perPage: 5,
       pageOptions: [5, 10, 15],
@@ -208,28 +159,59 @@ export default {
     refreshTable() {
       this.$refs.tbl_resumen_diario.refresh();
     },
-    myProvider(ctx) {
-      let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
-
-      if (ctx.filter !== "" && ctx.filter !== null) {
-        params += "&filter=" + ctx.filter;
-      }
-
-      if (ctx.sortBy !== "" && ctx.sortBy !== null) {
-        params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
-      }
-
-      const promise = axios.get(
-        `${this.app_url}/sunat/listarBoletasActuales${params}`
-      );
+    myProvider() {
+      const promise = axios.get(`${this.app_url}/sunat/listarBoletasActuales`);
 
       return promise.then((response) => {
-        const boletas = response.data.data;
-        console.log(boletas);
-        this.totalRows = response.data.total;
+        this.boletas = response.data;
+        this.totalRows = response.data.length;
 
-        return boletas || [];
+        return this.boletas || [];
       });
+    },
+    enviar_boletas() {
+      console.log(this.boletas);
+      this.enviado = true;
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer enviar este resumen diario?", {
+          title: "Enviar resumen diario",
+          okVariant: "success",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            axios
+              .post(`${this.app_url}/sunat/resumenDiario`, this.boletas)
+              .then((response) => {
+                console.log(response.data);
+                if (!response.data.error) {
+                  console.log(response.data.error);
+                  console.log(response.data.successMessage);
+                  this.$bvToast.toast("Facturas enviadas con exito", {
+                    title: "Envio de facturas a sunat",
+                    variant: "success",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                } else {
+                  console.log(response.data.error);
+                  console.log(response.data.errorMessage);
+                  this.$bvToast.toast("Hubo un error al enviar las facturas", {
+                    title: "Error al enviar las facturas",
+                    variant: "danger",
+                    toaster: "b-toaster-bottom-right",
+                    solid: true,
+                  });
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+            this.refreshTable();
+          }
+        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

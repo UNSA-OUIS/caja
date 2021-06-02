@@ -590,7 +590,7 @@ class ComprobanteController extends Controller
             Log::error('ComprobanteController@anular, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
-        return redirect()->route('comprobantes.iniciar')->with($result);
+        return redirect()->route('cobros.iniciar')->with($result);
     }
 
     public function enviarCorreo(Request $request)
@@ -631,7 +631,7 @@ class ComprobanteController extends Controller
             default:
                 break;
         }*/
-        
+
         EnviarCorreosJob::dispatch($data);
         $result = ['successMessage' => 'Correo reenviado con éxito', 'error' => false];
         return $result;
@@ -946,7 +946,7 @@ class ComprobanteController extends Controller
     public function verificarNroOperacion(Request $request)
     {
         if (Comprobante::where('nro_operacion', '=', $request->nro_operacion)->exists()) {
-            
+
             $result = ['errorMessage' => 'El número de operación ingresado ya se encuentra registrado en la fecha indicada.', 'error' => true];
             return $result;
         }

@@ -91,6 +91,13 @@
             >
             <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
+          <template v-slot:cell(codigo_nota)="row">
+            <span v-if="row.item.tipo_nota == '01'"> Interés por mora </span>
+            <span v-else-if="row.item.tipo_nota == '02'">
+              Aumento en el valor
+            </span>
+            <span v-else-if="row.item.tipo_nota == '03'"> Penalidades </span>
+          </template>
           <template v-slot:cell(usuario)="row">
             <span v-if="row.item.tipo_usuario === 'alumno'">
               {{ row.item.comprobanteable.apn }}
@@ -110,30 +117,14 @@
             </span>
           </template>
           <template v-slot:cell(acciones)="row">
-            <inertia-link
-              v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm"
-              :href="route('tipo-comprobante.mostrar', row.item.id)"
-            >
-              <b-icon icon="eye"></b-icon>
-            </inertia-link>
             <b-button
-              v-if="!row.item.deleted_at"
+              v-if="row.item.estado == 'noEnviado'"
               variant="danger"
               size="sm"
-              title="Eliminar"
-              @click="eliminar(row.item)"
+              title="Anular"
+              @click="anular(row.item)"
             >
-              <b-icon icon="trash"></b-icon>
-            </b-button>
-            <b-button
-              v-else
-              variant="success"
-              size="sm"
-              title="Restaurar"
-              @click="restaurar(row.item)"
-            >
-              <b-icon icon="check"></b-icon>
+              <b-icon icon="x-circle"></b-icon>
             </b-button>
           </template>
         </b-table>
@@ -172,7 +163,7 @@ export default {
         { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center" },
         { key: "correlativo", label: "Correlativo", class: "text-center" },
-        { key: "tipo_nota", label: "Codigo Motivo", class: "text-center" },
+        { key: "codigo_nota", label: "Motivo", class: "text-center" },
         { key: "motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
@@ -211,44 +202,18 @@ export default {
         return notaCredito || [];
       });
     },
-    eliminar(tipo_comprobante) {
+    anular(comprobante) {
       this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer eliminar este tipo de comprobante?",
-          {
-            title: "Eliminar tipo de comprobante",
-            okVariant: "danger",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
+        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
+          title: "Anular comprobante",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
         .then(async (value) => {
           if (value) {
-            this.$inertia.delete(
-              route("tipo-comprobante.eliminar", [tipo_comprobante.id])
-            );
-            this.refreshTable();
-          }
-        });
-    },
-    async restaurar(tipo_comprobante) {
-      this.$bvModal
-        .msgBoxConfirm(
-          "¿Esta seguro de querer restaurar este tipo de comprobante?",
-          {
-            title: "Restaurar tipo de comprobante",
-            okVariant: "primary",
-            okTitle: "SI",
-            cancelTitle: "NO",
-            centered: true,
-          }
-        )
-        .then(async (value) => {
-          if (value) {
-            this.$inertia.post(
-              route("tipo-comprobante.restaurar", [tipo_comprobante.id])
-            );
+            this.$inertia.post(route("comprobantes.anular", [comprobante]));
             this.refreshTable();
           }
         });

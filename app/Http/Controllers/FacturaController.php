@@ -507,7 +507,7 @@ class FacturaController extends Controller
             $factura->update();
         }
 
-        return redirect()->route('sunat.iniciarFacturas');
+        return redirect()->route('facturas.iniciar');
     }
 
     public function descargar_pdf(Request $request)

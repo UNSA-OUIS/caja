@@ -80,19 +80,20 @@ class BoletaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_usuario', ['alumno', 'docente', 'particular', 'dependencia'])
             ->where('tipo_comprobante_id', 'like', 1)
             ->whereIn('estado', ['noEnviado'])
-            ->whereDate('created_at', '=', Carbon::now()->format('Y-m-d'));
+            ->where('cajero_id', 'like', Auth::user()->id)
+            ->whereDate('created_at', '=', Carbon::now()->format('Y-m-d'))->get();
 
-        $sortby = $request->sortby;
+        /*$sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
             $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
             $query = $query->orderBy($sortby, $sortdirection);
-        }
+        }*/
 
-        return $query->paginate($request->size);
+        //return $query->paginate($request->size);
+        return $query;
     }
 
 
@@ -218,7 +219,6 @@ class BoletaController extends Controller
                 ];
 
                 EnviarCorreosJob::dispatch($data);
-
             }
             $html = new HtmlReport();
             $html->setTemplate('summary.html.twig');

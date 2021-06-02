@@ -24,6 +24,11 @@
           <strong v-else>Enviando facturas a sunat</strong>
         </div>
       </template>
+      <template v-slot:cell(fecha)="row">
+            <span>
+              {{ row.item.created_at.substring(0,10) }}
+            </span>
+          </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
           >No Enviado</b-badge
@@ -135,7 +140,7 @@ export default {
           sortable: true,
         },
         {
-          key: "created_at",
+          key: "fecha",
           label: "Fecha de Creacion",
           class: "text-center",
           sortable: true,
@@ -216,6 +221,22 @@ export default {
               .catch(function (error) {
                 console.log(error);
               });
+            this.refreshTable();
+          }
+        });
+    },
+    anular(comprobante) {
+      this.$bvModal
+        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
+          title: "Anular comprobante",
+          okVariant: "danger",
+          okTitle: "SI",
+          cancelTitle: "NO",
+          centered: true,
+        })
+        .then(async (value) => {
+          if (value) {
+            this.$inertia.post(route("facturas.anular", [comprobante]));
             this.refreshTable();
           }
         });
