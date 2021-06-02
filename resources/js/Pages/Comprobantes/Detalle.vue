@@ -157,13 +157,27 @@
               <b-icon icon="trash"></b-icon>
             </b-button>
           </template>
-          <template slot="bottom-row" slot-scope="">
-            <b-td /><b-td /><b-td /><b-td />
-            <b-td class="text-right font-weight-bold">TOTAL</b-td>
-            <b-td class="text-right font-weight-bold"
-              >S/. {{ precioTotal | currency }}</b-td
-            >
-            <b-td />
+          <template slot="custom-foot" slot-scope="">
+            <b-tr>
+              <b-td colspan="4"></b-td>
+              <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
+              <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta | currency }}</b-td><b-td />
+            </b-tr>
+            <b-tr>
+              <b-td colspan="4"></b-td>
+              <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
+              <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada | currency }}</b-td><b-td />
+            </b-tr>
+            <b-tr>
+              <b-td colspan="4"></b-td>
+              <b-td class="text-right font-weight-bold">IGV:</b-td>
+              <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto | currency }}</b-td><b-td />
+            </b-tr>
+            <b-tr>
+              <b-td colspan="4"></b-td>
+              <b-td class="text-right font-weight-bold">Importe total:</b-td>
+              <b-td class="text-right font-weight-bold">S/. {{ precioTotal | currency }}</b-td><b-td />
+            </b-tr>
           </template>
         </b-table>
       </b-col>
