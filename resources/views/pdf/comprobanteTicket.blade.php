@@ -1058,7 +1058,7 @@
 
                 <td>{{$detalle->concepto_id}}</td>
 
-                <td align="right">{{$detalle->concepto->descripcion}}</td>
+                <td align="right">{{$detalle->concepto->descripcion_imp}}</td>
 
             </tr>
 
@@ -1072,9 +1072,15 @@
 
                 <td>&nbsp;</td>
 
-                <td align="right"><b>SUBTOTAL:</b></td>
+                <td align="right"><b>Importe total:</b></td>
 
-                <td align="right"><b>S/. {{$comprobante->total - 18.00}}</b></td>
+                <td align="right"><b>S/. {{$comprobante->total}}</b></td>
+
+            </tr>
+
+            <tr>
+
+                <td colspan="3">&nbsp;</td>
 
             </tr>
 
@@ -1082,9 +1088,9 @@
 
                 <td>&nbsp;</td>
 
-                <td align="right"><b>I.G.V.</b></td>
+                <td align="right"><b>OP. INAFECTA</b></td>
 
-                <td align="right"><b>S/. 18.00</b></td>
+                <td align="right"><b>S/. {{$comprobante->total_inafecta}}</b></td>
 
             </tr>
 
@@ -1092,7 +1098,27 @@
 
                 <td>&nbsp;</td>
 
-                <td align="right"><b>TOTAL:</b></td>
+                <td align="right"><b>OP. GRAVADA</b></td>
+
+                <td align="right"><b>S/. {{$comprobante->total_gravada}}</b></td>
+
+            </tr>
+
+            <tr>
+
+                <td>&nbsp;</td>
+
+                <td align="right"><b>IGV 18%</b></td>
+
+                <td align="right"><b>S/. {{$comprobante->total_impuesto}}</b></td>
+
+            </tr>
+
+            <tr>
+
+                <td>&nbsp;</td>
+
+                <td align="right"><b>Importe total:</b></td>
 
                 <td align="right"><b>S/. {{$comprobante->total}}</b></td>
 
