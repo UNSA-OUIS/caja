@@ -364,7 +364,8 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = 0;
         $comprobante->total_inafecta = 0;
         $comprobante->total_gravada = 0;
-        $comprobante->estado = 'noEnviado';
+        $comprobante->estado = '-';
+        $comprobante->enviado = false;
         $comprobante->cajero_id = Auth::user()->id;
         $comprobante->save();
 
@@ -398,7 +399,8 @@ class ComprobanteController extends Controller
             $comprobante->total_gravada = $request->total_gravada;
             $comprobante->total = $request->total;
             $comprobante->email = $request->email;
-            $comprobante->estado = 'noEnviado';
+            $comprobante->estado = '-';
+            $comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;
             $comprobante->save();
 
@@ -459,7 +461,6 @@ class ComprobanteController extends Controller
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'alumno') {
-            //return $comprobante->tipo_comprobante['nombre'];
             $tipo_de_documento = '';
             $numero_de_documento = '';
             if (strlen($comprobante->comprobanteable['dic']) > 8) {
@@ -494,7 +495,6 @@ class ComprobanteController extends Controller
                 'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
-            //return $data;
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'docente') {
             $depa = Departamento::where('depa', '=',  $comprobante->comprobanteable['depend'])->first();

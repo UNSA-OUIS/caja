@@ -62,10 +62,11 @@ class BoletaController extends Controller
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
             ->where('tipo_comprobante_id', 'like', 1)
-            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->where('enviado', false)
+            ->whereIn('estado', ['anulado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
-            ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', 'like', Auth::user()->id);
+            ->whereDate('created_at', '<=', $request->fecha_fin);
+            //->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 
@@ -83,7 +84,8 @@ class BoletaController extends Controller
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
             ->where('tipo_comprobante_id', 'like', 1)
-            ->whereIn('estado', ['noEnviado'])
+            ->where('enviado', false)
+            ->whereIn('estado', ['anulado', 'observado'])
             ->where('cajero_id', 'like', Auth::user()->id)
             ->whereDate('created_at', '=', Carbon::now()->format('Y-m-d'))->get();
 
@@ -167,7 +169,7 @@ class BoletaController extends Controller
             $resumen_diario->fecha_envio = now();
             $resumen_diario->fecha_emision = now();
             $resumen_diario->correlativo = $correlativo;
-            $resumen_diario->estado = 'noEnviado';
+            $resumen_diario->enviado = false;
             $resumen_diario->save();
 
             $result = $see->send($resumen);

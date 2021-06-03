@@ -57,12 +57,13 @@ class FacturaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_usuario', 'like', 'empresa')
-            ->where('tipo_comprobante_id', 'like', 2)
-            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->where('tipo_usuario', 'empresa')
+            ->where('tipo_comprobante_id', 2)
+            ->where('enviado', false)
+            ->whereIn('estado', ['anulado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
-            ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', 'like', Auth::user()->id);
+            ->whereDate('created_at', '<=', $request->fecha_fin);
+            //->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 
