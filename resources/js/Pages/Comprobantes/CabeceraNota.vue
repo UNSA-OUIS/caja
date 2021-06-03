@@ -3,15 +3,21 @@
         <div class="form-row">
             <div class="form-group col-md-4 border border-light">
                 <label class="text-warning">Tipo de nota:</label>
-                <b-form-select id="input-2" v-model="comprobante.tipo_nota" :options="tipos_de_nota" >                   
+                <b-form-select id="input-2" :state="validacion_tipo" aria-describedby="input-2-feedback" v-model="comprobante.tipo_nota" :options="tipos_de_nota" >                   
                     <template v-slot:first>
                         <option :value="null" disabled>Seleccione...</option>
                     </template>
                 </b-form-select>
+                <b-form-invalid-feedback id="input-2-feedback">
+                    {{ validacion_mensaje_tipo }}
+                </b-form-invalid-feedback>
             </div>                      
             <div class="form-group col-md-8 border border-light">
                 <label class="text-warning">Motivo o sustento:</label>
-                <b-form-input id="input-3" v-model="comprobante.motivo" type="text" placeholder="Ingrese motivo"></b-form-input>
+                <b-form-input id="input-3" :state="validacion_motivo" aria-describedby="input-3-feedback" v-model="comprobante.motivo" type="text" placeholder="Ingrese motivo"></b-form-input>
+                <b-form-invalid-feedback id="input-3-feedback">
+                    {{ validacion_mensaje_motivo }}
+                </b-form-invalid-feedback>
             </div>                  
         </div>  
         <div class="card-header d-flex align-items-center">
@@ -154,6 +160,8 @@ export default {
                 { key: "impuesto", label: "IGV", class: "text-center" },
                 { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
             ],
+            validacion_mensaje_tipo: "",
+            validacion_mensaje_motivo: ""
         };
     },
     created() {
@@ -169,19 +177,41 @@ export default {
             return nombre.replace('/', ' ')
         },
         registrar() {
-            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar esta nota?", {
-                title: "Enviar nota",
-                okVariant: "success",
-                okTitle: "SI",
-                cancelVariant: "danger",
-                cancelTitle: "NO",
-                centered: true,
-            }).then((value) => {
-                if (value) {
-                    this.$inertia.post(route("comprobantes.registrar_nota"), this.comprobante);
-                }
-            });
+            if (this.validacion_tipo && this.validacion_motivo){
+                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar esta nota?", {
+                    title: "Enviar nota",
+                    okVariant: "success",
+                    okTitle: "SI",
+                    cancelVariant: "danger",
+                    cancelTitle: "NO",
+                    centered: true,
+                }).then((value) => {
+                    if (value) {
+                        this.$inertia.post(route("comprobantes.registrar_nota"), this.comprobante);
+                    }
+                });
+            }
         },
+    },
+    computed: {
+        validacion_tipo() {
+            if(this.comprobante.tipo_nota === null){
+                this.validacion_mensaje_tipo = "Debe seleccionar un tipo de nota"
+                return false
+            }
+            else{
+                return true
+            }
+        },
+        validacion_motivo() {
+            if(this.comprobante.motivo.length == 0){
+                this.validacion_mensaje_motivo = "Debe ingresar un motivo"
+                return false
+            }
+            else{
+                return true
+            }
+        }
     }
 };
 </script>
