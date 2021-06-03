@@ -21,7 +21,10 @@
                         </div>
                         <div class="form-group col-md-4 border border-light">
                             <label class="text-warning">Fecha de emisión (Opcional):</label>
-                            <b-form-input id="input-4" :readonly="accion === 'Mostrar'" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+                            <b-form-input id="input-4" :readonly="accion === 'Mostrar'" :state="validacion_fecha" aria-describedby="input-4-feedback" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+                            <b-form-invalid-feedback id="input-4-feedback">
+                                {{ validacion_mensaje_fecha }}
+                            </b-form-invalid-feedback>
                         </div>
                         <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
                     </div>
@@ -73,6 +76,7 @@
         </b-col>
       </b-row>
     </form>
+    <b-alert :show="validacion_detalles" variant="danger">Se encontraron detalles con precios variables aún no especificados, por favor revisar.</b-alert>
     <b-row class="mt-3">
       <b-col>
         <b-table
@@ -227,6 +231,7 @@ export default {
         { key: "acciones", label: "", class: "text-center" },
       ],
       validacion_mensaje: "",
+      validacion_mensaje_fecha: "",
       entidades_bancarias: [
                 {value: 'BCP', text: 'Banco de Crédito del Perú (BCP)'},
                 {value: 'BN', text: 'Banco de la Nación'},
@@ -262,19 +267,33 @@ export default {
       return this.comprobante.total;
     },
     validacion() {
-            if (this.comprobante.nro_operacion.length == 0 ) return null
-            else{
-                if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6){
-                    this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
-                    return false
-                }
-                if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 4){
-                    this.validacion_mensaje = "Debe ingresar exactamente 4 dígitos"
-                    return false
-                }
-            }
-            return true
+      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0 ) return null
+      else{
+        if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6){
+          this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
+          return false
         }
+        if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 4){
+          this.validacion_mensaje = "Debe ingresar exactamente 4 dígitos"
+          return false
+        }
+      }
+      return true
+    },
+    validacion_fecha() {
+      var regFecha = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
+      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0) return null
+      else{
+        if (!regFecha.test(this.fecha_operacion) || (this.fecha_operacion.length == 0 || this.fecha_operacion.length > 10)){
+          this.validacion_mensaje_fecha = "Debe ingresar una fecha válida"
+          return false
+        }
+      }
+      return true
+    },
+    validacion_detalles() {
+      return this.comprobante.detalles.some(element => parseFloat(element.precio) == 0)
+    }
   },
   watch: {
     filtro: function (val) {
@@ -297,7 +316,7 @@ export default {
   },
   methods: {
     verificar() {
-            if (this.validacion && this.fecha_operacion.length == 10){
+            if (this.validacion && this.validacion_fecha && this.fecha_operacion.length == 10){
                 axios.get(`${this.app_url}/verificarNroOperacion`, {
                     params: {
                         nro_operacion: this.comprobante.nro_operacion,
@@ -389,6 +408,7 @@ export default {
     },
     registrar() {
       const h = this.$createElement;
+      if(this.validacion != false && this.validacion_fecha != false && !this.validacion_detalles){
       if (this.comprobante.email != "") {
         if (this.validarEmail(this.comprobante.email)) {
           const messageVNode = "";
@@ -507,6 +527,7 @@ export default {
                 });
             }
           });
+      }
       }
     },
   },
