@@ -26,6 +26,9 @@ class DetallesComprobanteFactory extends Factory
         return [
             'cantidad' => $this->faker->randomDigit(1, 10),
             'valor_unitario' => $this->faker->randomNumber(2),
+            'gravado' => $this->faker->randomNumber(2),
+            'inafecto' => $this->faker->randomNumber(2),
+            'impuesto' => $this->faker->randomNumber(2),
             'descuento' => $this->faker->randomNumber(2),
             'estado' => true,
             'tipo_descuento' => $this->faker->randomElement(['soles', 'porcentaje']),

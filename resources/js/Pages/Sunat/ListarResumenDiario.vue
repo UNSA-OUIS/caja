@@ -5,12 +5,12 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Boletas creadas el dia de hoy</li>
+        <li class="breadcrumb-item active">Resumen diario</li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Boletas creadas el dia de hoy</span>
+        <span class="font-weight-bold">Resumen diario</span>
       </div>
       <div class="card-body">
         <b-table
@@ -31,8 +31,8 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay resumenes diarios para mostrar"
-          empty-filtered-text="No hay resumenes diarios que coincidan con su búsqueda."
+          empty-text="No hay boletas para mostrar"
+          empty-filtered-text="No hay boletas que coincidan con su búsqueda."
         >
           <template #table-caption
             >Se encontraron {{ totalRows }} boletas registradas que no se

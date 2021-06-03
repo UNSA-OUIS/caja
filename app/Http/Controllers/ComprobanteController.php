@@ -311,6 +311,7 @@ class ComprobanteController extends Controller
 
     public function crear_nota(Request $request)
     {
+        //return $request;
         $cobro = Comprobante::with('detalles.concepto', 'comprobanteable')->where('id', $request->comprobanteId)->first();
 
         $comprobante = new Comprobante();
@@ -321,6 +322,7 @@ class ComprobanteController extends Controller
         $comprobante->comprobante_afectado_id = $cobro->id;
 
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.' . $request->tipo_comprobante);
+
 
         $usuario = Auth::user();
         $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
@@ -346,6 +348,7 @@ class ComprobanteController extends Controller
 
     public function store_nota(Request $request)
     {
+        //return $request;
         $comprobante = new Comprobante();
         $comprobante->serie = $request->serie;
         $comprobante->correlativo = $request->correlativo;
@@ -364,6 +367,8 @@ class ComprobanteController extends Controller
         $comprobante->estado = 'noEnviado';
         $comprobante->cajero_id = Auth::user()->id;
         $comprobante->save();
+
+        //return $comprobante;
 
         $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
         $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
@@ -443,9 +448,10 @@ class ComprobanteController extends Controller
         $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $comprobante->id)->first();
         $matricula = Alumno::with('matriculas.escuela')->where('cui', $comprobante->codi_usuario)->select('cui', 'dic', 'apn')->first();
 
+
         if ($comprobante->tipo_usuario == 'empresa') {
             $data = [
-                'tipo_comprobante' => 'FACTURA',
+                'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'razon_social' => $comprobante->comprobanteable['razon_social'],
                 'email' => $comprobante->email,
                 'direccion' => $comprobante->comprobanteable['direccion'],
@@ -453,6 +459,7 @@ class ComprobanteController extends Controller
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'alumno') {
+            //return $comprobante->tipo_comprobante['nombre'];
             $tipo_de_documento = '';
             $numero_de_documento = '';
             if (strlen($comprobante->comprobanteable['dic']) > 8) {
@@ -479,7 +486,7 @@ class ComprobanteController extends Controller
                 $numero_de_documento = $comprobante->comprobanteable['dic'];
             }
             $data = [
-                'tipo_comprobante' => 'BOLETA',
+                'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'tipo_doc' => $tipo_de_documento,
                 'ndoc' => $numero_de_documento,
                 'escuela' => $matricula->matriculas[0]->escuela['nesc'],
@@ -487,12 +494,13 @@ class ComprobanteController extends Controller
                 'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
             ];
+            //return $data;
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'docente') {
             $depa = Departamento::where('depa', '=',  $comprobante->comprobanteable['depend'])->first();
 
             $data = [
-                'tipo_comprobante' => 'BOLETA',
+                'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'dni' =>   $comprobante->comprobanteable['dic'],
                 'docente' => str_replace('/', ' ',   $comprobante->comprobanteable['apn']),
                 'email' =>    $comprobante->email,
@@ -502,7 +510,7 @@ class ComprobanteController extends Controller
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'dependencia') {
             $data = [
-                'tipo_comprobante' => 'BOLETA',
+                'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'dependencia' => $comprobante->comprobanteable['nomb_depe'],
                 'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
@@ -510,7 +518,7 @@ class ComprobanteController extends Controller
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'particular') {
             $data = [
-                'tipo_comprobante' => 'BOLETA',
+                'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
                 'email' =>  $comprobante->email,
                 'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')

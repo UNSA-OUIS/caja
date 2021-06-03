@@ -71,6 +71,8 @@ class ComprobanteFactory extends Factory
             'correlativo' => '00000' . $this->faker->randomNumber(3),
             'total_descuento' => $this->faker->randomNumber(2),
             'total_impuesto' => $this->faker->randomNumber(2),
+            'total_inafecta' => $this->faker->randomNumber(2),
+            'total_gravada' => $this->faker->randomNumber(2),
             'total' => $this->faker->randomNumber(2),
             'estado' => 'noEnviado',
             'cajero_id' => function () {

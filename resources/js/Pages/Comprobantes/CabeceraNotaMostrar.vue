@@ -20,19 +20,19 @@
         <div class="form-row">
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Boleta electrónica:</label>
-                <label class="lbl-data" v-text="data.comprobante.serie + '-' + data.comprobante.correlativo"></label>
+                <label class="lbl-data" v-text="comprobante.serie + '-' + comprobante.correlativo"></label>
             </div>
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Cliente:</label>
-                <label v-if="data.comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'empresa'" class="lbl-data" v-text="data.comprobante.comprobanteable.razon_social"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'particular'" class="lbl-data" v-text="data.comprobante.comprobanteable.nombres"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'dependencia'" class="lbl-data" v-text="data.comprobante.comprobanteable.nomb_depe"></label>
+                <label v-if="comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="reemplazar(comprobante.comprobanteable.apn)"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'empresa'" class="lbl-data" v-text="comprobante.comprobanteable.razon_social"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'particular'" class="lbl-data" v-text="comprobante.comprobanteable.nombres"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="reemplazar(comprobante.comprobanteable.apn)"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'dependencia'" class="lbl-data" v-text="comprobante.comprobanteable.nomb_depe"></label>
             </div>
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Importe total:</label>
-                <label class="lbl-data" v-text="data.comprobante.total + ' NUEVOS SOLES'"></label>
+                <label class="lbl-data" v-text="comprobante.total + ' NUEVOS SOLES'"></label>
             </div>
         </div>
         <div>
@@ -47,7 +47,7 @@
                 small
                 responsive
                 stacked="md"
-                :items="data.comprobante.detalles"
+                :items="comprobante.detalles"
                 :fields="fields"
                 empty-text="No hay conceptos para mostrar"
                 >
@@ -94,22 +94,22 @@
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_inafecta }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_gravada }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">IGV:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_impuesto }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Importe total:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total }}</b-td>
                     </b-tr>
                 </template>
                 </b-table>

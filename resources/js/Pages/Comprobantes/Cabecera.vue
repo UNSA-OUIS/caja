@@ -59,8 +59,9 @@
                     <template v-else-if="comprobante.tipo_usuario === 'empresa' && data.tipo_comprobante === 'FACTURA'">
                         <cabecera-empresa :comprobante="comprobante" :data="data"></cabecera-empresa>
                     </template>
-                    <template v-else-if="data.tipo_comprobante === 'NOTA_DEBITO' || data.tipo_comprobante === 'NOTA_CREDITO'">
-                        <cabecera-nota :comprobante="comprobante" :data="data"></cabecera-nota>
+                    <template v-else-if="data.tipo_comprobante == 'NOTA DE DÉBITO' || data.tipo_comprobante == 'NOTA DE CRÉDITO'">
+                        <cabecera-nota-mostrar v-if="comprobante.id" :comprobante="comprobante" :data="data"></cabecera-nota-mostrar>
+                        <cabecera-nota v-else :comprobante="comprobante" :data="data"></cabecera-nota>
                     </template>
                     <template v-if="comprobante.detalles != null">
                         <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
@@ -79,9 +80,9 @@ import CabeceraDependencia from "./CabeceraDependencia";
 import CabeceraParticular from "./CabeceraParticular";
 import CabeceraEmpresa from "./CabeceraEmpresa";
 import CabeceraNota from "./CabeceraNota";
+import CabeceraNotaMostrar from "./CabeceraNotaMostrar";
 import Detalle from "./Detalle";
 import DetalleMostrar from "./DetalleMostrar";
-const axios = require("axios");
 
 export default {
     name: "comprobantes.cabecera",
@@ -94,6 +95,7 @@ export default {
         CabeceraParticular,
         CabeceraEmpresa,
         CabeceraNota,
+        CabeceraNotaMostrar,
         Detalle,
         DetalleMostrar
     },
