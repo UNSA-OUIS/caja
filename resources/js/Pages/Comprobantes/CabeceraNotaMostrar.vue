@@ -3,42 +3,36 @@
         <div class="form-row">
             <div class="form-group col-md-4 border border-light">
                 <label class="text-warning">Tipo de nota:</label>
-                <b-form-select id="input-2" :state="validacion_tipo" aria-describedby="input-2-feedback" v-model="comprobante.tipo_nota" :options="tipos_de_nota" >                   
+                <b-form-select id="input-2" v-model="comprobante.tipo_nota" :options="tipos_de_nota" >
                     <template v-slot:first>
                         <option :value="null" disabled>Seleccione...</option>
                     </template>
                 </b-form-select>
-                <b-form-invalid-feedback id="input-2-feedback">
-                    {{ validacion_mensaje_tipo }}
-                </b-form-invalid-feedback>
-            </div>                      
+            </div>
             <div class="form-group col-md-8 border border-light">
                 <label class="text-warning">Motivo o sustento:</label>
-                <b-form-input id="input-3" :state="validacion_motivo" aria-describedby="input-3-feedback" v-model="comprobante.motivo" type="text" placeholder="Ingrese motivo"></b-form-input>
-                <b-form-invalid-feedback id="input-3-feedback">
-                    {{ validacion_mensaje_motivo }}
-                </b-form-invalid-feedback>
-            </div>                  
-        </div>  
+                <b-form-input id="input-3" v-model="comprobante.motivo" type="text" placeholder="Ingrese motivo"></b-form-input>
+            </div>
+        </div>
         <div class="card-header d-flex align-items-center">
             <span class="font-weight-bold">Documento a modificar:</span>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Boleta electrónica:</label>
-                <label class="lbl-data" v-text="data.comprobante.serie + '-' + data.comprobante.correlativo"></label>
+                <label class="lbl-data" v-text="comprobante.serie + '-' + comprobante.correlativo"></label>
             </div>
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Cliente:</label>
-                <label v-if="data.comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'empresa'" class="lbl-data" v-text="data.comprobante.comprobanteable.razon_social"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'particular'" class="lbl-data" v-text="data.comprobante.comprobanteable.nombres"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="reemplazar(data.comprobante.comprobanteable.apn)"></label>
-                <label v-else-if="data.comprobante.tipo_usuario === 'dependencia'" class="lbl-data" v-text="data.comprobante.comprobanteable.nomb_depe"></label>
+                <label v-if="comprobante.tipo_usuario === 'alumno'" class="lbl-data" v-text="reemplazar(comprobante.comprobanteable.apn)"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'empresa'" class="lbl-data" v-text="comprobante.comprobanteable.razon_social"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'particular'" class="lbl-data" v-text="comprobante.comprobanteable.nombres"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'docente'" class="lbl-data" v-text="reemplazar(comprobante.comprobanteable.apn)"></label>
+                <label v-else-if="comprobante.tipo_usuario === 'dependencia'" class="lbl-data" v-text="comprobante.comprobanteable.nomb_depe"></label>
             </div>
             <div class="form-group col-md-4 border border-light">
                 <label class="text-info">Importe total:</label>
-                <label class="lbl-data" v-text="data.comprobante.total + ' NUEVOS SOLES'"></label>
+                <label class="lbl-data" v-text="comprobante.total + ' NUEVOS SOLES'"></label>
             </div>
         </div>
         <div>
@@ -53,7 +47,7 @@
                 small
                 responsive
                 stacked="md"
-                :items="data.comprobante.detalles"
+                :items="comprobante.detalles"
                 :fields="fields"
                 empty-text="No hay conceptos para mostrar"
                 >
@@ -100,22 +94,22 @@
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_inafecta }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_gravada }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">IGV:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_impuesto }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto }}</b-td>
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Importe total:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total }}</b-td>
                     </b-tr>
                 </template>
                 </b-table>
@@ -160,8 +154,6 @@ export default {
                 { key: "impuesto", label: "IGV", class: "text-center" },
                 { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
             ],
-            validacion_mensaje_tipo: "",
-            validacion_mensaje_motivo: ""
         };
     },
     created() {
@@ -177,41 +169,19 @@ export default {
             return nombre.replace('/', ' ')
         },
         registrar() {
-            if (this.validacion_tipo && this.validacion_motivo){
-                this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar esta nota?", {
-                    title: "Enviar nota",
-                    okVariant: "success",
-                    okTitle: "SI",
-                    cancelVariant: "danger",
-                    cancelTitle: "NO",
-                    centered: true,
-                }).then((value) => {
-                    if (value) {
-                        this.$inertia.post(route("comprobantes.registrar_nota"), this.comprobante);
-                    }
-                });
-            }
+            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer registrar esta nota?", {
+                title: "Enviar nota",
+                okVariant: "success",
+                okTitle: "SI",
+                cancelVariant: "danger",
+                cancelTitle: "NO",
+                centered: true,
+            }).then((value) => {
+                if (value) {
+                    this.$inertia.post(route("comprobantes.registrar_nota"), this.comprobante);
+                }
+            });
         },
-    },
-    computed: {
-        validacion_tipo() {
-            if(this.comprobante.tipo_nota === null){
-                this.validacion_mensaje_tipo = "Debe seleccionar un tipo de nota"
-                return false
-            }
-            else{
-                return true
-            }
-        },
-        validacion_motivo() {
-            if(this.comprobante.motivo.length == 0){
-                this.validacion_mensaje_motivo = "Debe ingresar un motivo"
-                return false
-            }
-            else{
-                return true
-            }
-        }
     }
 };
 </script>

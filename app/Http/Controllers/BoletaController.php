@@ -126,21 +126,21 @@ class BoletaController extends Controller
                     $details[$index]->setEstado('2');
                 }
                 if ($value['tipo_usuario'] == 'alumno') {
-                    $alumno = Alumno::where('cui', 'like', $value['codi_usuario'])->first();
+                    $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
                     $dni = substr($alumno->dic, 1);
                     //return $dni;
                     $details[$index]
                         ->setClienteTipo('1')
                         ->setClienteNro($dni);
                 } elseif ($value['tipo_usuario'] == 'particular') {
-                    $particular = Particular::where('dni', 'like', $value['codi_usuario'])->first();
+                    $particular = Particular::where('dni', $value['codi_usuario'])->first();
                     $dni = $particular->dni;
                     $details[$index]
                         ->setClienteTipo('1')
                         ->setClienteNro($dni);
                 } elseif ($value['tipo_usuario'] == 'docente') {
                     //return $boletas[$index];
-                    $docente = Docente::where('codper', 'like', $value['codi_usuario'])->first();
+                    $docente = Docente::where('codper', $value['codi_usuario'])->first();
                     $dni = $docente->dic;
                     $details[$index]
                         ->setClienteTipo('1')

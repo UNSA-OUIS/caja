@@ -110,7 +110,7 @@
                     <fieldset class="col-12 col-md-6 px-3">
                         <legend>Resultados de búsqueda:</legend>
                         <comprobantes
-                            v-if="tipo_comprobante === 'NOTA_DEBITO' || tipo_comprobante === 'NOTA_CREDITO'"
+                            v-if="tipo_comprobante === 'NOTA DE DÉBITO' || tipo_comprobante === 'NOTA DE CRÉDITO'"
                             :tipo_comprobante="tipo_comprobante"
                             :serie="serie"
                             :correlativo="correlativo"
@@ -192,8 +192,8 @@ export default {
             tipos_comprobante: [
                 { value: 'BOLETA', text: 'BOLETA' },
                 { value: 'FACTURA', text: 'FACTURA' },
-                { value: 'NOTA_DEBITO', text: 'NOTA DE DÉBITO' },
-                { value: 'NOTA_CREDITO', text: 'NOTA DE CRÉDITO' },
+                { value: 'NOTA DE DÉBITO', text: 'NOTA DE DÉBITO' },
+                { value: 'NOTA DE CRÉDITO', text: 'NOTA DE CRÉDITO' },
             ],
             tipos_usuario: [],
             tipos_usuario_boleta: [

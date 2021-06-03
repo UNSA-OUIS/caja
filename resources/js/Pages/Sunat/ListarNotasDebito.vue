@@ -1,18 +1,23 @@
 <template>
   <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('cobros.iniciar')">
+            Lista de cobros
+          </inertia-link>
+        </li>
+        <li class="breadcrumb-item active">
+          Enviar de notas de debito
+        </li>
+      </ol>
+    </nav>
     <div class="card">
-      <div class="card-header">
-        <ol class="breadcrumb float-left">
-          <li class="breadcrumb-item">
-            <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
-          </li>
-          <li class="breadcrumb-item active">Lista de notas de debito</li>
-        </ol>
-        <inertia-link
-          class="btn btn-success float-right"
-          :href="route('notas-debito.crear')"
-          >Nuevo</inertia-link
-        >
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Envio de nota de debito</span>
       </div>
       <div class="card-body">
         <b-alert show variant="success" v-if="$page.props.successMessage">{{
@@ -225,3 +230,31 @@ export default {
   },
 };
 </script>
+<style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>

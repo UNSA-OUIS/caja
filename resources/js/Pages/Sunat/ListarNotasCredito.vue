@@ -11,7 +11,7 @@
           </inertia-link>
         </li>
         <li class="breadcrumb-item active">
-          Enviar boletas a sunat mediante resumen diario
+          Enviar de notas de credito
         </li>
       </ol>
     </nav>
@@ -19,19 +19,6 @@
       <div class="card-header d-flex align-items-center">
         <span class="font-weight-bold">Envio de nota de credito</span>
       </div>
-      <!--<div class="card-header">
-        <ol class="breadcrumb float-left">
-          <li class="breadcrumb-item">
-            <inertia-link :href="`${app_url}/dashboard`">Inicio</inertia-link>
-          </li>
-          <li class="breadcrumb-item active">Lista de notas de credito</li>
-        </ol>
-        <inertia-link
-          class="btn btn-success float-right"
-          :href="route('notas-credito.crear')"
-          >Nuevo</inertia-link
-        >
-      </div>-->
       <div class="card-body">
         <b-alert show variant="success" v-if="$page.props.successMessage">{{
           $page.props.successMessage
