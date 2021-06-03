@@ -311,7 +311,6 @@ class ComprobanteController extends Controller
 
     public function crear_nota(Request $request)
     {
-        //return $request;
         $cobro = Comprobante::with('detalles.concepto', 'comprobanteable')->where('id', $request->comprobanteId)->first();
 
         $comprobante = new Comprobante();
@@ -364,7 +363,6 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = 0;
         $comprobante->total_inafecta = 0;
         $comprobante->total_gravada = 0;
-        $comprobante->estado = '-';
         $comprobante->enviado = false;
         $comprobante->cajero_id = Auth::user()->id;
         $comprobante->save();
@@ -399,7 +397,6 @@ class ComprobanteController extends Controller
             $comprobante->total_gravada = $request->total_gravada;
             $comprobante->total = $request->total;
             $comprobante->email = $request->email;
-            $comprobante->estado = '-';
             $comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;
             $comprobante->save();

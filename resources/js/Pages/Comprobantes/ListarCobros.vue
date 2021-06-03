@@ -120,6 +120,14 @@
           <template v-slot:cell(numero)="row">
             {{ row.item.serie }}-{{ row.item.correlativo }}
           </template>
+          <template v-slot:cell(enviado)="row">
+            <p v-if="row.item.enviado" class="h1 mb-2">
+              <b-icon icon="check-circle" variant="success"></b-icon>
+            </p>
+            <p v-else class="h4 mb-2">
+              <b-icon icon="x-circle" variant="danger"></b-icon>
+            </p>
+          </template>
           <template v-slot:cell(estado)="row">
             <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
               >No Enviado</b-badge
@@ -139,7 +147,13 @@
           </template>
           <template v-slot:cell(acciones)="row">
             <b-button-group>
-              <b-button variant="info" size="sm" @click="visualizar(row.item.url_ticket)"> <b-icon icon="printer"></b-icon> </b-button>
+              <b-button
+                variant="info"
+                size="sm"
+                @click="visualizar(row.item.url_ticket)"
+              >
+                <b-icon icon="printer"></b-icon>
+              </b-button>
             </b-button-group>
 
             <inertia-link
@@ -149,7 +163,7 @@
               <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
-              v-if="row.item.estado == 'noEnviado'"
+              v-if="row.item.enviado == false"
               variant="danger"
               size="sm"
               title="Anular"
@@ -189,7 +203,11 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        { key: "tipo_usuario", label: "Tipo administrado", class: "text-center" },
+        {
+          key: "tipo_usuario",
+          label: "Tipo administrado",
+          class: "text-center",
+        },
         { key: "usuario", label: "Administrado" },
         {
           key: "tipo_comprobante.nombre",
@@ -197,6 +215,7 @@ export default {
           class: "text-center",
         },
         { key: "numero", label: "Número de comprobante", class: "text-center" },
+        { key: "enviado", label: "Enviado", class: "text-center" },
         { key: "estado", label: "Estado", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
@@ -215,8 +234,8 @@ export default {
     refreshTable() {
       this.$refs.tbl_comprobantes.refresh();
     },
-    reemplazar(nombre){
-      return nombre.replace('/', ' ')
+    reemplazar(nombre) {
+      return nombre.replace("/", " ");
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;

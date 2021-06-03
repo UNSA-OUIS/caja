@@ -63,7 +63,6 @@ class BoletaController extends Controller
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
             ->where('tipo_comprobante_id', 'like', 1)
             ->where('enviado', false)
-            ->whereIn('estado', ['anulado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin);
             //->where('cajero_id', 'like', Auth::user()->id);

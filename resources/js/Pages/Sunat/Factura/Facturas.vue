@@ -25,10 +25,18 @@
         </div>
       </template>
       <template v-slot:cell(fecha)="row">
-            <span>
-              {{ row.item.created_at.substring(0,10) }}
-            </span>
-          </template>
+        <span>
+          {{ row.item.created_at.substring(0, 10) }}
+        </span>
+      </template>
+      <template v-slot:cell(enviado)="row">
+        <p v-if="row.item.enviado" class="h1 mb-2">
+          <b-icon icon="check-circle" variant="success"></b-icon>
+        </p>
+        <p v-else class="h4 mb-2">
+          <b-icon icon="x-circle" variant="danger"></b-icon>
+        </p>
+      </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
           >No Enviado</b-badge
@@ -52,7 +60,7 @@
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.estado == 'noEnviado'"
+          v-if="row.item.enviado == false"
           variant="danger"
           size="sm"
           title="Anular"
@@ -142,6 +150,12 @@ export default {
         {
           key: "fecha",
           label: "Fecha de Creacion",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "enviado",
+          label: "Enviado",
           class: "text-center",
           sortable: true,
         },

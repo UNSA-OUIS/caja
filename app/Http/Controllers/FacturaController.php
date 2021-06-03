@@ -60,7 +60,6 @@ class FacturaController extends Controller
             ->where('tipo_usuario', 'empresa')
             ->where('tipo_comprobante_id', 2)
             ->where('enviado', false)
-            ->whereIn('estado', ['anulado', 'observado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin);
             //->where('cajero_id', 'like', Auth::user()->id);
