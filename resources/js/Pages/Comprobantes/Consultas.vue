@@ -186,7 +186,21 @@
               >
                 PDF
               </b-button>
-              <b-button
+              <inertia-link
+                class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
+                :href="`${app_url}/${row.item.url_xml}`"
+                download
+              >
+                XML
+              </inertia-link>
+              <inertia-link
+                class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
+                :href="`${app_url}/${row.item.url_cdr}`"
+                download
+              >
+                CDR
+              </inertia-link>
+              <!--<b-button
                 v-if="
                   (row.item.tipo_comprobante_id == 2 &&
                     row.item.estado == 'aceptado') ||
@@ -209,7 +223,7 @@
                 @click="visualizar_cdr(row.item.url_cdr)"
               >
                 CDR
-              </b-button>
+              </b-button>-->
               <b-button
                 v-if="
                   row.item.estado == 'aceptado' ||

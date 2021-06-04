@@ -15,6 +15,6 @@ class ComprobanteSeeder extends Seeder
      */
     public function run()
     {
-        Comprobante::factory()->count(100)->has(DetallesComprobante::factory()->count(2), 'detalles')->create();
+        Comprobante::factory()->count(100)->has(DetallesComprobante::factory()->count(5), 'detalles')->create();
     }
 }

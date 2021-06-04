@@ -371,7 +371,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Enviar boletas por fecha
+                  Enviar boletas
                 </inertia-link>
               </li>
               <li
@@ -385,10 +385,10 @@
                     active: path == 'facturas',
                   }"
                 >
-                  Enviar facturas por fecha
+                  Enviar facturas
                 </inertia-link>
               </li>
-              <li
+              <!--<li
                 :class="{
                   'mm-active': path == 'notas-debito',
                 }"
@@ -423,7 +423,7 @@
                 >
                   Enviar resumen diario
                 </inertia-link>
-              </li>
+              </li>-->
             </ul>
           </li>
           <li>
