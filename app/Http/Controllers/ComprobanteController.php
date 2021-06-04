@@ -340,7 +340,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
-        $comprobante->tipo_pago = "";
+        $comprobante->tipo_pago = $cobro->tipo_pago;
 
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,

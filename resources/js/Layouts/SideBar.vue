@@ -61,6 +61,7 @@
             <inertia-link
               :class="{ active: path == 'dashboard' }"
               :href="route('dashboard')"
+              v-if="$permissions.can([{ name: 'Mostrar Dashboard' }])"
             >
               <i class="uil-home-alt"></i>
               <span class="badge badge-pill badge-primary float-right">01</span>
@@ -181,7 +182,7 @@
               }"
             >
               <i class="uil-window-section"></i>
-              <span>Administración</span>
+              <span>Mantenimiento</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[2]">
               <li
@@ -460,9 +461,7 @@
                   :class="{
                     active: path == 'tipo-comprobante',
                   }"
-                  v-if="
-                    $permissions.can([{ name: 'Listar Tipos-Comprobante' }])
-                  "
+                  v-if="$permissions.can([{ name: 'Listar Tipos-Comprobante' }])"
                 >
                   Tipos de comprobante
                 </inertia-link>

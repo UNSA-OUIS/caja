@@ -328,7 +328,7 @@ class PermisoSeeder extends Seeder
 
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-
+        Permission::create(['name' => 'Mostrar Dashboard', 'guard_name' => 'sanctum'])->assignRole($superadmin);
 
         Permission::create(['name' => 'Listar Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Roles', 'guard_name' => 'sanctum'])->assignRole($superadmin);
@@ -409,6 +409,9 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Mostrar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Anular Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Restaurar Comprobantes Propios', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
+
+        Permission::create(['name' => 'Enviar-Boletas SUNAT', 'guard_name' => 'sanctum'])->assignRole($cajero);
+        Permission::create(['name' => 'Enviar-Facturas SUNAT', 'guard_name' => 'sanctum'])->assignRole($cajero);
 
         Permission::create(['name' => 'Listar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);

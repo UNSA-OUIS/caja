@@ -2,7 +2,7 @@
     <div>
         <div class="form-row">
             <div class="form-group col-md-4 border border-light">
-                <label class="text-warning">Tipo de nota:</label>
+                <label class="text-info">Tipo de nota:</label>
                 <b-form-select id="input-2" :state="validacion_tipo" aria-describedby="input-2-feedback" v-model="comprobante.tipo_nota" :options="tipos_de_nota" >                   
                     <template v-slot:first>
                         <option :value="null" disabled>Seleccione...</option>
@@ -13,7 +13,7 @@
                 </b-form-invalid-feedback>
             </div>                      
             <div class="form-group col-md-8 border border-light">
-                <label class="text-warning">Motivo o sustento:</label>
+                <label class="text-info">Motivo o sustento:</label>
                 <b-form-input id="input-3" :state="validacion_motivo" aria-describedby="input-3-feedback" v-model="comprobante.motivo" type="text" placeholder="Ingrese motivo"></b-form-input>
                 <b-form-invalid-feedback id="input-3-feedback">
                     {{ validacion_mensaje_motivo }}
