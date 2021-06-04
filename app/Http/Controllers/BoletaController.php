@@ -157,9 +157,8 @@ class BoletaController extends Controller
             }
 
             //Recorro todas las boletas y anexo todas la notas de debito
-            foreach ($boletas as $index => $value) {
+            /*foreach ($boletas as $index => $value) {
                 $notas_debito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 3)->get();
-                //return $notas_debito[0]->serie;
                 if ($notas_debito != '') {
                     $details1[$index] = (new SummaryDetail())
                         ->setTipoDoc('08') // Nota de debito
@@ -201,10 +200,10 @@ class BoletaController extends Controller
                         ->setMtoOperInafectas($value['total_inafecta'])
                         ->setMtoIGV($value['total_impuesto']);
                 }
-            }
+            }*/
 
             //Recorro todas la boletas y anexo las notas de credito
-            foreach ($boletas as $index => $value) {
+            /*foreach ($boletas as $index => $value) {
                 $notas_credito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 4)->get();
                 if ($notas_credito != '') {
                     $details2[$index] = (new SummaryDetail())
@@ -247,7 +246,7 @@ class BoletaController extends Controller
                         ->setMtoOperInafectas($value['total_inafecta'])
                         ->setMtoIGV($value['total_impuesto']);
                 }
-            }
+            }*/
 
             $resumen = new Summary();
             $resumen->setFecGeneracion(new \DateTime(now())) // Fecha de emisión de las boletas.
@@ -259,7 +258,8 @@ class BoletaController extends Controller
                  * $details1 => solo notas de debito
                  * $details2 => solo notas de credito
                  */
-                ->setDetails($details, $details1, $details2);
+                //->setDetails($details, $details1, $details2);
+                ->setDetails($details);
 
             $resumen_diario = new ResumenDiario();
             $resumen_diario->fecha_envio = now();
@@ -338,19 +338,19 @@ class BoletaController extends Controller
             $boleta->estado = 'aceptado';
             $boleta->enviado = true;
             $boleta->update();
-            $notas_debito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 3)->first();
+            /*$notas_debito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 3)->first();
             $notas_debito->estado = 'aceptado';
             $notas_debito->enviado = true;
-            $notas_debito->update();
+            $notas_debito->update();*/
             /*foreach ($notas_debito as $index => $value) {
                 $notas_debito[$index]->estado = 'aceptado';
                 $notas_debito[$index]->enviado = true;
                 $notas_debito->update();
             }*/
-            $notas_credito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 4)->first();
+            /*$notas_credito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 4)->first();
             $notas_credito->estado = 'aceptado';
             $notas_credito->enviado = true;
-            $notas_credito->update();
+            $notas_credito->update();*/
             /*foreach ($notas_credito as $index => $value) {
                 $notas_credito[$index]->estado = 'aceptado';
                 $notas_credito[$index]->enviado = true;

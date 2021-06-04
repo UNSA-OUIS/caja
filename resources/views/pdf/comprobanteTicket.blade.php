@@ -975,7 +975,7 @@
 
         <br>
 
-        <table border="0" align="center" width="100%">
+        <table border="0" align="justify" width="100%">
 
             <tr>
 

@@ -790,7 +790,7 @@ class ComprobanteController extends Controller
 
         $pdf = PDF::loadView('pdf.comprobanteTicket', compact('comprobante'));
         $pdf->getDomPDF()->set_option("enable_php", true);
-        $customPaper = array(0, 0, 567.00, 283.80);
+        $customPaper = array(0, 0, 567.00, 350.00);
         $pdf->setPaper($customPaper, 'landscape');
         $pdfGuardado = $pdf->output();
 
