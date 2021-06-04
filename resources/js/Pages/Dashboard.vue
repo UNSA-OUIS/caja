@@ -9,17 +9,17 @@
                         </div>
                         <div>
                             <h4 class="mb-1 mt-1">
-                                $<span data-plugin="counterup">34,152</span>
+                                <span data-plugin="counterup">{{noEnviado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Total Revenue</p>
+                            <p class="text-muted mb-0">comprobantes no enviados</p>
                         </div>
-                        <p class="text-muted mt-3 mb-0">
+                        <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"
                                 ><i class="mdi mdi-arrow-up-bold ml-1"></i
                                 >2.65%</span
                             >
                             since last week
-                        </p>
+                        </p>-->
                     </div>
                 </div>
             </div>
@@ -33,17 +33,17 @@
                         </div>
                         <div>
                             <h4 class="mb-1 mt-1">
-                                <span data-plugin="counterup">5,643</span>
+                                <span data-plugin="counterup">{{rechazado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Orders</p>
+                            <p class="text-muted mb-0">comprobantes rechazados</p>
                         </div>
-                        <p class="text-muted mt-3 mb-0">
+                        <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
                                 ><i class="mdi mdi-arrow-down-bold ml-1"></i
                                 >0.82%</span
                             >
                             since last week
-                        </p>
+                        </p>-->
                     </div>
                 </div>
             </div>
@@ -57,17 +57,17 @@
                         </div>
                         <div>
                             <h4 class="mb-1 mt-1">
-                                <span data-plugin="counterup">45,254</span>
+                                <span data-plugin="counterup">{{anulado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Customers</p>
+                            <p class="text-muted mb-0">comprobantes anulados</p>
                         </div>
-                        <p class="text-muted mt-3 mb-0">
+                        <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
                                 ><i class="mdi mdi-arrow-down-bold ml-1"></i
                                 >6.24%</span
                             >
                             since last week
-                        </p>
+                        </p>-->
                     </div>
                 </div>
             </div>
@@ -81,17 +81,17 @@
                         </div>
                         <div>
                             <h4 class="mb-1 mt-1">
-                                + <span data-plugin="counterup">12.58</span>%
+                                <span data-plugin="counterup">{{aceptado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Growth</p>
+                            <p class="text-muted mb-0">comprobantes aceptados</p>
                         </div>
-                        <p class="text-muted mt-3 mb-0">
+                        <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"
                                 ><i class="mdi mdi-arrow-up-bold ml-1"></i
                                 >10.51%</span
                             >
                             since last week
-                        </p>
+                        </p>-->
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
             <div class="col-xl-8">
                 <div class="card">
                     <div class="card-body">
-                        <div class="float-right">
+                        <!--<div class="float-right">
                             <div class="dropdown">
                                 <a
                                     class="dropdown-toggle text-reset"
@@ -114,7 +114,7 @@
                                     aria-expanded="false"
                                 >
                                     <span class="font-weight-semibold"
-                                        >Sort By:</span
+                                        >Sort By: </span
                                     >
                                     <span class="text-muted"
                                         >Yearly<i
@@ -134,20 +134,19 @@
                                     <a class="dropdown-item" href="#">Weekly</a>
                                 </div>
                             </div>
-                        </div>
-                        <h4 class="card-title mb-4">Sales Analytics</h4>
+                        </div>-->
+                        <h4 class="card-title mb-4">Tipos de comprobantes emitidos</h4>
 
                         <div class="mt-1">
                             <ul class="list-inline main-chart mb-0">
                                 <li
                                     class="list-inline-item chart-border-left mr-0 border-0"
                                 >
-                                    <h3 class="text-primary">
-                                        $<span data-plugin="counterup"
-                                            >2,371</span
+                                    <h3>
+                                        <span data-plugin="counterup">{{boletas}}</span
                                         ><span
                                             class="text-muted d-inline-block font-size-15 ml-3"
-                                            >Income</span
+                                            >boletas</span
                                         >
                                     </h3>
                                 </li>
@@ -155,10 +154,10 @@
                                     class="list-inline-item chart-border-left mr-0"
                                 >
                                     <h3>
-                                        <span data-plugin="counterup">258</span
+                                        <span data-plugin="counterup">{{facturas}}</span
                                         ><span
                                             class="text-muted d-inline-block font-size-15 ml-3"
-                                            >Sales</span
+                                            >facturas</span
                                         >
                                     </h3>
                                 </li>
@@ -166,10 +165,21 @@
                                     class="list-inline-item chart-border-left mr-0"
                                 >
                                     <h3>
-                                        <span data-plugin="counterup">3.6</span
-                                        >%<span
+                                        <span data-plugin="counterup">{{notas_debito}}</span
+                                        ><span
                                             class="text-muted d-inline-block font-size-15 ml-3"
-                                            >Conversation Ratio</span
+                                            >notas de debito</span
+                                        >
+                                    </h3>
+                                </li>
+                                <li
+                                    class="list-inline-item chart-border-left mr-0"
+                                >
+                                    <h3>
+                                        <span data-plugin="counterup">{{notas_credito}}</span
+                                        ><span
+                                            class="text-muted d-inline-block font-size-15 ml-3"
+                                            >notas de credito</span
                                         >
                                     </h3>
                                 </li>
@@ -224,7 +234,7 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <div class="float-right">
+                        <!--<div class="float-right">
                             <div class="dropdown">
                                 <a
                                     class="dropdown-toggle text-reset"
@@ -255,7 +265,7 @@
                                     <a class="dropdown-item" href="#">Weekly</a>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <h4 class="card-title mb-4">Top Selling Products</h4>
 
@@ -1344,6 +1354,38 @@ import AppLayout from "@/Layouts/AppLayout";
 export default {
     components: {
         AppLayout
-    }
+    },
+    computed: {
+    noEnviado() {
+      return this.$store.state.envio.noEnviado;
+    },
+    observado() {
+      return this.$store.state.envio.observado;
+    },
+    rechazado() {
+      return this.$store.state.envio.rechazado;
+    },
+    anulado() {
+      return this.$store.state.envio.anulado;
+    },
+    aceptado() {
+      return this.$store.state.envio.aceptado;
+    },
+    boletas() {
+      return this.$store.state.envio.boletas;
+    },
+    facturas() {
+      return this.$store.state.envio.facturas;
+    },
+    notas_debito() {
+      return this.$store.state.envio.notas_debito;
+    },
+    notas_credito() {
+      return this.$store.state.envio.notas_credito;
+    },
+  },
+  created() {
+    this.$store.dispatch("getEstados");
+  },
 };
 </script>
