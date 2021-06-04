@@ -222,21 +222,35 @@
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th align="right">SUBTOTAL</th>
-                        <td align="right">S/. {{$comprobante->total - 18.00}}</td>
+                        <th align="right">Importe total:</th>
+                        <td align="right">S/. {{$comprobante->total}}</td>
                     </tr>
                     <tr>
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th align="right">I.G.V. </th>
-                        <td align="right">S/.18.00 </td>
+                        <th align="right">OP. INAFECTA </th>
+                        <td align="right">S/. {{$comprobante->total_inafecta}} </td>
                     </tr>
                     <tr>
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th align="right">TOTAL</th>
+                        <th align="right">OP. GRAVADA</th>
+                        <td align="right">S/. {{$comprobante->total_gravada}} </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th align="right">IGV 18%</th>
+                        <td align="right">S/. {{$comprobante->total_impuesto}} </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th align="right">Importe total:</th>
                         <td align="right">S/. {{$comprobante->total}} </td>
                     </tr>
                 </tfoot>

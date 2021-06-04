@@ -141,12 +141,9 @@
             <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
               >Anulado</b-badge
             >
-            <div v-if="row.item.estado == 'aceptado'">
-              <b-badge variant="success">Aceptado</b-badge>
-              <br />
-              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-              <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
-            </div>
+            <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
+              >Aceptado</b-badge
+            >
           </template>
           <template v-slot:cell(acciones)="row">
             <b-button-group>
@@ -166,7 +163,7 @@
               <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
-              v-if="row.item.enviado == false"
+              v-if="row.item.enviado == false && row.item.estado != 'anulado'"
               variant="danger"
               size="sm"
               title="Anular"

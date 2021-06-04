@@ -186,33 +186,11 @@
               >
                 PDF
               </b-button>
-              <inertia-link
+              <b-button
                 v-if="
-                  row.item.tipo_comprobante_id == 2 &&
-                    row.item.estado == aceptado
-                "
-                class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
-                :href="`${app_url}/${row.item.url_xml}`"
-                download
-              >
-                XML
-              </inertia-link>
-              <inertia-link
-                v-if="
-                  row.item.tipo_comprobante_id == 2 &&
-                    row.item.estado == aceptado
-                "
-                class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
-                :href="`${app_url}/${row.item.url_cdr}`"
-                download
-              >
-                CDR
-              </inertia-link>
-              <!--<b-button
-                v-if="
-                  (row.item.tipo_comprobante_id == 2 &&
-                    row.item.estado == 'aceptado') ||
-                  row.item.estado == 'observado'
+                  row.item.tipo_usuario == 'empresa' &&
+                  (row.item.estado == 'aceptado' ||
+                    row.item.estado == 'observado')
                 "
                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
@@ -222,16 +200,16 @@
               </b-button>
               <b-button
                 v-if="
-                  (row.item.tipo_comprobante_id == 2 &&
-                    row.item.estado == 'aceptado') ||
-                  row.item.estado == 'observado'
+                  row.item.tipo_usuario == 'empresa' &&
+                  (row.item.estado == 'aceptado' ||
+                    row.item.estado == 'observado')
                 "
                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
                 size="sm"
                 @click="visualizar_cdr(row.item.url_cdr)"
               >
                 CDR
-              </b-button>-->
+              </b-button>
               <b-button
                 v-if="
                   row.item.estado == 'aceptado' ||
@@ -276,8 +254,8 @@ export default {
       },
       selected: null,
       options: [
-        { value: 1, text: "Buscar por número de operación" },
         { value: 2, text: "Buscar por serie y correlativo" },
+        { value: 1, text: "Buscar por número de operación" },
       ],
       comprobante: [],
       fields: [
@@ -458,13 +436,13 @@ export default {
     },
     visualizar_xml(url_xml) {
       window.open(
-        `${this.app_url}/sunat/facturaXML?url_pdf=${url_xml}`,
+        `${this.app_url}/sunat/facturaXML?url_xml=${url_xml}`,
         "_blanck"
       );
     },
     visualizar_cdr(url_cdr) {
       window.open(
-        `${this.app_url}/sunat/facturaCDR?url_pdf=${url_cdr}`,
+        `${this.app_url}/sunat/facturaCDR?url_cdr=${url_cdr}`,
         "_blanck"
       );
     },
