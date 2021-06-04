@@ -57,12 +57,12 @@ class FacturaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_usuario', 'like', 'empresa')
-            ->where('tipo_comprobante_id', 'like', 2)
-            ->whereIn('estado', ['noEnviado', 'observado'])
+            ->where('tipo_usuario', 'empresa')
+            ->where('tipo_comprobante_id', 2)
+            ->where('enviado', false)
             ->whereDate('created_at', '>=', $request->fecha_inicio)
-            ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', 'like', Auth::user()->id);
+            ->whereDate('created_at', '<=', $request->fecha_fin);
+        //->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 
@@ -275,11 +275,13 @@ class FacturaController extends Controller
 
                 if ($code === 0) {
                     $factura->estado = 'aceptado';
+                    $factura->enviado = true;
                     $factura->observaciones = $cdr->getDescription() . PHP_EOL;
                     $factura->update();
                     if (count($cdr->getNotes()) > 0) {
                         // Corregir estas observaciones en siguientes emisiones.
                         $factura->estado = 'observado';
+                        $factura->enviado = false;
                         $factura->observaciones = '';
                         $factura->update();
                         foreach ($cdr->getNotes() as $index => $value) {
@@ -297,12 +299,14 @@ class FacturaController extends Controller
                     EnviarCorreosJob::dispatch($data);
                 } else if ($code >= 2000 && $code <= 3999) {
                     $factura->estado = 'rechazado';
+                    $factura->enviado = false;
                     $factura->observaciones = '';
                     $factura->update();
                 } else {
                     /* Esto no debería darse, pero si ocurre, es un CDR inválido que debería tratarse como un error-excepción. */
                     /*code: 0100 a 1999 */
                     $factura->estado = 'rechazado';
+                    $factura->enviado = false;
                     $factura->observaciones = '';
                     $factura->update();
                 }

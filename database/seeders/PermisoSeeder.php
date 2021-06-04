@@ -326,45 +326,6 @@ class PermisoSeeder extends Seeder
             'punto_venta_id' => 7
         ]);
 
-        //Datos adicionales
-        /*Persona::create([
-            'codigo' => 'cajero1',
-            'nombre' => 'CAJERO ' . $user1->name,
-            'user_id' => $user1->id
-        ]);
-        Persona::create([
-            'codigo' => 'cajero2',
-            'nombre' => 'CAJERO ' . $user2->name,
-            'email_personal' => 'garyfnc185@gmail.com',
-            'direccion' => 'Urb. las orquideas',
-            'celular' => '987314950',
-            'user_id' => $user2->id
-        ]);
-
-        Persona::create([
-            'codigo' => 'cajero3',
-            'nombre' => 'CAJERO ' . $user3->name,
-            'user_id' => $user3->id
-        ]);
-
-        Persona::create([
-            'codigo' => 'cajero4',
-            'nombre' => 'CAJERO ' . $user4->name,
-            'user_id' => $user4->id
-        ]);
-
-        Persona::create([
-            'codigo' => 'cajero5',
-            'nombre' => 'CAJERO ' . $user5->name,
-            'user_id' => $user5->id
-        ]);
-
-        Persona::create([
-            'codigo' => 'cajero6',
-            'nombre' => 'CAJERO ' . $user6->name,
-            'user_id' => $user6->id
-        ]);*/
-
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
 

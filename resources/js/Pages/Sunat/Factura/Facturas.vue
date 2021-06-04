@@ -25,14 +25,19 @@
         </div>
       </template>
       <template v-slot:cell(fecha)="row">
-            <span>
-              {{ row.item.created_at.substring(0,10) }}
-            </span>
-          </template>
+        <span>
+          {{ row.item.created_at.substring(0, 10) }}
+        </span>
+      </template>
+      <template v-slot:cell(enviado)="row">
+        <p v-if="row.item.enviado" class="h4 mb-2">
+          <b-icon icon="check-circle" variant="success"></b-icon>
+        </p>
+        <p v-else class="h4 mb-2">
+          <b-icon icon="x-circle" variant="danger"></b-icon>
+        </p>
+      </template>
       <template v-slot:cell(estado)="row">
-        <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-          >No Enviado</b-badge
-        >
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
           >Observado
         </b-badge>
@@ -52,7 +57,7 @@
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.estado == 'noEnviado'"
+          v-if="row.item.enviado == false"
           variant="danger"
           size="sm"
           title="Anular"
@@ -146,6 +151,12 @@ export default {
           sortable: true,
         },
         {
+          key: "enviado",
+          label: "Enviado",
+          class: "text-center",
+          sortable: true,
+        },
+        {
           key: "estado",
           label: "Estado",
           class: "text-center",
@@ -197,8 +208,8 @@ export default {
             axios
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
-                console.log(response.data);
-                if (!response.data.error) {
+                //console.log(response.data);
+                if (response.data.error == false && response.data.successMessage == 'Facturas enviadas con exito') {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {

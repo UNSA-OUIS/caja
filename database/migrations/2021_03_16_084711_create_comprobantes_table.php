@@ -29,7 +29,8 @@ class CreateComprobantesTable extends Migration
             $table->decimal('total_inafecta');
             $table->decimal('total_gravada');
             $table->decimal('total');
-            $table->enum('estado', ['noEnviado', 'observado', 'rechazado', 'anulado', 'aceptado']);
+            $table->enum('estado', ['observado', 'rechazado', 'anulado', 'aceptado'])->nullable();
+            $table->boolean('enviado')->nullable()->default(false);
             $table->string('email', 100)->nullable();
             $table->text('observaciones')->nullable();
             $table->string('url_xml')->nullable();

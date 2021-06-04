@@ -25,10 +25,10 @@
         </div>
       </template>
       <template v-slot:cell(fecha)="row">
-            <span>
-              {{ row.item.created_at.substring(0,10) }}
-            </span>
-          </template>
+        <span>
+          {{ row.item.created_at.substring(0, 10) }}
+        </span>
+      </template>
       <template v-slot:cell(usuario)="row">
         <span v-if="row.item.tipo_usuario === 'alumno'">
           {{ row.item.comprobanteable.apn }}
@@ -47,6 +47,14 @@
           {{ row.item.comprobanteable.nomb_depe }}
         </span>
       </template>
+      <template v-slot:cell(enviado)="row">
+        <p v-if="row.item.enviado" class="h4 mb-2">
+          <b-icon icon="check-circle" variant="success"></b-icon>
+        </p>
+        <p v-else class="h4 mb-2">
+          <b-icon icon="x-circle" variant="danger"></b-icon>
+        </p>
+      </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
           >No Enviado</b-badge
@@ -62,15 +70,15 @@
         >
         <div v-if="row.item.estado == 'aceptado'">
           <b-badge variant="success">Aceptado</b-badge>
-          <br />
+          <!--<br />
           <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-          <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
+          <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>-->
         </div>
       </template>
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.estado == 'noEnviado'"
+          v-if="row.item.enviado == false"
           variant="danger"
           size="sm"
           title="Anular"
@@ -78,23 +86,6 @@
         >
           <b-icon icon="x-circle"></b-icon>
         </b-button>
-        <b-button
-          v-if="row.item.estado == 'observado' || row.item.estado == 'aceptado'"
-          size="sm"
-          @click="row.toggleDetails"
-        >
-          <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
-          <b-icon v-else icon="plus-circle"></b-icon>
-        </b-button>
-      </template>
-      <template #row-details="row">
-        <b-card>
-          <ul>
-            <li>
-              {{ row.item.observaciones }}
-            </li>
-          </ul>
-        </b-card>
       </template>
       <template #table-caption
         >Se encontraron {{ totalRows }} boletas
@@ -155,6 +146,12 @@ export default {
           sortable: true,
         },
         {
+          key: "enviado",
+          label: "Enviado",
+          class: "text-center",
+          sortable: true,
+        },
+        {
           key: "estado",
           label: "Estado",
           class: "text-center",
@@ -207,7 +204,7 @@ export default {
               .post(`${this.app_url}/sunat/resumenDiario`, this.items)
               .then((response) => {
                 console.log(response.data);
-                if (!response.data.error) {
+                if (response.data.error == false && response.data.successMessage == 'Resumen diario enviado con exito') {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {
@@ -219,8 +216,8 @@ export default {
                 } else {
                   console.log(response.data.error);
                   console.log(response.data.errorMessage);
-                  this.$bvToast.toast("Hubo un error al enviar las facturas", {
-                    title: "Error al enviar las facturas",
+                  this.$bvToast.toast("Hubo un error al enviar las boletas", {
+                    title: "Error al enviar las boletas",
                     variant: "danger",
                     toaster: "b-toaster-bottom-right",
                     solid: true,
