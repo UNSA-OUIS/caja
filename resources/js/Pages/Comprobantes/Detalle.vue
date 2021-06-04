@@ -4,30 +4,40 @@
   
   <div>
     <div class="form-row">
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Entidad bancaria (Opcional):</label>
-                            <b-form-select id="input-2" :disabled="accion === 'Mostrar'" v-model="comprobante.entidad_bancaria" :options="entidades_bancarias" >
-                                <template v-slot:first>
-                                    <option :value="null" disabled>Seleccione...</option>
-                                </template>
-                            </b-form-select>
-                        </div> 
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Nro Operación (Opcional):</label>
-                            <b-form-input id="input-3" :readonly="accion === 'Mostrar'" :state="validacion" aria-describedby="input-3-feedback" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
-                            <b-form-invalid-feedback id="input-3-feedback">
-                                {{ validacion_mensaje }}
-                            </b-form-invalid-feedback>
-                        </div>
-                        <div class="form-group col-md-4 border border-light">
-                            <label class="text-warning">Fecha de emisión (Opcional):</label>
-                            <b-form-input id="input-4" :readonly="accion === 'Mostrar'" :state="validacion_fecha" aria-describedby="input-4-feedback" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
-                            <b-form-invalid-feedback id="input-4-feedback">
-                                {{ validacion_mensaje_fecha }}
-                            </b-form-invalid-feedback>
-                        </div>
-                        <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
-                    </div>
+      <div class="form-group col-md-12 border border-light">
+        <label class="text-info">Tipo de pago:</label>
+        <b-form-radio-group :disabled="accion === 'Mostrar'" v-model="comprobante.tipo_pago" :options="tipos_pago" name="detraccion"></b-form-radio-group>
+        <b-alert :show="!validacion_tipo" variant="danger" dismissible>{{ validacion_mensaje_tipo }}</b-alert>
+      </div>
+    </div>
+    <div v-if="comprobante.tipo_pago === 'Voucher'" class="form-row">
+      <div class="form-group col-md-4 border border-light">
+          <label class="text-warning">Entidad bancaria:</label>
+          <b-form-select id="input-2" :disabled="accion === 'Mostrar'" :state="validacion_banco" aria-describedby="input-2-feedback" v-model="comprobante.entidad_bancaria" :options="entidades_bancarias" >
+              <template v-slot:first>
+                  <option :value="null" disabled>Seleccione...</option>
+              </template>
+          </b-form-select>
+          <b-form-invalid-feedback id="input-2-feedback">
+              {{ validacion_mensaje_banco }}
+          </b-form-invalid-feedback>
+      </div> 
+      <div class="form-group col-md-4 border border-light">
+          <label class="text-warning">Nro Operación:</label>
+          <b-form-input id="input-3" :readonly="accion === 'Mostrar'" :state="validacion" aria-describedby="input-3-feedback" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
+          <b-form-invalid-feedback id="input-3-feedback">
+              {{ validacion_mensaje }}
+          </b-form-invalid-feedback>
+      </div>
+      <div class="form-group col-md-4 border border-light">
+          <label class="text-warning">Fecha de emisión:</label>
+          <b-form-input id="input-4" :readonly="accion === 'Mostrar'" :state="validacion_fecha" aria-describedby="input-4-feedback" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
+          <b-form-invalid-feedback id="input-4-feedback">
+              {{ validacion_mensaje_fecha }}
+          </b-form-invalid-feedback>
+      </div>
+      <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
+    </div>
     <b-alert show dismissible variant="success" v-if="alerta == false">
       {{ alerta_mensaje }}
     </b-alert>
@@ -76,7 +86,7 @@
         </b-col>
       </b-row>
     </form>
-    <b-alert :show="validacion_detalles" variant="danger">Se encontraron detalles con precios variables aún no especificados, por favor revisar.</b-alert>
+    <b-alert :show="show_error" variant="danger">{{ validacion_mensaje_detalles }}</b-alert>
     <b-row class="mt-3">
       <b-col>
         <b-table
@@ -231,17 +241,25 @@ export default {
         { key: "acciones", label: "", class: "text-center" },
       ],
       validacion_mensaje: "",
+      validacion_mensaje_tipo: "",
       validacion_mensaje_fecha: "",
+      validacion_mensaje_banco: "",
+      validacion_mensaje_detalles: "",
+      show_error: false,
       entidades_bancarias: [
-                {value: 'BCP', text: 'Banco de Crédito del Perú (BCP)'},
-                {value: 'BN', text: 'Banco de la Nación'},
-            ],
-            nro_operacion: "",
-            fecha_operacion: "",
-            error:{
-                estado: false,
-                mensaje: ""
-            },
+        {value: 'BCP', text: 'Banco de Crédito del Perú (BCP)'},
+        {value: 'BN', text: 'Banco de la Nación'},
+      ],
+      nro_operacion: "",
+      fecha_operacion: "",
+      error:{
+        estado: false,
+        mensaje: ""
+      },
+      tipos_pago: [
+        { text: "Efectivo", value: "Efectivo" },
+        { text: "Voucher", value: "Voucher" },
+      ]
     };
   },
   created() {
@@ -267,23 +285,52 @@ export default {
       return this.comprobante.total;
     },
     validacion() {
-      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0 ) return null
+      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0 && this.comprobante.tipo_pago != "Voucher") return null
+      else if(this.comprobante.tipo_pago === "Voucher" && this.nro_operacion.length == 0){
+        this.validacion_mensaje = "Debe ingresar un número de operación"
+        return false
+      }
       else{
-        if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6){
+        if (this.comprobante.entidad_bancaria == 'BCP' && this.nro_operacion.length != 6 ){
           this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
           return false
         }
-        if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 4){
-          this.validacion_mensaje = "Debe ingresar exactamente 4 dígitos"
+        if (this.comprobante.entidad_bancaria == 'BN' && this.nro_operacion.length != 6){
+          this.validacion_mensaje = "Debe ingresar exactamente 6 dígitos"
           return false
         }
       }
       return true
     },
+    validacion_tipo() {
+      if (this.comprobante.tipo_pago.length == 0) {
+        this.validacion_mensaje_tipo = "Debe seleccionar un tipo de pago"
+        return false
+      }
+      else{
+        return true
+      }
+    },
+    validacion_banco() {
+      if (this.comprobante.entidad_bancaria === null && this.comprobante.tipo_pago != "Voucher") return null
+      else{
+        if (this.comprobante.entidad_bancaria === null) {
+          this.validacion_mensaje_banco = "Debe seleccionar un tipo de pago"
+          return false
+        }
+        else{
+          return true
+        }
+      }
+    },
     validacion_fecha() {
       var regFecha = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
-      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0) return null
-      else{
+      if (this.fecha_operacion.length == 0 && this.nro_operacion.length == 0 && this.comprobante.tipo_pago != "Voucher") return null
+      else if(this.comprobante.tipo_pago === "Voucher" && this.fecha_operacion.length == 0){
+        this.validacion_mensaje_fecha = "Debe ingresar una fecha de operación"
+        return false
+      }
+      else {
         if (!regFecha.test(this.fecha_operacion) || (this.fecha_operacion.length == 0 || this.fecha_operacion.length > 10)){
           this.validacion_mensaje_fecha = "Debe ingresar una fecha válida"
           return false
@@ -292,7 +339,15 @@ export default {
       return true
     },
     validacion_detalles() {
-      return this.comprobante.detalles.some(element => parseFloat(element.precio) == 0)
+      if (this.comprobante.detalles.length == 0) {
+        this.validacion_mensaje_detalles = "Debe ingresar al menos un detalle para registrar el comprobante."
+        return false
+      }
+      else if(this.comprobante.detalles.some(element => parseFloat(element.precio) == 0)) {
+        this.validacion_mensaje_detalles = "Se encontraron detalles con precios variables aún no especificados, por favor revisar."
+        return false
+      }
+      return true
     }
   },
   watch: {
@@ -303,11 +358,21 @@ export default {
       this.filtro = "";
     },
     nro_operacion: function () {
-            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
-        },
-        fecha_operacion: function () {
-            this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
-        },
+      this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+    },
+    fecha_operacion: function () {
+      this.comprobante.nro_operacion = this.nro_operacion + "-" + this.fecha_operacion;
+    },
+    comprobante: {
+      handler() {
+        if (this.comprobante.tipo_pago === "Efectivo"){
+          this.nro_operacion = ""
+          this.fecha_operacion = ""
+          this.comprobante.entidad_bancaria = null
+        }
+      },
+      deep: true
+    }
   },
   filters: {
     currency(value) {
@@ -408,7 +473,8 @@ export default {
     },
     registrar() {
       const h = this.$createElement;
-      if(this.validacion != false && this.validacion_fecha != false && !this.validacion_detalles){
+      this.show_error = false
+      if(this.validacion != false && this.validacion_fecha != false && this.validacion_banco != false && this.validacion_detalles && this.validacion_tipo != false){
       if (this.comprobante.email != "") {
         if (this.validarEmail(this.comprobante.email)) {
           const messageVNode = "";
@@ -528,6 +594,12 @@ export default {
             }
           });
       }
+      }
+      else if (this.validacion_detalles) {
+        this.show_error = false
+      }
+      else {
+        this.show_error = true
       }
     },
   },

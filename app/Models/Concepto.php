@@ -22,7 +22,7 @@ class Concepto extends Model
         'clasificador_id',
         'unidad_medida_id',
         'semestre',
-        'codi_depe'
+        'codi_depe',
     ];
 
     public function tipo_concepto()
@@ -53,5 +53,10 @@ class Concepto extends Model
     public function detalles_comprobante()
     {
         return $this->setConnection('pgsql')->hasMany(DetallesComprobante::class);
+    }
+
+    public function puntos_venta()
+    {
+        return $this->belongsToMany(PuntosVenta::class, 'concepto_punto_venta', 'concepto_id', 'punto_venta_id');
     }
 }

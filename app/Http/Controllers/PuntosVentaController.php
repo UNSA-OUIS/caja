@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PuntosVentaStoreRequest;
 use App\Http\Requests\PuntosVentaUpdateRequest;
+use App\Models\Clasificador;
 use App\Models\PuntosVenta;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -44,18 +46,19 @@ class PuntosVentaController extends Controller
         $puntoVenta->nombre = "";
         $puntoVenta->direccion = "";
         $puntoVenta->user_id = null;
+        $puntoVenta->conceptos_asignados = array();
+
+        $conceptos = Clasificador::with(['conceptos' => function($query) {
+            $query->select('id', 'descripcion', 'clasificador_id', DB::raw('false as asignado'));
+        }])->has('conceptos')->get();
 
         $usuarios = User::select('id as value', 'name as text')
             ->whereHas('roles', function ($q) {
-                $q->where('roles.name', '=', 'Cajero'); // or whatever constraint you need here
+                $q->where('roles.name', '=', 'Cajero');
             })
             ->orderBy('name', 'asc')->get();
-
-        /*$cajeroRole = Role::where('name', 'Cajero')->first();
-        dd($cajeroRole);
-        $usuarios = $cajeroRole->users;*/
         
-        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios'));
+        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos'));
     }
 
     /**
