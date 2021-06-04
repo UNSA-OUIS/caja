@@ -8,6 +8,7 @@ use App\Models\Concepto;
 use App\Models\CuentaCorriente;
 use App\Models\Empresa;
 use App\Models\Particular;
+use App\Models\PuntosVenta;
 use App\Models\TipoComprobante;
 use App\Models\TiposConcepto;
 use App\Models\UnidadMedida;
@@ -138,5 +139,21 @@ class DataTestSeeder extends Seeder
         Empresa::create(['ruc'=>'20390900407','razon_social'=>'MAGIC TECHNOLOGIES E.I.R.L.','direccion'=>'AV. ARENALES NRO. 659 LIMA LIMA LIMA','email'=>'jortiz@unsa.edu.pe']);
         Empresa::create(['ruc'=>'20514449229','razon_social'=>'GROUP CORPORATION MULTI SYSTEM SOCIEDAD ANONIMA CERRADA','direccion'=>'AV. MEXICO NRO. 1829 LA VICTORIA LIMA LIMA LA VICTORIA','email'=>'jortiz@unsa.edu.pe']);
         Empresa::create(['ruc'=>'20331066703','razon_social'=>'INRETAIL PHARMA S.A.','direccion'=>'AV. DEFENSORES DEL MORRO NRO. 1277 LIMA LIMA CHORRILLOS','email'=>'jortiz@unsa.edu.pe']);
+    
+        //Asignación de conceptos por punto de venta
+        $puntoVenta1 = PuntosVenta::find(1);
+        $puntoVenta1->conceptos()->sync([1, 2, 3]);
+        $puntoVenta2 = PuntosVenta::find(2);
+        $puntoVenta2->conceptos()->sync([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        $puntoVenta3 = PuntosVenta::find(3);
+        $puntoVenta3->conceptos()->sync([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        $puntoVenta4 = PuntosVenta::find(4);
+        $puntoVenta4->conceptos()->sync([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        $puntoVenta5 = PuntosVenta::find(5);
+        $puntoVenta5->conceptos()->sync([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        $puntoVenta6 = PuntosVenta::find(6);
+        $puntoVenta6->conceptos()->sync([1, 2, 3]);
+        $puntoVenta7 = PuntosVenta::find(7);
+        $puntoVenta7->conceptos()->sync([1, 2, 3]);
     }
 }
