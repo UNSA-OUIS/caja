@@ -80,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="dropdown d-inline-block language-switch">
+                <!--<div class="dropdown d-inline-block language-switch">
                     <button
                         type="button"
                         class="btn header-item waves-effect"
@@ -95,8 +95,7 @@
                         />
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <!-- item-->
-                        <a href="#" class="dropdown-item notify-item">
+                       <a href="#" class="dropdown-item notify-item">
                             <img
                                 :src="`${app_url}/assets/images/flags/us.jpg`"
                                 alt="user-image"
@@ -105,8 +104,6 @@
                             />
                             <span class="align-middle">English</span>
                         </a>
-
-                        <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
                                 :src="
@@ -119,7 +116,6 @@
                             <span class="align-middle">Spanish</span>
                         </a>
 
-                        <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
                                 :src="
@@ -132,7 +128,6 @@
                             <span class="align-middle">German</span>
                         </a>
 
-                        <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
                                 :src="
@@ -145,7 +140,6 @@
                             <span class="align-middle">Italian</span>
                         </a>
 
-                        <!-- item-->
                         <a href="#" class="dropdown-item notify-item">
                             <img
                                 :src="
@@ -276,7 +270,7 @@
                         class="dropdown-menu dropdown-menu-right show"
                         v-if="menuNotificaciones"
                     >
-                        <!-- item-->
+
                         <inertia-link
                             class="dropdown-item"
                             :href="route('sunat.tablero')"
@@ -287,7 +281,7 @@
                             <span class="align-middle">Tablero</span>
                         </inertia-link>
                     </div>
-                </div>
+                </div>-->
 
                 <div class="dropdown d-inline-block">
                     <button
@@ -326,13 +320,13 @@
                             ></i>
                             <span class="align-middle">Perfil de usuario</span>
                         </inertia-link>
-                        <a class="dropdown-item" href="#"
+                        <!--<a class="dropdown-item" href="#"
                             ><i
                                 class="uil uil-wallet font-size-18 align-middle mr-1 text-muted"
                             ></i>
                             <span class="align-middle">My_Wallet</span></a
-                        >
-                        <a class="dropdown-item d-block" href="#"
+                        >-->
+                       <!-- <a class="dropdown-item d-block" href="#"
                             ><i
                                 class="uil uil-cog font-size-18 align-middle mr-1 text-muted"
                             ></i>
@@ -341,13 +335,13 @@
                                 class="badge badge-soft-success badge-pill mt-1 ml-2"
                                 >03</span
                             ></a
-                        >
-                        <a class="dropdown-item" href="#"
+                        >-->
+                       <!-- <a class="dropdown-item" href="#"
                             ><i
                                 class="uil uil-lock-alt font-size-18 align-middle mr-1 text-muted"
                             ></i>
                             <span class="align-middle">Lock_screen</span></a
-                        >
+                        >-->
                         <a type="button" class="dropdown-item" @click="logout"
                             ><i
                                 class="uil uil-sign-out-alt font-size-18 align-middle mr-1 text-muted"
@@ -357,14 +351,14 @@
                     </div>
                 </div>
 
-                <div class="dropdown d-inline-block">
+               <!-- <div class="dropdown d-inline-block">
                     <button
                         type="button"
                         class="btn header-item noti-icon right-bar-toggle waves-effect"
                     >
                         <i class="uil-cog"></i>
                     </button>
-                </div>
+                </div>-->
             </div>
         </div>
     </header>
@@ -388,16 +382,16 @@ export default {
         logout() {
             this.$inertia.post(route("logout"));
         },
-        mostrarOcultarBarraLateral() {            
+        mostrarOcultarBarraLateral() {
             let sitebody = document.body
-            let show_sidebar = !this.$store.getters.getShowSideBar            
+            let show_sidebar = !this.$store.getters.getShowSideBar
 
             if (show_sidebar) {
-                sitebody.classList.remove("vertical-collpsed")                                    
+                sitebody.classList.remove("vertical-collpsed")
             }
             else {
                 sitebody.classList.add("vertical-collpsed")
-            }            
+            }
 
             this.$store.dispatch("setShowSideBar", show_sidebar);
         }

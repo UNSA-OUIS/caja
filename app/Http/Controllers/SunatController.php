@@ -47,8 +47,24 @@ class SunatController extends Controller
     }
     public function getEstados()
     {
+        $boletas = count(DB::table('comprobantes')
+            ->where('tipo_comprobante_id', 1)
+            ->get());
+
+        $facturas = count(DB::table('comprobantes')
+            ->where('tipo_comprobante_id', 2)
+            ->get());
+
+        $notas_debito = count(DB::table('comprobantes')
+            ->where('tipo_comprobante_id', 3)
+            ->get());
+
+        $notas_credito = count(DB::table('comprobantes')
+            ->where('tipo_comprobante_id', 4)
+            ->get());
+
         $noEnviado  = count(DB::table('comprobantes')
-            ->where('estado', 'like', 'noEnviado')
+            ->where('enviado', false)
             ->get());
 
         $observado = count(DB::table('comprobantes')
@@ -69,10 +85,14 @@ class SunatController extends Controller
 
         return [
             'noEnviado' => $noEnviado,
-            'observado' => $observado,
+            //'observado' => $observado,
             'rechazado' => $rechazado,
             'anulado' => $anulado,
             'aceptado' => $aceptado,
+            'boletas' => $boletas,
+            'facturas' => $facturas,
+            'notas_debito' => $notas_debito,
+            'notas_credito' => $notas_credito
         ];
     }
 }

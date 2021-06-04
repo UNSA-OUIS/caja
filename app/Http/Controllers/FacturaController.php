@@ -75,7 +75,7 @@ class FacturaController extends Controller
     }
     public function enviar_facturas(Request $request)
     {
-        $see = require config_path('Sunat\config.php');
+        $see = require config_path('Sunat/config.php');
         $facturas = $request->all();
 
         foreach ($facturas as $index => $value) {

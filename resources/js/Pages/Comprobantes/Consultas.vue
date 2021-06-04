@@ -187,6 +187,10 @@
                 PDF
               </b-button>
               <inertia-link
+                v-if="
+                  row.item.tipo_comprobante_id == 2 &&
+                    row.item.estado == aceptado
+                "
                 class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
                 :href="`${app_url}/${row.item.url_xml}`"
                 download
@@ -194,6 +198,10 @@
                 XML
               </inertia-link>
               <inertia-link
+                v-if="
+                  row.item.tipo_comprobante_id == 2 &&
+                    row.item.estado == aceptado
+                "
                 class="btn btn-secondary btn-sm btn-rounded waves-effect waves-light"
                 :href="`${app_url}/${row.item.url_cdr}`"
                 download
