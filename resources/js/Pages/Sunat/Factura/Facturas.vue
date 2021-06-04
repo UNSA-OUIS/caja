@@ -30,7 +30,7 @@
         </span>
       </template>
       <template v-slot:cell(enviado)="row">
-        <p v-if="row.item.enviado" class="h1 mb-2">
+        <p v-if="row.item.enviado" class="h4 mb-2">
           <b-icon icon="check-circle" variant="success"></b-icon>
         </p>
         <p v-else class="h4 mb-2">
@@ -38,9 +38,6 @@
         </p>
       </template>
       <template v-slot:cell(estado)="row">
-        <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
-          >No Enviado</b-badge
-        >
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
           >Observado
         </b-badge>
@@ -211,8 +208,8 @@ export default {
             axios
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
-                console.log(response.data);
-                if (!response.data.error) {
+                //console.log(response.data);
+                if (response.data.error == false && response.data.successMessage == 'Facturas enviadas con exito') {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {

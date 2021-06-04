@@ -121,7 +121,7 @@
             {{ row.item.serie }}-{{ row.item.correlativo }}
           </template>
           <template v-slot:cell(enviado)="row">
-            <p v-if="row.item.enviado" class="h1 mb-2">
+            <p v-if="row.item.enviado" class="h4 mb-2">
               <b-icon icon="check-circle" variant="success"></b-icon>
             </p>
             <p v-else class="h4 mb-2">
@@ -141,9 +141,12 @@
             <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
               >Anulado</b-badge
             >
-            <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
-              >Facturada</b-badge
-            >
+            <div v-if="row.item.estado == 'aceptado'">
+              <b-badge variant="success">Aceptado</b-badge>
+              <br />
+              <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
+              <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
+            </div>
           </template>
           <template v-slot:cell(acciones)="row">
             <b-button-group>

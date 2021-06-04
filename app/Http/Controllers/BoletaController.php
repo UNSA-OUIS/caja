@@ -65,7 +65,7 @@ class BoletaController extends Controller
             ->where('enviado', false)
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin);
-            //->where('cajero_id', 'like', Auth::user()->id);
+        //->where('cajero_id', 'like', Auth::user()->id);
 
         $sortby = $request->sortby;
 
@@ -116,7 +116,7 @@ class BoletaController extends Controller
                 $ultimo->correlativo += 1;
                 $correlativo = str_pad($ultimo->correlativo, 3, "0", STR_PAD_LEFT);
             }
-
+            //Recorro todas las boletas y las anexo al resumen diario
             foreach ($boletas as $index => $value) {
                 $details[$index] = (new SummaryDetail())
                     ->setTipoDoc('03') // Boleta
@@ -124,12 +124,11 @@ class BoletaController extends Controller
                 if ($value['estado'] == 'anulado') {
                     $details[$index]->setEstado('3'); // Anulación
                 } else {
-                    $details[$index]->setEstado('2');
+                    $details[$index]->setEstado('1');
                 }
                 if ($value['tipo_usuario'] == 'alumno') {
                     $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
                     $dni = substr($alumno->dic, 1);
-                    //return $dni;
                     $details[$index]
                         ->setClienteTipo('1')
                         ->setClienteNro($dni);
@@ -140,7 +139,6 @@ class BoletaController extends Controller
                         ->setClienteTipo('1')
                         ->setClienteNro($dni);
                 } elseif ($value['tipo_usuario'] == 'docente') {
-                    //return $boletas[$index];
                     $docente = Docente::where('codper', $value['codi_usuario'])->first();
                     $dni = $docente->dic;
                     $details[$index]
@@ -153,8 +151,102 @@ class BoletaController extends Controller
                         ->setClienteNro($dni);
                 }
                 $details[$index]->setTotal($value['total'])
-                    ->setMtoOperGravadas($value['total_impuesto'])
-                    ->setMtoIGV(18.00);
+                    ->setMtoOperGravadas($value['total_gravada'])
+                    ->setMtoOperInafectas($value['total_inafecta'])
+                    ->setMtoIGV($value['total_impuesto']);
+            }
+
+            //Recorro todas las boletas y anexo todas la notas de debito
+            foreach ($boletas as $index => $value) {
+                $notas_debito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 3)->get();
+                //return $notas_debito[0]->serie;
+                if ($notas_debito != '') {
+                    $details1[$index] = (new SummaryDetail())
+                        ->setTipoDoc('08') // Nota de debito
+                        ->setSerieNro($notas_debito[0]->serie . '-' . $notas_debito[0]->correlativo)
+                        ->setDocReferencia((new Document)
+                            ->setTipoDoc(03)
+                            ->setNroDoc($value['serie'] . '-' . $value['correlativo']));
+                    if ($value['estado'] == 'anulado') {
+                        $details1[$index]->setEstado('3'); // Anulación
+                    } else {
+                        $details1[$index]->setEstado('1');
+                    }
+                    if ($value['tipo_usuario'] == 'alumno') {
+                        $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
+                        $dni = substr($alumno->dic, 1);
+                        $details1[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'particular') {
+                        $particular = Particular::where('dni', $value['codi_usuario'])->first();
+                        $dni = $particular->dni;
+                        $details1[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'docente') {
+                        $docente = Docente::where('codper', $value['codi_usuario'])->first();
+                        $dni = $docente->dic;
+                        $details1[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'dependencia') {
+                        $dni = '72351610';
+                        $details1[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    }
+                    $details1[$index]->setTotal($value['total'])
+                        ->setMtoOperGravadas($value['total_gravada'])
+                        ->setMtoOperInafectas($value['total_inafecta'])
+                        ->setMtoIGV($value['total_impuesto']);
+                }
+            }
+
+            //Recorro todas la boletas y anexo las notas de credito
+            foreach ($boletas as $index => $value) {
+                $notas_credito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 4)->get();
+                if ($notas_credito != '') {
+                    $details2[$index] = (new SummaryDetail())
+                        ->setTipoDoc('07') // Nota de credito
+                        ->setSerieNro($notas_credito[0]->serie . '-' . $notas_credito[0]->correlativo)
+                        ->setDocReferencia((new Document)
+                            ->setTipoDoc(03)
+                            ->setNroDoc($value['serie'] . '-' . $value['correlativo']));
+                    if ($value['estado'] == 'anulado') {
+                        $details2[$index]->setEstado('3'); // Anulación
+                    } else {
+                        $details2[$index]->setEstado('1');
+                    }
+                    if ($value['tipo_usuario'] == 'alumno') {
+                        $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
+                        $dni = substr($alumno->dic, 1);
+                        $details2[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'particular') {
+                        $particular = Particular::where('dni', $value['codi_usuario'])->first();
+                        $dni = $particular->dni;
+                        $details2[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'docente') {
+                        $docente = Docente::where('codper', $value['codi_usuario'])->first();
+                        $dni = $docente->dic;
+                        $details2[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    } elseif ($value['tipo_usuario'] == 'dependencia') {
+                        $dni = '72351610';
+                        $details2[$index]
+                            ->setClienteTipo('1')
+                            ->setClienteNro($dni);
+                    }
+                    $details2[$index]->setTotal($value['total'])
+                        ->setMtoOperGravadas($value['total_gravada'])
+                        ->setMtoOperInafectas($value['total_inafecta'])
+                        ->setMtoIGV($value['total_impuesto']);
+                }
             }
 
             $resumen = new Summary();
@@ -162,7 +254,12 @@ class BoletaController extends Controller
                 ->setFecResumen(new \DateTime(now())) // Fecha de envío del resumen diario.
                 ->setCorrelativo($correlativo) // Correlativo, necesario para diferenciar de otros Resumen diario del mismo día.
                 ->setCompany($this->empresa)
-                ->setDetails($details);
+                /**
+                 * $details => solo boletas
+                 * $details1 => solo notas de debito
+                 * $details2 => solo notas de credito
+                 */
+                ->setDetails($details, $details1, $details2);
 
             $resumen_diario = new ResumenDiario();
             $resumen_diario->fecha_envio = now();
@@ -239,7 +336,27 @@ class BoletaController extends Controller
         foreach ($boletas as $index => $value) {
             $boleta = Comprobante::where('id', 'like', $value['id'])->first();
             $boleta->estado = 'aceptado';
+            $boleta->enviado = true;
             $boleta->update();
+            $notas_debito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 3)->first();
+            $notas_debito->estado = 'aceptado';
+            $notas_debito->enviado = true;
+            $notas_debito->update();
+            /*foreach ($notas_debito as $index => $value) {
+                $notas_debito[$index]->estado = 'aceptado';
+                $notas_debito[$index]->enviado = true;
+                $notas_debito->update();
+            }*/
+            $notas_credito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 4)->first();
+            $notas_credito->estado = 'aceptado';
+            $notas_credito->enviado = true;
+            $notas_credito->update();
+            /*foreach ($notas_credito as $index => $value) {
+                $notas_credito[$index]->estado = 'aceptado';
+                $notas_credito[$index]->enviado = true;
+                $notas_credito[$index]->update();
+            }*/
+
 
             $data = [
                 'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),
@@ -251,7 +368,7 @@ class BoletaController extends Controller
         }
 
         return $resultado;
-        //return redirect()->route('boletas.iniciar');
+        //return redirect()->route('cobros.iniciar');
     }
     public function anular(Comprobante $boleta)
     {
