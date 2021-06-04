@@ -133,7 +133,7 @@ const axios = require("axios");
 
 export default {
   name: "puntosVenta.nuevo-mostrar",
-  props: ["puntoVenta", "usuarios"],
+  props: ["puntoVenta", "usuarios", "conceptos"],
   components: {
     AppLayout,
   },
@@ -143,6 +143,11 @@ export default {
       app_url: this.$root.app_url,
       formData: this.puntoVenta,
       accion: "",
+      fields: [                
+        { key: "nombre", label: "Clasificador", sortable: true, tdClass: "categoria" },
+        { key: "conceptos",stickyColumn: true, label: "Conceptos" },
+        { key: "acciones", label: "Seleccionar" },      
+      ],
     };
   },
   created() {

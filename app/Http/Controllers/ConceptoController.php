@@ -12,6 +12,8 @@ use App\Http\Requests\ConceptoStoreRequest;
 use App\Http\Requests\ConceptoUpdateRequest;
 use App\Models\CuentaCorriente;
 use App\Models\Dependencia;
+use App\Models\PuntosVenta;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Node\Expr\AssignOp\Concat;
@@ -200,12 +202,17 @@ class ConceptoController extends Controller
     {
         $filtro = $request->filtro;
 
-        $conceptos = Concepto::where('descripcion', 'ilike', '%' . $filtro . '%')
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['conceptos'=>function($query) use ($filtro){
+            $query->where('descripcion', 'ilike', '%' . $filtro . '%')
             ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-            ->select('id as concepto_id', 'codigo', 'descripcion', 'precio', 'tipo_precio', 'tipo_afectacion', 
+            ->select('conceptos.id as concepto_id', 'codigo', 'descripcion', 'precio', 'tipo_precio', 'tipo_afectacion', 
                       DB::raw("(CONCAT(codigo, ' - ', descripcion)) AS vista_concepto"))
             ->orderBy('descripcion', 'asc')
             ->get();
+        }])->where('user_id', $user->id)->first();
+
+        $conceptos = $puntoVenta->conceptos;
 
         return $conceptos;
     }

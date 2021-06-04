@@ -21,6 +21,7 @@ class CreateComprobantesTable extends Migration
             $table->string('codi_usuario', 20)->nullable();
             $table->char('nues_espe', 3)->nullable();
             $table->tinyInteger('tipo_comprobante_id');
+            $table->enum('tipo_pago', ['Efectivo', 'Voucher']);
             $table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->decimal('total_descuento');

@@ -77,6 +77,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
@@ -153,6 +154,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
@@ -203,6 +205,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
@@ -248,6 +251,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
@@ -293,6 +297,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
@@ -336,6 +341,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->tipo_pago = "";
 
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
@@ -359,6 +365,7 @@ class ComprobanteController extends Controller
         $comprobante->tipo_usuario = $request->tipo_usuario;
         $comprobante->email = $request->email;
         $comprobante->codi_usuario = $request->codi_usuario;
+        $comprobante->tipo_pago = $request->tipo_pago;
         $comprobante->total = 0;
         $comprobante->total_descuento = 0;
         $comprobante->total_impuesto = 0;
@@ -397,6 +404,7 @@ class ComprobanteController extends Controller
             $comprobante->total_inafecta = $request->total_inafecta;
             $comprobante->total_gravada = $request->total_gravada;
             $comprobante->total = $request->total;
+            $comprobante->tipo_pago = $request->tipo_pago;
             $comprobante->email = $request->email;
             $comprobante->estado = 'noEnviado';
             $comprobante->cajero_id = Auth::user()->id;
