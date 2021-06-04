@@ -68,7 +68,7 @@ export default {
             alumno: {},                        
             fields: [
                 { key: "numero", label: "NÚMERO", class: "text-center" },
-                { key: "usuario", label: "CLIENTE" },
+                { key: "usuario", label: "ADMINISTRADO" },
             ],                      
             totalRows: 1,
             currentPage: 1,

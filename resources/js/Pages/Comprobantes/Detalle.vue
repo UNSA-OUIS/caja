@@ -12,7 +12,7 @@
     </div>
     <div v-if="comprobante.tipo_pago === 'Voucher'" class="form-row">
       <div class="form-group col-md-4 border border-light">
-          <label class="text-warning">Entidad bancaria:</label>
+          <label class="text-info">Entidad bancaria:</label>
           <b-form-select id="input-2" :disabled="accion === 'Mostrar'" :state="validacion_banco" aria-describedby="input-2-feedback" v-model="comprobante.entidad_bancaria" :options="entidades_bancarias" >
               <template v-slot:first>
                   <option :value="null" disabled>Seleccione...</option>
@@ -23,14 +23,14 @@
           </b-form-invalid-feedback>
       </div> 
       <div class="form-group col-md-4 border border-light">
-          <label class="text-warning">Nro Operación:</label>
+          <label class="text-info">Nro Operación:</label>
           <b-form-input id="input-3" :readonly="accion === 'Mostrar'" :state="validacion" aria-describedby="input-3-feedback" v-model="nro_operacion" @change="verificar()" type="text" placeholder="Ingrese número de operación"></b-form-input>
           <b-form-invalid-feedback id="input-3-feedback">
               {{ validacion_mensaje }}
           </b-form-invalid-feedback>
       </div>
       <div class="form-group col-md-4 border border-light">
-          <label class="text-warning">Fecha de emisión:</label>
+          <label class="text-info">Fecha de emisión:</label>
           <b-form-input id="input-4" :readonly="accion === 'Mostrar'" :state="validacion_fecha" aria-describedby="input-4-feedback" v-model="fecha_operacion" @change="verificar()" type="date" placeholder="Ingrese fecha de operación"></b-form-input>
           <b-form-invalid-feedback id="input-4-feedback">
               {{ validacion_mensaje_fecha }}
