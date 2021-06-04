@@ -432,7 +432,5 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
     
-        $puntoVenta = PuntosVenta::find(3);
-        $puntoVenta->conceptos()->sync([1, 2, 3]);
     }
 }
