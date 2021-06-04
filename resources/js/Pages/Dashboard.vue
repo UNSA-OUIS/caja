@@ -7,11 +7,11 @@
                         <div class="float-right mt-2">
                             <div id="total-revenue-chart"></div>
                         </div>
-                        <div>
+                        <div class="text-center">
                             <h4 class="mb-1 mt-1">
                                 <span data-plugin="counterup">{{noEnviado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">comprobantes no enviados</p>
+                            <p class="text-muted mb-0">Comprobantes no enviados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"
@@ -31,11 +31,11 @@
                         <div class="float-right mt-2">
                             <div id="orders-chart"></div>
                         </div>
-                        <div>
+                        <div class="text-center">
                             <h4 class="mb-1 mt-1">
                                 <span data-plugin="counterup">{{rechazado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">comprobantes rechazados</p>
+                            <p class="text-muted mb-0">Comprobantes rechazados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
@@ -55,11 +55,11 @@
                         <div class="float-right mt-2">
                             <div id="customers-chart"></div>
                         </div>
-                        <div>
+                        <div class="text-center">
                             <h4 class="mb-1 mt-1">
                                 <span data-plugin="counterup">{{anulado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">comprobantes anulados</p>
+                            <p class="text-muted mb-0">Comprobantes anulados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
@@ -79,11 +79,11 @@
                         <div class="float-right mt-2">
                             <div id="growth-chart"></div>
                         </div>
-                        <div>
+                        <div class="text-center">
                             <h4 class="mb-1 mt-1">
                                 <span data-plugin="counterup">{{aceptado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">comprobantes aceptados</p>
+                            <p class="text-muted mb-0">Comprobantes aceptados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"

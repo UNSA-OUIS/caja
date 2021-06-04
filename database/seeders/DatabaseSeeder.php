@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call([EmpresaSeeder::class]);
         $this->call([ConceptoSeeder::class]);
         //$this->call([DataTestSeeder::class]);
-        $this->call([ComprobanteSeeder::class]);
+        //$this->call([ComprobanteSeeder::class]);
         //$this->call([DetallesComprobanteSeeder::class]);
     }
 }
