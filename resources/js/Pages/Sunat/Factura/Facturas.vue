@@ -12,8 +12,6 @@
       :busy="isBusy"
       :items="myProvider"
       :fields="fields"
-      :current-page="currentPage"
-      :per-page="perPage"
       empty-text="No hay facturas para mostrar"
       empty-filtered-text="No hay facturas que coincidan con su búsqueda."
     >
@@ -30,7 +28,7 @@
         </span>
       </template>
       <template v-slot:cell(estado)="row">
-        <b-badge v-if="row.item.estado == 'no_enviado'" variant="warning"
+        <b-badge v-if="row.item.estado == 'no_enviado'" variant="primary"
           >No enviado
         </b-badge>
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
@@ -42,14 +40,14 @@
         <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
           >Anulado</b-badge
         >
-        <div v-if="row.item.estado == 'aceptado'">
-          <b-badge variant="success">Aceptado</b-badge>
-        </div>
+        <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
+          >Aceptado</b-badge
+        >
       </template>
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.enviado == false"
+          v-if="row.item.estado != 'anulado'"
           variant="danger"
           size="sm"
           title="Anular"
@@ -79,18 +77,6 @@
         >Se encontraron {{ totalRows }} facturas
       </template>
     </b-table>
-    <b-row>
-      <b-col offset-md="8" md="4" class="my-1">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          align="fill"
-          size="sm"
-          class="my-0"
-        ></b-pagination>
-      </b-col>
-    </b-row>
     <b-row>
       <b-button
         v-if="items != ''"
@@ -143,12 +129,6 @@ export default {
           sortable: true,
         },
         {
-          key: "enviado",
-          label: "Enviado",
-          class: "text-center",
-          sortable: true,
-        },
-        {
           key: "estado",
           label: "Estado",
           class: "text-center",
@@ -157,35 +137,30 @@ export default {
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       totalRows: 1,
-      currentPage: 1,
-      perPage: 50,
-      pageOptions: [50, 100, 150],
     };
   },
   methods: {
     refreshTable() {
       this.$refs.tbl_facturas.refresh();
     },
-    myProvider(ctx) {
+    myProvider() {
       let params = {
         fecha_inicio: this.fecha_inicio,
         fecha_fin: this.fecha_fin,
-        page: ctx.currentPage,
-        size: ctx.perPage,
       };
       const promise = axios.get(`${this.app_url}/sunat/listarFacturas`, {
         params,
       });
 
       return promise.then((response) => {
-        this.items = response.data.data;
-        this.totalRows = response.data.total;
+        this.items = response.data;
+        console.log(this.items);
+        this.totalRows = response.data.length;
 
         return this.items || [];
       });
     },
     enviar_facturas() {
-      console.log(this.items);
       this.enviado = true;
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar estas facturas?", {
@@ -200,11 +175,7 @@ export default {
             axios
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
-                //console.log(response.data);
-                if (
-                  response.data.error == false &&
-                  response.data.successMessage == "Facturas enviadas con exito"
-                ) {
+                if (response.data.error == false) {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {
@@ -214,8 +185,8 @@ export default {
                     solid: true,
                   });
                 } else {
+                  console.log(response.data);
                   console.log(response.data.error);
-                  console.log(response.data.errorMessage);
                   this.$bvToast.toast("Hubo un error al enviar las facturas", {
                     title: "Error al enviar las facturas",
                     variant: "danger",

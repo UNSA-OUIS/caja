@@ -155,7 +155,7 @@
               <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
-              v-if="row.item.enviado == false && row.item.estado != 'anulado'"
+              v-if="row.item.estado == 'no_enviado'"
               variant="danger"
               size="sm"
               title="Anular"
