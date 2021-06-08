@@ -120,16 +120,8 @@
           <template v-slot:cell(numero)="row">
             {{ row.item.serie }}-{{ row.item.correlativo }}
           </template>
-          <template v-slot:cell(enviado)="row">
-            <p v-if="row.item.enviado" class="h4 mb-2">
-              <b-icon icon="check-circle" variant="success"></b-icon>
-            </p>
-            <p v-else class="h4 mb-2">
-              <b-icon icon="x-circle" variant="danger"></b-icon>
-            </p>
-          </template>
           <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
+            <b-badge v-if="row.item.estado == 'no_enviado'" variant="primary"
               >No Enviado</b-badge
             >
             <b-badge v-if="row.item.estado == 'observado'" variant="warning"
@@ -163,7 +155,7 @@
               <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
-              v-if="row.item.enviado == false && row.item.estado != 'anulado'"
+              v-if="row.item.estado == 'no_enviado'"
               variant="danger"
               size="sm"
               title="Anular"
@@ -215,7 +207,6 @@ export default {
           class: "text-center",
         },
         { key: "numero", label: "Número de comprobante", class: "text-center" },
-        { key: "enviado", label: "Enviado", class: "text-center" },
         { key: "estado", label: "Estado", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],

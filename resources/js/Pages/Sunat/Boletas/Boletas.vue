@@ -12,8 +12,6 @@
       :busy="isBusy"
       :items="myProvider"
       :fields="fields"
-      :current-page="currentPage"
-      :per-page="perPage"
       empty-text="No hay boletas para mostrar"
       empty-filtered-text="No hay boletas que coincidan con su búsqueda."
     >
@@ -47,16 +45,8 @@
           {{ row.item.comprobanteable.nomb_depe }}
         </span>
       </template>
-      <template v-slot:cell(enviado)="row">
-        <p v-if="row.item.enviado" class="h4 mb-2">
-          <b-icon icon="check-circle" variant="success"></b-icon>
-        </p>
-        <p v-else class="h4 mb-2">
-          <b-icon icon="x-circle" variant="danger"></b-icon>
-        </p>
-      </template>
       <template v-slot:cell(estado)="row">
-        <b-badge v-if="row.item.estado == 'noEnviado'" variant="primary"
+        <b-badge v-if="row.item.estado == 'no_enviado'" variant="primary"
           >No Enviado</b-badge
         >
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
@@ -70,15 +60,12 @@
         >
         <div v-if="row.item.estado == 'aceptado'">
           <b-badge variant="success">Aceptado</b-badge>
-          <!--<br />
-          <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-          <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>-->
         </div>
       </template>
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.enviado == false"
+          v-if="row.item.estado == 'no_enviado'"
           variant="danger"
           size="sm"
           title="Anular"
@@ -91,18 +78,6 @@
         >Se encontraron {{ totalRows }} boletas
       </template>
     </b-table>
-    <b-row>
-      <b-col offset-md="8" md="4" class="my-1">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          align="fill"
-          size="sm"
-          class="my-0"
-        ></b-pagination>
-      </b-col>
-    </b-row>
     <b-row>
       <b-button
         v-if="items != ''"
@@ -130,7 +105,6 @@ export default {
       enviado: false,
       fields: [
         { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
-        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
         { key: "usuario", label: "Administrado", sortable: true },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
@@ -146,12 +120,6 @@ export default {
           sortable: true,
         },
         {
-          key: "enviado",
-          label: "Enviado",
-          class: "text-center",
-          sortable: true,
-        },
-        {
           key: "estado",
           label: "Estado",
           class: "text-center",
@@ -160,35 +128,29 @@ export default {
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       totalRows: 1,
-      currentPage: 1,
-      perPage: 50,
-      pageOptions: [50, 100, 150],
     };
   },
   methods: {
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
-    myProvider(ctx) {
+    myProvider() {
       let params = {
         fecha_inicio: this.fecha_inicio,
         fecha_fin: this.fecha_fin,
-        page: ctx.currentPage,
-        size: ctx.perPage,
       };
       const promise = axios.get(`${this.app_url}/sunat/listarBoletas`, {
         params,
       });
 
       return promise.then((response) => {
-        this.items = response.data.data;
-        this.totalRows = response.data.total;
+        this.items = response.data;
+        this.totalRows = response.data.length;
 
         return this.items || [];
       });
     },
     enviar_boletas() {
-      console.log(this.items);
       this.enviado = true;
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar este resumen diario?", {
@@ -204,7 +166,7 @@ export default {
               .post(`${this.app_url}/sunat/resumenDiario`, this.items)
               .then((response) => {
                 console.log(response.data);
-                if (response.data.error == false && response.data.successMessage == 'Resumen diario enviado con exito') {
+                if (response.data.error == false) {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {
