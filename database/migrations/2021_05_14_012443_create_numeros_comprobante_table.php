@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNumerosOperacionTable extends Migration
+class CreateNumerosComprobanteTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateNumerosOperacionTable extends Migration
      */
     public function up()
     {
-        Schema::create('numeros_operacion', function (Blueprint $table) {
+        Schema::create('numeros_comprobante', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('tipo_comprobante_id');
             $table->string('serie', 4)->unique();

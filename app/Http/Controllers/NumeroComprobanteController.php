@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\NumeroOperacionStoreRequest;
-use App\Http\Requests\NumeroOperacionUpdateRequest;
-use App\Models\NumeroOperacion;
+use App\Http\Requests\NumeroComprobanteStoreRequest;
+use App\Http\Requests\NumeroComprobanteUpdateRequest;
+use App\Models\NumeroComprobante;
 use App\Models\PuntosVenta;
 use App\Models\TipoComprobante;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class NumeroOperacionController extends Controller
+class NumeroComprobanteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,7 @@ class NumeroOperacionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = NumeroOperacion::with('puntoVenta', 'tipoComprobante')->where('serie', 'like', '%' . $request->filter . '%');
+        $query = NumeroComprobante::with('puntoVenta', 'tipoComprobante')->where('serie', 'like', '%' . $request->filter . '%');
         $sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
@@ -39,7 +39,7 @@ class NumeroOperacionController extends Controller
      */
     public function create()
     {
-        $numeroOperacion = new NumeroOperacion();
+        $numeroOperacion = new NumeroComprobante();
         $numeroOperacion->serie = "";
         $numeroOperacion->correlativo = "00000001";
         $numeroOperacion->tipo_comprobante_id = null;
@@ -60,10 +60,10 @@ class NumeroOperacionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(NumeroOperacionStoreRequest $request)
+    public function store(NumeroComprobanteStoreRequest $request)
     {
         try {
-            $numeroOperacion = new NumeroOperacion();
+            $numeroOperacion = new NumeroComprobante();
             $numeroOperacion->serie = $request->serie;
             $numeroOperacion->correlativo = $request->correlativo;
             $numeroOperacion->tipo_comprobante_id = $request->tipo_comprobante_id;
@@ -73,7 +73,7 @@ class NumeroOperacionController extends Controller
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo registrar el número de operación.', 'error' => true];
-            \Log::error('NumeroOperacionController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            \Log::error('NumeroComprobanteController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('numerosOperacion.iniciar')->with($result);
@@ -85,7 +85,7 @@ class NumeroOperacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(NumeroOperacion $numeroOperacion)
+    public function show(NumeroComprobante $numeroOperacion)
     {
         $tiposComprobante = TipoComprobante::select('id as value', 'nombre as text')
             ->orderBy('nombre', 'asc')->get();
@@ -114,7 +114,7 @@ class NumeroOperacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(NumeroOperacionUpdateRequest $request, NumeroOperacion $numeroOperacion)
+    public function update(NumeroComprobanteUpdateRequest $request, NumeroComprobante $numeroOperacion)
     {
         try {
             $numeroOperacion->serie = $request->serie;
@@ -126,7 +126,7 @@ class NumeroOperacionController extends Controller
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el número de operación', 'error' => true];
-            \Log::error('NumeroOperacionController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            \Log::error('NumeroComprobanteController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('numerosOperacion.iniciar')->with($result);
@@ -138,7 +138,7 @@ class NumeroOperacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(NumeroOperacion $numeroOperacion)
+    public function destroy(NumeroComprobante $numeroOperacion)
     {
         try {
             $numeroOperacion->delete();
@@ -146,7 +146,7 @@ class NumeroOperacionController extends Controller
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo eliminar el número de operación'];
-            \Log::error('NumeroOperacionController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            \Log::error('NumeroComprobanteController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
             
         }
 
@@ -157,13 +157,13 @@ class NumeroOperacionController extends Controller
     {
 
         try {
-            $numeroOperacion = NumeroOperacion::withTrashed()->findOrFail($numeroOperacion_id);
+            $numeroOperacion = NumeroComprobante::withTrashed()->findOrFail($numeroOperacion_id);
             $numeroOperacion->restore();
             $result = ['successMessage' => 'Número de operación restaurado con éxito'];
             
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo restaurar el número de operación'];
-            \Log::warning('NumeroOperacionController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            \Log::warning('NumeroComprobanteController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->back()->with($result);

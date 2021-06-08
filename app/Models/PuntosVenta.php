@@ -22,9 +22,9 @@ class PuntosVenta extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function numerosOperacion()
+    public function numerosComprobante()
     {
-        return $this->hasMany(NumeroOperacion::class, 'punto_venta_id', 'id');
+        return $this->hasMany(NumeroComprobante::class, 'punto_venta_id', 'id');
     }
 
     public function conceptos()

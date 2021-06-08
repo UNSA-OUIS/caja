@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\NumeroOperacion;
+use App\Models\NumeroComprobante;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class NumeroComprobantePolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\NumeroOperacion  $numeroOperacion
+     * @param  \App\Models\NumeroComprobante  $numeroOperacion
      * @return mixed
      */
-    public function view(User $user, NumeroOperacion $numeroOperacion)
+    public function view(User $user, NumeroComprobante $numeroOperacion)
     {
         return $user->can('Mostrar Números-Comprobante');
     }
@@ -48,10 +48,10 @@ class NumeroComprobantePolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\NumeroOperacion  $numeroOperacion
+     * @param  \App\Models\NumeroComprobante  $numeroOperacion
      * @return mixed
      */
-    public function update(User $user, NumeroOperacion $numeroOperacion)
+    public function update(User $user, NumeroComprobante $numeroOperacion)
     {
         return $user->can('Editar Números-Comprobante');
     }
@@ -60,10 +60,10 @@ class NumeroComprobantePolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\NumeroOperacion  $numeroOperacion
+     * @param  \App\Models\NumeroComprobante  $numeroOperacion
      * @return mixed
      */
-    public function delete(User $user, NumeroOperacion $numeroOperacion)
+    public function delete(User $user, NumeroComprobante $numeroOperacion)
     {
         return $user->can('Eliminar Números-Comprobante');
     }
@@ -72,10 +72,10 @@ class NumeroComprobantePolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\NumeroOperacion  $numeroOperacion
+     * @param  \App\Models\NumeroComprobante  $numeroOperacion
      * @return mixed
      */
-    public function restore(User $user, NumeroOperacion $numeroOperacion)
+    public function restore(User $user, NumeroComprobante $numeroOperacion)
     {
         return $user->can('Restaurar Números-Comprobante');
     }
@@ -84,10 +84,10 @@ class NumeroComprobantePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\NumeroOperacion  $numeroOperacion
+     * @param  \App\Models\NumeroComprobante  $numeroOperacion
      * @return mixed
      */
-    public function forceDelete(User $user, NumeroOperacion $numeroOperacion)
+    public function forceDelete(User $user, NumeroComprobante $numeroOperacion)
     {
         //
     }

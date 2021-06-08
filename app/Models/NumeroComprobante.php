@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class NumeroOperacion extends Model
+class NumeroComprobante extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $table = 'numeros_operacion';
+    protected $table = 'numeros_comprobante';
     protected $fillable = [
         'serie',
         'correlativo',
