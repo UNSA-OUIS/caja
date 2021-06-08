@@ -20,8 +20,8 @@ class CreateResumenDiarioTable extends Migration
             //$table->string('serie', 4);
             $table->string('correlativo', 8);
             $table->string('ticket')->nullable();
-            $table->enum('estado', ['observado', 'rechazado', 'anulado', 'aceptado'])->nullable();
-            $table->boolean('enviado')->nullable()->default(false);
+            $table->enum('estado', ['no_enviado','observado', 'rechazado', 'anulado', 'aceptado']);
+            //$table->boolean('enviado')->nullable()->default(false);
             $table->text('observaciones')->nullable();
             $table->string('url_xml')->nullable();
             $table->string('url_cdr')->nullable();

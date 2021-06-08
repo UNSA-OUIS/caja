@@ -8,10 +8,10 @@
                             <div id="total-revenue-chart"></div>
                         </div>
                         <div class="text-center">
-                            <h4 class="mb-1 mt-1">
-                                <span data-plugin="counterup">{{noEnviado}}</span>
+                            <h4 class="text-primary mb-1 mt-1">
+                                <span data-plugin="counterup">{{no_enviado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Comprobantes no enviados</p>
+                            <p class="text-primary text-muted mb-0">Comprobantes no enviados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"
@@ -32,10 +32,10 @@
                             <div id="orders-chart"></div>
                         </div>
                         <div class="text-center">
-                            <h4 class="mb-1 mt-1">
+                            <h4 class="text-danger mb-1 mt-1">
                                 <span data-plugin="counterup">{{rechazado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Comprobantes rechazados</p>
+                            <p class="text-danger text-muted mb-0">Comprobantes rechazados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
@@ -56,10 +56,10 @@
                             <div id="customers-chart"></div>
                         </div>
                         <div class="text-center">
-                            <h4 class="mb-1 mt-1">
+                            <h4 class="text-secondary mb-1 mt-1">
                                 <span data-plugin="counterup">{{anulado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Comprobantes anulados</p>
+                            <p class="text-secondary text-muted mb-0">Comprobantes anulados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-danger mr-1"
@@ -80,10 +80,10 @@
                             <div id="growth-chart"></div>
                         </div>
                         <div class="text-center">
-                            <h4 class="mb-1 mt-1">
+                            <h4 class="text-success mb-1 mt-1">
                                 <span data-plugin="counterup">{{aceptado}}</span>
                             </h4>
-                            <p class="text-muted mb-0">Comprobantes aceptados</p>
+                            <p class="text-success text-muted mb-0">Comprobantes aceptados</p>
                         </div>
                         <!--<p class="text-muted mt-3 mb-0">
                             <span class="text-success mr-1"
@@ -200,7 +200,7 @@
             </div>
             <!-- end col-->
 
-            <div class="col-xl-4">
+            <!--<div class="col-xl-4">
                 <div class="card bg-primary">
                     <div class="card-body">
                         <div class="row align-items-center">
@@ -228,13 +228,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end card-body-->
                 </div>
-                <!-- end card-->
 
                 <div class="card">
                     <div class="card-body">
-                        <!--<div class="float-right">
+                        <div class="float-right">
                             <div class="dropdown">
                                 <a
                                     class="dropdown-toggle text-reset"
@@ -265,7 +263,7 @@
                                     <a class="dropdown-item" href="#">Weekly</a>
                                 </div>
                             </div>
-                        </div>-->
+                        </div>
 
                         <h4 class="card-title mb-4">Top Selling Products</h4>
 
@@ -292,7 +290,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end row-->
 
                         <div class="row align-items-center no-gutters mt-3">
                             <div class="col-sm-3">
@@ -316,7 +313,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end row-->
 
                         <div class="row align-items-center no-gutters mt-3">
                             <div class="col-sm-3">
@@ -340,7 +336,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end row-->
 
                         <div class="row align-items-center no-gutters mt-3">
                             <div class="col-sm-3">
@@ -364,7 +359,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end row-->
 
                         <div class="row align-items-center no-gutters mt-3">
                             <div class="col-sm-3">
@@ -388,15 +382,10 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- end row-->
                     </div>
-                    <!-- end card-body-->
                 </div>
-                <!-- end card-->
-            </div>
-            <!-- end Col -->
+            </div>-->
         </div>
-        <!-- end row-->
 
         <div class="row">
             <div class="col-xl-4">
@@ -1356,11 +1345,8 @@ export default {
         AppLayout
     },
     computed: {
-    noEnviado() {
-      return this.$store.state.envio.noEnviado;
-    },
-    observado() {
-      return this.$store.state.envio.observado;
+    no_enviado() {
+      return this.$store.state.envio.no_enviado;
     },
     rechazado() {
       return this.$store.state.envio.rechazado;

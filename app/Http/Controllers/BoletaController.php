@@ -62,19 +62,20 @@ class BoletaController extends Controller
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
             ->where('tipo_comprobante_id', 'like', 1)
-            ->where('enviado', false)
+            ->where('estado', 'no_enviado')
             ->whereDate('created_at', '>=', $request->fecha_inicio)
-            ->whereDate('created_at', '<=', $request->fecha_fin);
-        //->where('cajero_id', 'like', Auth::user()->id);
+            ->whereDate('created_at', '<=', $request->fecha_fin)
+            ->where('cajero_id', 'like', Auth::user()->id)->get();
 
-        $sortby = $request->sortby;
+        /*$sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
             $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
             $query = $query->orderBy($sortby, $sortdirection);
         }
 
-        return $query->paginate($request->size);
+        return $query->paginate($request->size);*/
+        return $query;
     }
 
     public function index_actual(Request $request)

@@ -63,29 +63,24 @@ class SunatController extends Controller
             ->where('tipo_comprobante_id', 4)
             ->get());
 
-        $noEnviado  = count(DB::table('comprobantes')
-            ->where('enviado', false)
-            ->get());
-
-        $observado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 'observado')
+        $no_enviado  = count(DB::table('comprobantes')
+            ->where('estado', 'no_enviado')
             ->get());
 
         $rechazado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 'rechazado')
+            ->where('estado','rechazado')
             ->get());
 
         $anulado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 'anulado')
+            ->where('estado','anulado')
             ->get());
 
         $aceptado = count(DB::table('comprobantes')
-            ->where('estado', 'like', 'aceptado')
+            ->where('estado','aceptado')
             ->get());
 
         return [
-            'noEnviado' => $noEnviado,
-            //'observado' => $observado,
+            'no_enviado' => $no_enviado,
             'rechazado' => $rechazado,
             'anulado' => $anulado,
             'aceptado' => $aceptado,

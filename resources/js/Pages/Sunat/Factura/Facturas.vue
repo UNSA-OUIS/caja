@@ -29,15 +29,10 @@
           {{ row.item.created_at.substring(0, 10) }}
         </span>
       </template>
-      <template v-slot:cell(enviado)="row">
-        <p v-if="row.item.enviado" class="h4 mb-2">
-          <b-icon icon="check-circle" variant="success"></b-icon>
-        </p>
-        <p v-else class="h4 mb-2">
-          <b-icon icon="x-circle" variant="danger"></b-icon>
-        </p>
-      </template>
       <template v-slot:cell(estado)="row">
+        <b-badge v-if="row.item.estado == 'no_enviado'" variant="warning"
+          >No enviado
+        </b-badge>
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
           >Observado
         </b-badge>
@@ -49,9 +44,6 @@
         >
         <div v-if="row.item.estado == 'aceptado'">
           <b-badge variant="success">Aceptado</b-badge>
-          <br />
-          <a :href="`${app_url}/${row.item.url_xml}`" download>XML</a>
-          <a :href="`${app_url}/${row.item.url_cdr}`" download>CDR</a>
         </div>
       </template>
 
@@ -209,7 +201,10 @@ export default {
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
                 //console.log(response.data);
-                if (response.data.error == false && response.data.successMessage == 'Facturas enviadas con exito') {
+                if (
+                  response.data.error == false &&
+                  response.data.successMessage == "Facturas enviadas con exito"
+                ) {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
                   this.$bvToast.toast("Facturas enviadas con exito", {

@@ -370,7 +370,8 @@ class ComprobanteController extends Controller
         $comprobante->total_impuesto = 0;
         $comprobante->total_inafecta = 0;
         $comprobante->total_gravada = 0;
-        $comprobante->enviado = false;
+        $comprobante->estado = 'no_enviado';
+        //$comprobante->enviado = false;
         $comprobante->cajero_id = Auth::user()->id;
         $comprobante->save();
 
@@ -405,7 +406,8 @@ class ComprobanteController extends Controller
             $comprobante->total = $request->total;
             $comprobante->tipo_pago = $request->tipo_pago;
             $comprobante->email = $request->email;
-            $comprobante->enviado = false;
+            $comprobante->estado = 'no_enviado';
+            //$comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;
             $comprobante->save();
 

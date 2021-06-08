@@ -7,12 +7,13 @@ use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use App\Http\Requests\UnidadMedidaStoreRequest;
 use App\Http\Requests\UnidadMedidaUpdateRequest;
+use Illuminate\Support\Facades\Log;
 
 class UnidadMedidaController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize("viewAny", UnidadMedida::class);        
+        $this->authorize("viewAny", UnidadMedida::class);
 
         $query = UnidadMedida::where('nombre', 'like', '%' . $request->filter . '%')
                     ->orderBy('id', 'desc');
@@ -30,7 +31,7 @@ class UnidadMedidaController extends Controller
     }
 
     public function create()
-    {   
+    {
         $this->authorize('create', UnidadMedida::class);
         // $nextid = UnidadMedida::all()->last()->id;
         $unidadMedida = new UnidadMedida();
@@ -44,7 +45,7 @@ class UnidadMedidaController extends Controller
     public function store(UnidadMedidaStoreRequest $request)
     {
         $this->authorize('create', UnidadMedida::class);
-        
+
         try {
             $unidadMedida = new UnidadMedida();
             $unidadMedida->nombre = $request->nombre;
@@ -53,7 +54,7 @@ class UnidadMedidaController extends Controller
             $result = ['successMessage' => 'Unidad de medida registrada con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo registrar la unidad de medida'];
-            \Log::error('UnidadMedidaController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('UnidadMedidaController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('unidades-medida.iniciar')->with($result);
@@ -82,7 +83,7 @@ class UnidadMedidaController extends Controller
             $result = ['successMessage' => 'Unidad de medida actualizada con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo actualizar la unidad de medida'];
-            \Log::error('UnidadMedidaController@update, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('UnidadMedidaController@update, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('unidades-medida.iniciar')->with($result);
@@ -97,7 +98,7 @@ class UnidadMedidaController extends Controller
             $result = ['successMessage' => 'Unidad de medida eliminada con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo eliminar la unidad de medida'];
-            \Log::error('UnidadMedidaController@destroy, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('UnidadMedidaController@destroy, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->back()->with($result);
@@ -109,12 +110,12 @@ class UnidadMedidaController extends Controller
         $this->authorize('restore', $unidadMedida);
 
         try {
-            
+
             $unidadMedida->restore();
             $result = ['successMessage' => 'Unidad de medida restaurada con éxito'];
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo restaurar la unidad de medida'];
-            \Log::error('UnidadMedidaController@restore, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('UnidadMedidaController@restore, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->back()->with($result);
