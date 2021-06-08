@@ -271,7 +271,7 @@ export default {
         (acc, item) => acc + item.subtotal, 0
       );
       this.comprobante.total_descuento = this.comprobante.detalles.reduce(
-        (acc, item) => acc + (parseFloat(item.precio) - item.subtotal), 0
+        (acc, item) => acc + (parseFloat(item.precio) * parseFloat(item.cantidad) - item.subtotal), 0
       );
       this.comprobante.total_gravada = this.comprobante.detalles.reduce(
         (acc, item) => acc + item.gravado, 0
@@ -343,7 +343,7 @@ export default {
         this.validacion_mensaje_detalles = "Debe ingresar al menos un detalle para registrar el comprobante."
         return false
       }
-      else if(this.comprobante.detalles.some(element => parseFloat(element.precio) == 0)) {
+      else if(this.comprobante.detalles.some(element => parseFloat(element.precio) == 0 || element.precio.length == 0)) {
         this.validacion_mensaje_detalles = "Se encontraron detalles con precios variables aún no especificados, por favor revisar."
         return false
       }

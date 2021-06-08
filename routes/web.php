@@ -25,7 +25,7 @@ use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\NotaDebitoController;
 use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\Pdf;
-use App\Http\Controllers\NumeroOperacionController;
+use App\Http\Controllers\NumeroComprobanteController;
 use App\Http\Controllers\PuntosVentaController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
@@ -368,13 +368,13 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/numeros-operacion', function () {
         return Inertia::render('Numeros_Operacion/Listar');
     })->name('numerosOperacion.iniciar');
-    Route::get('/numeros-operacion/listar', [NumeroOperacionController::class, 'index'])->name('numerosOperacion.listar');
-    Route::get('/numeros-operacion/crear', [NumeroOperacionController::class, 'create'])->name('numerosOperacion.crear');
-    Route::post('/numeros-operacion', [NumeroOperacionController::class, 'store'])->name('numerosOperacion.registrar');
-    Route::get('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'show'])->name('numerosOperacion.mostrar');
-    Route::post('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'update'])->name('numerosOperacion.actualizar');
-    Route::delete('/numeros-operacion/{numeroOperacion}', [NumeroOperacionController::class, 'destroy'])->name('numerosOperacion.eliminar');
-    Route::post('/numeros-operacion/{numeroOperacion}/restaurar', [NumeroOperacionController::class, 'restore'])->name('numerosOperacion.restaurar');
+    Route::get('/numeros-operacion/listar', [NumeroComprobanteController::class, 'index'])->name('numerosOperacion.listar');
+    Route::get('/numeros-operacion/crear', [NumeroComprobanteController::class, 'create'])->name('numerosOperacion.crear');
+    Route::post('/numeros-operacion', [NumeroComprobanteController::class, 'store'])->name('numerosOperacion.registrar');
+    Route::get('/numeros-operacion/{numeroOperacion}', [NumeroComprobanteController::class, 'show'])->name('numerosOperacion.mostrar');
+    Route::post('/numeros-operacion/{numeroOperacion}', [NumeroComprobanteController::class, 'update'])->name('numerosOperacion.actualizar');
+    Route::delete('/numeros-operacion/{numeroOperacion}', [NumeroComprobanteController::class, 'destroy'])->name('numerosOperacion.eliminar');
+    Route::post('/numeros-operacion/{numeroOperacion}/restaurar', [NumeroComprobanteController::class, 'restore'])->name('numerosOperacion.restaurar');
     /***************************************************************************/
 
 

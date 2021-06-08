@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class NumeroOperacionStoreRequest extends FormRequest
+class NumeroComprobanteStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,11 @@ class NumeroOperacionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'serie' => 'required|size:4|unique:numeros_operacion',
+            'serie' => 'required|size:4|unique:numeros_comprobante',
             'correlativo' => 'required',
             'tipo_comprobante_id' => 'required',
             'punto_venta_id' => ['required',
-            Rule::unique('numeros_operacion')->where(function ($query) {
+            Rule::unique('numeros_comprobante')->where(function ($query) {
 
                 return $query
                     ->where('punto_venta_id', $this->request->get('punto_venta_id'))
@@ -37,7 +37,7 @@ class NumeroOperacionStoreRequest extends FormRequest
                     ->where('serie', $this->request->get('serie'));
             }),
             ]
-            //|unique:numeros_operacion,punto_venta_id,'.$this->request->get('id').',NULL,id,tipo_comprobante_id,'.$this->request->get('tipo_comprobante_id')
+            //|unique:numeros_comprobante,punto_venta_id,'.$this->request->get('id').',NULL,id,tipo_comprobante_id,'.$this->request->get('tipo_comprobante_id')
         ];
     }
 

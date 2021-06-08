@@ -53,7 +53,7 @@
                 small
                 responsive
                 stacked="md"
-                :items="data.comprobante.detalles"
+                :items="comprobante.detallesAfectados"
                 :fields="fields"
                 empty-text="No hay conceptos para mostrar"
                 >
@@ -72,7 +72,8 @@
                     <b-form-input
                         class="text-center"
                         v-model="row.item.cantidad"
-                        readonly
+                        @keyup="calcularSubTotal(row.item.concepto_id)"
+                        @change="calcularSubTotal(row.item.concepto_id)"
                     ></b-form-input>
                     </div>
                 </template>
@@ -80,7 +81,8 @@
                     <b-form-input
                     class="text-center"
                     v-model="row.item.valor_unitario"
-                    readonly
+                    @keyup="calcularSubTotal(row.item.concepto_id)"
+                    @change="calcularSubTotal(row.item.concepto_id)"
                     ></b-form-input>
                 </template>
                 <template v-slot:cell(valor_venta)="row">
@@ -96,26 +98,36 @@
                     S/. {{ row.item.subtotal }}
                     </span>
                 </template>
+                <template v-slot:cell(acciones)="row">
+                    <b-button
+                    variant="danger"
+                    size="sm"
+                    title="Eliminar"
+                    @click="eliminarDetalle(row.index)"
+                    >
+                        <b-icon icon="trash"></b-icon>
+                    </b-button>
+                </template>
                 <template slot="custom-foot" slot-scope="">
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_inafecta }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta | currency }}</b-td><b-td />
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_gravada }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada | currency }}</b-td><b-td />
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">IGV:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total_impuesto }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto | currency }}</b-td><b-td />
                     </b-tr>
                     <b-tr>
                         <b-td colspan="4"></b-td>
                         <b-td class="text-right font-weight-bold">Importe total:</b-td>
-                        <b-td class="text-right font-weight-bold">S/. {{ data.comprobante.total }}</b-td>
+                        <b-td class="text-right font-weight-bold">S/. {{ precioTotal | currency }}</b-td><b-td />
                     </b-tr>
                 </template>
                 </b-table>
@@ -159,6 +171,7 @@ export default {
                 { key: "valor_venta", label: "VAL. VENTA", class: "text-center" },
                 { key: "impuesto", label: "IGV", class: "text-center" },
                 { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
+                { key: "acciones", label: "", class: "text-center" },
             ],
             validacion_mensaje_tipo: "",
             validacion_mensaje_motivo: ""
@@ -171,6 +184,11 @@ export default {
         else if (this.data.tipo_comprobante === 'NOTA DE CRÉDITO'){
             this.tipos_de_nota = this.tipos_nota_credito
         }
+    },
+    filters: {
+        currency(value) {
+            return value ? value.toFixed(2) : null;
+        },
     },
     methods: {
         reemplazar(nombre){
@@ -192,8 +210,52 @@ export default {
                 });
             }
         },
+        eliminarDetalle(index) {
+            this.comprobante.detallesAfectados.splice(index, 1);
+        },
+        calcularSubTotal(concepto_id) {
+            let objDetalle = this.comprobante.detallesAfectados.find(
+                (detalle) => detalle.concepto_id === concepto_id
+            );
+            let subtotal_parcial = objDetalle.cantidad * objDetalle.valor_unitario;
+            if (objDetalle.tipo_descuento === "soles") {
+                objDetalle.subtotal = subtotal_parcial -  objDetalle.descuento;
+            } else if (objDetalle.tipo_descuento === "porcentaje") {
+                objDetalle.subtotal =
+                subtotal_parcial - (subtotal_parcial *  objDetalle.descuento) / 100;
+            }
+
+            if(objDetalle.concepto.tipo_afectacion === "30"){
+                objDetalle.inafecto = objDetalle.subtotal.toFixed(4);
+                objDetalle.impuesto = 0;
+                objDetalle.gravado = 0;
+            }
+            else{
+                objDetalle.gravado = (objDetalle.subtotal * 0.82).toFixed(4);
+                objDetalle.impuesto = (objDetalle.subtotal * 0.18).toFixed(4);
+                objDetalle.inafecto = 0;
+            }
+        },
     },
     computed: {
+        precioTotal() {
+            this.comprobante.total = this.comprobante.detallesAfectados.reduce(
+                (acc, item) => acc + parseFloat(item.subtotal), 0
+            );
+            this.comprobante.total_descuento = this.comprobante.detallesAfectados.reduce(
+                (acc, item) => acc + (parseFloat(item.valor_unitario) * parseFloat(item.cantidad) - parseFloat(item.subtotal)), 0
+            );
+            this.comprobante.total_gravada = this.comprobante.detallesAfectados.reduce(
+                (acc, item) => acc + parseFloat(item.gravado), 0
+            );
+            this.comprobante.total_impuesto = this.comprobante.detallesAfectados.reduce(
+                (acc, item) => acc + parseFloat(item.impuesto), 0
+            );
+            this.comprobante.total_inafecta = this.comprobante.detallesAfectados.reduce(
+                (acc, item) => acc + parseFloat(item.inafecto), 0
+            );
+            return this.comprobante.total;
+        },
         validacion_tipo() {
             if(this.comprobante.tipo_nota === null){
                 this.validacion_mensaje_tipo = "Debe seleccionar un tipo de nota"

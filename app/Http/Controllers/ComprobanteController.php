@@ -15,7 +15,7 @@ use App\Jobs\EnviarCorreosJob;
 use App\Models\Concepto;
 use App\Models\Departamento;
 use App\Models\DetallesComprobante;
-use App\Models\NumeroOperacion;
+use App\Models\NumeroComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -59,9 +59,9 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         /*$comprobante->serie = "B001";
 
@@ -136,9 +136,9 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         /*$comprobante->serie = "B001";
 
@@ -187,9 +187,9 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         /*$comprobante->serie = "B001";
 
@@ -233,9 +233,9 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.BOLETA');
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.BOLETA'))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         /*$comprobante->serie = "B001";
 
@@ -279,9 +279,9 @@ class ComprobanteController extends Controller
         $comprobante->tipo_comprobante_id = config('caja.tipo_comprobante.FACTURA');
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         /*$comprobante->serie = "F001";
 
@@ -329,9 +329,9 @@ class ComprobanteController extends Controller
 
 
         $usuario = Auth::user();
-        $numeroOpe = $usuario->puntoVenta->numerosOperacion->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
-        $comprobante->serie = $numeroOpe->serie;
-        $comprobante->correlativo = $numeroOpe->correlativo;
+        $numeroComp = $usuario->puntoVenta->numerosComprobante->where('tipo_comprobante_id', config('caja.tipo_comprobante.' . $request->tipo_comprobante))->first();
+        $comprobante->serie = $numeroComp->serie;
+        $comprobante->correlativo = $numeroComp->correlativo;
 
         $comprobante->tipo_nota = null;
         $comprobante->motivo = "";
@@ -341,6 +341,7 @@ class ComprobanteController extends Controller
         $comprobante->total_gravada = "";
         $comprobante->total = "";
         $comprobante->tipo_pago = $cobro->tipo_pago;
+        $comprobante->detallesAfectados = $cobro->detalles;
 
         $data = [
             'tipo_comprobante' => $request->tipo_comprobante,
@@ -353,32 +354,52 @@ class ComprobanteController extends Controller
 
     public function store_nota(Request $request)
     {
-        //return $request;
-        $comprobante = new Comprobante();
-        $comprobante->serie = $request->serie;
-        $comprobante->correlativo = $request->correlativo;
-        $comprobante->motivo = $request->motivo;
-        $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
-        $comprobante->tipo_nota = $request->tipo_nota;
-        $comprobante->comprobante_afectado_id = $request->comprobante_afectado_id;
-        $comprobante->tipo_usuario = $request->tipo_usuario;
-        $comprobante->email = $request->email;
-        $comprobante->codi_usuario = $request->codi_usuario;
-        $comprobante->tipo_pago = $request->tipo_pago;
-        $comprobante->total = 0;
-        $comprobante->total_descuento = 0;
-        $comprobante->total_impuesto = 0;
-        $comprobante->total_inafecta = 0;
-        $comprobante->total_gravada = 0;
-        $comprobante->enviado = false;
-        $comprobante->cajero_id = Auth::user()->id;
-        $comprobante->save();
+        DB::beginTransaction();
 
-        //return $comprobante;
+        try {
+            $comprobante = new Comprobante();
+            $comprobante->serie = $request->serie;
+            $comprobante->correlativo = $request->correlativo;
+            $comprobante->motivo = $request->motivo;
+            $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
+            $comprobante->tipo_nota = $request->tipo_nota;
+            $comprobante->comprobante_afectado_id = $request->comprobante_afectado_id;
+            $comprobante->tipo_usuario = $request->tipo_usuario;
+            $comprobante->email = $request->email;
+            $comprobante->codi_usuario = $request->codi_usuario;
+            $comprobante->tipo_pago = $request->tipo_pago;
+            $comprobante->total = 0;
+            $comprobante->total_descuento = 0;
+            $comprobante->total_impuesto = 0;
+            $comprobante->total_inafecta = 0;
+            $comprobante->total_gravada = 0;
+            $comprobante->enviado = false;
+            $comprobante->cajero_id = Auth::user()->id;
+            $comprobante->save();
 
-        $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
-        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
-        $numeroComp->update();
+            foreach ($request->detallesAfectados as $detalle) {
+                $detalle_comprobante = new DetallesComprobante();
+                $detalle_comprobante->cantidad = $detalle['cantidad'];
+                $detalle_comprobante->valor_unitario =  $detalle['valor_unitario'];
+                $detalle_comprobante->gravado =  $detalle['gravado'];
+                $detalle_comprobante->inafecto =  $detalle['inafecto'];
+                $detalle_comprobante->impuesto =  $detalle['impuesto'];
+                $detalle_comprobante->descuento =  $detalle['descuento'];
+                $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
+                $detalle_comprobante->subtotal =  $detalle['subtotal'];
+                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                $detalle_comprobante->save();
+            }
+
+            $numeroComp = NumeroComprobante::where('serie', $comprobante->serie)->first();
+            $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+            $numeroComp->update();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('ComprobanteController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
 
         return redirect()->route('cobros.iniciar');
     }
@@ -430,7 +451,7 @@ class ComprobanteController extends Controller
                 'error' => false
             ];
 
-            $numeroComp = NumeroOperacion::where('serie', $comprobante->serie)->first();
+            $numeroComp = NumeroComprobante::where('serie', $comprobante->serie)->first();
             $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
             $numeroComp->update();
             DB::commit();
