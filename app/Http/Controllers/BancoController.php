@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BancoBCP;
 use Illuminate\Http\Request;
 
 class BancoController extends Controller
@@ -11,9 +12,13 @@ class BancoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        //$this->authorize("viewAny", Comprobante::class);
+
+        $query = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+            ->whereDate('frecepcion', '<=', $request->fecha_fin)->get();
+        return $query;
     }
 
     /**

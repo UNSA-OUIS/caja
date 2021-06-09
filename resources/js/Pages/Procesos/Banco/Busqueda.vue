@@ -1,0 +1,182 @@
+<template>
+  <app-layout>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('cobros.iniciar')">
+            Lista de cobros
+          </inertia-link>
+        </li>
+        <li class="breadcrumb-item active">Enviar resumen diario a sunat</li>
+      </ol>
+    </nav>
+    <div class="card">
+      <div class="card-header d-flex align-items-center">
+        <span class="font-weight-bold">Enviar resumen diario a sunat</span>
+      </div>
+      <div class="card-body">
+        <div class="row justify-content-center mb-1">
+          <fieldset class="col-12 col-md-15 px-3">
+            <legend>Opciones de búsqueda:</legend>
+            <div class="row justify-content-center">
+              <b-form inline>
+                <b-form-datepicker
+                  name="fecha_inicio"
+                  v-model="fecha_inicio"
+                  placeholder="Fecha de Inicio"
+                ></b-form-datepicker>
+                &nbsp;
+                <b-form-datepicker
+                  name="fecha_fin"
+                  v-model="fecha_fin"
+                  placeholder="Fecha de Fin"
+                ></b-form-datepicker>
+                &nbsp;
+                <b-form-select
+                  v-if="procesar_pagos"
+                  v-model="proceso"
+                  :options="procesos"
+                >
+                  <template #first>
+                    <b-form-select-option :value="null" disabled
+                      >-- Elija un Proceso --</b-form-select-option
+                    >
+                  </template>
+                </b-form-select>
+                &nbsp;
+                <b-button
+                  v-if="!procesar_pagos"
+                  variant="outline-success"
+                  @click="consultar_pagos()"
+                >
+                  Consultar Pagos <b-icon icon="search"></b-icon>
+                </b-button>
+                <b-button
+                  v-if="procesar_pagos"
+                  variant="outline-success"
+                  @click="consultar_pagos()"
+                >
+                  Procesar Pagos <b-icon icon="search"></b-icon>
+                </b-button>
+                &nbsp;
+                <b-button variant="outline-primary" @click="limpiar()">
+                  Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+                </b-button>
+              </b-form>
+            </div>
+            <br />
+            <div class="row justify-content-center"></div>
+            <b-alert v-show="alerta" show variant="danger" dismissible>
+              {{ alerta_mensaje }}
+            </b-alert>
+          </fieldset>
+        </div>
+        <br />
+        <div v-if="mostrar_boletas">
+          <pagos
+            :fecha_inicio="fecha_inicio"
+            :fecha_fin="fecha_fin"
+            :key="renderKey"
+          >
+          </pagos>
+        </div>
+      </div>
+    </div>
+  </app-layout>
+</template>
+<script>
+import AppLayout from "@/Layouts/AppLayout";
+import Pagos from "./Pagos";
+
+export default {
+  name: "facturas.busqueda",
+  components: {
+    AppLayout,
+    Pagos,
+  },
+  data() {
+    return {
+      procesar_pagos: false,
+      procesos: [
+        { value: 1, text: "Admision" },
+        { value: 1, text: "Extraordinario" },
+        { value: 1, text: "Posgrado" },
+        { value: 1, text: "2DA Especialidad" },
+        { value: 1, text: "Matricula Pregrado" },
+        { value: 1, text: "Regularizacion Expediente" },
+        { value: 1, text: "Deuda - CEPREUNSA" },
+        { value: 1, text: "Centro de Idiomas" },
+        { value: 1, text: "Residentado Medicos" },
+      ],
+      proceso: "",
+      app_url: this.$root.app_url,
+      alerta: false,
+      alerta_mensaje: "",
+      fecha_inicio: "",
+      fecha_fin: "",
+      mostrar_boletas: false,
+      renderKey: 1,
+    };
+  },
+  methods: {
+    consultar_pagos() {
+      if (!this.fecha_inicio && !this.fecha_fin) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de inicio y fin";
+      } else if (!this.fecha_inicio) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de inicio";
+      } else if (!this.fecha_fin) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de fin";
+      } else {
+        this.mostrar_boletas = true;
+        this.procesar_pagos = true;
+        this.renderKey++;
+        this.alerta = false;
+        this.alerta_mensaje = "";
+      }
+    },
+    limpiar() {
+      this.mostrar_boletas = false;
+      this.procesar_pagos = false;
+      this.filtrado = false;
+      this.alerta = false;
+      this.fecha_inicio = "";
+      this.fecha_fin = "";
+      this.alerta_mensaje = "";
+    },
+  },
+};
+</script>
+<style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
+.breadcrumb li a {
+  color: blue;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
+</style>
