@@ -226,13 +226,13 @@ export default {
             }
 
             if(objDetalle.concepto.tipo_afectacion === "30"){
-                objDetalle.inafecto = objDetalle.subtotal.toFixed(4);
+                objDetalle.inafecto = objDetalle.subtotal.toFixed(2);
                 objDetalle.impuesto = 0;
                 objDetalle.gravado = 0;
             }
             else{
-                objDetalle.gravado = (objDetalle.subtotal * 0.82).toFixed(4);
-                objDetalle.impuesto = (objDetalle.subtotal * 0.18).toFixed(4);
+                objDetalle.gravado = (objDetalle.subtotal * 0.82).toFixed(2);
+                objDetalle.impuesto = (objDetalle.subtotal * 0.18).toFixed(2);
                 objDetalle.inafecto = 0;
             }
         },

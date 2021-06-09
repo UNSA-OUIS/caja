@@ -103,6 +103,41 @@
               </b-form-group>
             </b-col>
             </b-row>
+
+          <h2 class="h4 mb-1">Asignación de conceptos</h2>
+                    <p class="small text-muted font-italic mb-4">Asignación de conceptos por punto de venta.</p>
+                    <b-table bordered striped hover :items="conceptos" :fields="fields">
+                        <template v-slot:cell(conceptos)="row">
+                            <div style="width:150px" class="custom-control custom-checkbox custom-control-inline" v-for="concepto in row.item.conceptos" :key="concepto.id">
+                                <input                                     
+                                    class="custom-control-input" 
+                                    :id="concepto.id" 
+                                    type="checkbox"
+                                    v-model="formData.conceptos_asignados"                        
+                                    :value="concepto.id"
+                                    @change="verificarSeleccion(row.item.nombre)"
+                                    :disabled="accion == 'Mostrar'"
+                                >
+                                <label class="cursor-pointer font-italic d-block custom-control-label" :for="concepto.id">{{ concepto.descripcion }}</label>
+                            </div>
+                        </template>
+                        <!-- --------------- selecionar todo ------------ -->
+                        <template v-slot:cell(acciones)="row">
+                            <div class="custom-control custom-checkbox custom-control-inline" >
+                                <input 
+                                    class="custom-control-input"
+                                    type="checkbox"
+                                    :id=" row.item.nombre"
+                                    v-model="bool_allSelecteds"
+                                    :value=" row.item.nombre"
+                                    :disabled="accion == 'Mostrar'"
+                                    @click="seleccionarTodos( row.item.nombre,$event)"
+                                >
+                                <label class="cursor-pointer font-italic d-block custom-control-label" :for=" row.item.nombre">{{  row.item.acciones }}</label>
+                            </div>
+                        </template>
+                        <!-- --------------- /selecionar todo ------------ -->
+                    </b-table>
           <b-button
             v-if="accion == 'Crear'"
             @click="registrar"
@@ -148,6 +183,8 @@ export default {
         { key: "conceptos",stickyColumn: true, label: "Conceptos" },
         { key: "acciones", label: "Seleccionar" },      
       ],
+      bool_allSelecteds: [],
+      total_permisos: this.conceptos.length
     };
   },
   created() {
@@ -175,6 +212,45 @@ export default {
         route("puntosVenta.actualizar", [this.formData.id]),
         this.formData
       );
+    },
+    seleccionarTodos(val,e){
+      var clasificador = this.conceptos.findIndex(
+        (clasificador) => clasificador.nombre === val
+      );
+      this.conceptos[clasificador].conceptos.forEach(concepto => {
+        if(e.target.checked){//if is true add to permissions array
+                      
+          if(!this.formData.conceptos_asignados.includes(concepto.id)){
+            this.formData.conceptos_asignados.push(concepto.id)
+          }
+        }else{
+          const index = this.formData.conceptos_asignados.indexOf(concepto.id);
+          if (index > -1) {
+            this.formData.conceptos_asignados.splice(index, 1);
+          }
+        }
+      })        
+    },
+    verificarSeleccion(val){
+      var clasificador = this.conceptos.find(
+        (clasificador) => clasificador.nombre === val
+      );
+      var count = 0
+      clasificador.conceptos.forEach(concepto => {
+        if (this.formData.conceptos_asignados.includes(concepto.id)) {
+          count ++
+        }
+      })
+
+      if(count == clasificador.conceptos.length){
+        if(!this.bool_allSelecteds.includes(val))
+          this.bool_allSelecteds.push(val)
+      }
+      else{
+        const index = this.bool_allSelecteds.indexOf(val);
+        if (index > -1)this.bool_allSelecteds.splice(index, 1);
+      }
+
     },
   },
 };
