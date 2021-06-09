@@ -1,22 +1,23 @@
 <template>
     <app-layout>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item ml-auto">
+                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <inertia-link :href="route('usuarios.iniciar')">
+                        Lista de usuarios
+                    </inertia-link>
+                </li>
+                <li class="breadcrumb-item active">
+                    {{ accion }} usuario
+                </li>
+            </ol>
+        </nav>
         <div class="card">
-            <div class="card-header">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="route('dashboard')"
-                            >Inicio</inertia-link
-                        >
-                    </li>
-                    <li class="breadcrumb-item">
-                        <inertia-link :href="route('usuarios.iniciar')"
-                            >Lista de usuarios</inertia-link
-                        >
-                    </li>
-                    <li class="breadcrumb-item active">
-                        {{ accion }} usuario
-                    </li>
-                </ol>
+            <div class="card-header d-flex align-items-center">
+                <span class="font-weight-bold">{{ accion }} usuario</span>
             </div>
             <div class="card-body">
                 <b-form @submit.prevent="enviar">
@@ -179,8 +180,8 @@ export default {
                 { key: "acciones", label: "Seleccionar" },
             ],
             formData:this.usuario,
-            categoria_permisos: [],   
-            bool_allSelecteds: [],       
+            categoria_permisos: [],
+            bool_allSelecteds: [],
             total_permisos: 0
         };
     },
@@ -316,5 +317,12 @@ export default {
     .categoria {
         width: 175px;
         font-weight: bold;
+    }
+    .breadcrumb li a {
+        color: blue;
+    }
+    .breadcrumb {
+        margin-bottom: 0;
+        background-color: white;
     }
 </style>
