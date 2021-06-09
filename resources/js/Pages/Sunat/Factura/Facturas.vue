@@ -204,8 +204,8 @@ export default {
     },
     anular(comprobante) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular este comprobante?", {
-          title: "Anular comprobante",
+        .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
+          title: "Anular factura",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",

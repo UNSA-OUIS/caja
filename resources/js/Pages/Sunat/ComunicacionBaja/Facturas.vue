@@ -1,27 +1,25 @@
 <template>
   <div>
     <b-table
-      ref="tbl_boletas"
+      ref="tbl_facturas"
       show-empty
       striped
       hover
       bordered
       small
       responsive
-      selectable
-      @row-selected="onRowSelected"
       stacked="md"
       :busy="isBusy"
       :items="myProvider"
       :fields="fields"
-      empty-text="No hay boletas para mostrar"
-      empty-filtered-text="No hay boletas que coincidan con su búsqueda."
+      empty-text="No hay facturas para mostrar"
+      empty-filtered-text="No hay facturas que coincidan con su búsqueda."
     >
       <template #table-busy>
         <div class="text-center text-success my-2">
           <b-spinner class="align-middle"></b-spinner>
           <strong v-if="!enviado">Cargando ...</strong>
-          <strong v-else>Enviando resumen diario a sunat</strong>
+          <strong v-else>Enviando comunicacion de baja a sunat</strong>
         </div>
       </template>
       <template v-slot:cell(fecha)="row">
@@ -29,28 +27,10 @@
           {{ row.item.created_at.substring(0, 10) }}
         </span>
       </template>
-      <template v-slot:cell(usuario)="row">
-        <span v-if="row.item.tipo_usuario === 'alumno'">
-          {{ row.item.comprobanteable.apn }}
-        </span>
-        <span v-else-if="row.item.tipo_usuario === 'empresa'">
-          {{ row.item.comprobanteable.razon_social }}
-        </span>
-        <span v-else-if="row.item.tipo_usuario === 'particular'">
-          {{ row.item.comprobanteable.apellidos }},
-          {{ row.item.comprobanteable.nombres }}
-        </span>
-        <span v-else-if="row.item.tipo_usuario === 'docente'">
-          {{ row.item.comprobanteable.apn }}
-        </span>
-        <span v-else-if="row.item.tipo_usuario === 'dependencia'">
-          {{ row.item.comprobanteable.nomb_depe }}
-        </span>
-      </template>
       <template v-slot:cell(estado)="row">
         <b-badge v-if="row.item.estado == 'no_enviado'" variant="primary"
-          >No Enviado</b-badge
-        >
+          >No enviado
+        </b-badge>
         <b-badge v-if="row.item.estado == 'observado'" variant="warning"
           >Observado
         </b-badge>
@@ -60,14 +40,14 @@
         <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
           >Anulado</b-badge
         >
-        <div v-if="row.item.estado == 'aceptado'">
-          <b-badge variant="success">Aceptado</b-badge>
-        </div>
+        <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
+          >Aceptado</b-badge
+        >
       </template>
 
       <template v-slot:cell(acciones)="row">
         <b-button
-          v-if="row.item.estado == 'no_enviado'"
+          v-if="row.item.estado != 'anulado'"
           variant="danger"
           size="sm"
           title="Anular"
@@ -75,9 +55,26 @@
         >
           <b-icon icon="x-circle"></b-icon>
         </b-button>
+        <b-button
+          v-if="row.item.estado == 'observado' || row.item.estado == 'aceptado'"
+          size="sm"
+          @click="row.toggleDetails"
+        >
+          <b-icon v-if="row.detailsShowing" icon="dash-circle"></b-icon>
+          <b-icon v-else icon="plus-circle"></b-icon>
+        </b-button>
+      </template>
+      <template #row-details="row">
+        <b-card>
+          <ul>
+            <li>
+              {{ row.item.observaciones }}
+            </li>
+          </ul>
+        </b-card>
       </template>
       <template #table-caption
-        >Se encontraron {{ totalRows }} boletas
+        >Se encontraron {{ totalRows }} facturas
       </template>
     </b-table>
     <b-row>
@@ -85,9 +82,9 @@
         v-if="items != ''"
         variant="success"
         title="Enviar facturas a sunat"
-        @click="enviar_boletas()"
+        @click="enviar_facturas()"
       >
-        Enviar resumen diario a sunat
+        Enviar Facturas a Sunat
         <b-icon icon="cloud-arrow-up"></b-icon>
       </b-button>
     </b-row>
@@ -97,18 +94,27 @@
 const axios = require("axios");
 
 export default {
-  name: "boletas.listar",
+  name: "facturas.listar",
   props: ["fecha_inicio", "fecha_fin"],
   data() {
     return {
       app_url: this.$root.app_url,
       items: [],
-      selected: [],
       isBusy: false,
       enviado: false,
       fields: [
-        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
-        { key: "usuario", label: "Administrado", sortable: true },
+        {
+          key: "codi_usuario",
+          label: "RUC",
+          class: "text-center",
+          sortable: true,
+        },
+        {
+          key: "comprobanteable.razon_social",
+          label: "Razon Social",
+          class: "text-left",
+          sortable: true,
+        },
         { key: "serie", label: "Serie", class: "text-center", sortable: true },
         {
           key: "correlativo",
@@ -135,35 +141,33 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_boletas.refresh();
-    },
-    onRowSelected(items) {
-      this.selected = items;
+      this.$refs.tbl_facturas.refresh();
     },
     myProvider() {
       let params = {
         fecha_inicio: this.fecha_inicio,
         fecha_fin: this.fecha_fin,
       };
-      const promise = axios.get(`${this.app_url}/sunat/listarBoletas`, {
-        params,
-      });
+      const promise = axios.get(
+        `${this.app_url}/sunat/comunicacion-baja/listarFacturas`,
+        {
+          params,
+        }
+      );
 
       return promise.then((response) => {
         this.items = response.data;
+        console.log(this.items);
         this.totalRows = response.data.length;
 
         return this.items || [];
       });
     },
-    enviar_boletas() {
+    enviar_facturas() {
       this.enviado = true;
-      if (this.selected == "") {
-        this.selected = this.items;
-      }
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer enviar este resumen diario?", {
-          title: "Enviar resumen diario",
+        .msgBoxConfirm("¿Esta seguro de querer enviar estas facturas?", {
+          title: "Enviar facturas",
           okVariant: "success",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -172,27 +176,32 @@ export default {
         .then(async (value) => {
           if (value) {
             axios
-              .post(`${this.app_url}/sunat/resumenDiario`, this.selected)
+              .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
-                console.log(response.data);
                 if (response.data.error == false) {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
-                  this.$bvToast.toast("El resumen diario de envio de manera exitosa", {
-                    title: "Envio de resumen diario a sunat",
-                    variant: "success",
-                    toaster: "b-toaster-bottom-right",
-                    solid: true,
-                  });
+                  this.$bvToast.toast(
+                    "Comunicacion de baja enviada con exito",
+                    {
+                      title: "Envio de comunicacion de baja a sunat",
+                      variant: "success",
+                      toaster: "b-toaster-bottom-right",
+                      solid: true,
+                    }
+                  );
                 } else {
+                  console.log(response.data);
                   console.log(response.data.error);
-                  console.log(response.data.errorMessage);
-                  this.$bvToast.toast("Ocurrio un error al enviar el resumen diario", {
-                    title: "Envio de resumen diario a sunat",
-                    variant: "danger",
-                    toaster: "b-toaster-bottom-right",
-                    solid: true,
-                  });
+                  this.$bvToast.toast(
+                    "Hubo un error al enviar la comunicacion de baja",
+                    {
+                      title: "Envio de comunicacion de baja a sunat",
+                      variant: "danger",
+                      toaster: "b-toaster-bottom-right",
+                      solid: true,
+                    }
+                  );
                 }
               })
               .catch(function (error) {
@@ -204,8 +213,8 @@ export default {
     },
     anular(comprobante) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer anular esta boleta?", {
-          title: "Anular boleta",
+        .msgBoxConfirm("¿Esta seguro de querer anular esta factura?", {
+          title: "Anular factura",
           okVariant: "danger",
           okTitle: "SI",
           cancelTitle: "NO",
@@ -213,7 +222,7 @@ export default {
         })
         .then(async (value) => {
           if (value) {
-            this.$inertia.post(route("boletas.anular", [comprobante]));
+            this.$inertia.post(route("facturas.anular", [comprobante]));
             this.refreshTable();
           }
         });

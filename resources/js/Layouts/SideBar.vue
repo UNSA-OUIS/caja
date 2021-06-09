@@ -373,7 +373,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Enviar resumen diario
+                  Resumen Diario
                 </inertia-link>
               </li>
               <li
@@ -387,7 +387,7 @@
                     active: path == 'facturas',
                   }"
                 >
-                  Enviar facturas
+                  Facturas
                 </inertia-link>
               </li>
               <li
@@ -401,7 +401,7 @@
                     active: path == 'comunicacion-baja',
                   }"
                 >
-                  Enviar comunicacion de baja
+                  Comunicacion de baja
                 </inertia-link>
               </li>
               <!--<li

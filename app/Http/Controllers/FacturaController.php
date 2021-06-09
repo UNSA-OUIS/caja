@@ -22,7 +22,6 @@ use Luecano\NumeroALetras\NumeroALetras;
 class FacturaController extends Controller
 {
     private $empresa;
-    private $error = '';
 
     function __construct()
     {
@@ -51,8 +50,8 @@ class FacturaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_comprobante_id', '!=', 1)
-            ->whereIn('estado', ['no_enviado', 'anulado'])
+            ->where('tipo_comprobante_id', 2)
+            ->where('estado', 'no_enviado')
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin)
             ->where('cajero_id', Auth::user()->id)->get();
