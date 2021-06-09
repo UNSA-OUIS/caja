@@ -338,6 +338,7 @@
                 'mm-active':
                   path == 'boletas' ||
                   path == 'facturas' ||
+                  path == 'comunicacion-baja'||
                   path == 'notas-credito' ||
                   path == 'notas-debito' ||
                   path == 'consultas-resumen-diario',
@@ -372,7 +373,7 @@
                     active: path == 'boletas',
                   }"
                 >
-                  Enviar boletas
+                  Resumen Diario
                 </inertia-link>
               </li>
               <li
@@ -386,7 +387,21 @@
                     active: path == 'facturas',
                   }"
                 >
-                  Enviar facturas
+                  Facturas
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'comunicacion-baja',
+                }"
+              >
+                <inertia-link
+                  :href="route('comunicacion-baja.iniciar')"
+                  :class="{
+                    active: path == 'comunicacion-baja',
+                  }"
+                >
+                  Comunicacion de baja
                 </inertia-link>
               </li>
               <!--<li

@@ -10,15 +10,15 @@
             Lista de cobros
           </inertia-link>
         </li>
-        <li class="breadcrumb-item active">Enviar resumen diario a sunat</li>
+        <li class="breadcrumb-item active">Enviar comunicacion de baja a sunat</li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Enviar resumen diario a sunat</span>
+        <span class="font-weight-bold">Enviar comunicacion de baja a sunat</span>
       </div>
       <div class="card-body">
-        <div class="row justify-content-center mb-1">
+          <div class="row justify-content-center mb-1">
           <fieldset class="col-12 col-md-10 px-3">
             <legend>Opciones de búsqueda:</legend>
             <div class="row justify-content-center">
@@ -35,8 +35,8 @@
                   placeholder="Fecha de Fin"
                 ></b-form-datepicker>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <b-button variant="outline-success" @click="buscar_boletas()">
-                  Buscar Boletas <b-icon icon="search"></b-icon>
+                <b-button variant="outline-success" @click="buscar_facturas()">
+                  Buscar Facturas <b-icon icon="search"></b-icon>
                 </b-button>
                 &nbsp;
                 <b-button variant="outline-primary" @click="limpiar()">
@@ -50,13 +50,13 @@
           </fieldset>
         </div>
         <br />
-        <div v-if="mostrar_boletas">
-          <boletas
+        <div v-if="mostrar_facturas">
+          <facturas
             :fecha_inicio="fecha_inicio"
             :fecha_fin="fecha_fin"
             :key="renderKey"
           >
-          </boletas>
+          </facturas>
         </div>
       </div>
     </div>
@@ -64,13 +64,13 @@
 </template>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import Boletas from "./Boletas";
+import Facturas from "./Facturas";
 
 export default {
   name: "facturas.busqueda",
   components: {
     AppLayout,
-    Boletas,
+    Facturas,
   },
   data() {
     return {
@@ -79,12 +79,12 @@ export default {
       alerta_mensaje: "",
       fecha_inicio: "",
       fecha_fin: "",
-      mostrar_boletas: false,
+      mostrar_facturas: false,
       renderKey: 1,
     };
   },
   methods: {
-    buscar_boletas() {
+    buscar_facturas() {
       if (!this.fecha_inicio && !this.fecha_fin) {
         this.alerta = true;
         this.alerta_mensaje = "Debe seleccionar una fecha de inicio y fin";
@@ -95,14 +95,14 @@ export default {
         this.alerta = true;
         this.alerta_mensaje = "Debe seleccionar una fecha de fin";
       } else {
-        this.mostrar_boletas = true;
+        this.mostrar_facturas = true;
         this.renderKey++;
         this.alerta = false;
         this.alerta_mensaje = "";
       }
     },
     limpiar() {
-      this.mostrar_boletas = false;
+      this.mostrar_facturas = false;
       this.filtrado = false;
       this.alerta = false;
       this.fecha_inicio = "";

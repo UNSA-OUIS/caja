@@ -14,6 +14,7 @@ use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\ComprobanteController;
+use App\Http\Controllers\ComunicacionBajaController;
 use App\Http\Controllers\LoginWithGoogleController;
 use App\Http\Controllers\TipoComprobanteController;
 use App\Http\Controllers\TiposConceptoController;
@@ -288,6 +289,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::post('/sunat/enviarFactura/{factura}', [FacturaController::class, 'enviar'])->name('facturas.enviar');
     Route::post('/sunat/anularFactura/{factura}', [FacturaController::class, 'anular'])->name('facturas.anular');
 
+    Route::get('/sunat/comunicacion-baja', function () {
+        return Inertia::render('Sunat/ComunicacionBaja/Busqueda');
+    })->name('comunicacion-baja.iniciar');
+    Route::get('/sunat/comunicacion-baja/listarFacturas', [ComunicacionBajaController::class, 'index'])->name('comunicacion-baja.listar');
+
 
     Route::get('/sunat/resumenDiario', function () {
         return Inertia::render('Sunat/ListarResumenDiario');
@@ -316,6 +322,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/notas-debito', function () {
         return Inertia::render('Sunat/ListarNotasDebito');
     })->name('notas-debito.iniciar');
+    Route::get('/notas-debito/listar', [NotadebitoController::class, 'index'])->name('notas-debito.listar');
+    Route::get('/notas-debito/crear', [NotaDebitoController::class, 'create'])->name('notas-debito.crear');
+    Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
+    Route::post('/notas-debito/enviar', [NotaDebitoController::class, 'enviar'])->name('notas-debito.enviar');
+    Route::post('/notas-debito/anular', [NotaDebitoController::class, 'anular'])->name('notas-debito.anular');
+
+    Route::get('/sunat/comunicacion-baja', function () {
+        return Inertia::render('Sunat/ComunicacionBaja/Busqueda');
+    })->name('comunicacion-baja.iniciar');
     Route::get('/notas-debito/listar', [NotadebitoController::class, 'index'])->name('notas-debito.listar');
     Route::get('/notas-debito/crear', [NotaDebitoController::class, 'create'])->name('notas-debito.crear');
     Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
@@ -376,8 +391,6 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::delete('/numeros-operacion/{numeroOperacion}', [NumeroComprobanteController::class, 'destroy'])->name('numerosOperacion.eliminar');
     Route::post('/numeros-operacion/{numeroOperacion}/restaurar', [NumeroComprobanteController::class, 'restore'])->name('numerosOperacion.restaurar');
     /***************************************************************************/
-
-
 });
 
 Route::get('/google', [LoginWithGoogleController::class, 'redirectToGoogle'])->name('google');;

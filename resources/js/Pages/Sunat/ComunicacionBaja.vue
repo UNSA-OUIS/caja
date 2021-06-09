@@ -5,36 +5,27 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Lista de cobros</li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('cobros.iniciar')">
+            Lista de cobros
+          </inertia-link>
+        </li>
+        <li class="breadcrumb-item active">
+          Enviar comunicacion de baja
+        </li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Lista de cobros</span>
-        <inertia-link
-          class="btn btn-success ml-auto"
-          :href="route('cobros.buscarUsuario')"
-        >
-          Nuevo
-        </inertia-link>
+        <span class="font-weight-bold">Enviar comunicacion de baja</span>
       </div>
       <div class="card-body">
-        <b-alert
-          show
-          dismissible
-          variant="success"
-          v-if="$page.props.successMessage"
-        >
-          {{ $page.props.successMessage }}
-        </b-alert>
-        <b-alert
-          show
-          dismissible
-          variant="danger"
-          v-if="$page.props.errorMessage"
-        >
-          {{ $page.props.errorMessage }}
-        </b-alert>
+        <b-alert show variant="success" v-if="$page.props.successMessage">{{
+          $page.props.successMessage
+        }}</b-alert>
+        <b-alert show variant="danger" v-if="$page.props.errorMessage">{{
+          $page.props.errorMessage
+        }}</b-alert>
         <b-row>
           <b-col sm="12" md="4" lg="4" class="my-1">
             <b-form-group
@@ -79,7 +70,7 @@
           </b-col>
         </b-row>
         <b-table
-          ref="tbl_comprobantes"
+          ref="tbl_notas_credito"
           show-empty
           striped
           hover
@@ -96,12 +87,48 @@
           :sort-desc.sync="sortDesc"
           :sort-direction="sortDirection"
           @filtered="onFiltered"
-          empty-text="No hay comprobantes para mostrar"
-          empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+          empty-text="No hay notas de credito para mostrar"
+          empty-filtered-text="No hay notas de credito que coincidan con su búsqueda."
         >
+          <template v-slot:cell(condicion)="row">
+            <b-badge v-if="!row.item.deleted_at" variant="success"
+              >Activo</b-badge
+            >
+            <b-badge v-else variant="secondary">Inactivo</b-badge>
+          </template>
+          <template v-slot:cell(codigo_nota)="row">
+            <span v-if="row.item.tipo_nota == '01'">
+              Anulación por operación
+            </span>
+            <span v-else-if="row.item.tipo_nota == '02'">
+              Anulación por error en el RUC
+            </span>
+            <span v-else-if="row.item.tipo_nota == '03'">
+              Corrección por error en la descripción
+            </span>
+            <span v-else-if="row.item.tipo_nota == '04'">
+              Descuento global
+            </span>
+            <span v-else-if="row.item.tipo_nota == '05'">
+              Descuento por ítem
+            </span>
+            <span v-else-if="row.item.tipo_nota == '06'">
+              Devolución total
+            </span>
+            <span v-else-if="row.item.tipo_nota == '07'">
+              Devolución por ítem
+            </span>
+            <span v-else-if="row.item.tipo_nota == '08'"> Bonificación </span>
+            <span v-else-if="row.item.tipo_nota == '09'">
+              Disminución en el valor
+            </span>
+            <span v-else-if="row.item.tipo_nota == '10'">
+              Otros conceptos
+            </span>
+          </template>
           <template v-slot:cell(usuario)="row">
             <span v-if="row.item.tipo_usuario === 'alumno'">
-              {{ reemplazar(row.item.comprobanteable.apn) }}
+              {{ row.item.comprobanteable.apn }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'empresa'">
               {{ row.item.comprobanteable.razon_social }}
@@ -111,55 +138,15 @@
               {{ row.item.comprobanteable.nombres }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'docente'">
-              {{ reemplazar(row.item.comprobanteable.apn) }}
+              {{ row.item.comprobanteable.apn }}
             </span>
             <span v-else-if="row.item.tipo_usuario === 'dependencia'">
               {{ row.item.comprobanteable.nomb_depe }}
             </span>
           </template>
-          <template v-slot:cell(numero)="row">
-            {{ row.item.serie }}-{{ row.item.correlativo }}
-          </template>
-          <template v-slot:cell(estado)="row">
-            <b-badge v-if="row.item.estado == 'no_enviado'" variant="primary"
-              >No Enviado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'observado'" variant="warning"
-              >Observado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'rechazado'" variant="danger"
-              >Rechazado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'anulado'" variant="secondary"
-              >Anulado</b-badge
-            >
-            <b-badge v-if="row.item.estado == 'aceptado'" variant="success"
-              >Aceptado</b-badge
-            >
-          </template>
           <template v-slot:cell(acciones)="row">
-            <b-button-group>
-              <b-button
-                variant="info"
-                size="sm"
-                @click="visualizar(row.item.url_ticket)"
-              >
-                <b-icon icon="printer"></b-icon>
-              </b-button>
-            </b-button-group>
-
-            <inertia-link
-              class="btn btn-primary btn-sm"
-              :href="route('consulta.mostrar', row.item)"
-            >
-              <b-icon icon="eye"></b-icon>
-            </inertia-link>
             <b-button
-              v-if="
-                row.item.estado == 'no_enviado' &&
-                (row.item.tipo_comprobante_id == 1 ||
-                  row.item.tipo_comprobante_id == 2)
-              "
+              v-if="row.item.estado == 'noEnviado'"
               variant="danger"
               size="sm"
               title="Anular"
@@ -191,7 +178,7 @@ const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-  name: "comprobantes.listar",
+  name: "notas-credito.listar",
   components: {
     AppLayout,
   },
@@ -199,19 +186,13 @@ export default {
     return {
       app_url: this.$root.app_url,
       fields: [
-        {
-          key: "tipo_usuario",
-          label: "Tipo administrado",
-          class: "text-center",
-        },
-        { key: "usuario", label: "Administrado" },
-        {
-          key: "tipo_comprobante.nombre",
-          label: "Tipo comprobante",
-          class: "text-center",
-        },
-        { key: "numero", label: "Número de comprobante", class: "text-center" },
-        { key: "estado", label: "Estado", class: "text-center" },
+        { key: "tipo_usuario", label: "Tipo usuario", class: "text-center" },
+        { key: "codi_usuario", label: "Código usuario", class: "text-center" },
+        { key: "usuario", label: "Administrado", sortable: true },
+        { key: "serie", label: "Serie", class: "text-center" },
+        { key: "correlativo", label: "Correlativo", class: "text-center" },
+        { key: "codigo_nota", label: "Motivo", class: "text-center" },
+        { key: "motivo", label: "Descripcion Motivo", class: "text-center" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
       index: 1,
@@ -227,10 +208,7 @@ export default {
   },
   methods: {
     refreshTable() {
-      this.$refs.tbl_comprobantes.refresh();
-    },
-    reemplazar(nombre) {
-      return nombre.replace("/", " ");
+      this.$refs.tbl_notas_credito.refresh();
     },
     myProvider(ctx) {
       let params = "?page=" + ctx.currentPage + "&size=" + ctx.perPage;
@@ -243,14 +221,16 @@ export default {
         params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
       }
 
-      const promise = axios.get(`${this.app_url}/comprobantes/listar${params}`);
+      const promise = axios.get(
+        `${this.app_url}/notas-credito/listar${params}`
+      );
 
       return promise.then((response) => {
-        const comprobantes = response.data.data;
-        console.log(comprobantes);
+        const notaCredito = response.data.data;
+        console.log(notaCredito);
         this.totalRows = response.data.total;
 
-        return comprobantes || [];
+        return notaCredito || [];
       });
     },
     anular(comprobante) {
@@ -269,12 +249,6 @@ export default {
           }
         });
     },
-    visualizar(url_pdf) {
-      window.open(
-        `${this.app_url}/sunat/facturaPDF?url_pdf=${url_pdf}`,
-        "_blanck"
-      );
-    },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
@@ -283,9 +257,28 @@ export default {
 };
 </script>
 <style scoped>
+fieldset {
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding-bottom: 10px;
+  height: auto;
+}
+
+legend {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 3px 5px 3px 7px;
+  width: auto;
+}
+
 .breadcrumb li a {
   color: blue;
 }
+
 .breadcrumb {
   margin-bottom: 0;
   background-color: white;

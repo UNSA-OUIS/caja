@@ -5,13 +5,13 @@ use Greenter\See;
 
 $see = new See();
 /************************** PRUEBA SUNAT ***************************/
-$see->setCertificate(file_get_contents(__DIR__ . '/Certificados/certificate.pem'));
+/*$see->setCertificate(file_get_contents(__DIR__ . '/Certificados/certificate.pem'));
 $see->setService(SunatEndpoints::FE_BETA);
-$see->setClaveSOL('20000000001', 'MODDATOS', 'moddatos');
+$see->setClaveSOL('20000000001', 'MODDATOS', 'moddatos');*/
 
 /************************** PRODUCCION SUNAT ***************************/
-/*$see->setCertificate(file_get_contents(storage_path('app/public/Sunat/Certificados/certificateOSCE.pem')));
+$see->setCertificate(file_get_contents(__DIR__ . '/Certificados/certificateOSCE.pem'));
 $see->setService('https://seres-ose.seresnet.com/ol-ti-itcpe/billService?wsdl');
-$see->setClaveSOL('20163646499', 'PROD2017', 'PROD2017');*/
+$see->setClaveSOL('20163646499', 'PROD2017', 'PROD2017');
 
 return $see;
