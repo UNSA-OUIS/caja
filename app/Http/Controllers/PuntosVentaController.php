@@ -75,6 +75,7 @@ class PuntosVentaController extends Controller
             $puntoVenta->ip = $request->ip;
             $puntoVenta->direccion = $request->direccion;
             $puntoVenta->user_id = $request->user_id;
+            $puntoVenta->conceptos()->sync($request->conceptos_asignados);
             $puntoVenta->save();
             $result = ['successMessage' => 'Punto de venta registrado con éxito'];
 
@@ -89,11 +90,17 @@ class PuntosVentaController extends Controller
 
     public function show(PuntosVenta $puntoVenta)
     {
+        $puntoVenta->conceptos_asignados = array_column($puntoVenta->conceptos->toArray(), 'id');
+    
+        $conceptos = Clasificador::with(['conceptos' => function($query) {
+            $query->select('id', 'descripcion', 'clasificador_id', DB::raw('false as asignado'));
+        }])->has('conceptos')->get();
+
         $usuarios = User::select('id as value', 'name as text')
             ->orderBy('name', 'asc')
             ->get();
 
-        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios'));
+        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos'));
     }
 
     public function edit($id)
@@ -114,6 +121,7 @@ class PuntosVentaController extends Controller
             $puntoVenta->ip = $request->ip;
             $puntoVenta->direccion = $request->direccion;
             $puntoVenta->user_id = $request->user_id;
+            $puntoVenta->conceptos()->sync($request->conceptos_asignados);
             $puntoVenta->update();
             $result = ['successMessage' => 'Punto de venta actualizado con éxito'];
 
