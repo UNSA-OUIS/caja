@@ -51,12 +51,11 @@ class FacturaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_comprobante_id', 2)
+            ->where('tipo_comprobante_id', '!=', 1)
             ->whereIn('estado', ['no_enviado', 'anulado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', 'like', Auth::user()->id)->get();
-
+            ->where('cajero_id', Auth::user()->id)->get();
         return $query;
     }
     public function enviar_facturas(Request $request)
@@ -89,12 +88,12 @@ class FacturaController extends Controller
                         ->setMtoValorUnitario($value['valor_unitario'])
                         ->setDescripcion($detalle[$index]->concepto['descripcion'])
                         ->setMtoBaseIgv($value['subtotal'])
-                        ->setPorcentajeIgv(18.00) // 18%
+                        ->setPorcentajeIgv($value['total_impuesto']) // 18%
                         ->setIgv($value['total_impuesto'])
                         ->setTipAfeIgv('10') // Gravado Op. Onerosa - Catalog. 07
                         ->setTotalImpuestos($value['total_impuesto']) // Suma de impuestos en el detalle
                         ->setMtoValorVenta($value['valor_unitario'] * $value['cantidad'])
-                        ->setMtoPrecioUnitario($value['valor_unitario'] + 18.00 / $value['cantidad']);
+                        ->setMtoPrecioUnitario($value['valor_unitario'] + $value['total_impuesto'] / $value['cantidad']);
                 }
 
                 $formatter = new NumeroALetras();

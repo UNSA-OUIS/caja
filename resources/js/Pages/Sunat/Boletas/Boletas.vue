@@ -8,6 +8,8 @@
       bordered
       small
       responsive
+      selectable
+      @row-selected="onRowSelected"
       stacked="md"
       :busy="isBusy"
       :items="myProvider"
@@ -101,6 +103,7 @@ export default {
     return {
       app_url: this.$root.app_url,
       items: [],
+      selected: [],
       isBusy: false,
       enviado: false,
       fields: [
@@ -134,6 +137,9 @@ export default {
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
+    onRowSelected(items) {
+      this.selected = items;
+    },
     myProvider() {
       let params = {
         fecha_inicio: this.fecha_inicio,
@@ -152,6 +158,9 @@ export default {
     },
     enviar_boletas() {
       this.enviado = true;
+      if (this.selected == "") {
+        this.selected = this.items;
+      }
       this.$bvModal
         .msgBoxConfirm("¿Esta seguro de querer enviar este resumen diario?", {
           title: "Enviar resumen diario",
@@ -163,14 +172,14 @@ export default {
         .then(async (value) => {
           if (value) {
             axios
-              .post(`${this.app_url}/sunat/resumenDiario`, this.items)
+              .post(`${this.app_url}/sunat/resumenDiario`, this.selected)
               .then((response) => {
                 console.log(response.data);
                 if (response.data.error == false) {
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
-                  this.$bvToast.toast("Facturas enviadas con exito", {
-                    title: "Envio de facturas a sunat",
+                  this.$bvToast.toast(response.data.successMessage, {
+                    title: "Envio de resumen diario a sunat",
                     variant: "success",
                     toaster: "b-toaster-bottom-right",
                     solid: true,
@@ -178,7 +187,7 @@ export default {
                 } else {
                   console.log(response.data.error);
                   console.log(response.data.errorMessage);
-                  this.$bvToast.toast("Hubo un error al enviar las boletas", {
+                  this.$bvToast.toast(response.data.errorMessage, {
                     title: "Error al enviar las boletas",
                     variant: "danger",
                     toaster: "b-toaster-bottom-right",

@@ -61,11 +61,11 @@ class BoletaController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
-            ->where('tipo_comprobante_id', 'like', 1)
+            ->where('tipo_comprobante_id', 1)
             ->whereIn('estado', ['no_enviado', 'anulado'])
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', 'like', Auth::user()->id)->get();
+            ->where('cajero_id', Auth::user()->id)->get();
         return $query;
     }
 
@@ -87,99 +87,17 @@ class BoletaController extends Controller
                 $ultimo->correlativo += 1;
                 $correlativo = str_pad($ultimo->correlativo, 3, "0", STR_PAD_LEFT);
             }
-            //Recorro todas las boletas y las anexo al resumen diario
+            /**
+             * Recorro todas las boletas y verifico si es que existe alguna nota de debito o credito que afecte a las boletaas
+             * que se envian para anexarlas al resumen diario*/
             foreach ($boletas as $index => $value) {
-                $notas_debito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 3)->first();
-                if ($notas_debito) {
-                    $details1[$index] = (new SummaryDetail())
-                        ->setTipoDoc('08') // Nota de debito
-                        ->setSerieNro($notas_debito->serie . '-' . $notas_debito->correlativo)
-                        ->setDocReferencia((new Document)
-                            ->setTipoDoc(03)
-                            ->setNroDoc($value['serie'] . '-' . $value['correlativo']));
-                    if ($value['estado'] == 'anulado') {
-                        $details1[$index]->setEstado('3'); // Anulación
-                    } else {
-                        $details1[$index]->setEstado('1');
-                    }
-                    if ($value['tipo_usuario'] == 'alumno') {
-                        $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
-                        $dni = substr($alumno->dic, 1);
-                        $details1[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'particular') {
-                        $particular = Particular::where('dni', $value['codi_usuario'])->first();
-                        $dni = $particular->dni;
-                        $details1[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'docente') {
-                        $docente = Docente::where('codper', $value['codi_usuario'])->first();
-                        $dni = $docente->dic;
-                        $details1[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'dependencia') {
-                        $dni = '72351610';
-                        $details1[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    }
-                    $details1[$index]->setTotal($value['total'])
-                        ->setMtoOperGravadas($value['total_gravada'])
-                        ->setMtoOperInafectas($value['total_inafecta'])
-                        ->setMtoIGV($value['total_impuesto']);
-                }
-                $notas_credito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 4)->first();
-                if ($notas_credito) {
-                    $details2[$index] = (new SummaryDetail())
-                        ->setTipoDoc('07') // Nota de credito
-                        ->setSerieNro('B001-1')
-                        ->setDocReferencia((new Document)
-                            ->setTipoDoc(03)
-                            ->setNroDoc($value['serie'] . '-' . $value['correlativo']));
-                    if ($value['estado'] == 'anulado') {
-                        $details2[$index]->setEstado('3'); // Anulación
-                    } else {
-                        $details2[$index]->setEstado('1');
-                    }
-                    if ($value['tipo_usuario'] == 'alumno') {
-                        $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
-                        $dni = substr($alumno->dic, 1);
-                        $details2[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'particular') {
-                        $particular = Particular::where('dni', $value['codi_usuario'])->first();
-                        $dni = $particular->dni;
-                        $details2[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'docente') {
-                        $docente = Docente::where('codper', $value['codi_usuario'])->first();
-                        $dni = $docente->dic;
-                        $details2[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    } elseif ($value['tipo_usuario'] == 'dependencia') {
-                        $dni = '72351610';
-                        $details2[$index]
-                            ->setClienteTipo('1')
-                            ->setClienteNro($dni);
-                    }
-                    $details2[$index]->setTotal($value['total'])
-                        ->setMtoOperGravadas($value['total_gravada'])
-                        ->setMtoOperInafectas($value['total_inafecta'])
-                        ->setMtoIGV($value['total_impuesto']);
-                }
                 $details[$index] = (new SummaryDetail())
                     ->setTipoDoc('03') // Boleta
                     ->setSerieNro($value['serie'] . '-' . $value['correlativo']);
                 if ($value['estado'] == 'anulado') {
                     $details[$index]->setEstado('3'); // Anulación
                 } else {
-                    $details[$index]->setEstado('1');
+                    $details[$index]->setEstado('1'); // Emision
                 }
                 if ($value['tipo_usuario'] == 'alumno') {
                     $alumno = Alumno::where('cui', $value['codi_usuario'])->first();
@@ -209,6 +127,101 @@ class BoletaController extends Controller
                     ->setMtoOperGravadas($value['total_gravada'])
                     ->setMtoOperInafectas($value['total_inafecta'])
                     ->setMtoIGV($value['total_impuesto']);
+                $id_boleta = $value['id'];
+                $notas_debito = Comprobante::where('comprobante_afectado_id', $id_boleta)->where('tipo_comprobante_id', 3)->where('estado', 'no_enviado')->get();
+                if ($notas_debito) {
+                    foreach ($notas_debito as $index => $value) {
+                        if ($value['comprobante_afectado_id'] == $id_boleta) {
+                            $boleta = Comprobante::where('id', $id_boleta)->first();
+                            $details1[$index] = (new SummaryDetail())
+                                ->setTipoDoc('08') // Nota de debito
+                                ->setSerieNro($value['serie'] . '-' . $value['correlativo'])
+                                ->setDocReferencia((new Document)
+                                    ->setTipoDoc(03)
+                                    ->setNroDoc($boleta->serie . '-' . $boleta->correlativo));
+                            if ($value['estado'] == 'anulado') {
+                                $details1[$index]->setEstado('3'); // Anulación
+                            } else {
+                                $details1[$index]->setEstado('1');
+                            }
+                            if ($boleta->tipo_usuario == 'alumno') {
+                                $alumno = Alumno::where('cui', $boleta->codi_usuario)->first();
+                                $dni = substr($alumno->dic, 1);
+                                $details1[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'particular') {
+                                $particular = Particular::where('dni', $boleta->codi_usuario)->first();
+                                $dni = $particular->dni;
+                                $details1[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'docente') {
+                                $docente = Docente::where('codper', $boleta->codi_usuario)->first();
+                                $dni = $docente->dic;
+                                $details1[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'dependencia') {
+                                $dni = '72351610';
+                                $details1[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            }
+                            $details1[$index]->setTotal($boleta->total)
+                                ->setMtoOperGravadas($boleta->total_gravada)
+                                ->setMtoOperInafectas($boleta->total_inafecta)
+                                ->setMtoIGV($boleta->total_impuesto);
+                        }
+                    }
+                }
+                $notas_credito = Comprobante::where('comprobante_afectado_id', $value['id'])->where('tipo_comprobante_id', 4)->where('estado', 'no_enviado')->get();
+                if ($notas_credito) {
+                    foreach ($notas_credito as $index => $value) {
+                        if ($value['comprobante_afectado_id'] == $id_boleta) {
+                            $boleta = Comprobante::where('id', $id_boleta)->first();
+                            $details2[$index] = (new SummaryDetail())
+                                ->setTipoDoc('08') // Nota de debito
+                                ->setSerieNro($value['serie'] . '-' . $value['correlativo'])
+                                ->setDocReferencia((new Document)
+                                    ->setTipoDoc(03)
+                                    ->setNroDoc($boleta->serie . '-' . $boleta->correlativo));
+                            if ($value['estado'] == 'anulado') {
+                                $details2[$index]->setEstado('3'); // Anulación
+                            } else {
+                                $details2[$index]->setEstado('1');
+                            }
+                            if ($boleta->tipo_usuario == 'alumno') {
+                                $alumno = Alumno::where('cui', $boleta->codi_usuario)->first();
+                                $dni = substr($alumno->dic, 1);
+                                $details2[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'particular') {
+                                $particular = Particular::where('dni', $boleta->codi_usuario)->first();
+                                $dni = $particular->dni;
+                                $details2[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'docente') {
+                                $docente = Docente::where('codper', $boleta->codi_usuario)->first();
+                                $dni = $docente->dic;
+                                $details2[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            } elseif ($boleta->tipo_usuario == 'dependencia') {
+                                $dni = '72351610';
+                                $details2[$index]
+                                    ->setClienteTipo('1')
+                                    ->setClienteNro($dni);
+                            }
+                            $details2[$index]->setTotal($boleta->total)
+                                ->setMtoOperGravadas($boleta->total_gravada)
+                                ->setMtoOperInafectas($boleta->total_inafecta)
+                                ->setMtoIGV($boleta->total_impuesto);
+                        }
+                    }
+                }
             }
 
             $resumen = new Summary();
@@ -307,17 +320,21 @@ class BoletaController extends Controller
                 $boleta = Comprobante::where('id', 'like', $value['id'])->first();
                 $boleta->estado = 'aceptado';
                 $boleta->update();
-                $notas_debito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 3)->first();
+                $id_boleta = $value['id'];
+                $notas_debito = Comprobante::where('comprobante_afectado_id', $id_boleta)->where('tipo_comprobante_id', 3)->where('estado', 'no_enviado')->get();
                 if ($notas_debito) {
-                    $notas_debito->estado = 'aceptado';
-                    $notas_debito->update();
+                    foreach ($notas_debito as $index => $value) {
+                        $notas_debito[$index]->estado = 'aceptado';
+                        $notas_debito->update();
+                    }
                 }
-                $notas_credito = Comprobante::where('comprobante_afectado_id', $boleta->id)->where('tipo_comprobante_id', 4)->first();
+                $notas_credito = Comprobante::where('comprobante_afectado_id', $id_boleta)->where('tipo_comprobante_id', 4)->where('estado', 'no_enviado')->get();
                 if ($notas_credito) {
-                    $notas_credito->estado = 'aceptado';
-                    $notas_credito->update();
+                    foreach ($notas_credito as $index => $value) {
+                        $notas_credito[$index]->estado = 'aceptado';
+                        $notas_credito->update();
+                    }
                 }
-
 
                 $data = [
                     'adjuntoPDF' => storage_path('app/public/Sunat/PDF/' . $value['serie'] . '-' . $value['correlativo'] . '.pdf'),

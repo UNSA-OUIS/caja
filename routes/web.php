@@ -321,6 +321,15 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
     Route::post('/notas-debito/enviar', [NotaDebitoController::class, 'enviar'])->name('notas-debito.enviar');
     Route::post('/notas-debito/anular', [NotaDebitoController::class, 'anular'])->name('notas-debito.anular');
+
+    Route::get('/sunat/comunicacion-baja', function () {
+        return Inertia::render('Sunat/ComunicacionBaja');
+    })->name('comunicacion-baja.iniciar');
+    Route::get('/notas-debito/listar', [NotadebitoController::class, 'index'])->name('notas-debito.listar');
+    Route::get('/notas-debito/crear', [NotaDebitoController::class, 'create'])->name('notas-debito.crear');
+    Route::get('/notas-debito', [NotaDebitoController::class, 'store'])->name('notas-debito.registrar');
+    Route::post('/notas-debito/enviar', [NotaDebitoController::class, 'enviar'])->name('notas-debito.enviar');
+    Route::post('/notas-debito/anular', [NotaDebitoController::class, 'anular'])->name('notas-debito.anular');
     /*******************************************************************/
 
     /**************************** Reportes ***************************/
