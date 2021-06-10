@@ -47,7 +47,7 @@ class UsuarioController extends Controller
     }
 
     public function store(UsuarioStoreRequest $request)
-    {      
+    {
         try {
             $usuario = new User();
             $usuario->name = $request->name;
@@ -150,21 +150,21 @@ class UsuarioController extends Controller
 
     public function editMyUser(MiUsuarioUpdateRequest $request, User $usuario)
     {
-        try {                       
-            $usuario->persona->id = $request->id;
-            $usuario->persona->celular = $request->celular;
-            $usuario->persona->email_personal = $request->email_personal;
-            $usuario->persona->direccion = $request->direccion;
-            $usuario->persona->nombre = $request->nombre;
-            $usuario->persona->codigo = $request->codigo;
-            $usuario->persona->update();
+        try {
+            $usuario->id = $request->id;
+            $usuario->celular = $request->celular;
+            $usuario->email_personal = $request->email_personal;
+            $usuario->direccion = $request->direccion;
+            $usuario->nombre = $request->nombre;
+            $usuario->codigo = $request->codigo;
+            $usuario->update();
 
             if ($request->password != "") {
                 $usuario->password = bcrypt($request->password);
                 $usuario->update();
-                Auth::login($usuario);  
+                Auth::login($usuario);
             }
-            $result = ['successMessage' => 'Perfil actualizado con éxito'];   
+            $result = ['successMessage' => 'Perfil actualizado con éxito'];
 
         } catch (\Exception $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el usuario'];
