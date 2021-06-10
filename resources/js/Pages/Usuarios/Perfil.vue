@@ -21,15 +21,15 @@
                             <div class="table-responsive mt-4">
                                 <div class="mt-4">
                                     <p class="mb-1">Código cajero :</p>
-                                    <h5 class="font-size-16">{{usuario.persona.codigo}}</h5>
+                                    <h5 class="font-size-16">{{usuario.codigo}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Nombre cajero :</p>
-                                    <h5 class="font-size-16">{{usuario.persona.nombre}}</h5>
+                                    <h5 class="font-size-16">{{usuario.nombre}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Celular :</p>
-                                    <h5 class="font-size-16">{{usuario.persona.celular}}</h5>
+                                    <h5 class="font-size-16">{{usuario.celular}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Correo institucional:</p>
@@ -37,11 +37,11 @@
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Correo personal:</p>
-                                    <h5 class="font-size-16">{{usuario.persona.email_personal}}</h5>
+                                    <h5 class="font-size-16">{{usuario.email_personal}}</h5>
                                 </div>
                                 <div class="mt-4">
                                     <p class="mb-1">Dirección :</p>
-                                    <h5 class="font-size-16">{{usuario.persona.direccion}}</h5>
+                                    <h5 class="font-size-16">{{usuario.direccion}}</h5>
                                 </div>
 
                             </div>
@@ -57,7 +57,7 @@
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" href="#about" role="tab">
                                 <i class="uil uil-user-circle font-size-20"></i>
-                                <span class="d-none d-sm-block">Editar perfil</span> 
+                                <span class="d-none d-sm-block">Editar perfil</span>
                             </a>
                         </li>
                     </ul>
@@ -158,7 +158,7 @@
                                                     {{ $page.props.errors.email_personal[0] }}
                                                 </div>
                                             </b-form-group>
-                                        </b-col>                                              
+                                        </b-col>
                                     </b-row>
                                     <b-row>
                                         <b-col>
@@ -180,7 +180,7 @@
                                                     {{ $page.props.errors.direccion[0] }}
                                                 </div>
                                             </b-form-group>
-                                        </b-col> 
+                                        </b-col>
                                     </b-row>
                                     <!-- <label for="">Si desea cambiar su contraseña tendrá que iniciar sesión nuevamente cuando los cambios sean guardados.</label>
                                     <b-alert :show="desiguales" variant="danger" dismissible>¡Los campos de la contraseña deben ser iguales!</b-alert>
@@ -224,7 +224,7 @@
                                                     {{ $page.props.errors.password[0] }}
                                                 </div>
                                             </b-form-group>
-                                        </b-col>                        
+                                        </b-col>
                                     </b-row> -->
                                     <b-button @click="actualizar" variant="success">Actualizar</b-button>
                                 </b-form>
@@ -241,19 +241,19 @@
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
-    name: "usuarios.perfil",   
-    props: ["usuario"], 
+    name: "usuarios.perfil",
+    props: ["usuario"],
     components: {
         AppLayout
     },
     data() {
         return {
-            accion: "",            
-            fields: [                
+            accion: "",
+            fields: [
                 { key: "categoria", label: "Menú", sortable: true },
-                { key: "permisos", label: "Permisos" },                
+                { key: "permisos", label: "Permisos" },
             ],
-            categoria_permisos: [],   
+            categoria_permisos: [],
             editarUsuario: {
                 id: "",
                 celular: "",
@@ -264,21 +264,21 @@ export default {
                 password: "",
                 passwordRepetido: "",
             },
-            desiguales: false,    
+            desiguales: false,
         };
     },
-    created() {        
-        this.editarUsuario.id = this.usuario.persona.id
-        this.editarUsuario.celular = this.usuario.persona.celular
-        this.editarUsuario.email_personal = this.usuario.persona.email_personal
-        this.editarUsuario.direccion = this.usuario.persona.direccion
-        this.editarUsuario.codigo = this.usuario.persona.codigo
-        this.editarUsuario.nombre = this.usuario.persona.nombre
+    created() {
+        this.editarUsuario.id = this.usuario.id
+        this.editarUsuario.celular = this.usuario.celular
+        this.editarUsuario.email_personal = this.usuario.email_personal
+        this.editarUsuario.direccion = this.usuario.direccion
+        this.editarUsuario.codigo = this.usuario.codigo
+        this.editarUsuario.nombre = this.usuario.nombre
     },
     methods: {
         mostrar_permisos() {
-            if (this.permissions.length > 0) {                            
-                let permisos = []            
+            if (this.permissions.length > 0) {
+                let permisos = []
                 let categoria_anterior = this.permissions[0].name.split(" ").pop()
                 let categoria, permiso_id, permiso_nombre
 
@@ -286,8 +286,8 @@ export default {
                     categoria = permission.name.split(" ").pop()
                     permiso_id = permission.id
                     permiso_nombre = permission.name.split(" ").shift()
-                    
-                    if (categoria !== categoria_anterior) {                                                    
+
+                    if (categoria !== categoria_anterior) {
                         this.categoria_permisos.push({
                             'categoria': categoria_anterior,
                             'permisos': permisos
@@ -299,16 +299,16 @@ export default {
                     permisos.push({
                         'id': permiso_id,
                         'nombre': permiso_nombre
-                    })               
+                    })
                 })
 
                 this.categoria_permisos.push({
                     'categoria': categoria_anterior,
                     'permisos': permisos
-                })                           
-            }            
+                })
+            }
         },
-        registrar() {            
+        registrar() {
             this.$inertia.post(
                 route("usuarios.registrar"),
                 this.usuario

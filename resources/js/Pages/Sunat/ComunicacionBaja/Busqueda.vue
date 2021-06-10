@@ -10,35 +10,46 @@
             Lista de cobros
           </inertia-link>
         </li>
-        <li class="breadcrumb-item active">Enviar comunicacion de baja a sunat</li>
+        <li class="breadcrumb-item active">
+          Enviar comunicacion de baja a sunat
+        </li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Enviar comunicacion de baja a sunat</span>
+        <span class="font-weight-bold"
+          >Enviar comunicacion de baja a sunat</span
+        >
       </div>
       <div class="card-body">
-          <div class="row justify-content-center mb-1">
-          <fieldset class="col-12 col-md-10 px-3">
+        <div class="row justify-content-center mb-5">
+          <fieldset class="col-6 col-md-10 px-3">
             <legend>Opciones de búsqueda:</legend>
             <div class="row justify-content-center">
-              <b-form inline>
-                <b-form-datepicker
-                  name="fecha_inicio"
-                  v-model="fecha_inicio"
-                  placeholder="Fecha de Inicio"
-                ></b-form-datepicker>
-                &nbsp;
-                <b-form-datepicker
-                  name="fecha_fin"
-                  v-model="fecha_fin"
-                  placeholder="Fecha de Fin"
-                ></b-form-datepicker>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <b-form>
+                <template>
+                  <div>
+                    <label>Desde</label>
+                    <b-form-datepicker
+                      name="fecha_inicio"
+                      v-model="fecha_inicio"
+                      class="mb-2"
+                    ></b-form-datepicker>
+                  </div>
+                </template>
+                <template>
+                  <div>
+                    <label>Hasta:</label>
+                    <b-form-datepicker
+                      name="fecha_fin"
+                      v-model="fecha_fin"
+                      class="mb-2"
+                    ></b-form-datepicker>
+                  </div>
+                </template>
                 <b-button variant="outline-success" @click="buscar_facturas()">
                   Buscar Facturas <b-icon icon="search"></b-icon>
                 </b-button>
-                &nbsp;
                 <b-button variant="outline-primary" @click="limpiar()">
                   Limpiar <b-icon icon="arrow-clockwise"></b-icon>
                 </b-button>
@@ -49,7 +60,6 @@
             </div>
           </fieldset>
         </div>
-        <br />
         <div v-if="mostrar_facturas">
           <facturas
             :fecha_inicio="fecha_inicio"

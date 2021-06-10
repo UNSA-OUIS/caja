@@ -37,7 +37,14 @@
 
     <button
       type="button"
-      class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn"
+      class="
+        btn btn-sm
+        px-3
+        font-size-16
+        header-item
+        waves-effect
+        vertical-menu-btn
+      "
       @click="mostrarOcultarBarraLateral()"
     >
       <i class="fa fa-fw fa-bars"></i>
@@ -53,7 +60,7 @@
         <template #default="{ hide }">
         <div class="p-3 bg-dark">-->
 
-    <div data-simplebar style="width:100%; height:100%; overflow: scroll;">
+    <div data-simplebar style="width: 100%; height: 100%; overflow: scroll">
       <div id="sidebar-menu">
         <ul class="metismenu list-unstyled" id="side-menu">
           <li class="menu-title">Menu</li>
@@ -299,6 +306,35 @@
               <span>Comprobantes</span>
             </inertia-link>
           </li>
+          <li>
+            <a
+              href="javascript: void(0);"
+              class="has-arrow waves-effect"
+              @click="mostrarMenu(3)"
+              :class="{
+                'mm-active': path == 'banco',
+              }"
+            >
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span>Procesos</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
+              <li
+                :class="{
+                  'mm-active': path == 'banco',
+                }"
+              >
+                <inertia-link
+                  :href="route('banco.iniciar')"
+                  :class="{
+                    active: path == 'banco',
+                  }"
+                >
+                  Banco
+                </inertia-link>
+              </li>
+            </ul>
+          </li>
           <!--<li :class="{ 'mm-active': path == 'comprobantes' }">
             <inertia-link
               :class="{ active: path == 'comprobantes' }"
@@ -333,12 +369,12 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(3)"
+              @click="mostrarMenu(4)"
               :class="{
                 'mm-active':
                   path == 'boletas' ||
                   path == 'facturas' ||
-                  path == 'comunicacion-baja'||
+                  path == 'comunicacion-baja' ||
                   path == 'notas-credito' ||
                   path == 'notas-debito' ||
                   path == 'consultas-resumen-diario',
@@ -347,21 +383,7 @@
               <i class="fas fa-cloud-upload-alt"></i>
               <span>Sunat</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
-              <!--<li
-                :class="{
-                  'mm-active': path == 'dashboard-sunat',
-                }"
-              >
-                <inertia-link
-                  :href="route('sunat.tablero')"
-                  :class="{
-                    active: path == 'dashboard-sunat',
-                  }"
-                >
-                  Dashboard Sunat
-                </inertia-link>
-              </li>-->
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
               <li
                 :class="{
                   'mm-active': path == 'boletas',
@@ -406,6 +428,20 @@
               </li>
               <!--<li
                 :class="{
+                  'mm-active': path == 'dashboard-sunat',
+                }"
+              >
+                <inertia-link
+                  :href="route('sunat.tablero')"
+                  :class="{
+                    active: path == 'dashboard-sunat',
+                  }"
+                >
+                  Dashboard Sunat
+                </inertia-link>
+              </li>-->
+              <!--<li
+                :class="{
                   'mm-active': path == 'notas-debito',
                 }"
               >
@@ -446,7 +482,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(4)"
+              @click="mostrarMenu(5)"
               :class="{
                 'mm-active':
                   path == 'tipo-comprobante' ||
@@ -457,7 +493,7 @@
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
               <li>
                 <inertia-link
                   :href="route('comprobantes.consultas')"
@@ -476,7 +512,9 @@
                   :class="{
                     active: path == 'tipo-comprobante',
                   }"
-                  v-if="$permissions.can([{ name: 'Listar Tipos-Comprobante' }])"
+                  v-if="
+                    $permissions.can([{ name: 'Listar Tipos-Comprobante' }])
+                  "
                 >
                   Tipos de comprobante
                 </inertia-link>
@@ -507,7 +545,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(5)"
+              @click="mostrarMenu(6)"
               :class="{
                 'mm-active':
                   path == 'reportes-diario' ||
@@ -519,7 +557,7 @@
               <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[6]">
               <li>
                 <inertia-link
                   href="#"

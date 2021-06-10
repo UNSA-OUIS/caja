@@ -5,20 +5,15 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item">
-          <inertia-link :href="route('cobros.iniciar')">
-            Lista de cobros
-          </inertia-link>
-        </li>
-        <li class="breadcrumb-item active">Enviar facturas a sunat</li>
+        <li class="breadcrumb-item active">Procesar cobros del banco</li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Enviar facturas a sunat</span>
+        <span class="font-weight-bold">Procesar cobros del banco</span>
       </div>
       <div class="card-body">
-        <div class="row justify-content-center mb-5">
+        <div class="row justify-content-center mb-1">
           <fieldset class="col-6 col-md-10 px-3">
             <legend>Opciones de búsqueda:</legend>
             <div class="row justify-content-center">
@@ -43,26 +38,54 @@
                     ></b-form-datepicker>
                   </div>
                 </template>
-                <b-button variant="outline-success" @click="buscar_facturas()">
-                  Buscar Facturas <b-icon icon="search"></b-icon>
+                <template>
+                  <div>
+                    <b-form-select
+                      v-if="procesar_pagos"
+                      v-model="proceso"
+                      :options="procesos"
+                      class="mb-3"
+                    >
+                      <template #first>
+                        <b-form-select-option :value="null" disabled
+                          >-- Elija un Proceso --</b-form-select-option
+                        >
+                      </template>
+                    </b-form-select>
+                  </div>
+                </template>
+                <b-button
+                  v-if="!procesar_pagos"
+                  variant="outline-success"
+                  @click="consultar_pagos()"
+                >
+                  Consultar Pagos <b-icon icon="search"></b-icon>
+                </b-button>
+                <b-button
+                  v-if="procesar_pagos"
+                  variant="outline-success"
+                  @click="consultar_pagos()"
+                >
+                  Procesar Pagos <b-icon icon="search"></b-icon>
                 </b-button>
                 <b-button variant="outline-primary" @click="limpiar()">
                   Limpiar <b-icon icon="arrow-clockwise"></b-icon>
                 </b-button>
               </b-form>
-              <b-alert v-show="alerta" show variant="danger" dismissible>
-                {{ alerta_mensaje }}
-              </b-alert>
             </div>
+            <div class="row justify-content-center"></div>
+            <b-alert v-show="alerta" show variant="danger" dismissible>
+              {{ alerta_mensaje }}
+            </b-alert>
           </fieldset>
         </div>
-        <div v-if="mostrar_facturas">
-          <facturas
+        <div v-if="mostrar_boletas">
+          <pagos
             :fecha_inicio="fecha_inicio"
             :fecha_fin="fecha_fin"
             :key="renderKey"
           >
-          </facturas>
+          </pagos>
         </div>
       </div>
     </div>
@@ -70,27 +93,40 @@
 </template>
 <script>
 import AppLayout from "@/Layouts/AppLayout";
-import Facturas from "./Facturas";
+import Pagos from "./Pagos";
 
 export default {
   name: "facturas.busqueda",
   components: {
     AppLayout,
-    Facturas,
+    Pagos,
   },
   data() {
     return {
+      procesar_pagos: false,
+      procesos: [
+        { value: 1, text: "Admision" },
+        { value: 2, text: "Extraordinario" },
+        { value: 3, text: "Posgrado" },
+        { value: 4, text: "2DA Especialidad" },
+        { value: 5, text: "Matricula Pregrado" },
+        { value: 6, text: "Regularizacion Expediente" },
+        { value: 7, text: "Deuda - CEPREUNSA" },
+        { value: 8, text: "Centro de Idiomas" },
+        { value: 9, text: "Residentado Medicos" },
+      ],
+      proceso: null,
       app_url: this.$root.app_url,
       alerta: false,
       alerta_mensaje: "",
       fecha_inicio: "",
       fecha_fin: "",
-      mostrar_facturas: false,
+      mostrar_boletas: false,
       renderKey: 1,
     };
   },
   methods: {
-    buscar_facturas() {
+    consultar_pagos() {
       if (!this.fecha_inicio && !this.fecha_fin) {
         this.alerta = true;
         this.alerta_mensaje = "Debe seleccionar una fecha de inicio y fin";
@@ -101,14 +137,16 @@ export default {
         this.alerta = true;
         this.alerta_mensaje = "Debe seleccionar una fecha de fin";
       } else {
-        this.mostrar_facturas = true;
+        this.mostrar_boletas = true;
+        this.procesar_pagos = true;
         this.renderKey++;
         this.alerta = false;
         this.alerta_mensaje = "";
       }
     },
     limpiar() {
-      this.mostrar_facturas = false;
+      this.mostrar_boletas = false;
+      this.procesar_pagos = false;
       this.filtrado = false;
       this.alerta = false;
       this.fecha_inicio = "";

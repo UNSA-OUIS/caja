@@ -10,6 +10,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClasificadorController;
 use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\AsignacionesController;
+use App\Http\Controllers\BancoController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\ParticularController;
 use App\Http\Controllers\EmpresaController;
@@ -274,6 +275,14 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.enviarCorreo');
     Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
+    /*******************************************************************/
+
+     /**************************** PROCESOS ***************************/
+     Route::get('/banco', function () {
+        return Inertia::render('Procesos/Banco/Busqueda');
+    })->name('banco.iniciar');
+
+    Route::get('/banco/listar', [BancoController::class, 'index'])->name('banco.listar');
     /*******************************************************************/
 
     /**************************** Sunat ***************************/
