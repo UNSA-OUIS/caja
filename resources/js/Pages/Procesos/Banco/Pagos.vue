@@ -24,8 +24,8 @@
           <strong v-else>Enviando resumen diario a sunat</strong>
         </div>
       </template>
-      <template #table-caption
-        >Se encontraron {{ totalRows }} boletas
+      <template v-if="totalRows != ''" #table-caption
+        >Se encontraron {{ totalRows }} registros
       </template>
     </b-table>
     <b-row>
@@ -55,10 +55,14 @@ export default {
       isBusy: false,
       enviado: false,
       fields: [
-        { key: "id", label: "ID", class: "text-center" },
+        { key: "insc_codi_web", label: "Codigo Bancario", class: "text-center" },
+        { key: "apn", label: "Apellidos y Nombres", class: "text-center" },
+        { key: "mont_calc", label: "Monto calculado", class: "text-center" },
+        { key: "oper", label: "Registro", class: "text-center" },
+        { key: "fvencimiento", label: "Fecha de Vencimiento", class: "text-center" },
         { key: "frecepcion", label: "Fecha de Recepcion", class: "text-center" },
       ],
-      totalRows: 1,
+      totalRows: "",
     };
   },
   methods: {

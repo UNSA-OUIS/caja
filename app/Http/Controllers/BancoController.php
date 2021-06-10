@@ -17,7 +17,7 @@ class BancoController extends Controller
         //$this->authorize("viewAny", Comprobante::class);
 
         $query = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-            ->whereDate('frecepcion', '<=', $request->fecha_fin)->get();
+            ->whereDate('frecepcion', '<=', $request->fecha_fin)->where('esta_id',2)->get();
         return $query;
     }
 
