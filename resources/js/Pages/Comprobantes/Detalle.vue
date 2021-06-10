@@ -102,6 +102,18 @@
           empty-text="No hay conceptos para mostrar"
         >
           <template v-slot:cell(codigo)="row">
+            <!--<b-button
+              v-if="row.item.codi_depe === 'Centro de costos multiple'"
+              variant="info"
+              size="sm"
+              title="Agregar"
+              v-b-modal[row.index]
+            >
+              + Centro Costo
+            </b-button>-->
+            <template v-if="row.item.codi_depe === 'Centro de costos multiple'">
+              <modal-centro-costos :comprobante="comprobante" :index="row.index"></modal-centro-costos>
+            </template>
             <b-form-input
               class="text-center"
               :value="row.item.codigo"
@@ -206,11 +218,13 @@
 <script>
 const axios = require("axios");
 import AppLayout from "@/Layouts/AppLayout";
+import ModalCentroCostos from "./ModalCentroCostos";
 export default {
   name: "comprobantes.detalle",
   props: ["comprobante"],
   components: {
     AppLayout,
+    ModalCentroCostos
   },
   data() {
     return {
@@ -345,6 +359,10 @@ export default {
       }
       else if(this.comprobante.detalles.some(element => parseFloat(element.precio) == 0 || element.precio.length == 0)) {
         this.validacion_mensaje_detalles = "Se encontraron detalles con precios variables aún no especificados, por favor revisar."
+        return false
+      }
+      else if(this.comprobante.detalles.some(element => element.codi_depe === "Centro de costos multiple")) {
+        this.validacion_mensaje_detalles = "Se encontraron detalles con centro de costo indefinido, por favor revisar."
         return false
       }
       return true

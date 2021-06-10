@@ -23,6 +23,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->double('descuento', 8, 4);
             $table->boolean('estado')->default(true);
             $table->enum('tipo_descuento', ['soles', 'porcentaje']);
+            $table->string('codi_depe')->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
             $table->decimal('subtotal', 7, 2);
             $table->tinyInteger('concepto_id');
             $table->bigInteger('comprobante_id');

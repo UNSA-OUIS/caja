@@ -191,7 +191,7 @@ class ConceptoController extends Controller
 
         $centroCostos = Dependencia::where('codi_depe', 'like', '%' . $filtro . '%')
             ->orWhere('nomb_depe', 'like', '%' . $filtro . '%')
-            ->select('codi_depe', 'nomb_depe')
+            ->select('codi_depe', 'nomb_depe', DB::raw("(CONCAT(codi_depe, ' - ', nomb_depe)) AS vista_centroCosto"))
             ->orderBy('codi_depe', 'asc')
             ->get();
 
@@ -206,7 +206,7 @@ class ConceptoController extends Controller
         $puntoVenta = PuntosVenta::with(['conceptos'=>function($query) use ($filtro){
             $query->where('descripcion', 'ilike', '%' . $filtro . '%')
             ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-            ->select('conceptos.id as concepto_id', 'codigo', 'descripcion', 'precio', 'tipo_precio', 'tipo_afectacion', 
+            ->select('conceptos.id as concepto_id', 'codigo', 'descripcion', 'precio', 'tipo_precio', 'tipo_afectacion', 'codi_depe', 
                       DB::raw("(CONCAT(codigo, ' - ', descripcion)) AS vista_concepto"))
             ->orderBy('descripcion', 'asc')
             ->get();
