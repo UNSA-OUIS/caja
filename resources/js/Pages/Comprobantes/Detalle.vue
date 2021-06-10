@@ -102,23 +102,19 @@
           empty-text="No hay conceptos para mostrar"
         >
           <template v-slot:cell(codigo)="row">
-            <!--<b-button
-              v-if="row.item.codi_depe === 'Centro de costos multiple'"
-              variant="info"
-              size="sm"
-              title="Agregar"
-              v-b-modal[row.index]
-            >
-              + Centro Costo
-            </b-button>-->
-            <template v-if="row.item.codi_depe === 'Centro de costos multiple'">
-              <modal-centro-costos :comprobante="comprobante" :index="row.index"></modal-centro-costos>
-            </template>
             <b-form-input
               class="text-center"
               :value="row.item.codigo"
               readonly
             ></b-form-input>
+          </template>
+          <template v-slot:cell(codi_depe)="row">
+            <template v-if="row.item.codi_depe === 'Centro de costos multiple'">
+              <modal-centro-costos :comprobante="comprobante" :index="row.index"></modal-centro-costos>
+            </template>
+            <template v-else>
+              {{ row.item.codi_depe }}
+            </template>
           </template>
           <template v-slot:cell(concepto)="row">
             <b-form-input :value="row.item.descripcion" readonly></b-form-input>
@@ -185,22 +181,22 @@
           </template>
           <template slot="custom-foot" slot-scope="">
             <b-tr>
-              <b-td colspan="4"></b-td>
+              <b-td colspan="5"></b-td>
               <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="4"></b-td>
+              <b-td colspan="5"></b-td>
               <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="4"></b-td>
+              <b-td colspan="5"></b-td>
               <b-td class="text-right font-weight-bold">IGV:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="4"></b-td>
+              <b-td colspan="5"></b-td>
               <b-td class="text-right font-weight-bold">Importe total:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ precioTotal | currency }}</b-td><b-td />
             </b-tr>
@@ -243,14 +239,20 @@ export default {
           tdClass: "codigo",
         },
         {
+          key: "codi_depe",
+          label: "C. COSTO",
+          class: "text-center",
+          tdClass: "centro",
+        },
+        {
           key: "descripcion",
           label: "CONCEPTO",
           class: "text-center",
           tdClass: "concepto",
         },
-        { key: "cantidad", label: "CANTIDAD", class: "text-center" },
-        { key: "precio", label: "COSTO", class: "text-center" },
-        { key: "descuento", label: "DESCUENTO", class: "text-center" },
+        { key: "cantidad", label: "CANT.", class: "text-center", tdClass: "cantidad" },
+        { key: "precio", label: "COSTO", class: "text-center", tdClass: "costo" },
+        { key: "descuento", label: "DESCUENTO", class: "text-center", tdClass: "descuento" },
         { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
         { key: "acciones", label: "", class: "text-center" },
       ],
@@ -625,7 +627,19 @@ export default {
 </script>
 <style>
 .codigo {
-  width: 150px;
+  max-width: 100px;
+}
+.cantidad {
+  max-width: 100px;
+}
+.costo {
+  max-width: 100px;
+}
+.centro {
+  max-width: 150px;
+}
+.descuento {
+  max-width: 120px;
 }
 .concepto {
   width: 400px;
