@@ -386,6 +386,7 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->inafecto =  $detalle['inafecto'];
                 $detalle_comprobante->impuesto =  $detalle['impuesto'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
+                $detalle_comprobante->codi_depe =  $detalle['codi_depe'];
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];
                 $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
@@ -439,6 +440,7 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->gravado =  $detalle['gravado'];
                 $detalle_comprobante->inafecto =  $detalle['inafecto'];
                 $detalle_comprobante->impuesto =  $detalle['impuesto'];
+                $detalle_comprobante->codi_depe =  $detalle['codi_depe'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];
