@@ -9,5 +9,5 @@ class BancoBCP extends Model
 {
     use HasFactory;
     protected $connection = "mysql3";
-    protected $table = 'banco_bcp';
+    protected $table = 'cja_banco';
 }

@@ -14,79 +14,61 @@
       </div>
       <div class="card-body">
         <div class="row justify-content-center mb-1">
-          <fieldset class="col-6 col-md-10 px-3">
-            <legend>Opciones de búsqueda:</legend>
-            <div class="row justify-content-center">
-              <b-form>
-                <template>
-                  <div>
-                    <label>Desde</label>
-                    <b-form-datepicker
-                      name="fecha_inicio"
-                      v-model="fecha_inicio"
-                      class="mb-2"
-                    ></b-form-datepicker>
-                  </div>
-                </template>
-                <template>
-                  <div>
-                    <label>Hasta:</label>
-                    <b-form-datepicker
-                      name="fecha_fin"
-                      v-model="fecha_fin"
-                      class="mb-2"
-                    ></b-form-datepicker>
-                  </div>
-                </template>
-                <template>
-                  <div>
-                    <b-form-select
-                      v-if="procesar_pagos"
-                      v-model="proceso"
-                      :options="procesos"
-                      class="mb-3"
-                    >
-                      <template #first>
-                        <b-form-select-option :value="null" disabled
-                          >-- Elija un Proceso --</b-form-select-option
-                        >
-                      </template>
-                    </b-form-select>
-                  </div>
-                </template>
-                <b-button
-                  v-if="!procesar_pagos"
-                  variant="outline-success"
-                  @click="consultar_pagos()"
+          <b-form inline>
+            <b-form-datepicker
+              name="fecha_inicio"
+              v-model="fecha_inicio"
+              placeholder="Desde"
+            ></b-form-datepicker>
+            &nbsp;&nbsp;
+            <b-form-datepicker
+              name="fecha_fin"
+              v-model="fecha_fin"
+              placeholder="Hasta"
+            ></b-form-datepicker>
+            &nbsp;&nbsp;
+            <b-form-select
+              v-if="procesar_pagos"
+              v-model="proceso"
+              :options="procesos"
+            >
+              <template #first>
+                <b-form-select-option :value="null" disabled
+                  >-- Elija un Proceso --</b-form-select-option
                 >
-                  Consultar Pagos <b-icon icon="search"></b-icon>
-                </b-button>
-                <b-button
-                  v-if="procesar_pagos"
-                  variant="outline-success"
-                  @click="consultar_pagos()"
-                >
-                  Procesar Pagos <b-icon icon="search"></b-icon>
-                </b-button>
-                <b-button variant="outline-primary" @click="limpiar()">
-                  Limpiar <b-icon icon="arrow-clockwise"></b-icon>
-                </b-button>
-              </b-form>
-            </div>
-            <div class="row justify-content-center"></div>
-            <b-alert v-show="alerta" show variant="danger" dismissible>
-              {{ alerta_mensaje }}
-            </b-alert>
-          </fieldset>
+              </template>
+            </b-form-select>
+            &nbsp;&nbsp;
+            <b-button
+              v-if="!procesar_pagos"
+              variant="outline-success"
+              @click="consultar_pagos()"
+            >
+              Consultar Pagos <b-icon icon="search"></b-icon>
+            </b-button>
+            &nbsp;
+            <b-button
+              v-if="procesar_pagos"
+              variant="outline-success"
+              @click="consultar_pagos()"
+            >
+              Procesar Pagos <b-icon icon="search"></b-icon>
+            </b-button>
+            <b-button variant="outline-primary" @click="limpiar()">
+              Limpiar <b-icon icon="arrow-clockwise"></b-icon>
+            </b-button>
+          </b-form>
         </div>
-        <div v-if="mostrar_boletas">
-          <pagos
-            :fecha_inicio="fecha_inicio"
-            :fecha_fin="fecha_fin"
-            :key="renderKey"
-          >
-          </pagos>
-        </div>
+        <b-alert v-show="alerta" show variant="danger" dismissible>
+          {{ alerta_mensaje }}
+        </b-alert>
+        <hr />
+        <pagos
+          :fecha_inicio="fecha_inicio"
+          :fecha_fin="fecha_fin"
+          :key="renderKey"
+        >
+        </pagos>
       </div>
     </div>
   </app-layout>
@@ -124,6 +106,11 @@ export default {
       mostrar_boletas: false,
       renderKey: 1,
     };
+  },
+  created() {
+    const now = new Date();
+    this.fecha_inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    this.fecha_fin = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   },
   methods: {
     consultar_pagos() {
