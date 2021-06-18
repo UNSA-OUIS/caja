@@ -2,19 +2,22 @@
   <app-layout>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item ml-auto">                    
-            <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
         <li class="breadcrumb-item active">Lista de números de comprobante</li>
       </ol>
-    </nav>  
+    </nav>
     <div class="card">
-      <div class="card-header d-flex align-items-center">                
+      <div class="card-header d-flex align-items-center">
         <span class="font-weight-bold">Lista de números de comprobante</span>
-        <inertia-link class="btn btn-success ml-auto" :href="route('numerosOperacion.crear')">
+        <inertia-link
+          class="btn btn-success ml-auto"
+          :href="route('numerosOperacion.crear')"
+        >
           Nuevo
         </inertia-link>
-      </div>        
+      </div>
       <div class="card-body">
         <b-alert
           show
@@ -101,36 +104,36 @@
             {{ row.item.tipo_comprobante.nombre }}
           </template>
           <template v-slot:cell(condicion)="row">
-            <span
-              v-if="!row.item.deleted_at"
-              class="badge badge-pill badge-soft-success font-size-12"
-              >Activo</span
+            <b-badge v-if="!row.item.deleted_at" variant="success"
+              >Activo</b-badge
             >
-            <span v-else class="badge badge-pill badge-soft-danger font-size-12"
-              >Inactivo</span
-            >
+            <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+              class="btn btn-primary btn-sm"
               :href="route('numerosOperacion.mostrar', row.item.id)"
             >
-              Ver
+              <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
               v-if="!row.item.deleted_at"
-              class="btn btn-danger btn-sm btn-rounded waves-effect waves-light"
+              variant="danger"
+              size="sm"
+              title="Eliminar"
               @click="eliminar(row.item)"
             >
-              Desactivar
+              <b-icon icon="trash"></b-icon>
             </b-button>
             <b-button
               v-else
-              class="btn btn-success btn-sm btn-rounded waves-effect waves-light"
+              variant="success"
+              size="sm"
+              title="Restaurar"
               @click="restaurar(row.item)"
             >
-              Restaurar
+              <b-icon icon="check"></b-icon>
             </b-button>
           </template>
         </b-table>
@@ -179,7 +182,11 @@ export default {
           class: "text-center",
         },
         { key: "punto_venta", label: "Punto de venta", class: "text-left" },
-        { key: "tipo_comprobante", label: "Tipo de comprobante", class: "text-left" },
+        {
+          key: "tipo_comprobante",
+          label: "Tipo de comprobante",
+          class: "text-left",
+        },
         { key: "condicion", label: "Condición", class: "text-left" },
         { key: "acciones", label: "Acciones", class: "text-center" },
       ],
@@ -209,7 +216,9 @@ export default {
         params += "&sortby=" + ctx.sortBy + "&sortdesc=" + ctx.sortDesc;
       }
 
-      const promise = axios.get(`${this.app_url}/numeros-operacion/listar${params}`);
+      const promise = axios.get(
+        `${this.app_url}/numeros-operacion/listar${params}`
+      );
 
       return promise.then((response) => {
         const numerosOperacion = response.data.data;
@@ -220,32 +229,42 @@ export default {
     },
     eliminar(numeroOperacion) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer desactivar este número de comprobante?", {
-          title: "Desactivar número de comprobante",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer desactivar este número de comprobante?",
+          {
+            title: "Desactivar número de comprobante",
+            okVariant: "danger",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then((value) => {
           if (value) {
-            this.$inertia.delete(route("numerosOperacion.eliminar", [numeroOperacion.id]));
+            this.$inertia.delete(
+              route("numerosOperacion.eliminar", [numeroOperacion.id])
+            );
             this.refreshTable();
           }
         });
     },
     async restaurar(numeroOperacion) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer restaurar este número de comprobante?", {
-          title: "Restaurar número de comprobante",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer restaurar este número de comprobante?",
+          {
+            title: "Restaurar número de comprobante",
+            okVariant: "success",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then((value) => {
           if (value) {
-            this.$inertia.post(route("numerosOperacion.restaurar", [numeroOperacion.id]));
+            this.$inertia.post(
+              route("numerosOperacion.restaurar", [numeroOperacion.id])
+            );
             this.refreshTable();
           }
         });
@@ -258,11 +277,11 @@ export default {
 };
 </script>
 <style scoped>
-    .breadcrumb li a {
-        color: blue;
-    }
-    .breadcrumb {
-        margin-bottom: 0;
-        background-color: white;
-    }
+.breadcrumb li a {
+  color: blue;
+}
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
 </style>
