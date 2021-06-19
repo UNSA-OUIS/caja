@@ -275,6 +275,7 @@ export default {
                 this.tipos_usuario = this.tipos_usuario_factura
                 this.show_select_tipos_usuario = true
                 this.show_busqueda_documento = false
+                this.tipo_usuario = 'EMPRESA'
             }
             else {
                 this.show_select_tipos_usuario = false

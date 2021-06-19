@@ -3,7 +3,7 @@
         <div class="row mb-2">
             <div class="col-lg-12">
                 <div class="text-right">
-                    <b-button v-if="totalRows == 0" size="sm" variant="success" v-b-modal.add-empresa>
+                    <b-button v-if="totalRows == 0 && opcion_busqueda == 'RUC'" size="sm" variant="success" v-b-modal.add-empresa>
                         Nuevo
                     </b-button>                    
                 </div>
@@ -183,7 +183,11 @@ export default {
                 //this.toggleBusy()                               
                 const usuarios = response.data.data
                 this.totalRows = response.data.total                    
-                
+                if (this.totalRows == 1 && this.opcion_busqueda === 'RUC'){
+                    this.$inertia.get(route('comprobantes.crear_empresa'), {                
+                    'empresa' : usuarios[0],                
+            })
+                }
                 return usuarios || [];
             });
         },             

@@ -20,7 +20,10 @@ class UsuarioController extends Controller
         //$this->authorize("viewAny", User::class);
 
         $query = User::where('name', 'like', '%' . $request->filter . '%')
-                    ->orWhere('email', 'like', '%' . $request->filter . '%');
+                    ->orWhere('email', 'like', '%' . $request->filter . '%')
+                    ->orWhereHas('roles', function ($query) use ($request) {
+                        $query->where('name', 'like', '%' . $request->filter . '%');
+                    });;
         $sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
