@@ -77,7 +77,11 @@ export default {
                 //this.toggleBusy()                               
                 const usuarios = response.data.data
                 this.totalRows = response.data.total                    
-                
+                if (this.totalRows == 1 && this.opcion_busqueda === 'CODIGO_DEPE') {
+                    this.$inertia.get(route('comprobantes.crear_dependencia'), {                
+                        'dependencia' : usuarios[0],                
+                    })
+                }
                 return usuarios || [];
             });
         },             

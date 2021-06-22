@@ -760,7 +760,7 @@ class ComprobanteController extends Controller
                     ->orderBy('razon_social', 'asc');
             }
         } else if ($request->tipo_usuario == 'DOCENTE') {
-            if ($request->opcion_busqueda == 'CODIGO') {
+            if ($request->opcion_busqueda == 'CODIGO_DOC') {
                 $query = Docente::where('codper', $request->filtro)
                     ->where('esta_doc', 'A')
                     ->select('depend', 'codper', 'dic', DB::raw("REPLACE(apn, '/', ' ') as apn"), 'correo');
@@ -771,7 +771,7 @@ class ComprobanteController extends Controller
                     ->orderBy('apn', 'asc');
             }
         } else if ($request->tipo_usuario == 'DEPENDENCIA') {
-            if ($request->opcion_busqueda == 'CODIGO') {
+            if ($request->opcion_busqueda == 'CODIGO_DEPE') {
                 $query = Dependencia::where('codi_depe', $request->filtro)
                     ->select('codi_depe', 'nomb_depe', 'mail_depe');
             } else if ($request->opcion_busqueda == 'NOMBRE') {

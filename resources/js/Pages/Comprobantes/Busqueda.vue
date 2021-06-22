@@ -214,11 +214,11 @@ export default {
                 { value: 'APN', text: 'Apellidos y nombres' },
             ],
             opciones_busqueda_docente: [
-                { value: 'CODIGO', text: 'CÓDIGO' },
+                { value: 'CODIGO_DOC', text: 'CÓDIGO' },
                 { value: 'APN', text: 'Apellidos y nombres' },
             ],
             opciones_busqueda_dependencia: [
-                { value: 'CODIGO', text: 'CÓDIGO' },
+                { value: 'CODIGO_DEPE', text: 'CÓDIGO' },
                 { value: 'NOMBRE', text: 'Nombre dependencia' },
             ],
             opciones_busqueda_empresa: [
@@ -350,12 +350,19 @@ export default {
                     this.form_validation_variables.only_letters=false;
                     this.form_validation_variables.only_numbers=false;
                     break;
-                case 'CODIGO':
+                case 'CODIGO_DOC':
                     this.filtro = ''
-                    this.form_validation_variables.minsize=4;
-                    this.form_validation_variables.maxsize=10;
+                    this.form_validation_variables.minsize=6;
+                    this.form_validation_variables.maxsize=6;
                     this.form_validation_variables.only_letters=false;
                     this.form_validation_variables.only_numbers=false;
+                    break;
+                case 'CODIGO_DEPE':
+                    this.filtro = ''
+                    this.form_validation_variables.minsize=9;
+                    this.form_validation_variables.maxsize=9;
+                    this.form_validation_variables.only_letters=false;
+                    this.form_validation_variables.only_numbers=true;
                     break;
                 case 'APN':
                     this.filtro = ''

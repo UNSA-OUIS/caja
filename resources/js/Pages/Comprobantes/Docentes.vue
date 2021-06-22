@@ -77,7 +77,11 @@ export default {
                 //this.toggleBusy()                               
                 const usuarios = response.data.data
                 this.totalRows = response.data.total                    
-                
+                if (this.totalRows == 1 && this.opcion_busqueda === 'CODIGO_DOC') {
+                    this.$inertia.get(route('comprobantes.crear_docente'), {                
+                        'docente' : usuarios[0],                
+                    })
+                }
                 return usuarios || [];
             });
         },             
