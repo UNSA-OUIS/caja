@@ -2,19 +2,22 @@
   <app-layout>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item ml-auto">                    
-            <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        <li class="breadcrumb-item ml-auto">
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
         <li class="breadcrumb-item active">Lista de puntos de venta</li>
       </ol>
-    </nav>  
+    </nav>
     <div class="card">
-      <div class="card-header d-flex align-items-center">                
+      <div class="card-header d-flex align-items-center">
         <span class="font-weight-bold">Lista de puntos de venta</span>
-        <inertia-link class="btn btn-success ml-auto" :href="route('puntosVenta.crear')">
+        <inertia-link
+          class="btn btn-success ml-auto"
+          :href="route('puntosVenta.crear')"
+        >
           Nuevo
         </inertia-link>
-      </div>        
+      </div>
       <div class="card-body">
         <b-alert
           show
@@ -98,36 +101,36 @@
             {{ row.item.user.name }}
           </template>
           <template v-slot:cell(condicion)="row">
-            <span
-              v-if="!row.item.deleted_at"
-              class="badge badge-pill badge-soft-success font-size-12"
-              >Activo</span
+            <b-badge v-if="!row.item.deleted_at" variant="success"
+              >Activo</b-badge
             >
-            <span v-else class="badge badge-pill badge-soft-danger font-size-12"
-              >Inactivo</span
-            >
+            <b-badge v-else variant="secondary">Inactivo</b-badge>
           </template>
           <template v-slot:cell(acciones)="row">
             <inertia-link
               v-if="!row.item.deleted_at"
-              class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
+              class="btn btn-primary btn-sm"
               :href="route('puntosVenta.mostrar', row.item.id)"
             >
-              Ver
+              <b-icon icon="eye"></b-icon>
             </inertia-link>
             <b-button
               v-if="!row.item.deleted_at"
-              class="btn btn-danger btn-sm btn-rounded waves-effect waves-light"
+              variant="danger"
+              size="sm"
+              title="Eliminar"
               @click="eliminar(row.item)"
             >
-              Desactivar
+              <b-icon icon="trash"></b-icon>
             </b-button>
             <b-button
               v-else
-              class="btn btn-success btn-sm btn-rounded waves-effect waves-light"
+              variant="success"
+              size="sm"
+              title="Restaurar"
               @click="restaurar(row.item)"
             >
-              Restaurar
+              <b-icon icon="check"></b-icon>
             </b-button>
           </template>
         </b-table>
@@ -217,29 +220,37 @@ export default {
     },
     eliminar(puntoVenta) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer desactivar este punto de venta?", {
-          title: "Desactivar punto de venta",
-          okVariant: "danger",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer desactivar este punto de venta?",
+          {
+            title: "Desactivar punto de venta",
+            okVariant: "danger",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then((value) => {
           if (value) {
-            this.$inertia.delete(route("puntosVenta.eliminar", [puntoVenta.id]));
+            this.$inertia.delete(
+              route("puntosVenta.eliminar", [puntoVenta.id])
+            );
             this.refreshTable();
           }
         });
     },
     async restaurar(puntoVenta) {
       this.$bvModal
-        .msgBoxConfirm("¿Esta seguro de querer restaurar este punto de venta?", {
-          title: "Restaurar punto de venta",
-          okVariant: "success",
-          okTitle: "SI",
-          cancelTitle: "NO",
-          centered: true,
-        })
+        .msgBoxConfirm(
+          "¿Esta seguro de querer restaurar este punto de venta?",
+          {
+            title: "Restaurar punto de venta",
+            okVariant: "success",
+            okTitle: "SI",
+            cancelTitle: "NO",
+            centered: true,
+          }
+        )
         .then((value) => {
           if (value) {
             this.$inertia.post(route("puntosVenta.restaurar", [puntoVenta.id]));
@@ -255,11 +266,11 @@ export default {
 };
 </script>
 <style scoped>
-    .breadcrumb li a {
-        color: blue;
-    }
-    .breadcrumb {
-        margin-bottom: 0;
-        background-color: white;
-    }
+.breadcrumb li a {
+  color: blue;
+}
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: white;
+}
 </style>

@@ -16,8 +16,17 @@ class BancoController extends Controller
     {
         //$this->authorize("viewAny", Comprobante::class);
 
-        $query = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-            ->whereDate('frecepcion', '<=', $request->fecha_fin)->where('esta_id',2)->get();
+        $query = BancoBCP::select('concepto')
+            ->whereDate('frecepcion', '>=', $request->fecha_inicio)
+            ->whereDate('frecepcion', '<=', $request->fecha_fin)
+            ->selectRaw('count(concepto) as cantidad')
+            ->selectRaw('sum(mont_pag) as monto_acumulado')
+            ->selectRaw("DATE_FORMAT(fpago,'%Y-%m-%d') as fecha_pago")
+            ->selectRaw("DATE_FORMAT(frecepcion,'%Y-%m-%d') as fecha_recepcion")
+            ->groupBy('concepto', 'fecha_pago', 'fecha_recepcion')
+            ->orderBy('concepto', 'ASC')
+            ->get();
+
         return $query;
     }
 
