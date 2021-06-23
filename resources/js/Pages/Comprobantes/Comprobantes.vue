@@ -71,10 +71,19 @@ export default {
                 { key: "usuario", label: "ADMINISTRADO" },
             ],                      
             totalRows: 1,
+            comprobantes: [],
             currentPage: 1,
             perPage: 5,
             pageOptions: [5, 10, 15],                        
         };
+    },
+    created(){
+        if (this.comprobantes.length == 1){
+            this.$inertia.get(route('comprobantes.crear_nota'), {                
+                'comprobanteId' : this.comprobantes[0].id,
+                'tipo_comprobante': this.tipo_comprobante             
+            })
+        }
     },
     methods: {
         refreshTable() {
@@ -97,7 +106,14 @@ export default {
             return promise.then(response => {                
                 //this.toggleBusy()                               
                 const usuarios = response.data.data
-                this.totalRows = response.data.total                    
+                this.comprobantes = response.data.data
+                this.totalRows = response.data.total      
+                if (this.totalRows == 1){
+                    this.$inertia.get(route('comprobantes.crear_nota'), {                
+                        'comprobanteId' : usuarios[0].id,
+                        'tipo_comprobante': this.tipo_comprobante             
+                    })
+                }              
                 
                 return usuarios || [];
             });

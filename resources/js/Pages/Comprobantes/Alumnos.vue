@@ -99,7 +99,14 @@ export default {
             return promise.then(response => {                
                 const usuarios = response.data.data
                 this.totalRows = response.data.total                    
-                
+                if (this.totalRows == 1 && this.opcion_busqueda === 'CUI'){
+                    if (usuarios[0].matriculas.length == 1){
+                        this.$inertia.get(route('comprobantes.crear_alumno'), {                
+                            'alumno' : usuarios[0],
+                            'matricula': usuarios[0].matriculas[0]
+                        })
+                    }
+                }
                 return usuarios || [];
             });
         },             

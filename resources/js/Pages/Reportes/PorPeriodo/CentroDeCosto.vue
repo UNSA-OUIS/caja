@@ -40,19 +40,28 @@
                         label-for="filterInput"
                         class="mb-0"
                         >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="centroCosto"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!centroCosto" @click="centroCosto = ''"
-                                >Limpiar</b-button
+                            <v-select
+                                v-model="centroCosto"
+                                @search="buscarCentroCosto"
+                                :filterable="false"
+                                :options="centrosCosto"
+                                :reduce="centroCosto => centroCosto"
+                                label="vista_centroCosto"
+                                placeholder="Ingrese código o nombre del centro de costo"
                             >
-                            </b-input-group-append>
-                        </b-input-group>
+                                <template #search="{attributes, events}">
+                                    <input
+                                        class="vs__search"
+                                        :required="!centroCosto"
+                                        v-bind="attributes"
+                                        v-on="events"
+                                        v-model="filtroCc"
+                                    />
+                                </template>
+                                <template slot="no-options">
+                                    Lo sentimos, no hay resultados de coincidencia.
+                                </template>
+                            </v-select>
                         </b-form-group>
                     </b-col>
                 </b-row>
@@ -225,7 +234,7 @@ export default {
         return {
             app_url: this.$root.app_url,
             json_fields: {
-                "Código": "codigo",
+                "Código": "codi_depe",
                 "Centro de costos": "dependencia.nomb_depe",
                 "Monto": "monto",
                 },
@@ -244,11 +253,14 @@ export default {
                 { key: "monto", label: "Monto" },
             ],
             filenamepdf: "Reporte_cobros",
-            centroCosto: "",
+            codi_depe: "",
+            centroCosto: null,
+            centrosCosto: [],
             centros: [],
             cajero: null,
             cajeros: [],
             filtro: "",
+            filtroCc: "",
             totalRegistros: 0,
             totalMontos: 0,
             filter: {
@@ -265,6 +277,12 @@ export default {
         },
         cajero:function(val) {
             this.filtro = ""
+        },
+        filtroCc:function(val) {
+            this.filtroCc = val.trim()
+        },
+        centroCosto:function(val) {
+            this.filtroCc = ""
         },
     },
     created(){
@@ -299,6 +317,9 @@ export default {
                 if (this.cajero != null){
                     params = params + "&cajeroId=" + this.cajero.cajero_id
                 }
+                if (this.centroCosto != null){
+                    params = params + "&cenCosCod=" + this.centroCosto.codi_depe
+                }
                 const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 console.log(`${this.app_url}/reportes-periodo/filter-reporte/centros/${params}`)
                 this.centros = response.data.centros
@@ -306,7 +327,7 @@ export default {
                 this.totalMontos = response.data.totalMontos
                 this.json_data = this.centros.slice()
                 this.json_data.push({ 
-                    codigo: "" + this.totalRegistros + " registros",
+                    codi_depe: "" + this.totalRegistros + " registros",
                     dependencia:{nomb_depe: "TOTALES:"},
                     monto: this.totalMontos
                 })
@@ -325,6 +346,17 @@ export default {
                     pdf.text('Página ' + i + ' de ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
                 } 
             }).save()
+        },
+        buscarCentroCosto(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCentroCosto?filtro=${search}`)
+                .then(response => {
+                    this.centrosCosto = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
         },
     },
     computed:{

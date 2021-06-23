@@ -34,18 +34,18 @@ class ReportesController extends Controller
                                     ->whereDate('created_at','<=',$request->fechaFin)->get();
         return ['comprobantes' => $comprobantes];*/
 
-        $comprobantes = Persona::select(DB::raw('DATE(comprobantes.created_at) as date'), 'personas.codigo', 'personas.nombre', 
+        $comprobantes = User::select(DB::raw('DATE(comprobantes.created_at) as date'), 'users.id as codigo', 'users.name as nombre', 
                                     DB::raw('count(case when comprobantes.estado != \'anulado\' then 1 else null end) as cobros'), 
                                     DB::raw('count(case when comprobantes.estado = \'anulado\' then 1 else null end) as anulados'), 
                                     DB::raw('SUM(comprobantes.total) As monto'), DB::raw('SUM(comprobantes.total_descuento) As descuento'), 
                                     DB::raw('SUM(comprobantes.total_impuesto) As impuesto'))
-                                    ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'personas.user_id')
+                                    ->leftJoin('comprobantes', 'comprobantes.cajero_id', '=', 'users.id')
                                     ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
                                     ->whereDate('comprobantes.created_at','<=',$request->fechaFin)
                                     ->when($request->cajeroId != "",function ($q) {
                                         return $q->where('comprobantes.cajero_id', request('cajeroId', 0));
                                     })
-                                    ->groupBy('date', 'personas.codigo','personas.nombre')
+                                    ->groupBy('date', 'codigo','nombre')
                                     ->get();
         //dd($comprobantes);
         $totalRegistros = $comprobantes->count();
@@ -87,11 +87,13 @@ class ReportesController extends Controller
     {
         $filtro = $request->filtro;
 
-        $cajeros = Persona::where('codigo', 'ilike', '%' . $filtro . '%')
-            ->orWhere('nombre', 'ilike', '%' . $filtro . '%')
-            ->select('id as cajero_id', 'codigo', 'nombre',
-            DB::raw("(CONCAT(codigo, ' - ', nombre)) AS vista_cajero"))
-            ->orderBy('codigo', 'asc')
+        $cajeros = User::where(DB::raw("(CONCAT(id, ' - ', name))"), 'ilike', '%' . $filtro . '%')
+            ->whereHas('roles', function ($q) {
+                $q->where('roles.name', '=', 'Cajero');
+            })
+            ->select('id as cajero_id', 'name',
+            DB::raw("(CONCAT(id, ' - ', name)) AS vista_cajero"))
+            ->orderBy('id', 'asc')
             ->get();
 
         return $cajeros;
@@ -121,6 +123,9 @@ class ReportesController extends Controller
                     ->whereDate('detalles_comprobante.created_at','<=',request('fechaFin'))
                     ->when($request->cajeroId != "",function ($q) {
                         return $q->where('comprobantes.cajero_id', request('cajeroId', 0));
+                    })
+                    ->when($request->cenCosCod != "",function ($q) {
+                        return $q->where('conceptos.codi_depe', request('cenCosCod', 0));
                     })
                     ->groupBy('conceptos.codi_depe')->get();
         $totalMontos = $centros->sum('monto');
