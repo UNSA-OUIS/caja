@@ -356,7 +356,9 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/reportes-periodo/centroDeCosto', [ReportesController::class, 'centroDeCosto'])->name('reportes.centroDeCosto');
     Route::get('/reportes-periodo/filter-reporte/centros', [ReportesController::class, 'filtrarCentroDeCosto'])->name('reportes.filtrarCentroDeCosto');
     Route::get('/reportes-periodo/reciboIngreso', [ReportesController::class, 'reciboIngreso'])->name('reportes.reciboIngreso');
+    Route::get('/reportes-periodo/filter-reporte/facturas', [ReportesController::class, 'filtrarFactura'])->name('reportes.filtrarFactura');
     Route::get('/reportes-periodo/facturas', [ReportesController::class, 'facturas'])->name('reportes.facturas');
+    Route::get('/reportes-periodo/filter-reporte/notas', [ReportesController::class, 'filtrarNota'])->name('reportes.filtrarNota');
     Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
     Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
     Route::get('/reportes-periodo/filter-reporte/consolidado', [ReportesController::class, 'filtrarConsolidado'])->name('reportes.filtrarConsolidado');
