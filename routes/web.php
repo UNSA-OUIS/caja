@@ -302,6 +302,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/ComunicacionBaja/Busqueda');
     })->name('comunicacion-baja.iniciar');
     Route::get('/sunat/comunicacion-baja/listarFacturas', [ComunicacionBajaController::class, 'index'])->name('comunicacion-baja.listar');
+    Route::post('/sunat/comunicacion-baja/enviar', [ComunicacionBajaController::class, 'enviar'])->name('comunicacion-baja.enviar');
 
 
     Route::get('/sunat/resumenDiario', function () {
