@@ -46,7 +46,7 @@
                             :options="tipos_nota"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>Seleccione...</option>
+                                <option :value="null" disabled>TODOS</option>
                             </template>
                             </b-form-select>
                         </b-form-group>

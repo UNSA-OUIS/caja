@@ -46,7 +46,7 @@
                             :options="tipos_factura"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>Seleccione...</option>
+                                <option :value="null" disabled>TODOS</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -66,7 +66,7 @@
                             :options="tipos_fecha"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>Seleccione...</option>
+                                <option :value="null" disabled>GENERO</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -88,7 +88,7 @@
                             :options="ctas_corriente"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>Seleccione...</option>
+                                <option :value="null" disabled>TODOS</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -331,14 +331,12 @@ export default {
 
             ],
             tipos_factura: [
-                { value: 1, text: "Option 1" },
-                { value: 2, text: "Option 2" },
-                { value: 3, text: "Option 3" },
+                { value: 1, text: "CANCELADOS" },
+                { value: 2, text: "PENDIENTES" },
+                { value: 3, text: "DETRACCIÓN" },
             ],
             tipos_fecha: [
-                { value: 1, text: "Option 1" },
-                { value: 2, text: "Option 2" },
-                { value: 3, text: "Option 3" },
+                { value: 1, text: "CANCELO" },
             ],
             ctas_corriente: [
                 { value: 1, text: "Option 1" },
