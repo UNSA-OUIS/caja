@@ -375,8 +375,6 @@
                   path == 'boletas' ||
                   path == 'facturas' ||
                   path == 'comunicacion-baja' ||
-                  path == 'notas-credito' ||
-                  path == 'notas-debito' ||
                   path == 'consultas-resumen-diario',
               }"
             >
@@ -426,6 +424,14 @@
                   Comunicacion de baja
                 </inertia-link>
               </li>
+              <li>
+                <inertia-link
+                  :href="route('resumen-diario.iniciar')"
+                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
+                >
+                  Consulta de Ticket
+                </inertia-link>
+              </li>
               <!--<li
                 :class="{
                   'mm-active': path == 'dashboard-sunat',
@@ -468,14 +474,7 @@
                   Enviar notas de credito
                 </inertia-link>
               </li>
-              <li>
-                <inertia-link
-                  :href="route('resumen-diario.iniciar')"
-                  :class="{ 'mm-active': path == 'consultas-resumen-diario' }"
-                >
-                  Enviar resumen diario
-                </inertia-link>
-              </li>-->
+              -->
             </ul>
           </li>
           <li>

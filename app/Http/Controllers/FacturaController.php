@@ -9,6 +9,7 @@ use Exception;
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
+use Greenter\Model\Sale\Detraction;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Legend;
@@ -371,7 +372,18 @@ class FacturaController extends Controller
                     ->setTotalImpuestos(18.00)
                     ->setValorVenta(100.00)
                     ->setSubTotal(118.00)
-                    ->setMtoImpVenta(118.00);
+                    ->setMtoImpVenta(118.00)
+                    ->setDetraccion(
+                        // MONEDA SIEMPRE EN SOLES
+                        (new Detraction())
+                            // Carnes y despojos comestibles
+                            ->setCodBienDetraccion('014') // catalog. 54
+                            // Deposito en cuenta
+                            ->setCodMedioPago('001') // catalog. 59
+                            ->setCtaBanco('0004-3342343243')
+                            ->setPercent(4.00)
+                            ->setMount(37.76)
+                    );
 
 
                 $result = $see->send($invoice);
