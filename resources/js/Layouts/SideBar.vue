@@ -335,6 +335,15 @@
               </li>
             </ul>
           </li>
+          <li :class="{ 'mm-active': path == 'admision' }">
+            <inertia-link
+              :class="{ active: path == 'admision' }"
+              :href="route('admision.iniciar')"
+            >
+              <i class="fas fa-money-check-alt"></i>
+              <span>Admision</span>
+            </inertia-link>
+          </li>
           <!--<li :class="{ 'mm-active': path == 'comprobantes' }">
             <inertia-link
               :class="{ active: path == 'comprobantes' }"
@@ -369,7 +378,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(4)"
+              @click="mostrarMenu(5)"
               :class="{
                 'mm-active':
                   path == 'boletas' ||
@@ -381,7 +390,7 @@
               <i class="fas fa-cloud-upload-alt"></i>
               <span>Sunat</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[4]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
               <li
                 :class="{
                   'mm-active': path == 'boletas',
@@ -481,7 +490,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(5)"
+              @click="mostrarMenu(6)"
               :class="{
                 'mm-active':
                   path == 'tipo-comprobante' ||
@@ -492,7 +501,7 @@
               <i class="fas fa-clipboard-list"></i>
               <span>Consultas</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[5]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[6]">
               <li>
                 <inertia-link
                   :href="route('comprobantes.consultas')"
@@ -544,7 +553,7 @@
             <a
               href="javascript: void(0);"
               class="has-arrow waves-effect"
-              @click="mostrarMenu(6)"
+              @click="mostrarMenu(7)"
               :class="{
                 'mm-active':
                   path == 'reportes-diario' ||
@@ -556,7 +565,7 @@
               <i class="fas fa-file-upload"></i>
               <span>Reportes</span>
             </a>
-            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[6]">
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[7]">
               <li>
                 <inertia-link
                   href="#"

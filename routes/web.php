@@ -285,6 +285,12 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/banco/listar', [BancoController::class, 'index'])->name('banco.listar');
     /*******************************************************************/
 
+    /**************************** PAGOS ***************************/
+    Route::get('/admision', function () {
+        return Inertia::render('Admision/Listar');
+    })->name('admision.iniciar');
+    /*******************************************************************/
+
     /**************************** Sunat ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
