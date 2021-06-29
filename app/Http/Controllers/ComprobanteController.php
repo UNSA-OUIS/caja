@@ -360,7 +360,12 @@ class ComprobanteController extends Controller
             $comprobante = new Comprobante();
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
-            $comprobante->motivo = $request->motivo;
+            if ($request->tipo_nota == '06'){
+                $comprobante->motivo = 'DEVOLUCIÓN TOTAL - ' . $request->motivo;
+            }
+            else{
+                $comprobante->motivo = $request->motivo;
+            }
             $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
             $comprobante->tipo_nota = $request->tipo_nota;
             $comprobante->comprobante_afectado_id = $request->comprobante_afectado_id;
@@ -368,11 +373,11 @@ class ComprobanteController extends Controller
             $comprobante->email = $request->email;
             $comprobante->codi_usuario = $request->codi_usuario;
             $comprobante->tipo_pago = $request->tipo_pago;
-            $comprobante->total = 0;
-            $comprobante->total_descuento = 0;
-            $comprobante->total_impuesto = 0;
-            $comprobante->total_inafecta = 0;
-            $comprobante->total_gravada = 0;
+            $comprobante->total = $request->total;
+            $comprobante->total_descuento = $request->total_descuento;
+            $comprobante->total_impuesto = $request->total_impuesto;
+            $comprobante->total_inafecta = $request->total_inafecta;
+            $comprobante->total_gravada = $request->total_gravada;
             $comprobante->estado = 'no_enviado';
             //$comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;

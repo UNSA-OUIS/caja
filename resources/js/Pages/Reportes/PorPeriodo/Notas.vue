@@ -112,6 +112,9 @@
                     <template v-slot:cell(serieCorre)="row">
                         {{ row.item.serie }}-{{ row.item.correlativo }}
                     </template>
+                    <template v-slot:cell(created_at)="row">
+                        {{ row.item.created_at.substring(0, 10) }}
+                    </template>
                     <template v-slot:cell(docAfectado)="row">
                         {{ row.item.comprobante_afectado.serie }}-{{ row.item.comprobante_afectado.correlativo }}
                     </template>
@@ -220,6 +223,9 @@
                                         >
                                             <template v-slot:cell(serieCorre)="row">
                                                 {{ row.item.serie }}-{{ row.item.correlativo }}
+                                            </template>
+                                            <template v-slot:cell(created_at)="row">
+                                                {{ row.item.created_at.substring(0, 10) }}
                                             </template>
                                             <template v-slot:cell(docAfectado)="row">
                                                 {{ row.item.comprobante_afectado.serie }}-{{ row.item.comprobante_afectado.correlativo }}

@@ -152,6 +152,14 @@
                     <template v-slot:cell(serieCorre)="row">
                         {{ row.item.serie }}-{{ row.item.correlativo }}
                     </template>
+                    <template v-slot:cell(created_at)="row">
+                        {{ row.item.created_at.substring(0, 10) }}
+                    </template>
+                    <template v-slot:cell(nro_operacion)="row">
+                        <template v-if="row.item.nro_operacion">
+                        {{ row.item.nro_operacion.substring(0, 6) }}
+                        </template>
+                    </template>
                     <template v-slot:cell(razon_social)="row">
                         {{ row.item.comprobanteable.razon_social }}
                     </template>
@@ -245,6 +253,14 @@
                                             <template v-slot:cell(serieCorre)="row">
                                                 {{ row.item.serie }}-{{ row.item.correlativo }}
                                             </template>
+                                            <template v-slot:cell(created_at)="row">
+                                                {{ row.item.created_at.substring(0, 10) }}
+                                            </template>
+                                            <template v-slot:cell(nro_operacion)="row">
+                                                <template v-if="row.item.nro_operacion">
+                                                {{ row.item.nro_operacion.substring(0, 6) }}
+                                                </template>
+                                            </template>
                                             <template v-slot:cell(razon_social)="row">
                                                 {{ row.item.comprobanteable.razon_social }}
                                             </template>
@@ -298,7 +314,7 @@ export default {
                 "SERIE-CORRE": "serieCorre",
                 "F. DIGI": "created_at",
                 "F. CANC": "cancelado_at",
-                "R. ING": "ring",
+                "R. ING": "nro_operacion",
                 RUC: "codi_usuario",
                 CLIENTE: "razon_social",
                 "DIRECCIÓN": "direccion",
@@ -320,7 +336,7 @@ export default {
                 { key: "serieCorre", label: "SERIE-CORRE"},
                 { key: "created_at", label: "F. DIGI" },
                 { key: "cancelado_at", label: "F. CANC" },
-                { key: "ring", label: "R. ING" },
+                { key: "nro_operacion", label: "R. ING" },
                 { key: "codi_usuario", label: "RUC" },
                 { key: "razon_social", label: "CLIENTE" ,class: "text-center" },
                 { key: "direccion", label: "DIRECCIÓN" ,class: "text-center" },
@@ -416,7 +432,7 @@ export default {
                         serieCorre: "" + cobro.serie + "-" + cobro.correlativo,
                         created_at: cobro.created_at,
                         cancelado_at: "",
-                        ring: "",
+                        nro_operacion: cobro.nro_operacion,
                         codi_usuario: cobro.codi_usuario,
                         razon_social: cobro.comprobanteable.razon_social,
                         direccion: cobro.comprobanteable.direccion,
