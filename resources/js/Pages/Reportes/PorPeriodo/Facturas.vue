@@ -46,7 +46,7 @@
                             :options="tipos_factura"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>TODOS</option>
+                                <option :value=0>TODOS</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -66,7 +66,7 @@
                             :options="tipos_fecha"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>GENERO</option>
+                                <option :value=0>POR FEC. DIGITACIÓN</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -88,7 +88,7 @@
                             :options="ctas_corriente"
                             size="sm">
                             <template v-slot:first>
-                                <option :value="null" disabled>TODOS</option>
+                                <option :value=0>TODOS</option>
                             </template>
                             </b-form-select>
                         </b-form-group>
@@ -154,6 +154,11 @@
                     </template>
                     <template v-slot:cell(created_at)="row">
                         {{ row.item.created_at.substring(0, 10) }}
+                    </template>
+                    <template v-slot:cell(fecha_cancelacion)="row">
+                        <template v-if="row.item.fecha_cancelacion">
+                        {{ row.item.fecha_cancelacion.substring(0, 10) }}
+                        </template>
                     </template>
                     <template v-slot:cell(nro_operacion)="row">
                         <template v-if="row.item.nro_operacion">
@@ -256,6 +261,11 @@
                                             <template v-slot:cell(created_at)="row">
                                                 {{ row.item.created_at.substring(0, 10) }}
                                             </template>
+                                            <template v-slot:cell(fecha_cancelacion)="row">
+                                                <template v-if="row.item.fecha_cancelacion">
+                                                {{ row.item.fecha_cancelacion.substring(0, 10) }}
+                                                </template>
+                                            </template>
                                             <template v-slot:cell(nro_operacion)="row">
                                                 <template v-if="row.item.nro_operacion">
                                                 {{ row.item.nro_operacion.substring(0, 6) }}
@@ -313,7 +323,7 @@ export default {
             json_fields: {
                 "SERIE-CORRE": "serieCorre",
                 "F. DIGI": "created_at",
-                "F. CANC": "cancelado_at",
+                "F. CANC": "fecha_cancelacion",
                 "R. ING": "nro_operacion",
                 RUC: "codi_usuario",
                 CLIENTE: "razon_social",
@@ -335,7 +345,7 @@ export default {
             fields: [
                 { key: "serieCorre", label: "SERIE-CORRE"},
                 { key: "created_at", label: "F. DIGI" },
-                { key: "cancelado_at", label: "F. CANC" },
+                { key: "fecha_cancelacion", label: "F. CANC" },
                 { key: "nro_operacion", label: "R. ING" },
                 { key: "codi_usuario", label: "RUC" },
                 { key: "razon_social", label: "CLIENTE" ,class: "text-center" },
@@ -349,10 +359,10 @@ export default {
             tipos_factura: [
                 { value: 1, text: "CANCELADOS" },
                 { value: 2, text: "PENDIENTES" },
-                { value: 3, text: "DETRACCIÓN" },
+                { value: 3, text: "CON DETRACCIÓN" },
             ],
             tipos_fecha: [
-                { value: 1, text: "CANCELO" },
+                { value: 1, text: "POR FEC. CANCELACIÓN" },
             ],
             ctas_corriente: [
                 { value: 1, text: "Option 1" },
@@ -374,9 +384,9 @@ export default {
                 cajeroId: "",
                 fechaInicio: "",
                 fechaFin: "",
-                tipo_factura: null,
-                tipo_fecha: null,
-                cta_corriente: null
+                tipo_factura: 0,
+                tipo_fecha: 0,
+                cta_corriente: 0
             },
 
         };
@@ -414,7 +424,8 @@ export default {
         },
         async filterTable() {
             try {
-                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin 
+                + "&tipo_factura=" + this.filter.tipo_factura + "&tipo_fecha=" + this.filter.tipo_fecha
                 if (this.cajero != null){
                     params = params + "&cajeroId=" + this.cajero.cajero_id
                 }
@@ -431,7 +442,7 @@ export default {
                     temp.push({
                         serieCorre: "" + cobro.serie + "-" + cobro.correlativo,
                         created_at: cobro.created_at,
-                        cancelado_at: "",
+                        fecha_cancelacion: cobro.fecha_cancelacion,
                         nro_operacion: cobro.nro_operacion,
                         codi_usuario: cobro.codi_usuario,
                         razon_social: cobro.comprobanteable.razon_social,

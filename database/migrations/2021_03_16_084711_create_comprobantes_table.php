@@ -38,6 +38,7 @@ class CreateComprobantesTable extends Migration
             $table->string('url_pdf')->nullable();
             $table->string('url_ticket')->nullable();
             $table->boolean('cancelado')->nullable()->default(false);
+            $table->dateTime('fecha_cancelacion')->nullable();
             $table->bigInteger('cajero_id');
             $table->char('tipo_nota', 2)->nullable();
             $table->text('motivo')->nullable();

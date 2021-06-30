@@ -299,6 +299,7 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
+        $comprobante->cancelado = false;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
@@ -433,6 +434,10 @@ class ComprobanteController extends Controller
             $comprobante->total = $request->total;
             $comprobante->tipo_pago = $request->tipo_pago;
             $comprobante->email = $request->email;
+            $comprobante->cancelado = $request->cancelado;
+            if ($request->cancelado){
+                $comprobante->fecha_cancelacion = now();
+            }
             $comprobante->estado = 'no_enviado';
             //$comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;

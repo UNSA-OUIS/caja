@@ -161,8 +161,21 @@ class ReportesController extends Controller
                                         return $q->where('cajero_id', request('cajeroId', 0));
                                     })
                                     ->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))
-                                    ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
-                                    ->whereDate('comprobantes.created_at','<=',$request->fechaFin)->get();
+                                    ->when($request->tipo_fecha == 0,function ($q) use ($request) {
+                                        return $q->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
+                                        ->whereDate('comprobantes.created_at','<=',$request->fechaFin);
+                                    })
+                                    ->when($request->tipo_fecha == 1,function ($q) use ($request) {
+                                        return $q->whereDate('comprobantes.fecha_cancelacion','>=',$request->fechaInicio)
+                                        ->whereDate('comprobantes.fecha_cancelacion','<=',$request->fechaFin);
+                                    })
+                                    ->when($request->tipo_factura == 1,function ($q) {
+                                        return $q->where('comprobantes.cancelado', true);
+                                    })
+                                    ->when($request->tipo_factura == 2,function ($q) {
+                                        return $q->where('comprobantes.cancelado', false);
+                                    })
+                                    ->get();
         //dd($comprobantes);
         $totalRegistros = $comprobantes->count();
         $totalCobros = $comprobantes->count();

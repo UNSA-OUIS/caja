@@ -38,6 +38,12 @@
       </div>
       <b-alert :show="error.estado" variant="danger" dismissible>{{ error.mensaje }}</b-alert>
     </div>
+    <div v-if="comprobante.tipo_comprobante_id == 2" class="form-row">
+      <div class="form-group col-md-12 border border-light">
+        <label class="text-info">¿Se cancelará al momento del pago?</label>
+        <b-form-radio-group :disabled="accion === 'Mostrar'" v-model="comprobante.cancelado" :options="opciones_cancelado" name="cancelado"></b-form-radio-group>
+      </div>
+    </div>
     <b-alert show dismissible variant="success" v-if="alerta == false">
       {{ alerta_mensaje }}
     </b-alert>
@@ -275,6 +281,10 @@ export default {
       tipos_pago: [
         { text: "Efectivo", value: "Efectivo" },
         { text: "Voucher", value: "Voucher" },
+      ],
+      opciones_cancelado: [
+        { text: "Cancelado", value: true },
+        { text: "Pendiente", value: false },
       ]
     };
   },
