@@ -18,6 +18,11 @@ class Comprobante extends Model
         return $this->belongsTo(TipoComprobante::class);
     }
 
+    public function cajero()
+    {
+        return $this->belongsTo(User::class, 'cajero_id');
+    }
+
     public function detalles()
     {
         return $this->hasMany(DetallesComprobante::class);
@@ -33,6 +38,6 @@ class Comprobante extends Model
 
     public function comprobante_afectado()
     {
-        return $this->hasOne(Comprobante::class);
+        return $this->hasOne(Comprobante::class, 'id', 'comprobante_afectado_id');
     }
 }

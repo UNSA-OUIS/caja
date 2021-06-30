@@ -151,11 +151,82 @@ class ReportesController extends Controller
         return Inertia::render('Reportes/PorPeriodo/Facturas', compact('comprobantes'));
     }
 
+    public function filtrarFactura(Request $request)
+    {
+        $this->authorize('cajero');
+
+        $comprobantes = Comprobante::with('comprobanteable')->with(['cajero' => function($query) {
+                                        $query->select('id', 'name');
+                                    }])->when($request->cajeroId != "",function ($q) {
+                                        return $q->where('cajero_id', request('cajeroId', 0));
+                                    })
+                                    ->where('tipo_comprobante_id', config('caja.tipo_comprobante.FACTURA'))
+                                    ->when($request->tipo_fecha == 0,function ($q) use ($request) {
+                                        return $q->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
+                                        ->whereDate('comprobantes.created_at','<=',$request->fechaFin);
+                                    })
+                                    ->when($request->tipo_fecha == 1,function ($q) use ($request) {
+                                        return $q->whereDate('comprobantes.fecha_cancelacion','>=',$request->fechaInicio)
+                                        ->whereDate('comprobantes.fecha_cancelacion','<=',$request->fechaFin);
+                                    })
+                                    ->when($request->tipo_factura == 1,function ($q) {
+                                        return $q->where('comprobantes.cancelado', true);
+                                    })
+                                    ->when($request->tipo_factura == 2,function ($q) {
+                                        return $q->where('comprobantes.cancelado', false);
+                                    })
+                                    ->get();
+        //dd($comprobantes);
+        $totalRegistros = $comprobantes->count();
+        $totalCobros = $comprobantes->count();
+        $totalDescuentos = $comprobantes->sum('total_descuento');
+        $totalIGV = $comprobantes->sum('total_impuesto');
+        $totalMontos = $comprobantes->sum('total');
+
+        return ['comprobantes' => $comprobantes,
+                'totalRegistros' => $totalRegistros,
+                'totalCobros' => $totalCobros,
+                'totalDescuentos' => $totalDescuentos,
+                'totalIGV' => $totalIGV,
+                'totalMontos' => $totalMontos,];
+    }
+
     public function notas()
     {
         $this->authorize('notas');
         $comprobantes = Comprobante::all();
         return Inertia::render('Reportes/PorPeriodo/Notas', compact('comprobantes'));
+    }
+
+    public function filtrarNota(Request $request)
+    {
+        $this->authorize('cajero');
+
+        $comprobantes = Comprobante::with('comprobanteable', 'comprobante_afectado')->with(['cajero' => function($query) {
+                                        $query->select('id', 'name');
+                                    }])->when($request->cajeroId != "",function ($q) {
+                                        return $q->where('cajero_id', request('cajeroId', 0));
+                                    })->whereBetween('tipo_comprobante_id', [config('caja.tipo_comprobante.NOTA DE DÉBITO'), config('caja.tipo_comprobante.NOTA DE CRÉDITO')])
+                                    ->when($request->tipoNota == 3,function ($q) {
+                                        return $q->where('tipo_comprobante_id', config('caja.tipo_comprobante.NOTA DE DÉBITO'));
+                                    })->when($request->tipoNota == 4,function ($q) {
+                                        return $q->where('tipo_comprobante_id', config('caja.tipo_comprobante.NOTA DE CRÉDITO'));
+                                    })
+                                    ->whereDate('comprobantes.created_at','>=',$request->fechaInicio)
+                                    ->whereDate('comprobantes.created_at','<=',$request->fechaFin)->get();
+        //dd($comprobantes);
+        $totalRegistros = $comprobantes->count();
+        $totalCobros = $comprobantes->count();
+        $totalDescuentos = $comprobantes->sum('total_descuento');
+        $totalIGV = $comprobantes->sum('total_impuesto');
+        $totalMontos = $comprobantes->sum('total');
+
+        return ['comprobantes' => $comprobantes,
+                'totalRegistros' => $totalRegistros,
+                'totalCobros' => $totalCobros,
+                'totalDescuentos' => $totalDescuentos,
+                'totalIGV' => $totalIGV,
+                'totalMontos' => $totalMontos,];
     }
 
     public function consolidado()

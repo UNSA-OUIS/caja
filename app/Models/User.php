@@ -89,4 +89,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(PuntosVenta::class);
     }
+
+    public function comprobantes()
+    {
+        return $this->hasMany(Comprobante::class, 'cajero_id');
+    }
 }

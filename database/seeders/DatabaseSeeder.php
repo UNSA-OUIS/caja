@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call([PermisoSeeder::class]);
         $this->call([UnidadMedidaSeeder::class]);
         $this->call([TiposConceptoSeeder::class]);
-        //$this->call([ParticularSeeder::class]);
-        //$this->call([ClasificadorSeeder::class]);
-        //$this->call([EmpresaSeeder::class]);
-        //$this->call([ConceptoSeeder::class]);
+        $this->call([ParticularSeeder::class]);
+        $this->call([ClasificadorSeeder::class]);
+        $this->call([EmpresaSeeder::class]);
+        $this->call([ConceptoSeeder::class]);
         //$this->call([DataTestSeeder::class]);
         //$this->call([ComprobanteSeeder::class]);
         //$this->call([DetallesComprobanteSeeder::class]);
