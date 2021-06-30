@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
 use Illuminate\Support\Facades\Auth;
+use Svg\Tag\Rect;
 
 class ComunicacionBajaController extends Controller
 {
@@ -46,5 +47,9 @@ class ComunicacionBajaController extends Controller
             ->whereDate('created_at', '<=', $request->fecha_fin)
             ->where('cajero_id', Auth::user()->id)->get();
         return $query;
+    }
+
+    public function enviar(Request $request){
+        return $request;
     }
 }

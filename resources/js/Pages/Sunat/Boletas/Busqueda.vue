@@ -18,35 +18,37 @@
         <span class="font-weight-bold">Enviar resumen diario a sunat</span>
       </div>
       <div class="card-body">
-        <div class="row justify-content-center mb-5">
-          <fieldset class="col-6 col-md-10 px-3">
+        <div class="row justify-content-center mb-30">
+          <fieldset class="col-20 col-md-30 px-3">
             <legend>Opciones de búsqueda:</legend>
             <div class="row justify-content-center">
-              <b-form>
-                <template>
-                  <div>
-                    <label>Desde</label>
-                    <b-form-datepicker
-                      name="fecha_inicio"
-                      v-model="fecha_inicio"
-                      class="mb-2"
-                    ></b-form-datepicker>
-                  </div>
-                </template>
-                <template>
-                  <div>
-                    <label>Hasta:</label>
-                    <b-form-datepicker
-                      name="fecha_fin"
-                      v-model="fecha_fin"
-                      class="mb-2"
-                    ></b-form-datepicker>
-                  </div>
-                </template>
-                <b-button variant="outline-success" @click="buscar_boletas()">
+              <b-form inline>
+                <label>Desde:</label>
+                &nbsp;&nbsp;
+                <b-form-datepicker
+                  name="fecha_inicio"
+                  v-model="fecha_inicio"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                ></b-form-datepicker>
+                <label>Hasta:</label>
+                &nbsp;&nbsp;
+                <b-form-datepicker
+                  name="fecha_fin"
+                  v-model="fecha_fin"
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                ></b-form-datepicker>
+                <b-button
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  variant="outline-success"
+                  @click="buscar_boletas()"
+                >
                   Buscar Boletas <b-icon icon="search"></b-icon>
                 </b-button>
-                <b-button variant="outline-primary" @click="limpiar()">
+                <b-button
+                  class="mb-2 mr-sm-2 mb-sm-0"
+                  variant="outline-primary"
+                  @click="limpiar()"
+                >
                   Limpiar <b-icon icon="arrow-clockwise"></b-icon>
                 </b-button>
               </b-form>
@@ -88,6 +90,16 @@ export default {
       mostrar_boletas: false,
       renderKey: 1,
     };
+  },
+  created() {
+    const now = new Date();
+    this.fecha_inicio = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    this.fecha_fin = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    this.buscar_boletas();
   },
   methods: {
     buscar_boletas() {

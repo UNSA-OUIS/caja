@@ -8,27 +8,16 @@ use App\Models\Comprobante;
 use App\Models\Docente;
 use App\Models\Particular;
 use App\Models\ResumenDiario;
-use Carbon\Carbon;
-use DateTime;
 use Exception;
-use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
 use Greenter\Model\Company\Company;
 use Greenter\Model\Sale\Document;
-use Greenter\Model\Sale\Invoice;
-use Greenter\Model\Sale\Legend;
-use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Summary\Summary;
 use Greenter\Model\Summary\SummaryDetail;
-use Greenter\Report\HtmlReport;
-use Greenter\Report\PdfReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-use Luecano\NumeroALetras\NumeroALetras;
 
 class BoletaController extends Controller
 {
@@ -267,7 +256,7 @@ class BoletaController extends Controller
 
             if (!$result->isSuccess()) {
                 // Si hubo error al conectarse al servicio de SUNAT.
-                //$resumen_diario->observaciones = var_dump($result->getError());
+                // $resumen_diario->observaciones = var_dump($result->getError());
                 // $resumen_diario->update();
                 $resultado = ['errorMessage' => var_dump($result->getError()), 'error' => true];
                 DB::rollback();

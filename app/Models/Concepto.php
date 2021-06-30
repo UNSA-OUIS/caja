@@ -55,6 +55,11 @@ class Concepto extends Model
         return $this->setConnection('pgsql')->hasMany(DetallesComprobante::class);
     }
 
+    public function detalles_admision()
+    {
+        return $this->setConnection('pgsql')->hasMany(DetallesAdmision::class);
+    }
+
     public function puntos_venta()
     {
         return $this->belongsToMany(PuntosVenta::class, 'concepto_punto_venta', 'concepto_id', 'punto_venta_id');

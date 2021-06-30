@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdmisionController;
 use App\Http\Controllers\BoletaController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -277,12 +278,26 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
     /*******************************************************************/
 
-     /**************************** PROCESOS ***************************/
-     Route::get('/banco', function () {
+    /**************************** PROCESOS ***************************/
+    Route::get('/banco', function () {
         return Inertia::render('Procesos/Banco/Busqueda');
     })->name('banco.iniciar');
 
     Route::get('/banco/listar', [BancoController::class, 'index'])->name('banco.listar');
+    /*******************************************************************/
+
+    /**************************** ADMISION ***************************/
+    Route::get('/admision', function () {
+        return Inertia::render('Admision/Listar');
+    })->name('admision.iniciar');
+    Route::get('/admision/listar', [AdmisionController::class, 'index'])->name('admision.listar');
+    Route::get('/admision/crear', [AdmisionController::class, 'create'])->name('admision.crear');
+    Route::post('/admision', [AdmisionController::class, 'store'])->name('admision.registrar');
+    /*
+    Route::get('/clasificadores/{clasificador}', [ClasificadorController::class, 'show'])->name('clasificadores.mostrar');
+    Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
+    Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
+    Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');*/
     /*******************************************************************/
 
     /**************************** Sunat ***************************/
@@ -302,6 +317,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Sunat/ComunicacionBaja/Busqueda');
     })->name('comunicacion-baja.iniciar');
     Route::get('/sunat/comunicacion-baja/listarFacturas', [ComunicacionBajaController::class, 'index'])->name('comunicacion-baja.listar');
+    Route::post('/sunat/comunicacion-baja/enviar', [ComunicacionBajaController::class, 'enviar'])->name('comunicacion-baja.enviar');
 
 
     Route::get('/sunat/resumenDiario', function () {

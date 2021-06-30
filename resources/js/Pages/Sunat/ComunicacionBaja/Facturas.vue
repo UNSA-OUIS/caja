@@ -176,7 +176,7 @@ export default {
         .then(async (value) => {
           if (value) {
             axios
-              .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
+              .post(`${this.app_url}/sunat/comunicacion-baja/enviar`, this.items)
               .then((response) => {
                 if (response.data.error == false) {
                   console.log(response.data.error);

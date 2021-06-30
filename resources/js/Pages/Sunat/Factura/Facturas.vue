@@ -154,7 +154,6 @@ export default {
 
       return promise.then((response) => {
         this.items = response.data;
-        console.log(this.items);
         this.totalRows = response.data.length;
 
         return this.items || [];
@@ -176,8 +175,11 @@ export default {
               .post(`${this.app_url}/sunat/enviarFacturas`, this.items)
               .then((response) => {
                 if (response.data.error == false) {
+                  console.log("*****EXITO****");
+                  console.log(response.data);
                   console.log(response.data.error);
                   console.log(response.data.successMessage);
+                  console.log("**************");
                   this.$bvToast.toast("Facturas enviadas con exito", {
                     title: "Envio de facturas a sunat",
                     variant: "success",
@@ -185,8 +187,11 @@ export default {
                     solid: true,
                   });
                 } else {
+                  console.log("*****FRACASO****");
                   console.log(response.data);
                   console.log(response.data.error);
+                  console.log(response.data.successMessage);
+                  console.log("**************");
                   this.$bvToast.toast("Hubo un error al enviar las facturas", {
                     title: "Error al enviar las facturas",
                     variant: "danger",
