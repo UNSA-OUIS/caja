@@ -169,6 +169,25 @@
               ></b-form-input>
             </div>
           </template>
+          <template v-slot:cell(resolucion)="row">
+            <b-form-input
+                class="text-center"
+                v-model="row.item.resolucion"
+                :readonly="accion === 'Mostrar' || row.item.descuento == 0"
+              ></b-form-input>
+            <b-form-select v-model="row.item.anho_resolucion" :options="anhos_resolucion"
+            :disabled="accion === 'Mostrar' || row.item.descuento == 0">
+              <template v-slot:first>
+                <option :value="'2021'">2021</option>
+              </template>
+            </b-form-select>
+            <b-form-select v-model="row.item.tipo_resolucion" :options="tipos_resolucion"
+            :disabled="accion === 'Mostrar' || row.item.descuento == 0">
+              <template v-slot:first>
+                <option :value="'DIGA'">DIGA</option>
+              </template>
+            </b-form-select>
+          </template>
           <template v-slot:cell(subTotal)="row">
             <span class="font-weight-bold">
               S/. {{ row.item.subtotal | currency }}
@@ -187,22 +206,22 @@
           </template>
           <template slot="custom-foot" slot-scope="">
             <b-tr>
-              <b-td colspan="5"></b-td>
+              <b-td colspan="6"></b-td>
               <b-td class="text-right font-weight-bold">Imp. Inafecto:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_inafecta | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="5"></b-td>
+              <b-td colspan="6"></b-td>
               <b-td class="text-right font-weight-bold">Imp. Gravado:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_gravada | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="5"></b-td>
+              <b-td colspan="6"></b-td>
               <b-td class="text-right font-weight-bold">IGV:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ comprobante.total_impuesto | currency }}</b-td><b-td />
             </b-tr>
             <b-tr>
-              <b-td colspan="5"></b-td>
+              <b-td colspan="6"></b-td>
               <b-td class="text-right font-weight-bold">Importe total:</b-td>
               <b-td class="text-right font-weight-bold">S/. {{ precioTotal | currency }}</b-td><b-td />
             </b-tr>
@@ -258,7 +277,8 @@ export default {
         },
         { key: "cantidad", label: "CANT.", class: "text-center", tdClass: "cantidad" },
         { key: "precio", label: "COSTO", class: "text-center", tdClass: "costo" },
-        { key: "descuento", label: "DESCUENTO", class: "text-center", tdClass: "descuento" },
+        { key: "descuento", label: "DESCUENTO", class: "text-center", tdClass: "costo" },
+        { key: "resolucion", label: "RESOLUCION", class: "text-center", tdClass: "descuento" },
         { key: "subTotal", label: "SUBTOTAL", class: "text-right" },
         { key: "acciones", label: "", class: "text-center" },
       ],
@@ -285,7 +305,16 @@ export default {
       opciones_cancelado: [
         { text: "Cancelado", value: true },
         { text: "Pendiente", value: false },
-      ]
+      ],
+      tipos_resolucion: [
+        { text: "VRAC", value: "VRAC" },
+        { text: "RR", value: "RR" },
+        { text: "CU", value: "CU" },
+        { text: "OTRO", value: "OTRO" },
+      ],
+      anhos_resolucion: [
+        { text: "2020", value: "2020" },
+      ],
     };
   },
   created() {
@@ -450,6 +479,9 @@ export default {
         this.$set(this.concepto, "cantidad", 1);
         this.$set(this.concepto, "tipo_descuento", "soles");
         this.$set(this.concepto, "descuento", 0);
+        this.$set(this.concepto, "resolucion", "");
+        this.$set(this.concepto, "anho_resolucion", "2021");
+        this.$set(this.concepto, "tipo_resolucion", "DIGA");
         this.concepto.precio =
           this.concepto.tipo_precio == "variable" ? 0 : this.concepto.precio;
         this.concepto.gravado =
@@ -484,6 +516,10 @@ export default {
       } else if (objDetalle.tipo_descuento === "porcentaje") {
         objDetalle.subtotal =
           subtotal_parcial - (subtotal_parcial * objDetalle.descuento) / 100;
+      }
+
+      if (objDetalle.descuento == '0' || objDetalle.descuento == ''){
+        objDetalle.resolucion = ''
       }
 
       if(objDetalle.tipo_afectacion === "30"){

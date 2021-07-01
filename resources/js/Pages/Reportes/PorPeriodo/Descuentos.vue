@@ -192,6 +192,7 @@ export default {
                 { key: "codigo", label: "Código" },
                 { key: "serie", label: "Serie" },
                 { key: "correlativo", label: "Correlativo" },
+                { key: "resolucion", label: "Resolucion" },
                 { key: "cui", label: "Cliente" },
                 { key: "total", label: "Precio Total" },
 

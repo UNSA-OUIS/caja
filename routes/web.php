@@ -274,6 +274,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/boletaXML', [ComprobanteController::class, 'descargar_xml'])->name('boleta.descargar-xml');
     Route::get('/verificarNroOperacion', [ComprobanteController::class, 'verificarNroOperacion'])->name('comprobantes.verificarNroOperacion');
 
+    Route::get('/pagarFactura', [ComprobanteController::class, 'pagarFactura'])->name('comprobantes.pagarFactura');
     Route::get('/enviarCorreo', [ComprobanteController::class, 'enviarCorreo'])->name('comprobantes.enviarCorreo');
     Route::get('/buscarUsuario', [ComprobanteController::class, 'buscarUsuario'])->name('comprobantes.buscarUsuario');
     /*******************************************************************/
@@ -284,6 +285,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('banco.iniciar');
 
     Route::get('/banco/listar', [BancoController::class, 'index'])->name('banco.listar');
+    Route::post('/banco/procesar_pagos', [BancoController::class, 'procesar_pagos'])->name('banco.procesar_pagos');
     /*******************************************************************/
 
     /**************************** ADMISION ***************************/

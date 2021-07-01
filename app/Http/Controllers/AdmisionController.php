@@ -71,6 +71,7 @@ class AdmisionController extends Controller
                 $detalle_admision = new DetallesAdmision();
                 $detalle_admision->concepto_id =  $detalle['concepto_id'];
                 $detalle_admision->admision_id =  $admision->id;
+                $detalle_admision->precio_variable =  $detalle['precio'];
                 $monto_concepto += $detalle['precio'];
                 $detalle_admision->save();
             }

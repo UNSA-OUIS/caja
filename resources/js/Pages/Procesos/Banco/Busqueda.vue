@@ -27,33 +27,17 @@
               placeholder="Hasta"
             ></b-form-datepicker>
             &nbsp;&nbsp;
-            <b-form-select
-              v-if="procesar_pagos"
-              v-model="proceso"
-              :options="procesos"
-            >
-              <template #first>
-                <b-form-select-option :value="null" disabled
-                  >-- Elija un Proceso --</b-form-select-option
-                >
-              </template>
-            </b-form-select>
-            &nbsp;&nbsp;
-            <b-button
-              v-if="!procesar_pagos"
-              variant="outline-success"
-              @click="consultar_pagos()"
-            >
+            <!--v-if="!procesar_pagos"-->
+            <b-button variant="outline-success" @click="consultar_pagos()">
               Consultar Pagos <b-icon icon="search"></b-icon>
             </b-button>
-            &nbsp;
-            <b-button
+            <!--<b-button
               v-if="procesar_pagos"
               variant="outline-success"
-              @click="consultar_pagos()"
+              @click="procesar_pagos()"
             >
               Procesar Pagos <b-icon icon="search"></b-icon>
-            </b-button>
+            </b-button>-->
             <b-button variant="outline-primary" @click="limpiar()">
               Limpiar <b-icon icon="arrow-clockwise"></b-icon>
             </b-button>
@@ -78,14 +62,14 @@ import AppLayout from "@/Layouts/AppLayout";
 import Pagos from "./Pagos";
 
 export default {
-  name: "facturas.busqueda",
+  name: "procesos.banco",
   components: {
     AppLayout,
     Pagos,
   },
   data() {
     return {
-      procesar_pagos: false,
+      /*procesar_pagos: false,
       procesos: [
         { value: 1, text: "Admision" },
         { value: 2, text: "Extraordinario" },
@@ -97,7 +81,7 @@ export default {
         { value: 8, text: "Centro de Idiomas" },
         { value: 9, text: "Residentado Medicos" },
       ],
-      proceso: null,
+      proceso: null,*/
       app_url: this.$root.app_url,
       alerta: false,
       alerta_mensaje: "",
@@ -109,11 +93,33 @@ export default {
   },
   created() {
     const now = new Date();
-    this.fecha_inicio = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    this.fecha_inicio = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
     this.fecha_fin = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   },
   methods: {
     consultar_pagos() {
+      if (!this.fecha_inicio && !this.fecha_fin) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de inicio y fin";
+      } else if (!this.fecha_inicio) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de inicio";
+      } else if (!this.fecha_fin) {
+        this.alerta = true;
+        this.alerta_mensaje = "Debe seleccionar una fecha de fin";
+      } else {
+        this.mostrar_boletas = true;
+        //this.procesar_pagos = true;
+        this.renderKey++;
+        this.alerta = false;
+        this.alerta_mensaje = "";
+      }
+    },
+    /*procesar_pagos() {
       if (!this.fecha_inicio && !this.fecha_fin) {
         this.alerta = true;
         this.alerta_mensaje = "Debe seleccionar una fecha de inicio y fin";
@@ -130,10 +136,10 @@ export default {
         this.alerta = false;
         this.alerta_mensaje = "";
       }
-    },
+    },*/
     limpiar() {
       this.mostrar_boletas = false;
-      this.procesar_pagos = false;
+      //this.procesar_pagos = false;
       this.filtrado = false;
       this.alerta = false;
       this.fecha_inicio = "";

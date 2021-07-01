@@ -61,6 +61,12 @@
           :fields="fields"
           empty-text="No hay conceptos para mostrar"
         >
+          <template v-slot:cell(precio)="row">
+            <span v-if="row.item.tipo_precio == 'fijo'">{{
+              row.item.precio
+            }}</span>
+            <b-input v-else v-model="row.item.precio"></b-input>
+          </template>
           <template v-slot:cell(acciones)="row">
             <b-button
               v-if="accion === 'Crear'"
@@ -236,8 +242,8 @@ export default {
 .concepto {
   width: 400px;
 }
-input[type="number"][id="precio"]::-webkit-inner-spin-button,
-input[type="number"][id="precio"]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }

@@ -26,20 +26,45 @@
         {{ row.item.frecepcion }}
       </template>
       <template v-slot:cell(fpago)="row">
-        {{ row.item.fpago}}
+        {{ row.item.fpago }}
       </template>
 
       <template v-if="totalRows != ''" #table-caption
         >Se encontraron {{ totalRows }} registros
       </template>
     </b-table>
+    <div class="card-body">
+      <div class="row justify-content-center mb-1">
+        <b-form inline>
+          <b-form-select
+            v-if="items != ''"
+            v-model="proceso"
+            :options="procesos"
+          >
+            <template #first>
+              <b-form-select-option :value="null" disabled
+                >-- Elija un Proceso --</b-form-select-option
+              >
+            </template>
+          </b-form-select>
+          &nbsp;&nbsp;
+          <b-button
+            v-if="items != ''"
+            variant="outline-success"
+            @click="procesar_pagos()"
+          >
+            Procesar Pagos <b-icon icon="search"></b-icon>
+          </b-button>
+        </b-form>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 const axios = require("axios");
 
 export default {
-  name: "boletas.listar",
+  name: "procesos.pagos",
   props: ["fecha_inicio", "fecha_fin"],
   data() {
     return {
@@ -48,6 +73,18 @@ export default {
       selected: [],
       isBusy: false,
       enviado: false,
+      procesos: [
+        { value: 1, text: "Admision" },
+        { value: 2, text: "Extraordinario" },
+        { value: 3, text: "Posgrado" },
+        { value: 4, text: "2DA Especialidad" },
+        { value: 5, text: "Matricula Pregrado" },
+        { value: 6, text: "Regularizacion Expediente" },
+        { value: 7, text: "Deuda - CEPREUNSA" },
+        { value: 8, text: "Centro de Idiomas" },
+        { value: 9, text: "Residentado Medicos" },
+      ],
+      proceso: null,
       fields: [
         { key: "concepto", label: "Concepto", class: "text-center" },
         {
@@ -67,6 +104,23 @@ export default {
     };
   },
   methods: {
+    procesar_pagos() {
+      let params = {
+        items: this.items,
+        proceso: this.proceso,
+      };
+      const promise = axios.post(`${this.app_url}/banco/procesar_pagos`, {
+        params,
+      });
+
+      return promise.then((response) => {
+        console.log(response);
+        this.items = response.data;
+        this.totalRows = response.data.length;
+
+        return this.items || [];
+      });
+    },
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
@@ -80,9 +134,7 @@ export default {
       });
 
       return promise.then((response) => {
-        console.log(response);
         this.items = response.data;
-        console.log(this.items);
         this.totalRows = response.data.length;
 
         return this.items || [];
