@@ -452,6 +452,9 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->impuesto =  $detalle['impuesto'];
                 $detalle_comprobante->codi_depe =  $detalle['codi_depe'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
+                if ($detalle['resolucion'] != ''){
+                    $detalle_comprobante->resolucion = $detalle['resolucion'] . "-" . $detalle['anho_resolucion'] . "-" . $detalle['tipo_resolucion'];
+                }
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];
                 $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
@@ -497,7 +500,7 @@ class ComprobanteController extends Controller
                 'razon_social' => $comprobante->comprobanteable['razon_social'],
                 'email' => $comprobante->email,
                 'direccion' => $comprobante->comprobanteable['direccion'],
-                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                'fecha_actual' => $comprobante->created_at->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'alumno') {
@@ -533,7 +536,7 @@ class ComprobanteController extends Controller
                 'escuela' => $matricula->matriculas[0]->escuela['nesc'],
                 'alumno' => str_replace('/', ' ', $comprobante->comprobanteable['apn']),
                 'email' =>  $comprobante->email,
-                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                'fecha_actual' => $comprobante->created_at->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'docente') {
@@ -545,7 +548,7 @@ class ComprobanteController extends Controller
                 'docente' => str_replace('/', ' ',   $comprobante->comprobanteable['apn']),
                 'email' =>    $comprobante->email,
                 'departamento' => $depa->ndep,
-                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                'fecha_actual' => $comprobante->created_at->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'dependencia') {
@@ -553,7 +556,7 @@ class ComprobanteController extends Controller
                 'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'dependencia' => $comprobante->comprobanteable['nomb_depe'],
                 'email' =>  $comprobante->email,
-                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                'fecha_actual' => $comprobante->created_at->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         } else if ($comprobante->tipo_usuario == 'particular') {
@@ -561,11 +564,29 @@ class ComprobanteController extends Controller
                 'tipo_comprobante' => $comprobante->tipo_comprobante['nombre'],
                 'particular' => $comprobante->comprobanteable['apellidos'] . ", " . $comprobante->comprobanteable['nombres'],
                 'email' =>  $comprobante->email,
-                'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
+                'fecha_actual' => $comprobante->created_at->format('Y-m-d')
             ];
             return Inertia::render('Comprobantes/Cabecera', compact('comprobante', 'data'));
         }
     }
+
+    public function pagarFactura(Request $request)
+    {
+        try {
+            $comprobante = Comprobante::findOrFail($request->comprobante_id);
+            $comprobante->cancelado = true;
+            $comprobante->fecha_cancelacion = now();
+            $comprobante->update();
+
+            $result = ['successMessage' => 'Cobro pagado con éxito', 'error' => false];
+        } catch (\Throwable $e) {
+            $result = ['errorMessage' => 'No se pudo pagar el cobro', 'error' => true];
+            Log::error('ComprobanteController@pagarFactura, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+
+        return $result;
+    }
+
     public function consulta_comprobante(Comprobante $comprobante)
     {
         $comprobante = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')->where('id', 'like', $comprobante->id)->first();

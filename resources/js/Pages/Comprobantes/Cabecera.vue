@@ -22,7 +22,12 @@
         </nav>
         <div class="card">
             <div class="card-header d-flex align-items-center">
-                <span class="font-weight-bold">Nuevo cobro</span>
+                <span v-if="comprobante.id" class="font-weight-bold">Ver cobro</span>
+                <span v-else class="font-weight-bold">Nuevo cobro</span>
+                <b-button v-if="comprobante.id && comprobante.cancelado == false" class="btn btn-success ml-auto"
+                size="sm" title="Pagar factura" @click="pagar(comprobante)">
+                    Pagar factura
+                </b-button>
             </div>
             <div class="card-doby">
                 <div class="container p-3">
@@ -73,6 +78,7 @@
     </app-layout>
 </template>
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import CabeceraAlumno from "./CabeceraAlumno";
 import CabeceraDocente from "./CabeceraDocente";
@@ -109,6 +115,44 @@ export default {
             this.comprobante.email = this.data.email;
         }
     },
+    methods: {
+        pagar(comprobante){
+            this.$bvModal.msgBoxConfirm("¿Esta seguro de querer pagar este cobro?", {
+                title: "Pagar cobro",
+                okVariant: "success",
+                okTitle: "SI",
+                cancelTitle: "NO",
+                centered: true,
+            }).then((value) => {
+                if (value) {
+                    axios.get(`${this.app_url}/pagarFactura`, {
+                        params: {
+                            comprobante_id: comprobante.id,
+                        },
+                    }).then((response) => {
+                        var success = response.data.successMessage;
+                        if (!response.data.error){
+                            this.$bvToast.toast(response.data.successMessage, {
+                                title: `Cobro pagado`,
+                                variant: "success",
+                                solid: true,
+                            });
+                            location.reload();
+                        }
+                        else{
+                            this.$bvToast.toast(response.data.errorMessage, {
+                                title: `Cobro no pagado`,
+                                variant: "danger",
+                                solid: true,
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+            });
+        }
+    }
 };
 </script>
 <style scoped>

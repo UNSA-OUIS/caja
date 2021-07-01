@@ -150,7 +150,10 @@
                     empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
                 >
                     <template v-slot:cell(serieCorre)="row">
-                        {{ row.item.serie }}-{{ row.item.correlativo }}
+                        <inertia-link :href="route('consulta.mostrar', row.item)">
+                            {{ row.item.serie }}-{{ row.item.correlativo }}
+                        </inertia-link>
+                        
                     </template>
                     <template v-slot:cell(created_at)="row">
                         {{ row.item.created_at.substring(0, 10) }}
