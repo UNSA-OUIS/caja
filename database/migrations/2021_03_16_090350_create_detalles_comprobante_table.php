@@ -21,6 +21,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->double('inafecto', 8, 4);
             $table->double('impuesto', 8, 4);
             $table->double('descuento', 8, 4);
+            $table->string('resolucion')->nullable();
             $table->boolean('estado')->default(true);
             $table->enum('tipo_descuento', ['soles', 'porcentaje']);
             $table->string('codi_depe')->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
