@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BancoBCP;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BancoController extends Controller
 {
@@ -35,9 +36,9 @@ class BancoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function procesar_pagos(Request $request)
     {
-        //
+        return $request;
     }
 
     /**
