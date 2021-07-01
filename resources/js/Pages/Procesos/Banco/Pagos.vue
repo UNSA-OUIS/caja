@@ -104,23 +104,6 @@ export default {
     };
   },
   methods: {
-    procesar_pagos() {
-      let params = {
-        items: this.items,
-        proceso: this.proceso,
-      };
-      const promise = axios.post(`${this.app_url}/banco/procesar_pagos`, {
-        params,
-      });
-
-      return promise.then((response) => {
-        console.log(response);
-        this.items = response.data;
-        this.totalRows = response.data.length;
-
-        return this.items || [];
-      });
-    },
     refreshTable() {
       this.$refs.tbl_boletas.refresh();
     },
@@ -134,6 +117,21 @@ export default {
       });
 
       return promise.then((response) => {
+        this.items = response.data;
+        this.totalRows = response.data.length;
+
+        return this.items || [];
+      });
+    },
+    procesar_pagos() {
+      const promise = axios.post(`${this.app_url}/banco/procesar_pagos`, {
+        fecha_inicio: this.fecha_inicio,
+        fecha_fin: this.fecha_fin,
+        proceso: this.proceso,
+      });
+
+      return promise.then((response) => {
+        console.log(response.data);
         this.items = response.data;
         this.totalRows = response.data.length;
 

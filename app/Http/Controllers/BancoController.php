@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admision;
 use App\Models\BancoBCP;
+use App\Models\Comprobante;
+use App\Models\DetallesComprobante;
+use App\Models\NumeroComprobante;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BancoController extends Controller
 {
@@ -38,7 +44,81 @@ class BancoController extends Controller
      */
     public function procesar_pagos(Request $request)
     {
-        return $request;
+        DB::beginTransaction();
+
+        try {
+            if ($request->proceso == 1) {
+
+                $pagos_reintegro_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                    ->where('concepto', 'REINTEGRO ADMISION')
+                    ->get();
+                $pagos_inscripcion_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                    ->where('concepto', 'INSCRIPCION ADMISION')
+                    ->get();
+                $pagos_pension_cpu = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                    ->where('concepto', 'PENSION CPU')
+                    ->get();
+                $pagos_cambio_carrera = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                    ->where('concepto', 'CAMBIO CARRERA')
+                    ->get();
+
+                foreach ($pagos_inscripcion_admision as $indice => $cabecera) {
+
+                    $comprobante = new Comprobante();
+                    $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
+
+                    $comprobante->tipo_usuario = 'alumno';
+                    $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
+                    $comprobante->serie = $cajero->serie;
+                    $comprobante->correlativo = $cajero->correlativo;
+                    $comprobante->total_descuento = 0;
+                    $comprobante->total_impuesto = 0;
+                    $comprobante->total_inafecta = 0;
+                    $comprobante->total_gravada = $cabecera['mont_pag'];
+                    $comprobante->total = $cabecera['mont_pag'];
+                    $comprobante->tipo_pago = 'Efectivo';
+                    $comprobante->estado = 'no_enviado';
+                    $comprobante->cajero_id = Auth::user()->id;
+                    $comprobante->save();
+
+                    $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();
+                    foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                        $detalle_comprobante = new DetallesComprobante();
+                        $detalle_comprobante->cantidad = 1;
+                        $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                        $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                        $detalle_comprobante->inafecto =  0;
+                        $detalle_comprobante->impuesto =  0;
+                        $detalle_comprobante->codi_depe =  0;
+                        $detalle_comprobante->descuento =  0;
+                        $detalle_comprobante->tipo_descuento =  'soles';
+                        $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                        $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                        $detalle_comprobante->comprobante_id =  $comprobante->id;
+                        $detalle_comprobante->save();
+                    }
+                    $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
+                    $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+                    $numeroComp->update();
+                }
+            } else {
+                return 'No es admision';
+            }
+            DB::commit();
+            $result = [
+                'successMessage' => 'Comprobante Registrado con exito',
+                'error' => false
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = ['errorMessage' => 'No se pudo registrar el comprobante', 'error' => true];
+            Log::error('BancoController@procesar_pagos, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+        }
+        return $result;
     }
 
     /**

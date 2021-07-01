@@ -158,169 +158,169 @@ class PermisoSeeder extends Seeder
         ]);
 
         NumeroComprobante::create([
-            'serie' => 'B001',
+            'serie' => 'B008',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 1
         ]);
         NumeroComprobante::create([
-            'serie' => 'F001',
+            'serie' => 'F008',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 1
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND01',
+            'serie' => 'ND08',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 1
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC01',
+            'serie' => 'NC08',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 1
         ]);
         NumeroComprobante::create([
-            'serie' => 'B002',
+            'serie' => 'B009',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 2
         ]);
         NumeroComprobante::create([
-            'serie' => 'F002',
+            'serie' => 'F009',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 2
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND02',
+            'serie' => 'ND09',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 2
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC02',
+            'serie' => 'NC09',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 2
         ]);
         NumeroComprobante::create([
-            'serie' => 'B003',
+            'serie' => 'B010',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 3
         ]);
         NumeroComprobante::create([
-            'serie' => 'F003',
+            'serie' => 'F010',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 3
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND03',
+            'serie' => 'ND10',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 3
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC03',
+            'serie' => 'NC10',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 3
         ]);
         NumeroComprobante::create([
-            'serie' => 'B004',
+            'serie' => 'B011',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 4
         ]);
         NumeroComprobante::create([
-            'serie' => 'F004',
+            'serie' => 'F011',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 4
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND04',
+            'serie' => 'ND11',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 4
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC04',
+            'serie' => 'NC11',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 4
         ]);
         NumeroComprobante::create([
-            'serie' => 'B005',
+            'serie' => 'B012',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 5
         ]);
         NumeroComprobante::create([
-            'serie' => 'F005',
+            'serie' => 'F012',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 5
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND05',
+            'serie' => 'ND12',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 5
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC05',
+            'serie' => 'NC12',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 5
         ]);
         NumeroComprobante::create([
-            'serie' => 'B006',
+            'serie' => 'B013',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 6
         ]);
         NumeroComprobante::create([
-            'serie' => 'F006',
+            'serie' => 'F013',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 6
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND06',
+            'serie' => 'ND13',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 6
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC06',
+            'serie' => 'NC13',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 6
         ]);
         NumeroComprobante::create([
-            'serie' => 'B007',
+            'serie' => 'B014',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 1,
             'punto_venta_id' => 7
         ]);
         NumeroComprobante::create([
-            'serie' => 'F007',
+            'serie' => 'F014',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 2,
             'punto_venta_id' => 7
         ]);
         NumeroComprobante::create([
-            'serie' => 'ND07',
+            'serie' => 'ND14',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 3,
             'punto_venta_id' => 7
         ]);
         NumeroComprobante::create([
-            'serie' => 'NC07',
+            'serie' => 'NC14',
             'correlativo' => '00000001',
             'tipo_comprobante_id' => 4,
             'punto_venta_id' => 7
@@ -434,6 +434,6 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Consolidado Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Facturas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
         Permission::create(['name' => 'Notas Reportes-Periodo', 'guard_name' => 'sanctum'])->assignRole($superadmin, $cajero);
-    
+
     }
 }
