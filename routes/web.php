@@ -284,6 +284,7 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     })->name('banco.iniciar');
 
     Route::get('/banco/listar', [BancoController::class, 'index'])->name('banco.listar');
+    Route::post('/banco/procesar_pagos', [BancoController::class, 'procesar_pagos'])->name('banco.procesar_pagos');
     /*******************************************************************/
 
     /**************************** ADMISION ***************************/
