@@ -104,12 +104,6 @@ export default {
           tdClass: "codigo",
         },
         {
-          key: "codi_depe",
-          label: "C. COSTO",
-          class: "text-center",
-          tdClass: "centro",
-        },
-        {
           key: "descripcion",
           label: "CONCEPTO",
           class: "text-center",
