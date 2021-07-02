@@ -38,6 +38,7 @@
             >
               Procesar Pagos <b-icon icon="search"></b-icon>
             </b-button>-->
+            &nbsp;&nbsp;
             <b-button variant="outline-primary" @click="limpiar()">
               Limpiar <b-icon icon="arrow-clockwise"></b-icon>
             </b-button>
