@@ -61,7 +61,25 @@
           :fields="fields"
           empty-text="No hay conceptos para mostrar"
         >
-          <template v-slot:cell(precio)="row">
+          <template v-if="admision.id" v-slot:cell(codigo)="row">
+            {{ row.item.concepto.codigo }}
+          </template>
+          <template v-else v-slot:cell(codigo)="row">
+            {{row.item.codigo}}
+          </template>
+          <template v-if="admision.id" v-slot:cell(descripcion)="row">
+            {{ row.item.concepto.descripcion }}
+          </template>
+          <template v-else v-slot:cell(descripcion)="row">
+            {{row.item.descripcion}}
+          </template>
+          <template v-slot:cell(cantidad)>
+            <span>1</span>
+          </template>
+          <template v-if="admision.id" v-slot:cell(precio)="row">
+            {{ row.item.precio_variable }}
+          </template>
+          <template v-else v-slot:cell(precio)="row">
             <span v-if="row.item.tipo_precio == 'fijo'">{{
               row.item.precio
             }}</span>
@@ -95,7 +113,7 @@ export default {
   props: ["admision"],
   data() {
     return {
-      accion: "Crear",
+      accion: "",
       alerta: null,
       alerta_mensaje: "",
       app_url: this.$root.app_url,
@@ -130,6 +148,13 @@ export default {
         { key: "acciones", label: "", class: "text-center" },
       ],
     };
+  },
+  created() {
+    if (!this.admision.id) {
+      this.accion = "Crear";
+    } else {
+      this.accion = "Mostrar";
+    }
   },
   methods: {
     buscarConcepto(search, loading) {
