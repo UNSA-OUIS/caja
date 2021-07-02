@@ -20,7 +20,7 @@ class CreateDetallesComprobanteTable extends Migration
             $table->double('gravado', 8, 4);
             $table->double('inafecto', 8, 4);
             $table->double('impuesto', 8, 4);
-            $table->double('descuento', 8, 4);
+            $table->double('descuento', 8, 4)->default(0.0);
             $table->string('resolucion')->nullable();
             $table->boolean('estado')->default(true);
             $table->enum('tipo_descuento', ['soles', 'porcentaje']);

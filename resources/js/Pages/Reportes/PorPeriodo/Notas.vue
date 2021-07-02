@@ -413,7 +413,7 @@ export default {
                             cliente = cobro.comprobanteable.apellidos + ", " + cobro.comprobanteable.nombres
                             break;
                         case 'docente':
-                            cliente = this.cobro.comprobanteable.apn
+                            cliente = cobro.comprobanteable.apn
                             break;
                         case 'dependencia':
                             cliente = cobro.comprobanteable.nomb_depe

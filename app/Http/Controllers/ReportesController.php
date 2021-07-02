@@ -6,6 +6,7 @@ use App\Models\Clasificador;
 use App\Models\Comprobante;
 use App\Models\Concepto;
 use App\Models\Dependencia;
+use App\Models\DetallesComprobante;
 use App\Models\Persona;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -106,6 +107,35 @@ class ReportesController extends Controller
         return Inertia::render('Reportes/PorPeriodo/Descuentos', compact('comprobantes'));
     }
 
+    public function filtrarDescuento(Request $request)
+    {
+        $this->authorize('descuento');
+        $descuentos = DetallesComprobante::whereNotNull('resolucion')->whereDate('created_at','>=',$request->fechaInicio)
+                                    ->whereDate('created_at','<=',$request->fechaFin)
+                                    ->when($request->cajeroId != "",function ($q) {
+                                        return $q->whereHas('comprobante', function ($query) {
+                                            $query->where('cajero_id', request('cajeroId', 0));
+                                        });
+                                    })
+                                    ->get()->load('comprobante.comprobanteable')->sortBy(['comprobantes.cajero_id', 'comprobantes.created_at']);
+        
+        $totalMontosxPagar = $descuentos->sum(function ($desc) {
+            return $desc['cantidad'] * $desc['valor_unitario'];
+        });
+        $totalDescuento = $descuentos->sum(function ($desc) {
+            return $desc['cantidad'] * $desc['valor_unitario'] - $desc['subtotal'];
+        });
+        $totalMontoPagado = $descuentos->sum('subtotal');
+        $totalRegistros = $descuentos->count();
+        return [
+            'descuentos' => $descuentos,
+            'totalMontosxPagar' => $totalMontosxPagar,
+            'totalDescuento' => $totalDescuento,
+            'totalMontoPagado' => $totalMontoPagado,
+            'totalRegistros' => $totalRegistros,
+        ];
+    }
+
     public function centroDeCosto()
     {
         $this->authorize('centroCosto');
@@ -153,7 +183,7 @@ class ReportesController extends Controller
 
     public function filtrarFactura(Request $request)
     {
-        $this->authorize('cajero');
+        $this->authorize('facturas');
 
         $comprobantes = Comprobante::with('comprobanteable')->with(['cajero' => function($query) {
                                         $query->select('id', 'name');
@@ -200,7 +230,7 @@ class ReportesController extends Controller
 
     public function filtrarNota(Request $request)
     {
-        $this->authorize('cajero');
+        $this->authorize('notas');
 
         $comprobantes = Comprobante::with('comprobanteable', 'comprobante_afectado')->with(['cajero' => function($query) {
                                         $query->select('id', 'name');
