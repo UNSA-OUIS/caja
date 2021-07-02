@@ -4,39 +4,32 @@
         <div class="card" ref="content">
             <div class="card-header">
                 <h1>Descuentos por cajero</h1>
-                <b-button @click="html2pdf">Descargar (html2pdf)</b-button>
-                <!--<b-button @click="dompdf">Descargar (dompdf)</b-button>
-                <a
-                    class="btn btn-success float-right" method="post"
-                    href="#" @click="dompdf"
-                    >Descargar (dompdf)</a
-                >-->
             </div>
             <div class="card-body">
                 <b-row>
                     <b-col cols="4">
-                        <b-form-group
-                        label="Buscar cajero: "
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0"
-                        >
-                        <b-input-group size="sm">
-                            <b-form-input
-                            v-model="dniCliente"
-                            type="search"
-                            id="filterInput"
-                            placeholder="Escriba el texto a buscar..."
-                            ></b-form-input>
-                            <b-input-group-append>
-                            <b-button :disabled="!dniCliente" @click="dniCliente = ''"
-                                >Limpiar</b-button
-                            >
-                            </b-input-group-append>
-                        </b-input-group>
-                        </b-form-group>
+                        <v-select
+                        v-model="cajero"
+                        @search="buscarCajero"
+                        :filterable="false"
+                        :options="cajeros"
+                        :reduce="cajero => cajero"
+                        label="vista_cajero"
+                        placeholder="Ingrese código o nombre del cajero"
+                    >
+                        <template #search="{attributes, events}">
+                            <input
+                                class="vs__search"
+                                :required="!cajero"
+                                v-bind="attributes"
+                                v-on="events"
+                                v-model="filtro"
+                            />
+                        </template>
+                        <template slot="no-options">
+                            Lo sentimos, no hay resultados de coincidencia.
+                        </template>
+                    </v-select>
                     </b-col>
                     <b-col cols="4">
                         <b-form-group
@@ -49,7 +42,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="fechaInicio"
+                            v-model="filter.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -69,7 +62,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="fechaFin"
+                            v-model="filter.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -79,22 +72,77 @@
                          </b-form-group>
                     </b-col>
                 </b-row>
+                <b-button class="btn btn-success float-right mt-2 mb-2" @click="filterTable()">Generar reporte</b-button>
                 <b-table
-                            ref="tbl_comprobantes"
-                            show-empty
-                            striped
-                            hover
-                            sticky-header
-                            bordered
-                            small
-                            responsive
-                            :items="grupoFilter"
-                            :fields="fields"
-                            empty-text="No hay comprobantes para mostrar"
-                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
-                        >
-                        </b-table>
-                
+                    ref="tbl_descuentos"
+                    show-empty
+                    striped
+                    hover
+                    sticky-header
+                    bordered
+                    small
+                    responsive
+                    :items="descuentos"
+                    :fields="fields"
+                    empty-text="No hay descuentos para mostrar"
+                    empty-filtered-text="No hay descuentos que coincidan con su búsqueda.">
+                    <template v-slot:cell(created_at)="row">
+                        {{ row.item.created_at.substring(0, 10) }}
+                    </template>
+                    <template v-slot:cell(cajero_id)="row">
+                        {{ row.item.comprobante.cajero_id }}
+                    </template>
+                    <template v-slot:cell(correlativo)="row">
+                        {{ row.item.comprobante.correlativo }}
+                    </template>
+                    <template v-slot:cell(codigo)="row">
+                        {{ row.item.comprobante.codi_usuario }}
+                    </template>
+                    <template v-slot:cell(nombre)="row">
+                        <span v-if="row.item.comprobante.tipo_usuario === 'alumno'">
+                        {{ reemplazar(row.item.comprobante.comprobanteable.apn) }}
+                        </span>
+                        <span v-else-if="row.item.comprobante.tipo_usuario === 'empresa'">
+                        {{ row.item.comprobante.comprobanteable.razon_social }}
+                        </span>
+                        <span v-else-if="row.item.comprobante.tipo_usuario === 'particular'">
+                        {{ row.item.comprobante.comprobanteable.apellidos }},
+                        {{ row.item.comprobante.comprobanteable.nombres }}
+                        </span>
+                        <span v-else-if="row.item.comprobante.tipo_usuario === 'docente'">
+                        {{ reemplazar(row.item.comprobante.comprobanteable.apn) }}
+                        </span>
+                        <span v-else-if="row.item.comprobante.tipo_usuario === 'dependencia'">
+                        {{ row.item.comprobante.comprobanteable.nomb_depe }}
+                        </span>
+                    </template>
+                    <template v-slot:cell(montoxpagar)="row">
+                        {{ row.item.cantidad * row.item.valor_unitario }}
+                    </template>
+                    <template v-slot:cell(descuento)="row">
+                        {{ row.item.cantidad * row.item.valor_unitario - row.item.subtotal }}
+                    </template>
+                    <template v-if="descuentos.length" slot="bottom-row" slot-scope="">
+                        <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                        <b-td colspan="3"></b-td>
+                        <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontosxPagar}}</b-td>
+                        <b-td class="text-right font-weight-bold">{{totalDescuento}}</b-td>
+                        <b-td colspan="1"></b-td>
+                        <b-td class="text-right font-weight-bold">{{totalMontoPagado}}</b-td>
+                    </template>
+                </b-table>
+                <b-button v-if="descuentos.length" @click="html2pdf">Descargar PDF</b-button>
+                <json-excel
+                    v-if="descuentos.length"
+                    :data="json_data"
+                    type="xlsx"
+                    :fields="json_fields"
+                    worksheet="Reporte_periodo_x_cajero"
+                    :name="filename"
+                    class="btn btn-success">
+                        Descargar Excel
+                </json-excel>
             </div>
 
             <vue-html2pdf
@@ -107,10 +155,8 @@
                     :pdf-quality="2"
                     :manual-pagination="true"
                     pdf-format="a4"
-                    pdf-orientation="portrait"
-                    pdf-content-width="800px"
-            
-                    @progress="onProgress($event)"
+                    pdf-orientation="landscape"
+                    pdf-content-width="1100px"
                     @hasStartedGeneration="hasStartedGeneration()"
                     @beforeDownload="beforeDownload($event)"
                     @hasGenerated="hasGenerated($event)"
@@ -144,10 +190,10 @@
                                     
                                 </div>
                                 
-                                    <div v-for="(group) in grupoDividido">
+                                    <div v-for="(group, key) in grupoDividido" :key="key">
                                        <div class="card-body">
                                         <b-table
-                                            ref="tbl_comprobantes"
+                                            ref="tbl_descuentos"
                                             show-empty
                                             striped
                                             hover
@@ -157,9 +203,54 @@
                                             stacked="md"
                                             :items="group"
                                             :fields="fields"
-                                            empty-text="No hay comprobantes para mostrar"
-                                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                                            empty-text="No hay descuentos para mostrar"
+                                            empty-filtered-text="No hay descuentos que coincidan con su búsqueda."
                                         >
+                                        <template v-slot:cell(created_at)="row">
+                                            {{ row.item.created_at.substring(0, 10) }}
+                                        </template>
+                                        <template v-slot:cell(cajero_id)="row">
+                                            {{ row.item.comprobante.cajero_id }}
+                                        </template>
+                                        <template v-slot:cell(correlativo)="row">
+                                            {{ row.item.comprobante.correlativo }}
+                                        </template>
+                                        <template v-slot:cell(codigo)="row">
+                                            {{ row.item.comprobante.codi_usuario }}
+                                        </template>
+                                        <template v-slot:cell(nombre)="row">
+                                            <span v-if="row.item.comprobante.tipo_usuario === 'alumno'">
+                                            {{ reemplazar(row.item.comprobante.comprobanteable.apn) }}
+                                            </span>
+                                            <span v-else-if="row.item.comprobante.tipo_usuario === 'empresa'">
+                                            {{ row.item.comprobante.comprobanteable.razon_social }}
+                                            </span>
+                                            <span v-else-if="row.item.comprobante.tipo_usuario === 'particular'">
+                                            {{ row.item.comprobante.comprobanteable.apellidos }},
+                                            {{ row.item.comprobante.comprobanteable.nombres }}
+                                            </span>
+                                            <span v-else-if="row.item.comprobante.tipo_usuario === 'docente'">
+                                            {{ reemplazar(row.item.comprobante.comprobanteable.apn) }}
+                                            </span>
+                                            <span v-else-if="row.item.comprobante.tipo_usuario === 'dependencia'">
+                                            {{ row.item.comprobante.comprobanteable.nomb_depe }}
+                                            </span>
+                                        </template>
+                                        <template v-slot:cell(montoxpagar)="row">
+                                            {{ row.item.cantidad * row.item.valor_unitario }}
+                                        </template>
+                                        <template v-slot:cell(descuento)="row">
+                                            {{ row.item.cantidad * row.item.valor_unitario - row.item.subtotal }}
+                                        </template>
+                                        <template v-if="descuentos.length" slot="bottom-row" slot-scope="">
+                                            <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
+                                            <b-td colspan="3"></b-td>
+                                            <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalMontosxPagar}}</b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalDescuento}}</b-td>
+                                            <b-td colspan="1"></b-td>
+                                            <b-td class="text-right font-weight-bold">{{totalMontoPagado}}</b-td>
+                                        </template>
                                         </b-table>
                                         <div class="html2pdf__page-break"/>
                                     </div>
@@ -173,43 +264,168 @@
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 import VueHtml2pdf from 'vue-html2pdf'
 import PeriodoMenu from "./PeriodoMenu";
+import JsonExcel from "vue-json-excel";
 
 export default {
-    name: "comprobantes.descuentos",
-    props: ["comprobantes"],
+    name: "reportes.consolidado",
     components: {
         AppLayout,
         VueHtml2pdf,
-        PeriodoMenu
+        PeriodoMenu,
+        JsonExcel
     },
     data() {
         return {
             app_url: this.$root.app_url,
-            fields: [
-                { key: "codigo", label: "Código" },
-                { key: "serie", label: "Serie" },
-                { key: "correlativo", label: "Correlativo" },
-                { key: "resolucion", label: "Resolucion" },
-                { key: "cui", label: "Cliente" },
-                { key: "total", label: "Precio Total" },
-
+            cajero: null,
+            cajeros: [],
+            filtro: "",
+            json_fields: {
+                "FECHA": "created_at",
+                "CAJERO": "cajero_id",
+                "RECIBO": "correlativo",
+                "CÓDIGO": "codigo",
+                "NOMBRE": "nombre",
+                "M.XPAGAR": "montoxpagar",
+                "DSCTO.": "descuento",
+                "RESOLUC": "resolucion",
+                "M.PAGADO": "subtotal",
+                },
+            json_data: [],
+            json_meta: [
+                [
+                    {
+                    key: "charset",
+                    value: "utf-8",
+                    },
+                ],
             ],
+            fields: [
+                { key: "created_at", label: "FECHA" },
+                { key: "cajero_id", label: "CAJERO" },
+                { key: "correlativo", label: "RECIBO" },
+                { key: "codigo", label: "CÓDIGO" },
+                { key: "nombre", label: "NOMBRE" },
+                { key: "montoxpagar", label: "M.XPAGAR", class: "text-right" },
+                { key: "descuento", label: "DSCTO.", class: "text-right" },
+                { key: "resolucion", label: "RESOLUC" },
+                { key: "subtotal", label: "M.PAGADO", class: "text-right" },
+            ],
+            descuentos: [],
+            totalRegistros: 0,
+            totalMontosxPagar: 0,
+            totalDescuento: 0,
+            totalMontoPagado: 0,
             filenamepdf: "Reporte_cobros",
-            currentPage: 1,
-            perPage: 5,
-            dniCliente: "",
-            fechaInicio: "",
-            fechaFin: "",
-            month: "",
+            filename: "",
+            filenamepdf: "Reporte_cobros",
+            filter: {
+                fechaInicio: "",
+                fechaFin: "",
+            },
 
         };
     },
+    watch : {
+        filtro:function(val) {
+            this.filtro = val.trim()
+        },
+        cajero:function(val) {
+            this.filtro = ""
+        },
+    },
+    created(){
+        var today = new Date()
+        today.setHours(today.getHours() - 5)
+        var dateString = today.toISOString().split("T")[0]
+        this.filename = "Reporte_periodo_x_consolidado_" + dateString + ".xls"
+        this.filter.fechaInicio = dateString;
+        this.filter.fechaFin = dateString;
+    },
     methods: {
+        reemplazar(nombre) {
+            return nombre.replace("/", " ");
+        },
+        buscarCajero(search, loading) {
+            loading(true)
+            axios.get(`${this.app_url}/buscarCajero?filtro=${search}`)
+                .then(response => {
+                    this.cajeros = response.data;
+                    loading(false)
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+        },
         refreshTable() {
-            this.$refs.tbl_comprobantes.refresh();
+            this.$refs.tbl_descuentos.refresh();
+        },
+        async filterTable() {
+            try {
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                if (this.cajero != null){
+                    params = params + "&cajeroId=" + this.cajero.cajero_id
+                }
+                const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/descuentos/${params}`)
+                this.descuentos = response.data.descuentos
+                this.totalRegistros = response.data.totalRegistros
+                this.totalMontosxPagar = response.data.totalMontosxPagar
+                this.totalDescuento = response.data.totalDescuento
+                this.totalMontoPagado = response.data.totalMontoPagado
+                var temp = []
+                this.descuentos.forEach(function(cobro) {
+                    var cliente = ""
+                    switch (cobro.comprobante.tipo_usuario) {
+                        case 'alumno':
+                            cliente = cobro.comprobante.comprobanteable.apn
+                            break;
+                        case 'empresa':
+                            cliente = cobro.comprobante.comprobanteable.razon_social
+                            break;
+                        case 'particular':
+                            cliente = cobro.comprobante.comprobanteable.apellidos + ", " + cobro.comprobante.comprobanteable.nombres
+                            break;
+                        case 'docente':
+                            cliente = cobro.comprobante.comprobanteable.apn
+                            break;
+                        case 'dependencia':
+                            cliente = cobro.comprobante.comprobanteable.nomb_depe
+                            break;
+                        default:
+                            break;
+                    }
+                    temp.push({
+                        created_at: cobro.created_at,
+                        cajero_id: cobro.comprobante.cajero_id,
+                        correlativo: cobro.comprobante.correlativo,
+                        codigo: cobro.comprobante.codi_usuario,
+                        nombre: cliente,
+                        montoxpagar: cobro.cantidad * cobro.valor_unitario,
+                        descuento: cobro.cantidad * cobro.valor_unitario - cobro.subtotal,
+                        resolucion: cobro.resolucion,
+                        subtotal: cobro.subtotal,
+                    })
+                });
+                this.json_data = temp.slice()
+                this.json_data.push({
+                    created_at: "" + this.totalRegistros + " registros",
+                    cajero_id: "",
+                    correlativo: "",
+                    codigo: "",
+                    nombre: "TOTALES:",
+                    montoxpagar: this.totalMontosxPagar,
+                    descuento: this.totalDescuento,
+                    resolucion: "",
+                    subtotal: this.totalMontoPagado,
+                })
+                
+            } catch (error) {
+                console.log(error)
+            }
         },
         html2pdf(){
             this.$refs.html2Pdf.generatePdf()
@@ -234,7 +450,7 @@ export default {
     },
     computed:{
         grupoFilter(){
-            var group = this.comprobantes;
+            var group = this.descuentos;
             
             group = this.fechaInicio && this.fechaFin
             ? group.filter(item => 
