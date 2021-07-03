@@ -26,6 +26,7 @@ class BancoController extends Controller
         $query = BancoBCP::select('concepto')
             ->whereDate('frecepcion', '>=', $request->fecha_inicio)
             ->whereDate('frecepcion', '<=', $request->fecha_fin)
+            ->where('flag', 0)
             ->selectRaw('count(concepto) as cantidad')
             ->selectRaw('sum(mont_pag) as monto_acumulado')
             ->selectRaw("DATE_FORMAT(fpago,'%Y-%m-%d') as fecha_pago")
@@ -83,6 +84,7 @@ class BancoController extends Controller
                     $comprobante->tipo_pago = 'Efectivo';
                     $comprobante->estado = 'no_enviado';
                     $comprobante->cajero_id = Auth::user()->id;
+                    $comprobante->cuenta_33 = true;
                     $comprobante->save();
 
                     $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();
