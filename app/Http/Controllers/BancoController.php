@@ -7,6 +7,7 @@ use App\Models\BancoBCP;
 use App\Models\Comprobante;
 use App\Models\DetallesComprobante;
 use App\Models\NumeroComprobante;
+use App\Models\Particular;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,7 @@ class BancoController extends Controller
         $query = BancoBCP::select('concepto')
             ->whereDate('frecepcion', '>=', $request->fecha_inicio)
             ->whereDate('frecepcion', '<=', $request->fecha_fin)
+            ->where('flag', 0)
             ->selectRaw('count(concepto) as cantidad')
             ->selectRaw('sum(mont_pag) as monto_acumulado')
             ->selectRaw("DATE_FORMAT(fpago,'%Y-%m-%d') as fecha_pago")
@@ -71,7 +73,29 @@ class BancoController extends Controller
                     $comprobante = new Comprobante();
                     $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
 
-                    $comprobante->tipo_usuario = 'alumno';
+                    $nombres_apellidos = $cabecera['apn'];
+                    $indice = stripos($nombres_apellidos, ',');
+                    $nombres = substr($nombres_apellidos, 0, $indice);
+                    $apellidos = substr($nombres_apellidos, $indice, strlen($nombres_apellidos));
+
+                    $cantidad_dni = BancoBCP::where('ndoc', $cabecera['ndoc'])->count();
+                    if ($cantidad_dni == 1) {
+                        $particular = new Particular();
+                        $particular->dni = $cabecera['ndoc'];
+                        $particular->nombres = $nombres;
+                        $particular->apellidos = $apellidos;
+                        $particular->save();
+                    } else {
+                        $registro = BancoBCP::where('ndoc', $cabecera['ndoc'])->first();
+                        $particular = new Particular();
+                        $particular->dni = $registro->ndoc;
+                        $particular->nombres = $nombres;
+                        $particular->apellidos = $apellidos;
+                        $particular->save();
+
+                    }
+                    $comprobante->tipo_usuario = 'particular';
+                    $comprobante->codi_usuario = $cabecera['ndoc'];
                     $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
                     $comprobante->serie = $cajero->serie;
                     $comprobante->correlativo = $cajero->correlativo;
@@ -83,6 +107,8 @@ class BancoController extends Controller
                     $comprobante->tipo_pago = 'Efectivo';
                     $comprobante->estado = 'no_enviado';
                     $comprobante->cajero_id = Auth::user()->id;
+                    $comprobante->cuenta_33 = true;
+                    $comprobante->enviado = false;
                     $comprobante->save();
 
                     $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();

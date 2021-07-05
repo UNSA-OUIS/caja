@@ -30,7 +30,7 @@
       </template>
 
       <template v-if="totalRows != ''" #table-caption
-        >Se encontraron {{ totalRows }} registros
+        >Se encontraron {{ totalRows }} procesos
       </template>
     </b-table>
     <div class="card-body">

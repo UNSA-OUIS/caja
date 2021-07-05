@@ -295,14 +295,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/admision/listar', [AdmisionController::class, 'index'])->name('admision.listar');
     Route::get('/admision/crear', [AdmisionController::class, 'create'])->name('admision.crear');
     Route::post('/admision', [AdmisionController::class, 'store'])->name('admision.registrar');
-    /*
-    Route::get('/clasificadores/{clasificador}', [ClasificadorController::class, 'show'])->name('clasificadores.mostrar');
-    Route::post('/clasificadores/{clasificador}', [ClasificadorController::class, 'update'])->name('clasificadores.actualizar');
-    Route::delete('/clasificadores/{clasificador}', [ClasificadorController::class, 'destroy'])->name('clasificadores.eliminar');
-    Route::post('/clasificadores/{clasificador}/restaurar', [ClasificadorController::class, 'restore'])->name('clasificadores.restaurar');*/
+    Route::get('/admision/{admision}', [AdmisionController::class, 'show'])->name('admision.mostrar');
+    Route::post('/admision/{admision}', [AdmisionController::class, 'update'])->name('admision.actualizar');
     /*******************************************************************/
 
-    /**************************** Sunat ***************************/
+    /**************************** SUNAT ***************************/
     Route::get('/sunat/tablero', SunatController::class)->name('sunat.tablero');
     Route::get('/getEstados', [SunatController::class, 'getEstados'])->name('sunat.getEstados');
 

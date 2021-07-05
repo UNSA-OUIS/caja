@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Monolog\Handler\FirePHPHandler;
 
 class AdmisionController extends Controller
 {
@@ -19,7 +20,7 @@ class AdmisionController extends Controller
     public function index(Request $request)
     {
         $query = Admision::with('detalles')->where('proceso_id', 'like', '%' . $request->filter . '%')
-                    ->orderBy('id', 'desc');
+            ->orderBy('id', 'desc');
         $sortby = $request->sortby;
 
         if ($sortby && !empty($sortby)) {
@@ -102,10 +103,12 @@ class AdmisionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Admision $admision)
     {
-        //
+        $admision = Admision::with('detalles.concepto')->where('id', $admision->id)->first();
+        return Inertia::render('Admision/Cabecera', compact('admision'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
