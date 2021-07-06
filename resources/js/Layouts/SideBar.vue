@@ -384,7 +384,8 @@
                   path == 'boletas' ||
                   path == 'facturas' ||
                   path == 'comunicacion-baja' ||
-                  path == 'consultas-resumen-diario',
+                  path == 'consultas-resumen-diario' ||
+                  path == 'boletas_cuenta33',
               }"
             >
               <i class="fas fa-cloud-upload-alt"></i>
@@ -403,6 +404,15 @@
                   }"
                 >
                   Resumen Diario
+                </inertia-link>
+              </li>
+
+              <li>
+                <inertia-link
+                  :href="route('cuenta33.iniciar')"
+                  :class="{ 'mm-active': path == 'boletas_cuenta33' }"
+                >
+                  Resumen diario C33
                 </inertia-link>
               </li>
               <li

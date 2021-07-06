@@ -34,6 +34,7 @@ class ComprobanteController extends Controller
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
             ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
             ->where('cajero_id', 'like', Auth::user()->id)
+
             ->latest();
 
         $sortby = $request->sortby;

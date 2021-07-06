@@ -52,9 +52,26 @@ class BoletaController extends Controller
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')->with('detalles.concepto')
             ->where('tipo_comprobante_id', 1)
             ->whereIn('estado', ['no_enviado', 'anulado'])
+            ->where('estado', false)
             ->whereDate('created_at', '>=', $request->fecha_inicio)
             ->whereDate('created_at', '<=', $request->fecha_fin)
-            ->where('cajero_id', Auth::user()->id)->get();
+            ->where('cajero_id', Auth::user()->id)
+            ->where('cuenta_33', false)
+            ->get();
+        return $query;
+    }
+
+    public function index_cuenta33(Request $request)
+    {
+        $query = Comprobante::with('comprobanteable')->with('detalles.concepto')->with('tipo_comprobante')->where('tipo_comprobante_id', 1)
+            ->whereIn('estado', ['no_enviado', 'anulado'])
+            ->where('enviado', false)
+            ->whereDate('created_at', '>=', $request->fecha_inicio)
+            ->whereDate('created_at', '<=', $request->fecha_fin)
+            ->where('cajero_id', Auth::user()->id)
+            ->where('cuenta_33', true)
+            ->get();
+
         return $query;
     }
 
