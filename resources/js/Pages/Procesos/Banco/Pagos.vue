@@ -1,5 +1,11 @@
 <template>
   <div>
+    <b-alert show dismissible variant="success" v-if="alerta == false">
+      {{ alerta_mensaje }}
+    </b-alert>
+    <b-alert show dismissible variant="danger" v-if="alerta == true">
+      {{ alerta_mensaje }}
+    </b-alert>
     <b-table
       ref="tbl_boletas"
       show-empty
@@ -89,6 +95,8 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      alerta: null,
+      alerta_mensaje: "",
       items: [],
       selected: [],
       isBusy: false,
@@ -160,20 +168,25 @@ export default {
       });
     },
     procesar_pagos() {
-      const promise = axios.post(`${this.app_url}/banco/procesar_pagos`, {
-        fecha_inicio: this.fecha_inicio,
-        fecha_fin: this.fecha_fin,
-        proceso: this.proceso,
-        subproceso: this.subproceso,
-      });
-
-      return promise.then((response) => {
-        console.log(response.data);
-        this.items = response.data;
-        this.totalRows = response.data.length;
-
-        return this.items || [];
-      });
+      axios
+        .post(`${this.app_url}/banco/procesar_pagos`, {
+          fecha_inicio: this.fecha_inicio,
+          fecha_fin: this.fecha_fin,
+          proceso: this.proceso,
+          subproceso: this.subproceso,
+        })
+        .then((response) => {
+          if (!response.data.error) {
+            this.alerta = response.data.error;
+            this.alerta_mensaje = response.data.successMessage;
+          } else {
+            this.alerta = response.data.error;
+            this.alerta_mensaje = response.data.errorMessage;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;

@@ -46,7 +46,6 @@ class BancoController extends Controller
      */
     public function procesar_pagos(Request $request)
     {
-        //return $request;
         DB::beginTransaction();
 
         try {
@@ -113,29 +112,22 @@ class BancoController extends Controller
                     $comprobante = new Comprobante();
                     $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
 
-
-                    /*$nombres_apellidos = $cabecera['apn'];
-                    $indice = stripos($nombres_apellidos, ',');
-                    $nombres = substr($nombres_apellidos, 0, $indice);
-                    $apellidos = substr($nombres_apellidos, $indice, strlen($nombres_apellidos));*/
-
-                    /*$cantidad_dni = BancoBCP::where('ndoc', $cabecera['ndoc'])->count();
-                    if ($cantidad_dni == 1) {
+                    $nombres_apellidos = $cabecera['apn'];
+                    $indice = strrpos($nombres_apellidos, ',');
+                    /*$dni = '72351610';
+                    $consulta = file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+                    return $consulta;*/
+                    $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                    if (!$existe_dni) {
                         $particular = new Particular();
                         $particular->dni = $cabecera['ndoc'];
-                        $particular->nombres = 'Jesus';
-                        $particular->apellidos = 'Ortiz';
+                        $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                        $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
                         $particular->save();
-                    } else {
-                        $registro = BancoBCP::where('ndoc', $cabecera['ndoc'])->first();
-                        $particular = new Particular();
-                        $particular->dni = $registro->ndoc;
-                        $particular->nombres = 'Jesus';
-                        $particular->apellidos = 'Ortiz';
-                        $particular->save();
-                    }*/
+                    }
+
                     $comprobante->tipo_usuario = 'particular';
-                    $comprobante->codi_usuario = '48611654';
+                    $comprobante->codi_usuario = $cabecera['ndoc'];
                     $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
                     $comprobante->serie = $cajero->serie;
                     $comprobante->correlativo = $cajero->correlativo;
@@ -149,6 +141,7 @@ class BancoController extends Controller
                     $comprobante->cajero_id = Auth::user()->id;
                     $comprobante->cuenta_33 = true;
                     $comprobante->enviado = false;
+                    $comprobante->created_at = $cabecera['frecepcion'];
                     $comprobante->save();
 
                     $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();
