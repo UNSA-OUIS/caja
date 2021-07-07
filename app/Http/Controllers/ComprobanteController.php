@@ -378,6 +378,7 @@ class ComprobanteController extends Controller
             $comprobante->total_descuento = $request->total_descuento;
             $comprobante->total_impuesto = $request->total_impuesto;
             $comprobante->total_inafecta = $request->total_inafecta;
+            $comprobante->detraccion = $request->detraccion;
             $comprobante->total_gravada = $request->total_gravada;
             $comprobante->estado = 'no_enviado';
             //$comprobante->enviado = false;
@@ -396,6 +397,7 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];
                 $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                $detalle_comprobante->clasificador_id =  $detalle['clasificador_id'];
                 $detalle_comprobante->comprobante_id =  $comprobante->id;
                 $detalle_comprobante->save();
             }
@@ -438,6 +440,7 @@ class ComprobanteController extends Controller
             if ($request->cancelado){
                 $comprobante->fecha_cancelacion = now();
             }
+            $comprobante->detraccion = $request->detraccion;
             $comprobante->estado = 'no_enviado';
             //$comprobante->enviado = false;
             $comprobante->cajero_id = Auth::user()->id;
@@ -458,6 +461,7 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];
                 $detalle_comprobante->subtotal =  $detalle['subtotal'];
                 $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                $detalle_comprobante->clasificador_id =  $detalle['clasificador_id'];
                 $detalle_comprobante->comprobante_id =  $comprobante->id;
                 $detalle_comprobante->save();
             }

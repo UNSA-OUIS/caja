@@ -100,7 +100,7 @@
         <!-- end row-->
 
         <div class="row">
-            <div class="col-xl-8">
+            <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
                         <!--<div class="float-right">
@@ -168,7 +168,7 @@
                                         <span data-plugin="counterup">{{notas_debito}}</span
                                         ><span
                                             class="text-muted d-inline-block font-size-15 ml-3"
-                                            >notas de debito</span
+                                            >notas de débito</span
                                         >
                                     </h3>
                                 </li>
@@ -179,7 +179,7 @@
                                         <span data-plugin="counterup">{{notas_credito}}</span
                                         ><span
                                             class="text-muted d-inline-block font-size-15 ml-3"
-                                            >notas de credito</span
+                                            >notas de crédito</span
                                         >
                                     </h3>
                                 </li>
@@ -388,6 +388,40 @@
         </div>
 
         <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Comprobantes registrados en el día</h4>
+                        <b-table
+                            ref="tbl_comprobantes"
+                            show-empty
+                            striped
+                            hover
+                            sticky-header
+                            bordered
+                            small
+                            responsive
+                            :items="comprobantes"
+                            :fields="fields"
+                            empty-text="No hay comprobantes para mostrar"
+                            empty-filtered-text="No hay comprobantes que coincidan con su búsqueda."
+                        >
+                            <template slot="bottom-row" slot-scope="">
+                                <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td><b-td />
+                                <b-td class="text-right font-weight-bold">TOTALES:</b-td>
+                                <b-td class="text-right font-weight-bold">{{totalCobros}}</b-td>
+                                <b-td class="text-right font-weight-bold">{{totalAnulados}}</b-td>
+                                <b-td class="text-right font-weight-bold">{{totalDescuentos}}</b-td>
+                                <b-td class="text-right font-weight-bold">{{totalIGV}}</b-td>
+                                <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
+                            </template>
+                        </b-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row">
             <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body">
@@ -708,15 +742,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- enbd table-responsive-->
                         </div>
-                        <!-- data-sidebar-->
                     </div>
-                    <!-- end card-body-->
                 </div>
-                <!-- end card-->
             </div>
-            <!-- end col -->
 
             <div class="col-xl-4">
                 <div class="card">
@@ -970,7 +999,6 @@
                 </div>
             </div>
         </div>
-        <!-- end row -->
 
         <div class="row">
             <div class="col-lg-12">
@@ -1053,7 +1081,6 @@
                                             Mastercard
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1105,7 +1132,6 @@
                                             Visa
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1159,7 +1185,6 @@
                                             Paypal
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1212,7 +1237,6 @@
                                             Mastercard
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1263,7 +1287,6 @@
                                             Visa
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1316,7 +1339,6 @@
                                             Paypal
                                         </td>
                                         <td>
-                                            <!-- Button trigger modal -->
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light"
@@ -1328,50 +1350,94 @@
                                 </tbody>
                             </table>
                         </div>
-                        <!-- end table-responsive -->
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
         <!-- end row -->
     </app-layout>
 </template>
 
 <script>
+const axios = require('axios')
 import AppLayout from "@/Layouts/AppLayout";
 
 export default {
     components: {
         AppLayout
     },
+    data() {
+        return {
+            app_url: this.$root.app_url,
+            fields: [
+                { key: "date", label: "Fecha"},
+                { key: "codigo", label: "Código" },
+                { key: "nombre", label: "Nombre" },
+                { key: "cobros", label: "# Cobros" ,class: "text-right" },
+                { key: "anulados", label: "# Anulados" ,class: "text-right" },
+                { key: "descuento", label: "Dscto." ,class: "text-right" },
+                { key: "impuesto", label: "IGV" ,class: "text-right" },
+                { key: "monto", label: "Monto" ,class: "text-right" },
+            ],
+            comprobantes : [],
+            totalRegistros: 0,
+            totalCobros: 0,
+            totalDescuentos: 0,
+            totalIGV: 0,
+            totalMontos: 0,
+            totalAnulados: 0,
+            filter: {
+                fechaInicio: "",
+                fechaFin: "",
+            },
+        }
+    },
     computed: {
-    no_enviado() {
-      return this.$store.state.envio.no_enviado;
+        no_enviado() {
+        return this.$store.state.envio.no_enviado;
+        },
+        rechazado() {
+        return this.$store.state.envio.rechazado;
+        },
+        anulado() {
+        return this.$store.state.envio.anulado;
+        },
+        aceptado() {
+        return this.$store.state.envio.aceptado;
+        },
+        boletas() {
+        return this.$store.state.envio.boletas;
+        },
+        facturas() {
+        return this.$store.state.envio.facturas;
+        },
+        notas_debito() {
+        return this.$store.state.envio.notas_debito;
+        },
+        notas_credito() {
+        return this.$store.state.envio.notas_credito;
+        },
     },
-    rechazado() {
-      return this.$store.state.envio.rechazado;
+    async created() {
+        this.$store.dispatch("getEstados");
+        var today = new Date()
+        today.setHours(today.getHours() - 5)
+        this.filter.fechaInicio = today.toISOString().split("T")[0]
+        this.filter.fechaFin = today.toISOString().split("T")[0]
+
+        try {
+            let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+            const response = await axios.get(`${this.app_url}/reportes-periodo/filter-reporte/cajeros/${params}`)
+            this.comprobantes = response.data.comprobantes
+            this.totalRegistros = response.data.totalRegistros
+            this.totalCobros = response.data.totalCobros
+            this.totalDescuentos = response.data.totalDescuentos
+            this.totalIGV = response.data.totalIGV
+            this.totalMontos = response.data.totalMontos
+            this.totalAnulados = response.data.totalAnulados
+        } catch (error) {
+            console.log(error)
+        }
     },
-    anulado() {
-      return this.$store.state.envio.anulado;
-    },
-    aceptado() {
-      return this.$store.state.envio.aceptado;
-    },
-    boletas() {
-      return this.$store.state.envio.boletas;
-    },
-    facturas() {
-      return this.$store.state.envio.facturas;
-    },
-    notas_debito() {
-      return this.$store.state.envio.notas_debito;
-    },
-    notas_credito() {
-      return this.$store.state.envio.notas_credito;
-    },
-  },
-  created() {
-    this.$store.dispatch("getEstados");
-  },
 };
 </script>

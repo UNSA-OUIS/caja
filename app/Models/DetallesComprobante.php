@@ -22,4 +22,9 @@ class DetallesComprobante extends Model
     {
         return $this->belongsTo(Concepto::class);
     }
+
+    public function clasificador()
+    {
+        return $this->belongsTo(Clasificador::class);
+    }
 }

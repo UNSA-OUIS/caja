@@ -30,6 +30,7 @@ use App\Http\Controllers\DependenciaController;
 use App\Http\Controllers\Pdf;
 use App\Http\Controllers\NumeroComprobanteController;
 use App\Http\Controllers\PuntosVentaController;
+use App\Http\Controllers\ReciboIngresoController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ResumenDiarioController;
@@ -381,6 +382,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/reportes-periodo/notas', [ReportesController::class, 'notas'])->name('reportes.notas');
     Route::get('/reportes-periodo/consolidado', [ReportesController::class, 'consolidado'])->name('reportes.consolidado');
     Route::get('/reportes-periodo/filter-reporte/consolidado', [ReportesController::class, 'filtrarConsolidado'])->name('reportes.filtrarConsolidado');
+    /*******************************************************************/
+
+    /**************************** Reportes ***************************/
+    Route::get('/recibo-ingreso/cajero', [ReciboIngresoController::class, 'porCajero'])->name('recibos.cajero');
+    Route::get('/recibo-ingreso/filter-reporte/cajeros', [ReciboIngresoController::class, 'filtrarCajero'])->name('recibos.filtrarCajero');
     /*******************************************************************/
 
     /**************************** CUENTAS CORRIENTES ***************************/

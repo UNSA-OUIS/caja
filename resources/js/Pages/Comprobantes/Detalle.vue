@@ -235,13 +235,14 @@
           id="checkbox-1"
           v-model="detraccion"
           name="checkbox-1"
+          :disabled="accion === 'Mostrar'"
         >
           Agregar detracción
         </b-form-checkbox>
       </b-col>
       <b-col>
-        <b-form-input v-model="comprobante.detraccion" placeholder="Ingrese detracción"
-        :readonly="!detraccion" @keyup="calcularDetraccion()"></b-form-input>
+        <b-form-input type="number" v-model="comprobante.detraccion" placeholder="Ingrese detracción"
+        :readonly="!detraccion || accion === 'Mostrar'" class="text-right"></b-form-input>
       </b-col>
     </b-row>
     <div>
@@ -339,7 +340,16 @@ export default {
   computed: {
     precioTotal() {
       this.comprobante.total = this.comprobante.detalles.reduce(
-        (acc, item) => acc + item.subtotal, 0
+        (acc, item) =>{
+          var updatedSum = 0
+          if(item.detraccion && this.detraccion){
+            updatedSum = acc + item.subtotal - this.comprobante.detraccion
+          }
+          else{
+            updatedSum = acc + item.subtotal
+          }
+          return updatedSum
+        } , 0
       );
       this.comprobante.total_descuento = this.comprobante.detalles.reduce(
         (acc, item) => acc + (parseFloat(item.precio) * parseFloat(item.cantidad) - item.subtotal), 0

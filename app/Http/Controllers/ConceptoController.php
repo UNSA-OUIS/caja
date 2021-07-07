@@ -206,7 +206,7 @@ class ConceptoController extends Controller
         $puntoVenta = PuntosVenta::with(['conceptos'=>function($query) use ($filtro){
             $query->where('descripcion', 'ilike', '%' . $filtro . '%')
             ->orWhere('codigo', 'ilike', '%' . $filtro . '%')
-            ->select('conceptos.id as concepto_id', 'codigo', 'descripcion', 'precio', 'detraccion', 'tipo_precio', 'tipo_afectacion', 'codi_depe',
+            ->select('conceptos.id as concepto_id', 'codigo', 'descripcion', 'precio', 'detraccion', 'tipo_precio', 'tipo_afectacion', 'codi_depe', 'clasificador_id',
                       DB::raw("(CONCAT(codigo, ' - ', descripcion)) AS vista_concepto"))
             ->orderBy('descripcion', 'asc')
             ->get();

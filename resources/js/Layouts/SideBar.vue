@@ -595,7 +595,7 @@
               </li>
               <li>
                 <inertia-link
-                  href="#"
+                  :href="route('recibos.cajero')"
                   :class="{ 'mm-active': path == 'reportes-ingresos' }"
                 >
                   Ingresos
