@@ -17,7 +17,7 @@ class CreateDetallesAdmisionTable extends Migration
             $table->id();
             $table->tinyInteger('concepto_id');
             $table->bigInteger('admision_id');
-            $table->bigInteger('precio_variable')->nullable();
+            $table->double('precio_variable')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
