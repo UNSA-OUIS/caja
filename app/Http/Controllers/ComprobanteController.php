@@ -34,6 +34,8 @@ class ComprobanteController extends Controller
         $query = Comprobante::with('comprobanteable')->with('tipo_comprobante')
             ->with('detalles')->where('codi_usuario', 'like', '%' . $request->filter . '%')
             ->where('cajero_id', 'like', Auth::user()->id)
+            //->where('cuenta_33', false)
+            ->where('enviado', false)
             ->latest();
 
         $sortby = $request->sortby;
@@ -361,10 +363,9 @@ class ComprobanteController extends Controller
             $comprobante = new Comprobante();
             $comprobante->serie = $request->serie;
             $comprobante->correlativo = $request->correlativo;
-            if ($request->tipo_nota == '06'){
+            if ($request->tipo_nota == '06') {
                 $comprobante->motivo = 'DEVOLUCIÓN TOTAL - ' . $request->motivo;
-            }
-            else{
+            } else {
                 $comprobante->motivo = $request->motivo;
             }
             $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
@@ -435,7 +436,7 @@ class ComprobanteController extends Controller
             $comprobante->tipo_pago = $request->tipo_pago;
             $comprobante->email = $request->email;
             $comprobante->cancelado = $request->cancelado;
-            if ($request->cancelado){
+            if ($request->cancelado) {
                 $comprobante->fecha_cancelacion = now();
             }
             $comprobante->estado = 'no_enviado';
@@ -452,7 +453,7 @@ class ComprobanteController extends Controller
                 $detalle_comprobante->impuesto =  $detalle['impuesto'];
                 $detalle_comprobante->codi_depe =  $detalle['codi_depe'];
                 $detalle_comprobante->descuento =  $detalle['descuento'];
-                if ($detalle['resolucion'] != ''){
+                if ($detalle['resolucion'] != '') {
                     $detalle_comprobante->resolucion = $detalle['resolucion'] . "-" . $detalle['anho_resolucion'] . "-" . $detalle['tipo_resolucion'];
                 }
                 $detalle_comprobante->tipo_descuento =  $detalle['tipo_descuento'];

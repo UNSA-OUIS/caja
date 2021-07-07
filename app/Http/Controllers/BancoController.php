@@ -49,24 +49,63 @@ class BancoController extends Controller
         DB::beginTransaction();
 
         try {
+            $pagos_reintegro_admision = array();
+            $pagos_inscripcion_admision = array();
+            $pagos_pension_cpu = array();
+            $pagos_cambio_carrera = array();
+
             if ($request->proceso == 1) {
 
-                $pagos_reintegro_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
-                    ->where('concepto', 'REINTEGRO ADMISION')
-                    ->get();
-                $pagos_inscripcion_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
-                    ->where('concepto', 'INSCRIPCION ADMISION')
-                    ->get();
-                $pagos_pension_cpu = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
-                    ->where('concepto', 'PENSION CPU')
-                    ->get();
-                $pagos_cambio_carrera = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
-                    ->whereDate('frecepcion', '<=', $request->fecha_fin)
-                    ->where('concepto', 'CAMBIO CARRERA')
-                    ->get();
+                if ($request->subproceso == "1") {
+                    $pagos_reintegro_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'REINTEGRO ADMISION')
+                        ->where('flag', 0)
+                        ->get();
+                    //return 'subproceso 1';
+                } else if ($request->subproceso == "2") {
+                    $pagos_inscripcion_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'INSCRIPCION ADMISION')
+                        ->where('flag', 0)
+                        ->get();
+                    //return $pagos_inscripcion_admision;
+                } else if ($request->subproceso == "3") {
+                    $pagos_pension_cpu = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'PENSION CPU')
+                        ->where('flag', 0)
+                        ->get();
+                    //return 'subproceso 3';
+                } else if ($request->subproceso == "4") {
+                    $pagos_cambio_carrera = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'CAMBIO CARRERA')
+                        ->where('flag', 0)
+                        ->get();
+                    //return 'subproceso 4';
+                } else {
+                    $pagos_reintegro_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'REINTEGRO ADMISION')
+                        ->where('flag', 0)
+                        ->get();
+                    $pagos_inscripcion_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'INSCRIPCION ADMISION')
+                        ->where('flag', 0)
+                        ->get();
+                    $pagos_pension_cpu = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'PENSION CPU')
+                        ->where('flag', 0)
+                        ->get();
+                    $pagos_cambio_carrera = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
+                        ->whereDate('frecepcion', '<=', $request->fecha_fin)
+                        ->where('concepto', 'CAMBIO CARRERA')
+                        ->where('flag', 0)
+                        ->get();
+                }
 
                 foreach ($pagos_inscripcion_admision as $indice => $cabecera) {
 
@@ -74,26 +113,19 @@ class BancoController extends Controller
                     $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
 
                     $nombres_apellidos = $cabecera['apn'];
-                    $indice = stripos($nombres_apellidos, ',');
-                    $nombres = substr($nombres_apellidos, 0, $indice);
-                    $apellidos = substr($nombres_apellidos, $indice, strlen($nombres_apellidos));
-
-                    $cantidad_dni = BancoBCP::where('ndoc', $cabecera['ndoc'])->count();
-                    if ($cantidad_dni == 1) {
+                    $indice = strrpos($nombres_apellidos, ',');
+                    /*$dni = '72351610';
+                    $consulta = file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
+                    return $consulta;*/
+                    $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                    if (!$existe_dni) {
                         $particular = new Particular();
                         $particular->dni = $cabecera['ndoc'];
-                        $particular->nombres = $nombres;
-                        $particular->apellidos = $apellidos;
+                        $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                        $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
                         $particular->save();
-                    } else {
-                        $registro = BancoBCP::where('ndoc', $cabecera['ndoc'])->first();
-                        $particular = new Particular();
-                        $particular->dni = $registro->ndoc;
-                        $particular->nombres = $nombres;
-                        $particular->apellidos = $apellidos;
-                        $particular->save();
-
                     }
+
                     $comprobante->tipo_usuario = 'particular';
                     $comprobante->codi_usuario = $cabecera['ndoc'];
                     $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
@@ -109,6 +141,7 @@ class BancoController extends Controller
                     $comprobante->cajero_id = Auth::user()->id;
                     $comprobante->cuenta_33 = true;
                     $comprobante->enviado = false;
+                    $comprobante->created_at = $cabecera['frecepcion'];
                     $comprobante->save();
 
                     $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();

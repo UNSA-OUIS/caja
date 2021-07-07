@@ -3,16 +3,14 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item ml-auto">
-                    <inertia-link :href="route('dashboard')">Inicio</inertia-link>
-                </li>
-                <li class="breadcrumb-item">
-                    <inertia-link :href="route('admision.iniciar')">
-                        Lista
-                    </inertia-link>
-                </li>
-                <li class="breadcrumb-item active">
-                    {{ accion }}
-                </li>
+          <inertia-link :href="route('dashboard')">Inicio</inertia-link>
+        </li>
+        <li class="breadcrumb-item">
+          <inertia-link :href="route('admision.iniciar')">
+            Lista de procesos de admision
+          </inertia-link>
+        </li>
+        <li class="breadcrumb-item active">{{ accion }} proceso de admision</li>
       </ol>
     </nav>
     <div class="card">
@@ -24,41 +22,73 @@
           <b-container class="bv-example-row">
             <b-row>
               <b-col>
-                <b-form-select
-                  :disabled="accion == 'Mostrar'"
-                  v-model="admision.proceso_id"
-                  :options="procesos"
-                  class="mb-3"
+                <b-form-group
+                  id="select-group-1"
+                  label="Proceso de admision:"
+                  label-for="select-1"
                 >
-                  <template #first>
-                    <b-form-select-option :value="null" disabled
-                      >Seleccione un proceso</b-form-select-option
-                    >
-                  </template>
-                </b-form-select>
+                  <b-form-select
+                    :disabled="accion == 'Mostrar'"
+                    v-model="admision.proceso_id"
+                    :options="procesos"
+                    class="mb-3"
+                  >
+                    <template #first>
+                      <b-form-select-option :value="null" disabled
+                        >Seleccione un proceso</b-form-select-option
+                      >
+                    </template>
+                  </b-form-select>
+                  <div v-if="$page.props.errors.proceso_id" class="text-danger">
+                    {{ $page.props.errors.proceso_id[0] }}
+                  </div>
+                </b-form-group>
               </b-col>
-              <b-col
-                ><b-form-input
-                  :readonly="accion == 'Mostrar'"
-                  type="number"
-                  v-model="admision.monto_total"
-                  placeholder="Ingrese monto total"
-                ></b-form-input
-              ></b-col>
-              <b-col
-                ><b-form-select
-                  :disabled="accion == 'Mostrar'"
-                  v-model="admision.tipo_colegio"
-                  :options="tipos_colegio"
-                  class="mb-3"
+              <b-col>
+                <b-form-group
+                  id="input-group-1"
+                  label="Monto total:"
+                  label-for="input-1"
+                  ><b-form-input
+                    readonly
+                    class="mb-3"
+                    v-model="admision.monto_total"
+                    >S/. {{ precioTotal | currency }}</b-form-input
+                  >
+                  <div
+                    v-if="$page.props.errors.monto_total"
+                    class="text-danger"
+                  >
+                    {{ $page.props.errors.monto_total[0] }}
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group
+                  id="select-group-2"
+                  label="Tipo de colegio:"
+                  label-for="select-2"
                 >
-                  <template #first>
-                    <b-form-select-option :value="null" disabled
-                      >Seleccione un tipo de colegio</b-form-select-option
-                    >
-                  </template>
-                </b-form-select></b-col
-              >
+                  <b-form-select
+                    :disabled="accion == 'Mostrar'"
+                    v-model="admision.tipo_colegio"
+                    :options="tipos_colegio"
+                    class="mb-3"
+                  >
+                    <template #first>
+                      <b-form-select-option :value="null" disabled
+                        >Seleccione un tipo de colegio</b-form-select-option
+                      >
+                    </template>
+                  </b-form-select>
+                  <div
+                    v-if="$page.props.errors.tipo_colegio"
+                    class="text-danger"
+                  >
+                    {{ $page.props.errors.tipo_colegio[0] }}
+                  </div>
+                </b-form-group>
+              </b-col>
             </b-row>
           </b-container>
           <template>
@@ -103,6 +133,24 @@ export default {
     } else {
       this.accion = "Mostrar";
     }
+  },
+  computed: {
+    precioTotal() {
+      if (this.accion == "Crear") {
+        this.admision.monto_total = this.admision.detalles.reduce(
+          (acc, item) => acc + item.subtotal,
+          0
+        );
+        return this.admision.monto_total;
+      } else {
+        return this.admision.monto_total;
+      }
+    },
+  },
+  filters: {
+    currency(value) {
+      return value ? value.toFixed(2) : null;
+    },
   },
 };
 </script>
