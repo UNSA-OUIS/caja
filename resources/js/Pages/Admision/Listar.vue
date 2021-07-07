@@ -125,7 +125,7 @@
             <inertia-link
               v-if="!row.item.deleted_at"
               class="btn btn-primary btn-sm"
-              :href="route('clasificadores.mostrar', row.item.id)"
+              :href="route('admision.mostrar', row.item.id)"
             >
               <b-icon icon="eye"></b-icon>
             </inertia-link>
