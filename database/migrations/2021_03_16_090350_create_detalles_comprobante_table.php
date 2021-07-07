@@ -27,10 +27,15 @@ class CreateDetallesComprobanteTable extends Migration
             $table->string('codi_depe')->comment("Codigo de la dependencia de la BD de sian en la tabla depe ");
             $table->decimal('subtotal', 7, 2);
             $table->tinyInteger('concepto_id');
+            $table->bigInteger('clasificador_id');
             $table->bigInteger('comprobante_id');
             $table->timestamps();
 
             $table->foreign('concepto_id')->references('id')->on('conceptos')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreign('clasificador_id')->references('id')->on('clasificadores')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

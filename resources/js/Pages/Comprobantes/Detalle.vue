@@ -51,7 +51,7 @@
       {{ alerta_mensaje }}
     </b-alert>
     <hr />
-    <form @submit.prevent="agregarDetalle">
+    <form v-if="comprobante.tipo_comprobante_id != 2 || (comprobante.tipo_comprobante_id == 2 && comprobante.detalles.length < 1)" @submit.prevent="agregarDetalle">
       <b-row>
         <b-col cols="6">
           <v-select
@@ -229,6 +229,22 @@
         </b-table>
       </b-col>
     </b-row>
+    <b-row v-if="comprobante.tipo_comprobante_id == 2 && (comprobante.detalles.length == 1 && comprobante.detalles[0].detraccion)">
+      <b-col>
+        <b-form-checkbox
+          id="checkbox-1"
+          v-model="detraccion"
+          name="checkbox-1"
+          :disabled="accion === 'Mostrar'"
+        >
+          Agregar detracción
+        </b-form-checkbox>
+      </b-col>
+      <b-col>
+        <b-form-input type="number" v-model="comprobante.detraccion" placeholder="Ingrese detracción"
+        :readonly="!detraccion || accion === 'Mostrar'" class="text-right"></b-form-input>
+      </b-col>
+    </b-row>
     <div>
       <b-button v-if="accion === 'Crear'" variant="success" @click="registrar()"
         >Registrar</b-button
@@ -256,6 +272,7 @@ export default {
       concepto: null,
       filtro: "",
       conceptos: [],
+      detraccion: false,
       fields: [
         {
           key: "codigo",
@@ -323,7 +340,16 @@ export default {
   computed: {
     precioTotal() {
       this.comprobante.total = this.comprobante.detalles.reduce(
-        (acc, item) => acc + item.subtotal, 0
+        (acc, item) =>{
+          var updatedSum = 0
+          if(item.detraccion && this.detraccion){
+            updatedSum = acc + item.subtotal - this.comprobante.detraccion
+          }
+          else{
+            updatedSum = acc + item.subtotal
+          }
+          return updatedSum
+        } , 0
       );
       this.comprobante.total_descuento = this.comprobante.detalles.reduce(
         (acc, item) => acc + (parseFloat(item.precio) * parseFloat(item.cantidad) - item.subtotal), 0
@@ -505,6 +531,9 @@ export default {
     },
     eliminarDetalle(index) {
       this.comprobante.detalles.splice(index, 1);
+    },
+    calcularDetraccion() {
+      this.comprobante.total = this.comprobante.total - parseFloat(this.comprobante.detraccion)
     },
     calcularSubTotal(concepto_id) {
       let objDetalle = this.comprobante.detalles.find(

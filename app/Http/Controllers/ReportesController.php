@@ -262,8 +262,7 @@ class ReportesController extends Controller
     public function consolidado()
     {
         $this->authorize('consolidado');
-        $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/PorPeriodo/Consolidado', compact('comprobantes'));
+        return Inertia::render('Reportes/PorPeriodo/Consolidado');
     }
 
     public function filtrarConsolidado(Request $request)

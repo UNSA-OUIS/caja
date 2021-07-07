@@ -277,8 +277,11 @@
                   v-else
                   id="input-5"
                   v-model="formData.tipo_afectacion"
+                  :readonly="accion == 'Mostrar'"
+                  required
                 >
                   <template v-slot:first>
+                    <option :value="null" disabled>Seleccione...</option>
                     <option :value="30">
                       Inafecto: Operacion Onerosa
                     </option>

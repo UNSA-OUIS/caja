@@ -29,7 +29,7 @@
                     <i class="fa fa-fw fa-bars"></i>
                 </button>
 
-                <!-- App Search-->
+                <!-- App Search
                 <form class="app-search d-none d-lg-block">
                     <div class="position-relative">
                         <input
@@ -39,7 +39,7 @@
                         />
                         <span class="uil-search"></span>
                     </div>
-                </form>
+                </form>-->
             </div>
             <div class="d-flex">
                 <div class="dropdown d-inline-block d-lg-none ml-2">

@@ -133,6 +133,21 @@
                 </b-table>
             </b-col>
             </b-row>
+            <b-row v-if="data.comprobante.tipo_comprobante_id == 2 && data.comprobante.detraccion != null">
+                <b-col>
+                    <b-form-checkbox
+                    id="checkbox-1"
+                    v-model="detraccion"
+                    name="checkbox-1"
+                    >
+                    Agregar detracción
+                    </b-form-checkbox>
+                </b-col>
+                <b-col>
+                    <b-form-input type="number" v-model="comprobante.detraccion" placeholder="Ingrese detracción"
+                    :readonly="!detraccion" class="text-right"></b-form-input>
+                </b-col>
+            </b-row>
             <div>
                 <b-button variant="success" @click="registrar()">Registrar</b-button>
             </div>
@@ -147,6 +162,7 @@ export default {
         return {
             app_url: this.$root.app_url,
             tipos_de_nota: [],
+            detraccion: true,
             tipos_nota_debito: [
                 {value: '01', text: 'Interés por mora'},
                 {value: '02', text: 'Aumento en el valor'},
@@ -184,6 +200,7 @@ export default {
         else if (this.data.tipo_comprobante === 'NOTA DE CRÉDITO'){
             this.tipos_de_nota = this.tipos_nota_credito
         }
+        this.comprobante.detraccion = parseFloat(this.data.comprobante.detraccion)
     },
     filters: {
         currency(value) {
@@ -240,7 +257,16 @@ export default {
     computed: {
         precioTotal() {
             this.comprobante.total = this.comprobante.detallesAfectados.reduce(
-                (acc, item) => acc + parseFloat(item.subtotal), 0
+                (acc, item) =>{
+                    var updatedSum = 0
+                    if(this.comprobante.detraccion != null){
+                        updatedSum = acc + parseFloat(item.subtotal) - this.comprobante.detraccion
+                    }
+                    else{
+                        updatedSum = acc + parseFloat(item.subtotal)
+                    }
+                    return updatedSum
+                } , 0
             );
             this.comprobante.total_descuento = this.comprobante.detallesAfectados.reduce(
                 (acc, item) => acc + (parseFloat(item.valor_unitario) * parseFloat(item.cantidad) - parseFloat(item.subtotal)), 0
