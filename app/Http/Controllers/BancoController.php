@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Admision;
 use App\Models\BancoBCP;
 use App\Models\Comprobante;
+use App\Models\Concepto;
 use App\Models\DetallesComprobante;
+use App\Models\InscReci;
 use App\Models\NumeroComprobante;
 use App\Models\Particular;
+use App\Models\RegiInscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +30,6 @@ class BancoController extends Controller
         $query = BancoBCP::select('concepto')
             ->whereDate('frecepcion', '>=', $request->fecha_inicio)
             ->whereDate('frecepcion', '<=', $request->fecha_fin)
-            ->where('flag', 0)
             ->selectRaw('count(concepto) as cantidad')
             ->selectRaw('sum(mont_pag) as monto_acumulado')
             ->selectRaw("DATE_FORMAT(fpago,'%Y-%m-%d') as fecha_pago")
@@ -62,28 +64,528 @@ class BancoController extends Controller
                         ->where('concepto', 'REINTEGRO ADMISION')
                         ->where('flag', 0)
                         ->get();
-                    //return 'subproceso 1';
+
+                    foreach ($pagos_reintegro_admision as $indice => $cabecera) {
+
+                        $comprobante = new Comprobante();
+                        $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
+
+                        $nombres_apellidos = $cabecera['apn'];
+                        $indice = strrpos($nombres_apellidos, ',');
+                        $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                        if (!$existe_dni) {
+                            $particular = new Particular();
+                            $particular->dni = $cabecera['ndoc'];
+                            $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                            $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
+                            $particular->save();
+                        }
+
+                        $regi_inscripcion = RegiInscripcion::where('insc_codi_web', $cabecera['cod_bancario'])->where('insc_ano_proc', '2021')->first();
+                        $insc_reci = InscReci::where('insc_id', $regi_inscripcion->insc_id)->first();
+
+                        $comprobante->tipo_usuario = 'particular';
+                        $comprobante->codi_usuario = $cabecera['ndoc'];
+                        if ($regi_inscripcion) {
+                            $comprobante->nues_espe = $regi_inscripcion->nues;
+                        }
+                        $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
+                        $comprobante->serie = $cajero->serie;
+                        $comprobante->correlativo = $cajero->correlativo;
+                        $comprobante->total_descuento = 0;
+                        $comprobante->total_impuesto = 0;
+                        $comprobante->total_inafecta = 0;
+                        $comprobante->total_gravada = $cabecera['mont_pag'];
+                        $comprobante->total = $cabecera['mont_pag'];
+                        $comprobante->tipo_pago = 'Efectivo';
+                        $comprobante->estado = 'no_enviado';
+                        $comprobante->cajero_id = Auth::user()->id;
+                        $comprobante->cuenta_33 = true;
+                        $comprobante->enviado = false;
+                        $comprobante->created_at = $cabecera['frecepcion'];
+                        $comprobante->save();
+
+                        if ($insc_reci->inre_tipo_cole == '1') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'nacional')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '2') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'parroquial')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '3') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'particular')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
+                        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+                        $numeroComp->update();
+                    }
                 } else if ($request->subproceso == "2") {
                     $pagos_inscripcion_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
                         ->whereDate('frecepcion', '<=', $request->fecha_fin)
                         ->where('concepto', 'INSCRIPCION ADMISION')
                         ->where('flag', 0)
                         ->get();
-                    //return $pagos_inscripcion_admision;
+
+                    foreach ($pagos_inscripcion_admision as $indice => $cabecera) {
+
+                        $comprobante = new Comprobante();
+                        $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
+
+                        $nombres_apellidos = $cabecera['apn'];
+                        $indice = strrpos($nombres_apellidos, ',');
+                        $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                        if (!$existe_dni) {
+                            $particular = new Particular();
+                            $particular->dni = $cabecera['ndoc'];
+                            $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                            $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
+                            $particular->save();
+                        }
+
+                        $regi_inscripcion = RegiInscripcion::where('insc_codi_web', $cabecera['cod_bancario'])->where('insc_ano_proc', '2021')->first();
+                        $insc_reci = InscReci::where('insc_id', $regi_inscripcion->insc_id)->first();
+
+                        $comprobante->tipo_usuario = 'particular';
+                        $comprobante->codi_usuario = $cabecera['ndoc'];
+                        if ($regi_inscripcion) {
+                            $comprobante->nues_espe = $regi_inscripcion->nues;
+                        }
+                        $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
+                        $comprobante->serie = $cajero->serie;
+                        $comprobante->correlativo = $cajero->correlativo;
+                        $comprobante->total_descuento = 0;
+                        $comprobante->total_impuesto = 0;
+                        $comprobante->total_inafecta = 0;
+                        $comprobante->total_gravada = $cabecera['mont_pag'];
+                        $comprobante->total = $cabecera['mont_pag'];
+                        $comprobante->tipo_pago = 'Efectivo';
+                        $comprobante->estado = 'no_enviado';
+                        $comprobante->cajero_id = Auth::user()->id;
+                        $comprobante->cuenta_33 = true;
+                        $comprobante->enviado = false;
+                        $comprobante->created_at = $cabecera['frecepcion'];
+                        $comprobante->save();
+
+                        if ($insc_reci->inre_tipo_cole == '1') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'nacional')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '2') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'parroquial')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '3') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'particular')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
+                        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+                        $numeroComp->update();
+                    }
                 } else if ($request->subproceso == "3") {
                     $pagos_pension_cpu = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
                         ->whereDate('frecepcion', '<=', $request->fecha_fin)
                         ->where('concepto', 'PENSION CPU')
                         ->where('flag', 0)
                         ->get();
-                    //return 'subproceso 3';
+
+                    foreach ($pagos_pension_cpu as $indice => $cabecera) {
+
+                        $comprobante = new Comprobante();
+                        $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
+
+                        $nombres_apellidos = $cabecera['apn'];
+                        $indice = strrpos($nombres_apellidos, ',');
+                        $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                        if (!$existe_dni) {
+                            $particular = new Particular();
+                            $particular->dni = $cabecera['ndoc'];
+                            $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                            $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
+                            $particular->save();
+                        }
+
+                        $regi_inscripcion = RegiInscripcion::where('insc_codi_web', $cabecera['cod_bancario'])->where('insc_ano_proc', '2021')->first();
+                        $insc_reci = InscReci::where('insc_id', $regi_inscripcion->insc_id)->first();
+
+                        $comprobante->tipo_usuario = 'particular';
+                        $comprobante->codi_usuario = $cabecera['ndoc'];
+                        if ($regi_inscripcion) {
+                            $comprobante->nues_espe = $regi_inscripcion->nues;
+                        }
+                        $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
+                        $comprobante->serie = $cajero->serie;
+                        $comprobante->correlativo = $cajero->correlativo;
+                        $comprobante->total_descuento = 0;
+                        $comprobante->total_impuesto = 0;
+                        $comprobante->total_inafecta = 0;
+                        $comprobante->total_gravada = $cabecera['mont_pag'];
+                        $comprobante->total = $cabecera['mont_pag'];
+                        $comprobante->tipo_pago = 'Efectivo';
+                        $comprobante->estado = 'no_enviado';
+                        $comprobante->cajero_id = Auth::user()->id;
+                        $comprobante->cuenta_33 = true;
+                        $comprobante->enviado = false;
+                        $comprobante->created_at = $cabecera['frecepcion'];
+                        $comprobante->save();
+
+                        if ($insc_reci->inre_tipo_cole == '1') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'nacional')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '2') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'parroquial')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '3') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'particular')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
+                        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+                        $numeroComp->update();
+                    }
                 } else if ($request->subproceso == "4") {
                     $pagos_cambio_carrera = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
                         ->whereDate('frecepcion', '<=', $request->fecha_fin)
                         ->where('concepto', 'CAMBIO CARRERA')
                         ->where('flag', 0)
                         ->get();
-                    //return 'subproceso 4';
+
+                    foreach ($pagos_cambio_carrera as $indice => $cabecera) {
+
+                        $comprobante = new Comprobante();
+                        $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
+
+                        $nombres_apellidos = $cabecera['apn'];
+                        $indice = strrpos($nombres_apellidos, ',');
+                        $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
+                        if (!$existe_dni) {
+                            $particular = new Particular();
+                            $particular->dni = $cabecera['ndoc'];
+                            $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
+                            $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
+                            $particular->save();
+                        }
+
+                        $regi_inscripcion = RegiInscripcion::where('insc_codi_web', $cabecera['cod_bancario'])->where('insc_ano_proc', '2021')->first();
+                        $insc_reci = InscReci::where('insc_id', $regi_inscripcion->insc_id)->first();
+
+                        $comprobante->tipo_usuario = 'particular';
+                        $comprobante->codi_usuario = $cabecera['ndoc'];
+                        if ($regi_inscripcion) {
+                            $comprobante->nues_espe = $regi_inscripcion->nues;
+                        }
+                        $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
+                        $comprobante->serie = $cajero->serie;
+                        $comprobante->correlativo = $cajero->correlativo;
+                        $comprobante->total_descuento = 0;
+                        $comprobante->total_impuesto = 0;
+                        $comprobante->total_inafecta = 0;
+                        $comprobante->total_gravada = $cabecera['mont_pag'];
+                        $comprobante->total = $cabecera['mont_pag'];
+                        $comprobante->tipo_pago = 'Efectivo';
+                        $comprobante->estado = 'no_enviado';
+                        $comprobante->cajero_id = Auth::user()->id;
+                        $comprobante->cuenta_33 = true;
+                        $comprobante->enviado = false;
+                        $comprobante->created_at = $cabecera['frecepcion'];
+                        $comprobante->save();
+
+                        if ($insc_reci->inre_tipo_cole == '1') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'nacional')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '2') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'parroquial')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        } elseif ($insc_reci->inre_tipo_cole == '3') {
+                            $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->where('tipo_colegio', 'particular')->first();
+                            foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
+                                $concepto = Concepto::where('id', $detalle['concepto_id'])->first();
+
+                                $detalle_comprobante = new DetallesComprobante();
+                                $detalle_comprobante->cantidad = 1;
+                                $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
+                                $detalle_comprobante->gravado =  $detalle['precio_variable'];
+                                $detalle_comprobante->inafecto =  0;
+                                $detalle_comprobante->impuesto =  0;
+                                $detalle_comprobante->codi_depe =  0;
+                                $detalle_comprobante->descuento =  0;
+                                $detalle_comprobante->tipo_descuento =  'soles';
+                                $detalle_comprobante->subtotal =  $detalle['precio_variable'];
+                                $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
+                                $detalle_comprobante->comprobante_id =  $comprobante->id;
+                                $detalle_comprobante->clasificador_id =  $concepto->clasificador_id;
+                                $detalle_comprobante->save();
+
+                                if ($regi_inscripcion->nues == '405' || $regi_inscripcion->nues == '406' || $regi_inscripcion->nues == '471' || $regi_inscripcion->nues == '431') {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
+                        $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
+                        $numeroComp->update();
+                    }
                 } else {
                     $pagos_reintegro_admision = BancoBCP::whereDate('frecepcion', '>=', $request->fecha_inicio)
                         ->whereDate('frecepcion', '<=', $request->fecha_fin)
@@ -106,66 +608,9 @@ class BancoController extends Controller
                         ->where('flag', 0)
                         ->get();
                 }
-
-                foreach ($pagos_inscripcion_admision as $indice => $cabecera) {
-
-                    $comprobante = new Comprobante();
-                    $cajero = NumeroComprobante::where('punto_venta_id', Auth::user()->id)->where('tipo_comprobante_id', 1)->first();
-
-                    $nombres_apellidos = $cabecera['apn'];
-                    $indice = strrpos($nombres_apellidos, ',');
-                    /*$dni = '72351610';
-                    $consulta = file_get_contents("https://dniruc.apisperu.com/api/v1/dni/$dni?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJzaXphQHVuc2EuZWR1LnBlIn0._33jLRFR1pvHFv0z7Lzh6ZysOUfZSYlu7uxxE5Wagwo");
-                    return $consulta;*/
-                    $existe_dni = Particular::where('dni', $cabecera['ndoc'])->exists();
-                    if (!$existe_dni) {
-                        $particular = new Particular();
-                        $particular->dni = $cabecera['ndoc'];
-                        $particular->nombres = substr($nombres_apellidos, $indice + 1, strlen($nombres_apellidos));
-                        $particular->apellidos = str_replace("/", " ", substr($nombres_apellidos, 1, $indice - 1));
-                        $particular->save();
-                    }
-
-                    $comprobante->tipo_usuario = 'particular';
-                    $comprobante->codi_usuario = $cabecera['ndoc'];
-                    $comprobante->tipo_comprobante_id = $cajero->tipo_comprobante_id;
-                    $comprobante->serie = $cajero->serie;
-                    $comprobante->correlativo = $cajero->correlativo;
-                    $comprobante->total_descuento = 0;
-                    $comprobante->total_impuesto = 0;
-                    $comprobante->total_inafecta = 0;
-                    $comprobante->total_gravada = $cabecera['mont_pag'];
-                    $comprobante->total = $cabecera['mont_pag'];
-                    $comprobante->tipo_pago = 'Efectivo';
-                    $comprobante->estado = 'no_enviado';
-                    $comprobante->cajero_id = Auth::user()->id;
-                    $comprobante->cuenta_33 = true;
-                    $comprobante->enviado = false;
-                    $comprobante->created_at = $cabecera['frecepcion'];
-                    $comprobante->save();
-
-                    $proceso_inscripcion_admision = Admision::with('detalles')->where('proceso_id', 2)->first();
-                    foreach ($proceso_inscripcion_admision->detalles as $index => $detalle) {
-                        $detalle_comprobante = new DetallesComprobante();
-                        $detalle_comprobante->cantidad = 1;
-                        $detalle_comprobante->valor_unitario =  $detalle['precio_variable'];
-                        $detalle_comprobante->gravado =  $detalle['precio_variable'];
-                        $detalle_comprobante->inafecto =  0;
-                        $detalle_comprobante->impuesto =  0;
-                        $detalle_comprobante->codi_depe =  0;
-                        $detalle_comprobante->descuento =  0;
-                        $detalle_comprobante->tipo_descuento =  'soles';
-                        $detalle_comprobante->subtotal =  $detalle['precio_variable'];
-                        $detalle_comprobante->concepto_id =  $detalle['concepto_id'];
-                        $detalle_comprobante->comprobante_id =  $comprobante->id;
-                        $detalle_comprobante->save();
-                    }
-                    $numeroComp = NumeroComprobante::where('serie', $cajero->serie)->first();
-                    $numeroComp->correlativo = str_pad($numeroComp->correlativo + 1, 8, "0", STR_PAD_LEFT);
-                    $numeroComp->update();
-                }
-            } else {
-                return 'No es admision';
+            } elseif ($request->proceso == 7) {
+                return 'Es Ceprunsa';
+            } {
             }
             DB::commit();
             $result = [

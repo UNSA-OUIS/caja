@@ -16,7 +16,7 @@ class CreateAdmisionTable extends Migration
         Schema::create('admision', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('proceso_id');
-            $table->double('monto_total');
+            $table->bigInteger('monto_total');
             $table->string('tipo_colegio', 50);
             $table->timestamps();
             $table->softDeletes();

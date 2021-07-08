@@ -176,6 +176,7 @@ export default {
           subproceso: this.subproceso,
         })
         .then((response) => {
+            console.log(response);
           if (!response.data.error) {
             this.alerta = response.data.error;
             this.alerta_mensaje = response.data.successMessage;
