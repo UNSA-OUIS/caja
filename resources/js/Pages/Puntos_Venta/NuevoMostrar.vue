@@ -103,6 +103,21 @@
               </b-form-group>
             </b-col>
             </b-row>
+            <b-row>
+              <b-col cols="6">
+                            <b-form-group id="input-group-4" label="Cuenta(s) corriente(s):" label-for="input-4">
+                                <b-form-select
+                                    id="input-4"
+                                    v-model="formData.cuentas_asignadas"
+                                    :options="cuentas"
+                                    multiple
+                                    :select-size="5"
+                                    :disabled="accion == 'Mostrar'"
+                                >
+                                </b-form-select>
+                            </b-form-group>
+                        </b-col>
+            </b-row>
 
           <h2 class="h4 mb-1">Asignación de conceptos</h2>
                     <p class="small text-muted font-italic mb-4">Asignación de conceptos por punto de venta.</p>
@@ -168,7 +183,7 @@ const axios = require("axios");
 
 export default {
   name: "puntosVenta.nuevo-mostrar",
-  props: ["puntoVenta", "usuarios", "conceptos"],
+  props: ["puntoVenta", "usuarios", "conceptos", "cuentas"],
   components: {
     AppLayout,
   },

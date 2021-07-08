@@ -170,7 +170,7 @@ export default {
                     class: "text-center"
                 },
                 { key: "numero_cuenta", label: "Cta. Corriente" },
-                { key: "descripcion", label: "Descripción" },
+                { key: "banco", label: "Entidad bancaria" },
                 { key: "moneda", label: "Moneda", class: "text-center" },
                 { key: "acciones", label: "Acciones", class: "text-center" }
             ],

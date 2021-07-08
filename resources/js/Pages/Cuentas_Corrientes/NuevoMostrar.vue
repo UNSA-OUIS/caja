@@ -31,7 +31,7 @@
               {{ $page.props.errors.numero_cuenta[0] }}
             </div>
           </b-form-group>
-          <b-form-group
+          <!--<b-form-group
             id="input-group-2"
             label="Descripción:"
             label-for="input-2"
@@ -44,6 +44,21 @@
             ></b-form-input>
             <div v-if="$page.props.errors.descripcion" class="text-danger">
               {{ $page.props.errors.descripcion[0] }}
+            </div>
+          </b-form-group>-->
+          <b-form-group id="input-group-2" label="Entidad bancaria:" label-for="input-2">
+            <b-form-select
+              id="input-2"
+              v-model="formData.banco"
+              :options="bancos"
+              :disabled="accion == 'Mostrar'"
+            >
+              <template v-slot:first>
+                <option :value="null" disabled>Seleccione...</option>
+              </template>
+            </b-form-select>
+            <div v-if="$page.props.errors.banco" class="text-danger">
+              {{ $page.props.errors.banco[0] }}
             </div>
           </b-form-group>
           <b-form-group id="input-group-3" label="Moneda:" label-for="input-3">
@@ -80,7 +95,7 @@
             >Actualizar</b-button
           >
         </b-form>
-        <b-button @click="enviarCorreo()">Enviar correo</b-button>
+        <!--<b-button @click="enviarCorreo()">Enviar correo</b-button>-->
       </div>
     </div>
   </app-layout>
@@ -107,6 +122,10 @@ export default {
         { value: "USD", text: "Dólares" },
         { value: "E", text: "Euros" },
       ],
+      bancos: [
+        { value: "BCP", text: "Banco de Crédito del Perú" },
+        { value: "BNAC", text: "Banco de la nación" },
+      ],
     };
   },
   created() {
@@ -117,7 +136,7 @@ export default {
     }
   },
   methods: {
-    enviarCorreo() {
+    /*enviarCorreo() {
       axios
         .get(`${this.app_url}/enviarCorreo?to=garyfnc185@gmail.com`)
         .then((response) => {
@@ -127,7 +146,7 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-    },
+    },*/
     registrar() {
       console.log(this.formData);
       this.$inertia.post(

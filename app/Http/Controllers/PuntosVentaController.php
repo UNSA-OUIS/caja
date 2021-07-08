@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PuntosVentaStoreRequest;
 use App\Http\Requests\PuntosVentaUpdateRequest;
 use App\Models\Clasificador;
+use App\Models\CuentaCorriente;
 use App\Models\PuntosVenta;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -47,10 +49,13 @@ class PuntosVentaController extends Controller
         $puntoVenta->direccion = "";
         $puntoVenta->user_id = null;
         $puntoVenta->conceptos_asignados = array();
+        $puntoVenta->cuentas_asignadas = array();
 
         $conceptos = Clasificador::with(['conceptos' => function($query) {
             $query->select('id', 'descripcion', 'clasificador_id', DB::raw('false as asignado'));
         }])->has('conceptos')->get();
+
+        $cuentas = CuentaCorriente::select('id as value', DB::raw("(CONCAT(banco, ' ', numero_cuenta, ' ', moneda)) AS text"))->orderBy('text', 'asc')->get();
 
         $usuarios = User::select('id as value', 'name as text')
             ->whereHas('roles', function ($q) {
@@ -58,7 +63,7 @@ class PuntosVentaController extends Controller
             })
             ->orderBy('name', 'asc')->get();
         
-        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos'));
+        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos', 'cuentas'));
     }
 
     /**
@@ -76,12 +81,13 @@ class PuntosVentaController extends Controller
             $puntoVenta->direccion = $request->direccion;
             $puntoVenta->user_id = $request->user_id;
             $puntoVenta->conceptos()->sync($request->conceptos_asignados);
+            $puntoVenta->cuentasCorrientes()->sync($request->cuentas_asignadas);
             $puntoVenta->save();
             $result = ['successMessage' => 'Punto de venta registrado con éxito'];
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo registrar el punto de venta', 'error' => true];
-            \Log::error('PuntosVentaController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('PuntosVentaController@store, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('puntosVenta.iniciar')->with($result);
@@ -91,7 +97,10 @@ class PuntosVentaController extends Controller
     public function show(PuntosVenta $puntoVenta)
     {
         $puntoVenta->conceptos_asignados = array_column($puntoVenta->conceptos->toArray(), 'id');
-    
+        $puntoVenta->cuentas_asignadas = array_column($puntoVenta->cuentasCorrientes->toArray(), 'id');
+        
+        $cuentas = CuentaCorriente::select('id as value', DB::raw("(CONCAT(banco, ' ', numero_cuenta, ' ', moneda)) AS text"))->orderBy('text', 'asc')->get();
+
         $conceptos = Clasificador::with(['conceptos' => function($query) {
             $query->select('id', 'descripcion', 'clasificador_id', DB::raw('false as asignado'));
         }])->has('conceptos')->get();
@@ -100,7 +109,7 @@ class PuntosVentaController extends Controller
             ->orderBy('name', 'asc')
             ->get();
 
-        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos'));
+        return Inertia::render('Puntos_Venta/NuevoMostrar', compact('puntoVenta', 'usuarios', 'conceptos', 'cuentas'));
     }
 
     public function edit($id)
@@ -122,12 +131,13 @@ class PuntosVentaController extends Controller
             $puntoVenta->direccion = $request->direccion;
             $puntoVenta->user_id = $request->user_id;
             $puntoVenta->conceptos()->sync($request->conceptos_asignados);
+            $puntoVenta->cuentasCorrientes()->sync($request->cuentas_asignadas);
             $puntoVenta->update();
             $result = ['successMessage' => 'Punto de venta actualizado con éxito'];
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo actualizar el punto de venta', 'error' => true];
-            \Log::error('PuntosVentaController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('PuntosVentaController@update, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->route('puntosVenta.iniciar')->with($result);
@@ -148,7 +158,7 @@ class PuntosVentaController extends Controller
 
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo eliminar el punto de venta'];
-            \Log::error('PuntosVentaController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::error('PuntosVentaController@destroy, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
             
         }
 
@@ -165,7 +175,7 @@ class PuntosVentaController extends Controller
             
         } catch (\Throwable $e) {
             $result = ['errorMessage' => 'No se pudo restaurar el punto de venta'];
-            \Log::warning('PuntosVentaController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
+            Log::warning('PuntosVentaController@restore, Detalle: "'.$e->getMessage().'" on file '.$e->getFile().':'.$e->getLine());
         }
 
         return redirect()->back()->with($result);

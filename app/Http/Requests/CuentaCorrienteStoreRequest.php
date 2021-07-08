@@ -25,7 +25,7 @@ class CuentaCorrienteStoreRequest extends FormRequest
     {
         return [
             'numero_cuenta' => 'required|unique:cuentas_corrientes',
-            'descripcion' => 'required',
+            'banco' => 'required',
             'moneda' => 'required'
         ];
     }
@@ -34,7 +34,7 @@ class CuentaCorrienteStoreRequest extends FormRequest
     {
         return [
             'numero_cuenta.required' => 'El campo número de cuenta es obligatorio.',
-            'descripcion.required' => 'El campo descripción es obligatorio.',
+            'banco.required' => 'El campo entidad bancaria es obligatorio.',
             'moneda.required' => 'El campo moneda es obligatorio.',
         ];
     }

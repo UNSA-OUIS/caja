@@ -21,6 +21,7 @@ class CreateComprobantesTable extends Migration
             $table->string('codi_usuario', 20)->nullable();
             $table->char('nues_espe', 3)->nullable();
             $table->tinyInteger('tipo_comprobante_id');
+            $table->tinyInteger('cuenta_corriente_id');
             $table->enum('tipo_pago', ['Efectivo', 'Voucher']);
             $table->string('serie', 4);
             $table->string('correlativo', 8);
@@ -54,6 +55,11 @@ class CreateComprobantesTable extends Migration
                 ->onDelete('cascade');
 
             $table->foreign('tipo_comprobante_id')->references('id')->on('tipo_comprobante')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            
+            $table->foreign('cuenta_corriente_id')->references('id')->on('cuentas_corrientes')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
