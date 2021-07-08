@@ -5,12 +5,12 @@
         <li class="breadcrumb-item ml-auto">
           <inertia-link :href="route('dashboard')">Inicio</inertia-link>
         </li>
-        <li class="breadcrumb-item active">Lista</li>
+        <li class="breadcrumb-item active">Lista de procesos de admision</li>
       </ol>
     </nav>
     <div class="card">
       <div class="card-header d-flex align-items-center">
-        <span class="font-weight-bold">Admision</span>
+        <span class="font-weight-bold">Procesos de admision</span>
         <inertia-link
           class="btn btn-success ml-auto"
           :href="route('admision.crear')"

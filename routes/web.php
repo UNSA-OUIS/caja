@@ -330,7 +330,11 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/sunat/boletas', function () {
         return Inertia::render('Sunat/Boletas/Busqueda');
     })->name('boletas.iniciar');
+    Route::get('/sunat/boletas/cuenta33', function () {
+        return Inertia::render('Sunat/Cuenta33/Busqueda');
+    })->name('cuenta33.iniciar');
     Route::get('/sunat/listarBoletas', [BoletaController::class, 'index'])->name('boletas.listar');
+    Route::get('/sunat/listarBoletasCuenta33', [BoletaController::class, 'index_cuenta33'])->name('boletas_cuenta33.listar');
     Route::get('/sunat/listarBoletasActuales', [BoletaController::class, 'index_actual'])->name('boletas_actuales.listar');
     Route::post('/sunat/resumenDiario', [BoletaController::class, 'resumenDiario'])->name('boletas.resumen-diario');
     Route::post('/sunat/anularBoleta/{boleta}', [BoletaController::class, 'anular'])->name('boletas.anular');

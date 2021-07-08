@@ -1,5 +1,11 @@
 <template>
   <div>
+    <b-alert show dismissible variant="success" v-if="alerta == false">
+      {{ alerta_mensaje }}
+    </b-alert>
+    <b-alert show dismissible variant="danger" v-if="alerta == true">
+      {{ alerta_mensaje }}
+    </b-alert>
     <b-table
       ref="tbl_boletas"
       show-empty
@@ -39,6 +45,7 @@
           <b-form-select
             v-if="items != ''"
             v-model="proceso"
+            class="mb-3"
             :options="procesos"
           >
             <template #first>
@@ -48,9 +55,28 @@
             </template>
           </b-form-select>
           &nbsp;&nbsp;
+          <b-form-select v-if="proceso == 1" v-model="subproceso" class="mb-3">
+            <b-form-select-option :value="null"
+              >Please select an option</b-form-select-option
+            >
+            <b-form-select-option v-if="reintegro_admision" value="1"
+              >Reintegro Admision</b-form-select-option
+            >
+            <b-form-select-option v-if="inscripcion_admision" value="2"
+              >Inscripcion Admision</b-form-select-option
+            >
+            <b-form-select-option v-if="pension_cepreunsa" value="3"
+              >Pension Cepreunsa</b-form-select-option
+            >
+            <b-form-select-option v-if="cambio_carrera" value="4"
+              >Cambio de carrera</b-form-select-option
+            >
+          </b-form-select>
+          &nbsp;&nbsp;
           <b-button
             v-if="items != ''"
             variant="outline-success"
+            class="mb-3"
             @click="procesar_pagos()"
           >
             Procesar Pagos <b-icon icon="search"></b-icon>
@@ -69,10 +95,16 @@ export default {
   data() {
     return {
       app_url: this.$root.app_url,
+      alerta: null,
+      alerta_mensaje: "",
       items: [],
       selected: [],
       isBusy: false,
       enviado: false,
+      reintegro_admision: false,
+      inscripcion_admision: false,
+      pension_cepreunsa: false,
+      cambio_carrera: false,
       procesos: [
         { value: 1, text: "Admision" },
         { value: 2, text: "Extraordinario" },
@@ -85,6 +117,7 @@ export default {
         { value: 9, text: "Residentado Medicos" },
       ],
       proceso: null,
+      subproceso: null,
       fields: [
         { key: "concepto", label: "Concepto", class: "text-center" },
         {
@@ -118,25 +151,42 @@ export default {
 
       return promise.then((response) => {
         this.items = response.data;
+        this.items.forEach((element) => {
+          if (element.concepto == "REINTEGRO ADMISION") {
+            this.reintegro_admision = true;
+          } else if (element.concepto == "INSCRIPCION ADMISION") {
+            this.inscripcion_admision = true;
+          } else if (element.concepto == "PENSION CPU") {
+            this.pension_cepreunsa = true;
+          } else if (element.concepto == "CAMBIO CARRERA") {
+            this.cambio_carrera = true;
+          }
+        });
         this.totalRows = response.data.length;
 
         return this.items || [];
       });
     },
     procesar_pagos() {
-      const promise = axios.post(`${this.app_url}/banco/procesar_pagos`, {
-        fecha_inicio: this.fecha_inicio,
-        fecha_fin: this.fecha_fin,
-        proceso: this.proceso,
-      });
-
-      return promise.then((response) => {
-        console.log(response.data);
-        this.items = response.data;
-        this.totalRows = response.data.length;
-
-        return this.items || [];
-      });
+      axios
+        .post(`${this.app_url}/banco/procesar_pagos`, {
+          fecha_inicio: this.fecha_inicio,
+          fecha_fin: this.fecha_fin,
+          proceso: this.proceso,
+          subproceso: this.subproceso,
+        })
+        .then((response) => {
+          if (!response.data.error) {
+            this.alerta = response.data.error;
+            this.alerta_mensaje = response.data.successMessage;
+          } else {
+            this.alerta = response.data.error;
+            this.alerta_mensaje = response.data.errorMessage;
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
