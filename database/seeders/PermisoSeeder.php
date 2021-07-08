@@ -413,6 +413,13 @@ class PermisoSeeder extends Seeder
         Permission::create(['name' => 'Enviar-Boletas SUNAT', 'guard_name' => 'sanctum'])->assignRole($cajero);
         Permission::create(['name' => 'Enviar-Facturas SUNAT', 'guard_name' => 'sanctum'])->assignRole($cajero);
 
+        Permission::create(['name' => 'Listar Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Crear Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Mostrar Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Editar Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Eliminar Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+        Permission::create(['name' => 'Restaurar Cuentas-Corrientes', 'guard_name' => 'sanctum'])->assignRole($superadmin);
+
         Permission::create(['name' => 'Listar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Crear Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);
         Permission::create(['name' => 'Mostrar Puntos-Venta', 'guard_name' => 'sanctum'])->assignRole($superadmin);

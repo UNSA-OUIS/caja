@@ -12,5 +12,10 @@ class CuentaCorriente extends Model
 
     protected $table = 'cuentas_corrientes';
 
-    protected $fillable = ['numeroCuenta', 'descripcion', 'moneda'];
+    protected $fillable = ['numeroCuenta', 'banco', 'moneda'];
+
+    public function puntos_venta()
+    {
+        return $this->belongsToMany(PuntosVenta::class, 'cuenta_corriente_punto_venta', 'cuenta_corriente_id', 'punto_venta_id');
+    }
 }

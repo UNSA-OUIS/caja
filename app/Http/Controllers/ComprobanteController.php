@@ -13,9 +13,11 @@ use App\Models\Comprobante;
 use App\Models\Dependencia;
 use App\Jobs\EnviarCorreosJob;
 use App\Models\Concepto;
+use App\Models\CuentaCorriente;
 use App\Models\Departamento;
 use App\Models\DetallesComprobante;
 use App\Models\NumeroComprobante;
+use App\Models\PuntosVenta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,6 +81,7 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
+        $comprobante->cuenta_corriente_id = null;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
@@ -111,10 +114,21 @@ class ComprobanteController extends Controller
         $alumno = Alumno::where('cui', '=', $request->alumno['cui'])->first();
         $email = $alumno->email != null ? $alumno->email : '';
         // **************************** Relationship ****************
+
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['cuentasCorrientes'=>function($query) {
+            $query->select('cuentas_corrientes.id as value',
+            DB::raw("(CONCAT(cuentas_corrientes.banco, ' ', cuentas_corrientes.numero_cuenta, ' ', cuentas_corrientes.moneda)) AS text"))
+            ->orderBy('text', 'asc')->get();
+        }])->where('user_id', $user->id)->first();
+
+        $cuentas = $puntoVenta->cuentasCorrientes;
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'tipo_doc' => $tipo_de_documento,
             'ndoc' => $numero_de_documento,
+            'cuentas' => $cuentas,
             'escuela' => $request->matricula['escuela']['nesc'],
             'alumno' => str_replace('/', ' ', $request->alumno['apn']),
             'email' => $email->mail != '' ? $email->mail . '@unsa.edu.pe' : '',
@@ -156,6 +170,7 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
+        $comprobante->cuenta_corriente_id = null;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
@@ -163,9 +178,19 @@ class ComprobanteController extends Controller
         $depa = Departamento::where('depa', '=', $request->docente['depend'])->first();
         $ndep = $depa != null ? $depa->ndep : '';
 
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['cuentasCorrientes'=>function($query) {
+            $query->select('cuentas_corrientes.id as value',
+            DB::raw("(CONCAT(cuentas_corrientes.banco, ' ', cuentas_corrientes.numero_cuenta, ' ', cuentas_corrientes.moneda)) AS text"))
+            ->orderBy('text', 'asc')->get();
+        }])->where('user_id', $user->id)->first();
+
+        $cuentas = $puntoVenta->cuentasCorrientes;
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dni' => $request->docente['dic'],
+            'cuentas' => $cuentas,
             'docente' => str_replace('/', ' ', $request->docente['apn']),
             'email' => $request->docente['correo'] != '' ? $request->docente['correo'] . '@unsa.edu.pe' : '',
             'departamento' => $ndep,
@@ -207,13 +232,24 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
+        $comprobante->cuenta_corriente_id = null;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['cuentasCorrientes'=>function($query) {
+            $query->select('cuentas_corrientes.id as value',
+            DB::raw("(CONCAT(cuentas_corrientes.banco, ' ', cuentas_corrientes.numero_cuenta, ' ', cuentas_corrientes.moneda)) AS text"))
+            ->orderBy('text', 'asc')->get();
+        }])->where('user_id', $user->id)->first();
+
+        $cuentas = $puntoVenta->cuentasCorrientes;
+
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'dependencia' => $request->dependencia['nomb_depe'],
+            'cuentas' => $cuentas,
             'email' => 'sizaisi@unsa.edu.pe',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -253,13 +289,24 @@ class ComprobanteController extends Controller
         $comprobante->total = "";
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
+        $comprobante->cuenta_corriente_id = null;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['cuentasCorrientes'=>function($query) {
+            $query->select('cuentas_corrientes.id as value',
+            DB::raw("(CONCAT(cuentas_corrientes.banco, ' ', cuentas_corrientes.numero_cuenta, ' ', cuentas_corrientes.moneda)) AS text"))
+            ->orderBy('text', 'asc')->get();
+        }])->where('user_id', $user->id)->first();
+
+        $cuentas = $puntoVenta->cuentasCorrientes;
+        
         $data = [
             'tipo_comprobante' => 'BOLETA',
             'particular' => $request->particular['apellidos'] . ", " . $request->particular['nombres'],
+            'cuentas' => $cuentas,
             'email' => $request->particular['email'] != null ? $request->particular['email'] : '',
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
         ];
@@ -300,13 +347,24 @@ class ComprobanteController extends Controller
         $comprobante->tipo_pago = "";
         $comprobante->nro_operacion = "";
         $comprobante->cancelado = false;
+        $comprobante->cuenta_corriente_id = null;
         $comprobante->entidad_bancaria = null;
         $comprobante->email = "";
         $comprobante->detalles = array();
 
+        $user = Auth::user();
+        $puntoVenta = PuntosVenta::with(['cuentasCorrientes'=>function($query) {
+            $query->select('cuentas_corrientes.id as value',
+            DB::raw("(CONCAT(cuentas_corrientes.banco, ' ', cuentas_corrientes.numero_cuenta, ' ', cuentas_corrientes.moneda)) AS text"))
+            ->orderBy('text', 'asc')->get();
+        }])->where('user_id', $user->id)->first();
+
+        $cuentas = $puntoVenta->cuentasCorrientes;
+        
         $data = [
             'tipo_comprobante' => 'FACTURA',
             'razon_social' => $request->empresa['razon_social'],
+            'cuentas' => $cuentas,
             'email' => $request->empresa['email'] != null ? $request->empresa['email'] : '',
             'direccion' => $request->empresa['direccion'],
             'fecha_actual' => Carbon::now('America/Lima')->format('Y-m-d')
@@ -341,6 +399,7 @@ class ComprobanteController extends Controller
         $comprobante->total_inafecta = "";
         $comprobante->total_gravada = "";
         $comprobante->total = "";
+        $comprobante->cuenta_corriente_id = $cobro->cuenta_corriente_id;
         $comprobante->tipo_pago = $cobro->tipo_pago;
         $comprobante->detallesAfectados = $cobro->detalles;
 
@@ -374,6 +433,7 @@ class ComprobanteController extends Controller
             $comprobante->email = $request->email;
             $comprobante->codi_usuario = $request->codi_usuario;
             $comprobante->tipo_pago = $request->tipo_pago;
+            $comprobante->cuenta_corriente_id = $request->cuenta_corriente_id;
             $comprobante->total = $request->total;
             $comprobante->total_descuento = $request->total_descuento;
             $comprobante->total_impuesto = $request->total_impuesto;
@@ -408,7 +468,7 @@ class ComprobanteController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('ComprobanteController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('ComprobanteController@storeNota, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
         return redirect()->route('cobros.iniciar');
@@ -427,6 +487,7 @@ class ComprobanteController extends Controller
             $comprobante->tipo_comprobante_id = $request->tipo_comprobante_id;
             $comprobante->serie = $request->serie;
             $comprobante->nro_operacion = $request->nro_operacion;
+            $comprobante->cuenta_corriente_id = $request->cuenta_corriente_id;
             $comprobante->entidad_bancaria = $request->entidad_bancaria;
             $comprobante->correlativo = $request->correlativo;
             $comprobante->total_descuento = $request->total_descuento;

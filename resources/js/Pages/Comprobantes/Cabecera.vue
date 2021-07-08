@@ -70,7 +70,7 @@
                     </template>
                     <template v-if="comprobante.detalles != null">
                         <detalle-mostrar v-if="comprobante.id" :comprobante="comprobante"></detalle-mostrar>
-                        <detalle v-else :comprobante="comprobante"></detalle>
+                        <detalle v-else :comprobante="comprobante" :cuentas="data.cuentas"></detalle>
                     </template>
                 </div>
             </div>

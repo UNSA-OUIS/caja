@@ -200,7 +200,9 @@ export default {
         else if (this.data.tipo_comprobante === 'NOTA DE CRÉDITO'){
             this.tipos_de_nota = this.tipos_nota_credito
         }
-        this.comprobante.detraccion = parseFloat(this.data.comprobante.detraccion)
+        if (this.data.comprobante.detraccion != null){
+            this.comprobante.detraccion = parseFloat(this.data.comprobante.detraccion)
+        }
     },
     filters: {
         currency(value) {

@@ -25,7 +25,7 @@ class CuentaCorrienteUpdateRequest extends FormRequest
     {
         return [
             'numeroCuenta' => 'required|unique:cuentas_corrientes,numeroCuenta,' . $this->request->get('id'),
-            'descripcion' => 'required',
+            'banco' => 'required',
             'moneda' => 'required'
         ];
     }
@@ -34,7 +34,8 @@ class CuentaCorrienteUpdateRequest extends FormRequest
     {
         return [
             'numeroCuenta.required' => 'El campo número de cuenta es obligatorio.',
-            'descripcion.required' => 'El campo descripción es obligatorio.',
+            'numeroCuenta.unique' => 'El campo número de cuenta es obligatorio.',
+            'banco.required' => 'El campo entidad bancaria es obligatorio.',
             'moneda.required' => 'El campo moneda es obligatorio.',
         ];
     }

@@ -4,10 +4,18 @@
   
   <div>
     <div class="form-row">
-      <div class="form-group col-md-12 border border-light">
+      <div class="form-group col-md-6 border border-light">
         <label class="text-info">Tipo de pago:</label>
         <b-form-radio-group :disabled="accion === 'Mostrar'" v-model="comprobante.tipo_pago" :options="tipos_pago" name="detraccion"></b-form-radio-group>
         <b-alert :show="!validacion_tipo" variant="danger" dismissible>{{ validacion_mensaje_tipo }}</b-alert>
+      </div>
+      <div class="form-group col-md-6 border border-light">
+        <label class="text-info">Nro. Cuenta:</label>
+        <b-form-select id="input-4" v-model="comprobante.cuenta_corriente_id" :options="cuentas" :disabled="accion == 'Mostrar'">
+          <template v-slot:first>
+              <option :value="null" disabled>Seleccione...</option>
+          </template>
+        </b-form-select>
       </div>
     </div>
     <div v-if="comprobante.tipo_pago === 'Voucher'" class="form-row">
@@ -258,7 +266,7 @@ import AppLayout from "@/Layouts/AppLayout";
 import ModalCentroCostos from "./ModalCentroCostos";
 export default {
   name: "comprobantes.detalle",
-  props: ["comprobante"],
+  props: ["comprobante", "cuentas"],
   components: {
     AppLayout,
     ModalCentroCostos
