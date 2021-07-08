@@ -25,8 +25,8 @@ class ConceptoStoreRequest extends FormRequest
     {
         return [
             'codigo' => 'required|unique:conceptos',
-            'descripcion' => 'required|max:50',
-            'descripcion_imp' => 'required|max:25',
+            'descripcion' => 'required|max:100',
+            'descripcion_imp' => 'required|max:50',
             'tipo_concepto_id' => 'required',
             'clasificador_id' => 'required',
             'unidad_medida_id' => 'required',

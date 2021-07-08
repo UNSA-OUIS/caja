@@ -149,7 +149,7 @@ export default {
   },
   filters: {
     currency(value) {
-      return value ? value.toFixed(2) : null;
+      return value ? value.toFixed() : null;
     },
   },
 };

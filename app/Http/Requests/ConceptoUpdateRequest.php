@@ -25,8 +25,8 @@ class ConceptoUpdateRequest extends FormRequest
     {
         return [
             'codigo' => 'required|unique:conceptos,codigo,' . $this->request->get('id'),
-            'descripcion' => 'required|max:50',
-            'descripcion_imp' => 'required|max:25',
+            'descripcion' => 'required|max:100',
+            'descripcion_imp' => 'required|max:50',
             'precio' => 'required',
             'tipo_concepto_id' => 'required',
             'clasificador_id' => 'required',
@@ -38,10 +38,10 @@ class ConceptoUpdateRequest extends FormRequest
     {
         return [
             'codigo.required' => 'El campo código es obligatorio.',
-            'descripcion.required' => 'El campo descripción es obligatorio.',                        
-            'descripcion_imp.required' => 'El campo descripción corta es obligatorio.',                        
-            'descripcion_imp.max' => 'El campo descripción corta no debe ser mayor que :max caracteres.', 
-            'precio.required' => 'El campo precio es obligatorio.',                       
+            'descripcion.required' => 'El campo descripción es obligatorio.',
+            'descripcion_imp.required' => 'El campo descripción corta es obligatorio.',
+            'descripcion_imp.max' => 'El campo descripción corta no debe ser mayor que :max caracteres.',
+            'precio.required' => 'El campo precio es obligatorio.',
             'tipo_concepto_id.required' => 'El campo tipo de concepto es obligatorio.',
             'clasificador_id.required' => 'El campo clasificador es obligatorio.',
             'unidad_medida_id.required' => 'El campo unidad de medida es obligatorio.'

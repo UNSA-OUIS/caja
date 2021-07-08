@@ -18,7 +18,7 @@ class CreateConceptosTable extends Migration
         Schema::create('conceptos', function (Blueprint $table) {
             $table->id();
             $table->integer('codigo')->unique();
-            $table->string('descripcion', 50);
+            $table->string('descripcion', 100);
             $table->string('descripcion_imp', 50)->comment('Descripción corta para impresión de comprobante');
             $table->string('precio', 10)->nullable();
             $table->string('tipo_precio', 10);
