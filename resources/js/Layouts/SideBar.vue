@@ -312,37 +312,58 @@
               class="has-arrow waves-effect"
               @click="mostrarMenu(3)"
               :class="{
-                'mm-active': path == 'banco',
+                'mm-active': path == 'procesos',
+                'mm-active': path == 'admision',
+                'mm-active': path == 'procesos-admision',
               }"
             >
               <i class="fas fa-chalkboard-teacher"></i>
-              <span>Procesos</span>
+              <span>Banco</span>
             </a>
             <ul class="sub-menu" aria-expanded="false" v-show="show_menus[3]">
               <li
                 :class="{
-                  'mm-active': path == 'banco',
+                  'mm-active': path == 'procesos',
                 }"
               >
                 <inertia-link
                   :href="route('banco.iniciar')"
                   :class="{
-                    active: path == 'banco',
+                    active: path == 'procesos',
                   }"
                 >
-                  Banco
+                  Procesos
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'admision',
+                }"
+              >
+                <inertia-link
+                  :href="route('admision-consulta.iniciar')"
+                  :class="{
+                    active: path == 'admision',
+                  }"
+                >
+                  Admision
+                </inertia-link>
+              </li>
+              <li
+                :class="{
+                  'mm-active': path == 'procesos-admision',
+                }"
+              >
+                <inertia-link
+                  :href="route('admision.iniciar')"
+                  :class="{
+                    active: path == 'procesos-admision',
+                  }"
+                >
+                  Procesos Admision
                 </inertia-link>
               </li>
             </ul>
-          </li>
-          <li :class="{ 'mm-active': path == 'admision' }">
-            <inertia-link
-              :class="{ active: path == 'admision' }"
-              :href="route('admision.iniciar')"
-            >
-              <i class="fas fa-money-check-alt"></i>
-              <span>Admision</span>
-            </inertia-link>
           </li>
           <!--<li :class="{ 'mm-active': path == 'comprobantes' }">
             <inertia-link
@@ -412,7 +433,7 @@
                   :href="route('cuenta33.iniciar')"
                   :class="{ 'mm-active': path == 'boletas_cuenta33' }"
                 >
-                  Resumen diario C33
+                  Resumen Diario Banco
                 </inertia-link>
               </li>
               <li
