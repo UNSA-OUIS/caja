@@ -71,7 +71,7 @@ class ConceptoController extends Controller
             ->orderBy('nombre', 'asc')
             ->get();
 
-        $cuentas_corrientes = CuentaCorriente::select('id as value', DB::raw("CONCAT(numero_cuenta, ' | ', descripcion) as text"))
+        $cuentas_corrientes = CuentaCorriente::select('id as value', DB::raw("CONCAT(numero_cuenta, ' | ', banco) as text"))
             ->orderBy('id', 'asc')
             ->get();
 
