@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admision;
+use App\Models\BancoBCP;
 use App\Models\DetallesAdmision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -116,9 +117,17 @@ class AdmisionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function consulta(Request $request)
     {
-        //
+        $query = BancoBCP::where('cod_bancario', $request->codigo_web);
+        $sortby = $request->sortby;
+
+        if ($sortby && !empty($sortby)) {
+            $sortdirection = $request->sortdesc == "true" ? 'desc' : 'asc';
+            $query = $query->orderBy($sortby, $sortdirection);
+        }
+
+        return $query->paginate($request->size);
     }
 
     /**

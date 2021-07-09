@@ -34,6 +34,7 @@ use App\Http\Controllers\ReciboIngresoController;
 use App\Http\Controllers\SunatController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\ResumenDiarioController;
+use App\Models\Admision;
 
 Route::get('/', function () {
     return Inertia::render('Auth/Login', [
@@ -293,6 +294,10 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/admision', function () {
         return Inertia::render('Admision/Listar');
     })->name('admision.iniciar');
+    Route::get('/admision/consulta', function () {
+        return Inertia::render('Admision/Consulta');
+    })->name('admision-consulta.iniciar');
+    Route::get('/admision/consulta/codigo web', [AdmisionController::class, 'consulta'])->name('comprobantes-consultas.numero_operacion');
     Route::get('/admision/listar', [AdmisionController::class, 'index'])->name('admision.listar');
     Route::get('/admision/crear', [AdmisionController::class, 'create'])->name('admision.crear');
     Route::post('/admision', [AdmisionController::class, 'store'])->name('admision.registrar');
