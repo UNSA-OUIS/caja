@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 <b-row>
-                    <b-col cols="4">
+                    <b-col cols="6">
                         <v-select
                         v-model="cajero"
                         @search="buscarCajero"
@@ -30,10 +30,28 @@
                         </template>
                     </v-select>
                     </b-col>
-                    <b-col cols="4">
+                    <b-col cols="6">
+                        <b-form-group
+                        label="Cuenta corriente: "
+                        label-cols-sm="6"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="cuentaCorriente"
+                        class="mb-0"
+                        >
+                            <b-form-select id="cuentaCorriente" v-model="filter.cuenta_corriente_id" :options="cuentas">
+                                <template v-slot:first>
+                                    <option :value="null" disabled>Seleccione...</option>
+                                </template>
+                            </b-form-select>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col cols="6">
                         <b-form-group
                         label="Fecha inicio: "
-                        label-cols-sm="5"
+                        label-cols-sm="6"
                         label-align-sm="right"
                         label-size="sm"
                         label-for="startDate"
@@ -50,10 +68,10 @@
                         ></b-form-datepicker>
                          </b-form-group>
                     </b-col>
-                    <b-col cols="4">
+                    <b-col cols="6">
                         <b-form-group
                         label="Fecha fin: "
-                        label-cols-sm="4"
+                        label-cols-sm="6"
                         label-align-sm="right"
                         label-size="sm"
                         label-for="endDate"
@@ -85,12 +103,8 @@
                     :fields="fields"
                     empty-text="No hay clasificadores para mostrar"
                     empty-filtered-text="No hay clasificadores que coincidan con su búsqueda.">
-                    <template v-slot:cell(concepto)="row">
-                        <b-table
-                        :items="row.item.conceptos"
-                    :fields="fields_concepto">
-                            
-                        </b-table>
+                    <template v-slot:cell(descripcion)="row">
+                        {{ row.item.descripcion }} ({{ row.item.cantidad }})
                     </template>
                     <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
                         <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
@@ -197,6 +211,7 @@ import JsonExcel from "vue-json-excel";
 
 export default {
     name: "reportes.consolidado",
+    props: ["cuentas"],
     components: {
         AppLayout,
         VueHtml2pdf,
@@ -223,9 +238,9 @@ export default {
                 ],
             ],
             fields: [
-                { key: "id", label: "Código" },
-                { key: "concepto", label: "Concepto" },
-                { key: "importe", label: "Importe" ,class: "text-right" },
+                { key: "clasificador_id", label: "Código" },
+                { key: "descripcion", label: "Concepto" },
+                { key: "subtotal", label: "Importe" ,class: "text-right" },
             ],
             clasificadores: [],
             totalRegistros: 0,
@@ -236,6 +251,7 @@ export default {
             filter: {
                 fechaInicio: "",
                 fechaFin: "",
+                cuenta_corriente_id: null
             },
 
         };
@@ -273,7 +289,7 @@ export default {
         },
         async filterTable() {
             try {
-                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin
+                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin + "&cuenta_corriente_id=" + this.filter.cuenta_corriente_id
                 if (this.cajero != null){
                     params = params + "&cajeroId=" + this.cajero.cajero_id
                 }

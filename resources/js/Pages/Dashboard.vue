@@ -1,104 +1,6 @@
 <template>
     <app-layout>
-        <div class="row">
-            <div class="col-md-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="total-revenue-chart"></div>
-                        </div>
-                        <div class="text-center">
-                            <h4 class="text-primary mb-1 mt-1">
-                                <span data-plugin="counterup">{{no_enviado}}</span>
-                            </h4>
-                            <p class="text-primary text-muted mb-0">Comprobantes no enviados</p>
-                        </div>
-                        <!--<p class="text-muted mt-3 mb-0">
-                            <span class="text-success mr-1"
-                                ><i class="mdi mdi-arrow-up-bold ml-1"></i
-                                >2.65%</span
-                            >
-                            since last week
-                        </p>-->
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="orders-chart"></div>
-                        </div>
-                        <div class="text-center">
-                            <h4 class="text-danger mb-1 mt-1">
-                                <span data-plugin="counterup">{{rechazado}}</span>
-                            </h4>
-                            <p class="text-danger text-muted mb-0">Comprobantes rechazados</p>
-                        </div>
-                        <!--<p class="text-muted mt-3 mb-0">
-                            <span class="text-danger mr-1"
-                                ><i class="mdi mdi-arrow-down-bold ml-1"></i
-                                >0.82%</span
-                            >
-                            since last week
-                        </p>-->
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="customers-chart"></div>
-                        </div>
-                        <div class="text-center">
-                            <h4 class="text-secondary mb-1 mt-1">
-                                <span data-plugin="counterup">{{anulado}}</span>
-                            </h4>
-                            <p class="text-secondary text-muted mb-0">Comprobantes anulados</p>
-                        </div>
-                        <!--<p class="text-muted mt-3 mb-0">
-                            <span class="text-danger mr-1"
-                                ><i class="mdi mdi-arrow-down-bold ml-1"></i
-                                >6.24%</span
-                            >
-                            since last week
-                        </p>-->
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-
-            <div class="col-md-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="float-right mt-2">
-                            <div id="growth-chart"></div>
-                        </div>
-                        <div class="text-center">
-                            <h4 class="text-success mb-1 mt-1">
-                                <span data-plugin="counterup">{{aceptado}}</span>
-                            </h4>
-                            <p class="text-success text-muted mb-0">Comprobantes aceptados</p>
-                        </div>
-                        <!--<p class="text-muted mt-3 mb-0">
-                            <span class="text-success mr-1"
-                                ><i class="mdi mdi-arrow-up-bold ml-1"></i
-                                >10.51%</span
-                            >
-                            since last week
-                        </p>-->
-                    </div>
-                </div>
-            </div>
-            <!-- end col-->
-        </div>
-        <!-- end row-->
-
+        
         <div class="row">
             <div class="col-xl-12">
                 <div class="card">
@@ -386,6 +288,105 @@
                 </div>
             </div>-->
         </div>
+        <h4 class="card-title ml-3 pl-1 mb-3">Estados de comprobantes emitidos</h4>
+        <div class="row">
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="float-right mt-2">
+                            <div id="total-revenue-chart"></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="text-primary mb-1 mt-1">
+                                <span data-plugin="counterup">{{no_enviado}}</span>
+                            </h4>
+                            <p class="text-primary text-muted mb-0">Comprobantes no enviados</p>
+                        </div>
+                        <!--<p class="text-muted mt-3 mb-0">
+                            <span class="text-success mr-1"
+                                ><i class="mdi mdi-arrow-up-bold ml-1"></i
+                                >2.65%</span
+                            >
+                            since last week
+                        </p>-->
+                    </div>
+                </div>
+            </div>
+            <!-- end col-->
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="float-right mt-2">
+                            <div id="orders-chart"></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="text-danger mb-1 mt-1">
+                                <span data-plugin="counterup">{{rechazado}}</span>
+                            </h4>
+                            <p class="text-danger text-muted mb-0">Comprobantes rechazados</p>
+                        </div>
+                        <!--<p class="text-muted mt-3 mb-0">
+                            <span class="text-danger mr-1"
+                                ><i class="mdi mdi-arrow-down-bold ml-1"></i
+                                >0.82%</span
+                            >
+                            since last week
+                        </p>-->
+                    </div>
+                </div>
+            </div>
+            <!-- end col-->
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="float-right mt-2">
+                            <div id="customers-chart"></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="text-secondary mb-1 mt-1">
+                                <span data-plugin="counterup">{{anulado}}</span>
+                            </h4>
+                            <p class="text-secondary text-muted mb-0">Comprobantes anulados</p>
+                        </div>
+                        <!--<p class="text-muted mt-3 mb-0">
+                            <span class="text-danger mr-1"
+                                ><i class="mdi mdi-arrow-down-bold ml-1"></i
+                                >6.24%</span
+                            >
+                            since last week
+                        </p>-->
+                    </div>
+                </div>
+            </div>
+            <!-- end col-->
+
+            <div class="col-md-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="float-right mt-2">
+                            <div id="growth-chart"></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="text-success mb-1 mt-1">
+                                <span data-plugin="counterup">{{aceptado}}</span>
+                            </h4>
+                            <p class="text-success text-muted mb-0">Comprobantes aceptados</p>
+                        </div>
+                        <!--<p class="text-muted mt-3 mb-0">
+                            <span class="text-success mr-1"
+                                ><i class="mdi mdi-arrow-up-bold ml-1"></i
+                                >10.51%</span
+                            >
+                            since last week
+                        </p>-->
+                    </div>
+                </div>
+            </div>
+            <!-- end col-->
+        </div>
+        <!-- end row-->
 
         <div class="row">
             <div class="col-xl-12">

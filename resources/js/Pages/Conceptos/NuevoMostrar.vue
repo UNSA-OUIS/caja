@@ -282,8 +282,8 @@
                 >
                   <template v-slot:first>
                     <option :value="null" disabled>Seleccione...</option>
-                    <option :value="30">
-                      Inafecto: Operacion Onerosa
+                    <option :value="10">
+                      Gravado: Operacion Onerosa
                     </option>
                   </template>
                 </b-form-select>
@@ -340,7 +340,7 @@ export default {
       ],
       tipoAfectacionIGV: [
         { value: 10, text: "Gravado: Operacion Onerosa" },
-        { value: 20, text: "Exonerado: Operacion Onerosa" },
+        //{ value: 20, text: "Exonerado: Operacion Onerosa" },
         { value: 30, text: "Inafecto: Operacion Onerosa" },
       ],
       semestre: [
