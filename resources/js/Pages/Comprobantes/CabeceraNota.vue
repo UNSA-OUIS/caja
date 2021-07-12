@@ -133,7 +133,7 @@
                 </b-table>
             </b-col>
             </b-row>
-            <b-row v-if="data.comprobante.tipo_comprobante_id == 2 && data.comprobante.detraccion != null">
+            <!--<b-row v-if="data.comprobante.tipo_comprobante_id == 2 && data.comprobante.detraccion != null">
                 <b-col>
                     <b-form-checkbox
                     id="checkbox-1"
@@ -147,7 +147,7 @@
                     <b-form-input type="number" v-model="comprobante.detraccion" placeholder="Ingrese detracción"
                     :readonly="!detraccion" class="text-right"></b-form-input>
                 </b-col>
-            </b-row>
+            </b-row>-->
             <div>
                 <b-button variant="success" @click="registrar()">Registrar</b-button>
             </div>
@@ -259,16 +259,7 @@ export default {
     computed: {
         precioTotal() {
             this.comprobante.total = this.comprobante.detallesAfectados.reduce(
-                (acc, item) =>{
-                    var updatedSum = 0
-                    if(this.comprobante.detraccion != null){
-                        updatedSum = acc + parseFloat(item.subtotal) - this.comprobante.detraccion
-                    }
-                    else{
-                        updatedSum = acc + parseFloat(item.subtotal)
-                    }
-                    return updatedSum
-                } , 0
+                (acc, item) =>acc + parseFloat(item.subtotal) , 0
             );
             this.comprobante.total_descuento = this.comprobante.detallesAfectados.reduce(
                 (acc, item) => acc + (parseFloat(item.valor_unitario) * parseFloat(item.cantidad) - parseFloat(item.subtotal)), 0
