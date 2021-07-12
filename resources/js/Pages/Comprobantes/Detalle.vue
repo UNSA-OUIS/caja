@@ -59,7 +59,7 @@
       {{ alerta_mensaje }}
     </b-alert>
     <hr />
-    <form v-if="comprobante.tipo_comprobante_id != 2 || (comprobante.tipo_comprobante_id == 2 && comprobante.detalles.length < 1)" @submit.prevent="agregarDetalle">
+    <form v-if="!detraccion.estado" @submit.prevent="agregarDetalle">
       <b-row>
         <b-col cols="6">
           <v-select
@@ -237,7 +237,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row v-if="comprobante.tipo_comprobante_id == 2 && (comprobante.detalles.length == 1 && comprobante.detalles[0].detraccion)">
+    <!--<b-row v-if="comprobante.tipo_comprobante_id == 2 && (comprobante.detalles.length == 1 && comprobante.detalles[0].detraccion)">
       <b-col>
         <b-form-checkbox
           id="checkbox-1"
@@ -252,7 +252,40 @@
         <b-form-input type="number" v-model="comprobante.detraccion" placeholder="Ingrese detracción"
         :readonly="!detraccion || accion === 'Mostrar'" class="text-right"></b-form-input>
       </b-col>
-    </b-row>
+    </b-row>-->
+    <div class="form-row" v-if="comprobante.tipo_comprobante_id == 2 && (comprobante.detalles.length == 1 && comprobante.detalles[0].detraccion)">
+      <div class="form-group col-md-2 border border-light">
+        <label class="text-info">Detracción:</label>
+        <b-form-checkbox
+          id="checkbox-1"
+          v-model="detraccion.estado"
+          name="checkbox-1"
+          @change="calcularDetraccion()"
+          :disabled="accion === 'Mostrar'"
+        >
+        </b-form-checkbox>
+      </div>
+      <div class="form-group col-md-2 border border-light">
+        <label class="text-info">Cuenta BN Nro:</label>
+        <label class="lbl-data">101-060462</label>
+      </div>
+      <div class="form-group col-md-4 border border-light">
+        <label class="text-info">Tipo de detracción:</label>
+        <b-form-select id="input-2" :disabled="!detraccion.estado || accion === 'Mostrar'" v-model="detraccion.tipo_detraccion" @change="calcularDetraccion()" :options="tipos_detraccion" >                   
+          <template v-slot:first>
+            <option :value="0" disabled>Seleccione...</option>
+          </template>
+        </b-form-select>
+      </div>
+      <div class="form-group col-md-2 border border-light">
+        <label class="text-info">Porcentaje:</label>
+        <label class="lbl-data" v-text="detraccion.porcentaje"></label>
+      </div>
+      <div class="form-group col-md-2 border border-light">
+        <label class="text-info">Monto S/:</label>
+        <label class="lbl-data" v-text="comprobante.detraccion"></label>
+      </div>
+    </div>
     <div>
       <b-button v-if="accion === 'Crear'" variant="success" @click="registrar()"
         >Registrar</b-button
@@ -280,7 +313,11 @@ export default {
       concepto: null,
       filtro: "",
       conceptos: [],
-      detraccion: false,
+      detraccion: {
+        estado: false,
+        tipo_detraccion: 0,
+        porcentaje: 0
+      },
       fields: [
         {
           key: "codigo",
@@ -340,6 +377,10 @@ export default {
       anhos_resolucion: [
         { text: "2020", value: "2020" },
       ],
+      tipos_detraccion: [
+        { text: "ARRENDAMIENTO DE BIENES MUEBLES", value: 10.00 },
+        { text: "OTROS SERVICIOS EMPRESARIALES", value: 12.00 },
+      ],
     };
   },
   created() {
@@ -348,16 +389,7 @@ export default {
   computed: {
     precioTotal() {
       this.comprobante.total = this.comprobante.detalles.reduce(
-        (acc, item) =>{
-          var updatedSum = 0
-          if(item.detraccion && this.detraccion){
-            updatedSum = acc + item.subtotal - this.comprobante.detraccion
-          }
-          else{
-            updatedSum = acc + item.subtotal
-          }
-          return updatedSum
-        } , 0
+        (acc, item) =>acc + item.subtotal , 0
       );
       this.comprobante.total_descuento = this.comprobante.detalles.reduce(
         (acc, item) => acc + (parseFloat(item.precio) * parseFloat(item.cantidad) - item.subtotal), 0
@@ -541,7 +573,15 @@ export default {
       this.comprobante.detalles.splice(index, 1);
     },
     calcularDetraccion() {
-      this.comprobante.total = this.comprobante.total - parseFloat(this.comprobante.detraccion)
+      if (this.detraccion.estado){
+        this.detraccion.porcentaje = this.detraccion.tipo_detraccion.toFixed(2)
+        this.comprobante.detraccion = (this.comprobante.total * (this.detraccion.porcentaje/100)).toFixed(2)
+      }
+      else{
+        this.detraccion.tipo_detraccion = 0
+        this.detraccion.porcentaje = 0
+        this.comprobante.detraccion = null
+      }
     },
     calcularSubTotal(concepto_id) {
       let objDetalle = this.comprobante.detalles.find(
@@ -732,4 +772,14 @@ input[type="number"][id="precio"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.lbl-data {
+        text-align: center;
+        border: 0;
+        padding: 0;
+        display: block;
+        width: 100%;
+        font-size: 1rem;
+        margin-bottom: 0;
+        font-weight: 400;
+    }
 </style>
