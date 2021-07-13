@@ -59,7 +59,7 @@
             </b-col>
             </b-row>
             <b-row>
-                <b-col cols="6">
+                <!--<b-col cols="6">
                     <b-form-group
                         id="input-group-2"
                         label="IP:"
@@ -76,9 +76,9 @@
                         {{ $page.props.errors.ip[0] }}
                         </div>
                     </b-form-group>
-                </b-col>
+                </b-col>-->
               
-            <b-col>
+            <b-col cols="6">
               <b-form-group
                 id="input-group-3"
                 label="Usuario:"
@@ -102,9 +102,7 @@
                 </div>
               </b-form-group>
             </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="6">
+            <b-col cols="6">
                             <b-form-group id="input-group-4" label="Cuenta(s) corriente(s):" label-for="input-4">
                                 <b-form-select
                                     id="input-4"

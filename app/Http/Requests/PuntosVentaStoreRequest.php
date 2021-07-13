@@ -24,7 +24,8 @@ class PuntosVentaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'ip' => 'required|unique:puntos_venta',
+            //'ip' => 'required|unique:puntos_venta',
+            'ip' => 'unique:puntos_venta',
             'nombre' => 'required',
             'direccion' => 'required|max:250',
             'user_id' => 'required|unique:puntos_venta',
@@ -34,7 +35,7 @@ class PuntosVentaStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'ip.required' => 'El campo IP es obligatorio.',
+            //'ip.required' => 'El campo IP es obligatorio.',
             'nombre.required' => 'El campo nombre es obligatorio.',
             'direccion.required' => 'El campo dirección es obligatorio.',
             'user_id.required' => 'El campo usuario es obligatorio.',

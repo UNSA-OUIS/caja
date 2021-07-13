@@ -80,9 +80,9 @@ class PuntosVentaController extends Controller
             $puntoVenta->ip = $request->ip;
             $puntoVenta->direccion = $request->direccion;
             $puntoVenta->user_id = $request->user_id;
+            $puntoVenta->save();
             $puntoVenta->conceptos()->sync($request->conceptos_asignados);
             $puntoVenta->cuentasCorrientes()->sync($request->cuentas_asignadas);
-            $puntoVenta->save();
             $result = ['successMessage' => 'Punto de venta registrado con éxito'];
 
         } catch (\Throwable $e) {
