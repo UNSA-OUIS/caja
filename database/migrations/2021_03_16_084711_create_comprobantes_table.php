@@ -46,6 +46,7 @@ class CreateComprobantesTable extends Migration
             $table->char('tipo_nota', 2)->nullable();
             $table->text('motivo')->nullable();
             $table->bigInteger('comprobante_afectado_id')->nullable();
+            $table->bigInteger('recibo_ingreso_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -65,6 +66,10 @@ class CreateComprobantesTable extends Migration
                 ->onDelete('cascade');
 
             $table->foreign('comprobante_afectado_id')->references('id')->on('comprobantes')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreign('recibo_ingreso_id')->references('id')->on('recibos_ingreso')
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

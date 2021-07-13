@@ -24,7 +24,8 @@ class PuntosVentaUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'ip' => 'required|unique:puntos_venta,ip,' . $this->request->get('id'),
+            //'ip' => 'required|unique:puntos_venta,ip,' . $this->request->get('id'),
+            'ip' => 'unique:puntos_venta,ip,' . $this->request->get('id'),
             'nombre' => 'required',
             'direccion' => 'required|max:250',
             'user_id' => 'required|unique:puntos_venta,user_id,' . $this->request->get('id'),
@@ -34,7 +35,7 @@ class PuntosVentaUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'ip.required' => 'El campo IP es obligatorio.',
+            //'ip.required' => 'El campo IP es obligatorio.',
             'nombre.required' => 'El campo nombre es obligatorio.',
             'direccion.required' => 'El campo dirección es obligatorio.',
             'user_id.required' => 'El campo usuario es obligatorio.',

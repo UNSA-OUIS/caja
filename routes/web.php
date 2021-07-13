@@ -390,9 +390,10 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     Route::get('/reportes-periodo/filter-reporte/consolidado', [ReportesController::class, 'filtrarConsolidado'])->name('reportes.filtrarConsolidado');
     /*******************************************************************/
 
-    /**************************** Reportes ***************************/
+    /**************************** Recibos de ingreso ***************************/
     Route::get('/recibo-ingreso/cajero', [ReciboIngresoController::class, 'porCajero'])->name('recibos.cajero');
     Route::get('/recibo-ingreso/filter-reporte/cajeros', [ReciboIngresoController::class, 'filtrarCajero'])->name('recibos.filtrarCajero');
+    Route::post('/recibo-ingreso', [ReciboIngresoController::class, 'store'])->name('recibos.registrar');
     /*******************************************************************/
 
     /**************************** CUENTAS CORRIENTES ***************************/

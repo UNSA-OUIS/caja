@@ -172,12 +172,7 @@ export default {
           sortable: true,
           class: "text-center",
         },
-        {
-          key: "ip",
-          label: "IP",
-          sortable: true,
-          class: "text-center",
-        },
+        //{ key: "ip", label: "IP", sortable: true, class: "text-center", },
         { key: "direccion", label: "Dirección", class: "text-left" },
         { key: "user", label: "Usuario", class: "text-left" },
         { key: "condicion", label: "Condición", class: "text-left" },

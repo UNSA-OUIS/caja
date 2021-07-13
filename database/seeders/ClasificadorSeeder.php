@@ -19,6 +19,6 @@ class ClasificadorSeeder extends Seeder
         Clasificador::create([ 'nombre'=>'DERECHO DE EXAMEN DE ADMISION']);
         Clasificador::create([ 'nombre'=>'GRADOS, TITULOS, CONSTANCIAS Y CERTIFICADOS']);
         Clasificador::create([ 'nombre'=>'DERECHOS UNIVERSITARIOS']);
-        Clasificador::create([ 'nombre'=>'REGISTROSR']);
+        Clasificador::create([ 'nombre'=>'REGISTROS']);
     }
 }

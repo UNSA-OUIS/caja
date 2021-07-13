@@ -1,18 +1,36 @@
 <template>
     <app-layout>
         <div class="card" ref="content">
-            <div class="card-header">
-                <h1>Recibo de ingresos</h1>
-            </div>
+            <div class="card-header d-flex align-items-center">                
+                <span class="font-weight-bold">Recibo de ingresos</span>
+                <div v-if="clasificadores.length > 0" class="d-flex ml-auto">
+                    <b-form-input class="ml-auto" v-model="recibo.correlativo" id="input-1" type="text" placeholder="Nro de recibo"></b-form-input>
+                    <b-button class="btn btn-success float-right" @click="registrar()">Registrar</b-button>
+                </div>
+            </div> 
             <div class="card-body">
+                <b-alert
+                show
+                dismissible
+                variant="success"
+                v-if="$page.props.successMessage"
+                >{{ $page.props.successMessage }}</b-alert
+                >
+                <b-alert
+                show
+                dismissible
+                variant="danger"
+                v-if="$page.props.errorMessage"
+                >{{ $page.props.errorMessage }}</b-alert
+                >
                 <b-row>
                     <b-col cols="6">
                         <v-select
-                        v-model="cajero"
+                        v-model="recibo.cajero_id"
                         @search="buscarCajero"
                         :filterable="false"
                         :options="cajeros"
-                        :reduce="cajero => cajero"
+                        :reduce="(cajero) => cajero.cajero_id"
                         label="vista_cajero"
                         placeholder="Ingrese código o nombre del cajero"
                     >
@@ -39,7 +57,7 @@
                         label-for="cuentaCorriente"
                         class="mb-0"
                         >
-                            <b-form-select id="cuentaCorriente" v-model="filter.cuenta_corriente_id" :options="cuentas">
+                            <b-form-select id="cuentaCorriente" v-model="recibo.cuenta_corriente_id" :options="cuentas">
                                 <template v-slot:first>
                                     <option :value="null" disabled>Seleccione...</option>
                                 </template>
@@ -59,7 +77,7 @@
                         >
                         <b-form-datepicker
                             id="startDate"
-                            v-model="filter.fechaInicio"
+                            v-model="recibo.fechaInicio"
                             today-button
                             reset-button
                             close-button
@@ -79,7 +97,7 @@
                         >
                         <b-form-datepicker
                             id="endDate"
-                            v-model="filter.fechaFin"
+                            v-model="recibo.fechaFin"
                             today-button
                             reset-button
                             close-button
@@ -112,93 +130,7 @@
                         <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
                     </template>
                 </b-table>
-                <b-button v-if="clasificadores.length" @click="html2pdf">Descargar PDF</b-button>
-                <json-excel
-                    v-if="clasificadores.length"
-                    :data="json_data"
-                    type="xlsx"
-                    :fields="json_fields"
-                    worksheet="Reporte_periodo_x_cajero"
-                    :name="filename"
-                    class="btn btn-success">
-                        Descargar Excel
-                </json-excel>
             </div>
-
-            <vue-html2pdf
-                    :show-layout="false"
-                    :float-layout="true"
-                    :enable-download="false"
-                    :preview-modal="true"
-                    :paginate-elements-by-height="1400"
-                    :filename="filenamepdf"
-                    :pdf-quality="2"
-                    :manual-pagination="true"
-                    pdf-format="a4"
-                    pdf-orientation="portrait"
-                    pdf-content-width="800px"
-                    @hasStartedGeneration="hasStartedGeneration()"
-                    @beforeDownload="beforeDownload($event)"
-                    @hasGenerated="hasGenerated($event)"
-                    ref="html2Pdf"
-                >
-                    <section slot="pdf-content">
-                        <div class="container">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="header">
-                                        <img
-                                            src="https://cdn.jsdelivr.net/gh/unsa-cdn/static@master/logo.png"
-                                            alt=""
-                                            height="50"
-                                            class="logo logo-light float-left mr-2"
-                                        />
-                                        <div class="float-left">
-                                            
-                                            <h6><small>UNIVERSIDAD NACIONAL DE SAN AGUSTIN<br>
-                                            CALLE SANTA CATALINA 117 AREQUIPA AREQUIPA<br>
-                                            SISTEMA DE CAJAS/INGRESOS</small></h6>
-                                        </div>
-                                        <div class="float-right">
-                                            <h6><small>{{filenamepdf}}.pdf</small></h6>
-                                        </div>
-                                    </div>
-                                    <div class="container row align-middle ">
-                                        <h1 class="text-center">Reporte de cobros</h1>
-                                    </div>
-                                    
-                                    
-                                </div>
-                                
-                                    <div v-for="(group, key) in grupoDividido" :key="key">
-                                       <div class="card-body">
-                                        <b-table
-                                            ref="tbl_clasificadores"
-                                            show-empty
-                                            striped
-                                            hover
-                                            bordered
-                                            small
-                                            responsive
-                                            stacked="md"
-                                            :items="group"
-                                            :fields="fields"
-                                            empty-text="No hay clasificadores para mostrar"
-                                            empty-filtered-text="No hay clasificadores que coincidan con su búsqueda."
-                                        >
-                                        <template v-if="clasificadores.length" slot="bottom-row" slot-scope="">
-                                            <b-td class="text-right font-weight-bold">{{totalRegistros}} registros</b-td>
-                                            <b-td class="text-right font-weight-bold">TOTALES:</b-td>
-                                            <b-td class="text-right font-weight-bold">{{totalMontos}}</b-td>
-                                        </template>
-                                        </b-table>
-                                        <div class="html2pdf__page-break"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </vue-html2pdf>
         </div>
     </app-layout>
 </template>
@@ -211,7 +143,7 @@ import JsonExcel from "vue-json-excel";
 
 export default {
     name: "reportes.consolidado",
-    props: ["cuentas"],
+    props: ["recibo", "cuentas"],
     components: {
         AppLayout,
         VueHtml2pdf,
@@ -223,20 +155,6 @@ export default {
             cajero: null,
             cajeros: [],
             filtro: "",
-            json_fields: {
-                "Código": "codigo",
-                Nombre: "nombre",
-                "Monto": "monto",
-                },
-            json_data: [],
-            json_meta: [
-                [
-                    {
-                    key: "charset",
-                    value: "utf-8",
-                    },
-                ],
-            ],
             fields: [
                 { key: "clasificador_id", label: "Código" },
                 { key: "descripcion", label: "Concepto" },
@@ -245,14 +163,6 @@ export default {
             clasificadores: [],
             totalRegistros: 0,
             totalMontos: 0,
-            filenamepdf: "Reporte_cobros",
-            filename: "",
-            filenamepdf: "Reporte_cobros",
-            filter: {
-                fechaInicio: "",
-                fechaFin: "",
-                cuenta_corriente_id: null
-            },
 
         };
     },
@@ -260,17 +170,22 @@ export default {
         filtro:function(val) {
             this.filtro = val.trim()
         },
-        cajero:function(val) {
+        recibo:function(val) {
             this.filtro = ""
         },
+        recibo: {
+            handler() {
+                this.filtro = ""
+            },
+            deep: true
+        }
     },
     created(){
         var today = new Date()
         today.setHours(today.getHours() - 5)
         var dateString = today.toISOString().split("T")[0]
-        this.filename = "Reporte_periodo_x_consolidado_" + dateString + ".xls"
-        this.filter.fechaInicio = dateString;
-        this.filter.fechaFin = dateString;
+        this.recibo.fechaInicio = dateString;
+        this.recibo.fechaFin = dateString;
     },
     methods: {
         buscarCajero(search, loading) {
@@ -287,12 +202,12 @@ export default {
         refreshTable() {
             this.$refs.tbl_clasificadores.refresh();
         },
+        registrar() {                                         
+            this.$inertia.post(route('recibos.registrar'), this.recibo)
+        },
         async filterTable() {
             try {
-                let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin + "&cuenta_corriente_id=" + this.filter.cuenta_corriente_id
-                if (this.cajero != null){
-                    params = params + "&cajeroId=" + this.cajero.cajero_id
-                }
+                let params = "?fechaInicio=" + this.recibo.fechaInicio + "&fechaFin=" + this.recibo.fechaFin + "&cuenta_corriente_id=" + this.recibo.cuenta_corriente_id + "&cajeroId=" + this.recibo.cajero_id
                 const response = await axios.get(`${this.app_url}/recibo-ingreso/filter-reporte/cajeros/${params}`)
                 this.clasificadores = response.data.clasificadores
                 this.totalRegistros = response.data.totalRegistros
@@ -308,51 +223,6 @@ export default {
                 console.log(error)
             }
         },
-        html2pdf(){
-            this.$refs.html2Pdf.generatePdf()
-        },
-        dompdf(){
-            this.$inertia.post(
-                route("reportes.cajeropdf"),
-                this.grupoFilter
-            );
-        },
-        async beforeDownload ({ html2pdf, options, pdfContent }) {
-            await html2pdf().set(options).from(pdfContent).toPdf().get('pdf').then((pdf) => {
-                const totalPages = pdf.internal.getNumberOfPages()
-                for (let i = 1; i <= totalPages; i++) {
-                    pdf.setPage(i)
-                    pdf.setFontSize(10)
-                    pdf.setTextColor(150)
-                    pdf.text('Página ' + i + ' de ' + totalPages, (pdf.internal.pageSize.getWidth() * 0.88), (pdf.internal.pageSize.getHeight() - 0.3))
-                } 
-            }).save()
-        },
     },
-    computed:{
-        grupoFilter(){
-            var group = this.clasificadores;
-            
-            group = this.fechaInicio && this.fechaFin
-            ? group.filter(item => 
-            new Date(item.created_at.slice(0, 10).split('-')) >= new Date(this.fechaInicio.split('-')) && 
-            new Date(item.created_at.slice(0, 10).split('-')) <= new Date(this.fechaFin.split('-')))
-            : group
-            group = this.dniCliente
-            ? group.filter(item => item.cui.includes(this.dniCliente))
-            : group
-            return group
-        },
-        grupoDividido(){
-            var group = this.grupoFilter;
-            const groups = [];
-            var i,j,temparray,chunk = 25;
-            for (i=0,j=group.length; i<j; i+=chunk) {
-                temparray = group.slice(i,i+chunk);
-                groups.push(temparray);
-            }
-            return groups;
-        }
-    }
 };
 </script>

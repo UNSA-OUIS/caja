@@ -15,7 +15,7 @@ class CreatePuntosVentaTable extends Migration
     {
         Schema::create('puntos_venta', function (Blueprint $table) {
             $table->id();
-            $table->string('ip')->unique();
+            $table->string('ip')->unique()->nullable();
             $table->string('direccion', 250);
             $table->string('nombre');
             $table->bigInteger('user_id')->unique();
