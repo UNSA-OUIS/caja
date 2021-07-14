@@ -642,6 +642,38 @@
               </li>
             </ul>
           </li>
+          <li>
+            <a
+              href="javascript: void(0);"
+              class="has-arrow waves-effect"
+              @click="mostrarMenu(8)"
+              :class="{
+                'mm-active':
+                  path == 'recibo-ingreso' 
+              }"
+            >
+              <i class="fas fa-file-upload"></i>
+              <span>Recibos</span>
+            </a>
+            <ul class="sub-menu" aria-expanded="false" v-show="show_menus[8]">
+              <li>
+                <inertia-link
+                  :href="route('recibos.cajero')"
+                  :class="{ 'mm-active': path == 'recibo-ingreso' }"
+                >
+                  Registro
+                </inertia-link>
+              </li>
+              <li>
+                <inertia-link
+                  :href="route('recibos.busquedaRecibo')"
+                  :class="{ 'mm-active': path == 'recibo-ingreso' }"
+                >
+                  Búsqueda
+                </inertia-link>
+              </li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>

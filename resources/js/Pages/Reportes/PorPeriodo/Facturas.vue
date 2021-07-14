@@ -85,7 +85,7 @@
                             <b-form-select
                             v-model="filter.cta_corriente"
                             id="ctaCorriente"
-                            :options="ctas_corriente"
+                            :options="cuentas"
                             size="sm">
                             <template v-slot:first>
                                 <option :value=0>TODOS</option>
@@ -161,11 +161,6 @@
                     <template v-slot:cell(fecha_cancelacion)="row">
                         <template v-if="row.item.fecha_cancelacion">
                         {{ row.item.fecha_cancelacion.substring(0, 10) }}
-                        </template>
-                    </template>
-                    <template v-slot:cell(nro_operacion)="row">
-                        <template v-if="row.item.nro_operacion">
-                        {{ row.item.nro_operacion.substring(0, 6) }}
                         </template>
                     </template>
                     <template v-slot:cell(razon_social)="row">
@@ -269,11 +264,6 @@
                                                 {{ row.item.fecha_cancelacion.substring(0, 10) }}
                                                 </template>
                                             </template>
-                                            <template v-slot:cell(nro_operacion)="row">
-                                                <template v-if="row.item.nro_operacion">
-                                                {{ row.item.nro_operacion.substring(0, 6) }}
-                                                </template>
-                                            </template>
                                             <template v-slot:cell(razon_social)="row">
                                                 {{ row.item.comprobanteable.razon_social }}
                                             </template>
@@ -317,6 +307,7 @@ export default {
         PeriodoMenu,
         JsonExcel
     },
+    props: ["cuentas"],
     data() {
         return {
             app_url: this.$root.app_url,
@@ -327,7 +318,7 @@ export default {
                 "SERIE-CORRE": "serieCorre",
                 "F. DIGI": "created_at",
                 "F. CANC": "fecha_cancelacion",
-                "R. ING": "nro_operacion",
+                "R. ING": "recibo_ingreso_id",
                 RUC: "codi_usuario",
                 CLIENTE: "razon_social",
                 "DIRECCIÓN": "direccion",
@@ -349,7 +340,7 @@ export default {
                 { key: "serieCorre", label: "SERIE-CORRE"},
                 { key: "created_at", label: "F. DIGI" },
                 { key: "fecha_cancelacion", label: "F. CANC" },
-                { key: "nro_operacion", label: "R. ING" },
+                { key: "recibo_ingreso_id", label: "R. ING" },
                 { key: "codi_usuario", label: "RUC" },
                 { key: "razon_social", label: "CLIENTE" ,class: "text-center" },
                 { key: "direccion", label: "DIRECCIÓN" ,class: "text-center" },
@@ -429,6 +420,7 @@ export default {
             try {
                 let params = "?fechaInicio=" + this.filter.fechaInicio + "&fechaFin=" + this.filter.fechaFin 
                 + "&tipo_factura=" + this.filter.tipo_factura + "&tipo_fecha=" + this.filter.tipo_fecha
+                + "&cta_corriente=" + this.filter.cta_corriente
                 if (this.cajero != null){
                     params = params + "&cajeroId=" + this.cajero.cajero_id
                 }
@@ -446,7 +438,7 @@ export default {
                         serieCorre: "" + cobro.serie + "-" + cobro.correlativo,
                         created_at: cobro.created_at,
                         fecha_cancelacion: cobro.fecha_cancelacion,
-                        nro_operacion: cobro.nro_operacion,
+                        recibo_ingreso_id: cobro.recibo_ingreso_id,
                         codi_usuario: cobro.codi_usuario,
                         razon_social: cobro.comprobanteable.razon_social,
                         direccion: cobro.comprobanteable.direccion,

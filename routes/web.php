@@ -393,6 +393,8 @@ Route::group(["middleware" => ['auth:sanctum', 'verified']], function () {
     /**************************** Recibos de ingreso ***************************/
     Route::get('/recibo-ingreso/cajero', [ReciboIngresoController::class, 'porCajero'])->name('recibos.cajero');
     Route::get('/recibo-ingreso/filter-reporte/cajeros', [ReciboIngresoController::class, 'filtrarCajero'])->name('recibos.filtrarCajero');
+    Route::get('/recibo-ingreso/buscar-recibo', [ReciboIngresoController::class, 'buscarRecibo'])->name('recibos.buscarRecibo');
+    Route::get('/recibo-ingreso/busqueda-recibo', [ReciboIngresoController::class, 'busquedaRecibo'])->name('recibos.busquedaRecibo');
     Route::post('/recibo-ingreso', [ReciboIngresoController::class, 'store'])->name('recibos.registrar');
     /*******************************************************************/
 

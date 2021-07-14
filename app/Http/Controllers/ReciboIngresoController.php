@@ -27,7 +27,7 @@ class ReciboIngresoController extends Controller
         $cuentas = CuentaCorriente::select('id as value', DB::raw("(CONCAT(banco, ' ', numero_cuenta, ' ', moneda)) AS text"))
                 ->orderBy('text', 'asc')->get();
 
-        return Inertia::render('Reportes/Ingresos/RegistroRecibo', compact('recibo', 'cuentas'));
+        return Inertia::render('Ingresos/RegistroRecibo', compact('recibo', 'cuentas'));
     }
 
     public function filtrarCajero(Request $request)
@@ -68,6 +68,25 @@ class ReciboIngresoController extends Controller
             Log::error('ReciboIngresoController@store, Detalle: "' . $e->getMessage() . '" on file ' . $e->getFile() . ':' . $e->getLine());
         }
 
-        return redirect()->route('recibos.cajero')->with($result);
+        return redirect()->route('recibos.busquedaRecibo')->with($result);
+    }
+
+    public function busquedaRecibo()
+    {
+
+        return Inertia::render('Recibos/BuscarRecibo');
+    }
+
+    public function buscarRecibo(Request $request)
+    {
+        $clasificadores = DB::table('vista_recibo_ingreso')->select(DB::raw('MIN(clasificador_id) as clasificador_id'), 'descripcion',
+                                DB::raw('sum(totalcobros) as cantidad'), DB::raw('sum(subtotal) as subtotal'))
+                                ->where('recibo_ingreso_id', $request->nroRecibo)
+                                ->groupBy('descripcion')->orderBy('clasificador_id')->get();
+        
+        $totalRegistros = $clasificadores->count();
+                                
+        return ['clasificadores' => $clasificadores,
+                'totalRegistros' => $totalRegistros,];
     }
 }
