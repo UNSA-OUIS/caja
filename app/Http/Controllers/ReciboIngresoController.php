@@ -27,7 +27,7 @@ class ReciboIngresoController extends Controller
         $cuentas = CuentaCorriente::select('id as value', DB::raw("(CONCAT(banco, ' ', numero_cuenta, ' ', moneda)) AS text"))
                 ->orderBy('text', 'asc')->get();
 
-        return Inertia::render('Ingresos/RegistroRecibo', compact('recibo', 'cuentas'));
+        return Inertia::render('Recibos/RegistroRecibo', compact('recibo', 'cuentas'));
     }
 
     public function filtrarCajero(Request $request)

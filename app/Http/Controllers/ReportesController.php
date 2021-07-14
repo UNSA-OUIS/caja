@@ -208,7 +208,7 @@ class ReportesController extends Controller
                                         return $q->where('comprobantes.cancelado', false);
                                     })
                                     ->when($request->tipo_factura == 3, function ($q) {
-                                        return $q->whereNotNull('comprobantes.recibo_ingreso_id');
+                                        return $q->whereNotNull('comprobantes.detraccion');
                                     })
                                     ->when($request->cta_corriente != 0, function ($q) {
                                         return $q->where('cuenta_corriente_id', request('cta_corriente', 0));
