@@ -9,7 +9,6 @@
                 </div>
             </div> 
             <div class="card-body">
-                
                 <b-row>
                     <b-col cols="6">
                         <v-select

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Clasificador;
 use App\Models\Comprobante;
 use App\Models\Concepto;
+use App\Models\CuentaCorriente;
 use App\Models\Dependencia;
 use App\Models\DetallesComprobante;
 use App\Models\Persona;
@@ -177,8 +178,9 @@ class ReportesController extends Controller
     public function facturas()
     {
         $this->authorize('facturas');
-        $comprobantes = Comprobante::all();
-        return Inertia::render('Reportes/PorPeriodo/Facturas', compact('comprobantes'));
+        $cuentas = CuentaCorriente::select('id as value', DB::raw("(CONCAT(banco, ' ', numero_cuenta, ' ', moneda)) AS text"))
+                ->orderBy('text', 'asc')->get();
+        return Inertia::render('Reportes/PorPeriodo/Facturas', compact('cuentas'));
     }
 
     public function filtrarFactura(Request $request)
@@ -199,11 +201,17 @@ class ReportesController extends Controller
                                         return $q->whereDate('comprobantes.fecha_cancelacion','>=',$request->fechaInicio)
                                         ->whereDate('comprobantes.fecha_cancelacion','<=',$request->fechaFin);
                                     })
-                                    ->when($request->tipo_factura == 1,function ($q) {
+                                    ->when($request->tipo_factura == 1, function ($q) {
                                         return $q->where('comprobantes.cancelado', true);
                                     })
-                                    ->when($request->tipo_factura == 2,function ($q) {
+                                    ->when($request->tipo_factura == 2, function ($q) {
                                         return $q->where('comprobantes.cancelado', false);
+                                    })
+                                    ->when($request->tipo_factura == 3, function ($q) {
+                                        return $q->whereNotNull('comprobantes.recibo_ingreso_id');
+                                    })
+                                    ->when($request->cta_corriente != 0, function ($q) {
+                                        return $q->where('cuenta_corriente_id', request('cta_corriente', 0));
                                     })
                                     ->get();
         //dd($comprobantes);
